@@ -5,7 +5,16 @@
     <link>https://payloads.online/</link>
     <description>Recent content on 倾旋的博客</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 11 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 30 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>博客更新</title>
+      <link>https://payloads.online/archivers/2021-08-30/1/</link>
+      <pubDate>Mon, 30 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2021-08-30/1/</guid>
+      <description>接下来的时间会将自己的知识进行归纳，将博客中错误的内容进行更正，将没有成体系的知识文章进行选择性删除&amp;hellip;.</description>
+    </item>
+    
     <item>
       <title>Windows活动目录中的LDAP</title>
       <link>https://payloads.online/archivers/2021-08-11/1/</link>
@@ -368,29 +377,6 @@ from flask import Flask app = Flask(__name__) @app.route(&amp;#39;/&amp;#39;) de
 当满足以下条件时，遍历会终止：
 某个Access-denied ACE中的SID在线程令牌中存在，而且该ACE中的权限与线程要求的权限相符，此时系统拒绝该线程访问对象。
 某个Access-allowed ACE中的SID在线程令牌中存在，而且该ACE中的权限与线程要求的权限相符，此时系统允许线程访问对象。所有ACE中的SID在线程令牌中均不存在，此时系统拒绝线程访问对象。</description>
-    </item>
-    
-    <item>
-      <title>Cobalt Strike Aggressor Script （第一课）</title>
-      <link>https://payloads.online/archivers/2020-03-02/4/</link>
-      <pubDate>Mon, 02 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://payloads.online/archivers/2020-03-02/4/</guid>
-      <description>前言 在后渗透阶段，目前较为流行的C2平台就属Cobalt Strike做的比较优秀了；目前国内的论坛、网站上已经放出很多版本，最新的为Cobalt Strike 3.14，目前最新版本4.0已不再有试用版。
-起初我刚接触Cobalt Strike时，觉得非常不习惯，从Metasploit萌新走来，觉得这个图形化软件远远比不上Metasploit的模块丰富，后经过长时间的使用以及研究，从这个项目中学习到了很多技术，被开发者的思想所折服，应该算比较超前的一款值得学习的平台了。
-Aggressor Script Aggressor Script是Cobalt Strike 3.0版本以上的一个内置脚本语言，由Sleep语言解析，Cobalt Strike 3.0以上版本的菜单、选项、事件都由default.cna构建。红队人员可以通过它来调用一些IRC、Webhook接口去对接机器人，实现自动化渗透与监控，Aggressor Script是Cobalt Strike这款C2平台的画龙点睛之笔。
-对于Python、C/C++爱好者来说，Sleep语言一开始接触的时候感觉很奇怪，会有很多想吐槽的点，但久而久之，就会发现它的便捷之处。
-安装Sleep语言环境 为了快速掌握Aggressor Script，需要先掌握和熟悉一些Sleep的语法，不然遇到错误无法发现自己错在哪里。
-Sleep语言下载地址：http://sleep.dashnine.org/download/sleep.jar
-启动Sleep脚本语言解释器：
-java -jar sleep.jar
-Sleep语言数据类型  数字 字符串 Arrays Lists Stacks Sets Hashs  Sleep语法手册：http://sleep.dashnine.org/manual/
-这里主要介绍一些特殊的数据类型：Stacks、Lists、Hashs
-Array数据类型支持多种数据存放在一起，也就是说Array是一个复合数据类型；
-例如：
-# create a List @foo = @(&#39;foo&#39;,123.0,&#39;bar&#39;); println(@foo[0]) 遍历：
-@foo = @(&#39;foo&#39;,123.0,&#39;bar&#39;); foreach $var (@foo) { println($var); } Stacks 栈 - “后进先出”
-# create a Stacks push(@stack, &amp;quot;apple&amp;quot;); push(@stack, &amp;quot;banana&amp;quot;); push(@stack, &amp;quot;cucumber&amp;quot;); println(&amp;quot;Stack is: &amp;quot; .</description>
     </item>
     
   </channel>
