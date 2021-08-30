@@ -792,11 +792,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://payloads.online/archivers/2017-06-02/1/</loc>
-    <lastmod>2017-06-02T00:00:00+00:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
     <loc>https://payloads.online/archivers/nmap-write-script/</loc>
     <lastmod>2017-06-02T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
