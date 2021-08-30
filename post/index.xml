@@ -16,6 +16,15 @@
     </item>
     
     <item>
+      <title>博客更新了</title>
+      <link>https://payloads.online/archivers/2021-08-30/2/</link>
+      <pubDate>Mon, 30 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2021-08-30/2/</guid>
+      <description>接下来的时间会将自己的知识进行归纳，将博客中错误的内容进行更正，将没有成体系的知识文章进行选择性删除&amp;hellip;.</description>
+    </item>
+    
+    <item>
       <title>Windows活动目录中的LDAP</title>
       <link>https://payloads.online/archivers/2021-08-11/1/</link>
       <pubDate>Wed, 11 Aug 2021 00:00:00 +0000</pubDate>
@@ -351,32 +360,6 @@ BOOL ConnectTaskServer(LPCWSTR lpwsHost, LPCWSTR lpwDomain,LPCWSTR lpwsUserName,
 POST /application/services/proxy/doPostAndGet HTTP/1.1 Host: app.domain.com Connection: keep-alive Content-Length: XX Content-Type: application/json Accept: */* Referer: http://app.domain.com/application/portal/ Accept-Encoding: gzip, deflate Accept-Language: zh-CN,zh;q=0.9 { &amp;quot;url&amp;quot;:&amp;quot;http://domain.com/sso?login&amp;quot;, &amp;quot;method&amp;quot;:&amp;quot;post&amp;quot;, &amp;quot;jsonBody&amp;quot;:&amp;quot;{\&amp;quot;username\&amp;quot;:\&amp;quot;123456\&amp;quot;}&amp;quot; } Flask 框架 Flask是一个用Python编写的Web应用程序框架，它基于Werkzeug WSGI工具包和Jinja2模板引擎。
 Flask也被称为“microframework” ，因为它使用简单的核心，用extension增加其他功能，它没有默认使用的数据库、窗体验证工具。
 from flask import Flask app = Flask(__name__) @app.route(&amp;#39;/&amp;#39;) def hello_world(): return &amp;#39;Hello, World!&amp;#39; $ export FLASK_APP=hello.py $ python -m flask run * Running on http://127.</description>
-    </item>
-    
-    <item>
-      <title>Windows特权提升漏洞-符号</title>
-      <link>https://payloads.online/archivers/2020-03-21/1/</link>
-      <pubDate>Sat, 21 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://payloads.online/archivers/2020-03-21/1/</guid>
-      <description>0X01 Windows 特权提升漏洞分类 Windows 特权提升相信大家已经不陌生了，常见的场景如：NETWORK SERVICE → SYSTEM
-但从漏洞原理去了解，会发现利用漏洞利用本就是一个“使程序逻辑不按照正常方向运转”的过程。
-许多需要构建多个苛刻条件的Windows底层漏洞发现绝非偶然，也有许多Windows漏洞的发现是纯属偶然，它们是那么的容易可以利用，并且危害巨大。
-从研究成本，我根据自己的理解将Windows漏洞分为以下几类：
- Windows内核、服务的底层漏洞（需要长时间的Fuzz跟踪以及很深厚的基础知识） Windows服务、相关软件生态的权限控制不当产生的漏洞 Windows开发者自己本身都未想到过的逻辑漏洞  以上3种可能是一个不严谨的分类，但作为一个理解铺垫是足够了。
-0X02 权限（特权）与进程的关系 - 访问控制模型 访问控制模型有两个主要的组成部分，访问令牌（Access Token）和安全描述符（Security Descriptor），它们分别是访问者和被访问者拥有的东西。通过访问令牌和安全描述符的内容，Windows可以确定持有令牌的访问者能否访问持有安全描述符的对象。
-访问令牌是与特定的Windows账户关联的。当一个Windows账户登录的时候，系统会从内部数据库里读取该账户的信息，然后使用这些信息生成一个访问令牌。在该账户环境下启动的进程，都会获得这个令牌的一个副本，进程中的线程默认持有这个令牌。线程要想去访问某个对象，或者执行某些系统管理相关的操作时，Windows就会使用这个线程持有的令牌进行访问检查。
-安全描述符是与被访问对象关联的，它含有这个对象所有者的SID，以及一个访问控制列表（ACL，Access Control List），访问控制列表又包括了DACL（Discretionary Access Control List）和SACL（System Access Control List）——目前还不知道这两个东西的确切翻译——其中，**DACL是安全描述符中最重要的，它里面包含零个或多个访问控制项（ACE，Access Control Entry），每个访问控制项的内容描述了允许或拒绝特定账户对这个对象执行特定操作。**至于SACL，它很少用到，主要是用于系统审计的，它的内容指定了当特定账户对这个对象执行特定操作时，记录到系统日志中。
-如文件，点击右键选择“属性”，找到“安全”选项卡，点击“高级”按钮。弹出的对话筐中，“权限”选项卡就是DACL，&amp;ldquo;审核&amp;quot;选项卡是SACL，“所有者”是Owner、Group。
-访问令牌中主要含有以下的内容：
- 当前登录账户的SID，也就是与令牌关联的账户的SID 当前登录账户所属的账户组的SID列表 受限制的SID（Restricted SID）列表 当前登录账户以及它所属账户组的权限（Privileges）列表  SID（Security Identity）是Windows中每个账户和账户组都有的一个标识符，平常我们看到的Administrator，Users等账户或者账户组在Windows内部是使用SID来标识的。例如S-1-5-21-1004336348-1275210071-725345543-1003就是一个完整的SID。每个SID在同一个系统中都是唯一的。
-再来看看安全描述符中ACE的具体内容：
- 特定账户或者账户组的SID； 一个访问掩码（Access Mask），该掩码指定了具体的访问权限（Access Rights），也就是可以对该对象执行的操作； 一个位标记，指示了这个ACE的类型； 一组位标记，指示了安全描述符所属对象的子对象是否继承这个ACE；  所有的可访问对象都有三种ACE，分别是Access-denied ACE，Access-allowed ACE，System-audit ACE。Access-denied ACE用于拒绝账户访问，Access-allowed ACE用于允许账户访问，而System-audit ACE用于SACL中。
-当一个线程尝试去访问一个对象时，系统会检查线程持有的令牌以及被访问对象的安全描述符中的DACL。如果安全描述符中不存在DACL，则系统会允许线程进行访问。
-如果存在DACL，系统会顺序遍历DACL中的每个ACE，检查ACE中的SID在线程的令牌中是否存在。
-当满足以下条件时，遍历会终止：
-某个Access-denied ACE中的SID在线程令牌中存在，而且该ACE中的权限与线程要求的权限相符，此时系统拒绝该线程访问对象。
-某个Access-allowed ACE中的SID在线程令牌中存在，而且该ACE中的权限与线程要求的权限相符，此时系统允许线程访问对象。所有ACE中的SID在线程令牌中均不存在，此时系统拒绝线程访问对象。</description>
     </item>
     
   </channel>
