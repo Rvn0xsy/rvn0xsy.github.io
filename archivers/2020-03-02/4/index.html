@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Cobalt Strike Aggressor Script （第一课）</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="前言">前言</h2>
+<p>在后渗透阶段，目前较为流行的C2平台就属Cobalt Strike做的比较优秀了；目前国内的论坛、网站上已经放出很多版本，最新的为Cobalt Strike 3.14，目前最新版本4.0已不再有试用版。</p>
+<p>起初我刚接触Cobalt Strike时，觉得非常不习惯，从Metasploit萌新走来，觉得这个图形化软件远远比不上Metasploit的模块丰富，后经过长时间的使用以及研究，从这个项目中学习到了很多技术，被开发者的思想所折服，应该算比较超前的一款值得学习的平台了。</p>
+<h2 id="aggressor-script">Aggressor Script</h2>
+<p>Aggressor Script是Cobalt Strike 3.0版本以上的一个内置脚本语言，由<a href="http://sleep.dashnine.org/manual">Sleep语言</a>解析，Cobalt Strike 3.0以上版本的菜单、选项、事件都由default.cna构建。红队人员可以通过它来调用一些IRC、Webhook接口去对接机器人，实现自动化渗透与监控，Aggressor Script是Cobalt Strike这款C2平台的画龙点睛之笔。</p>
+<p>对于Python、C/C++爱好者来说，Sleep语言一开始接触的时候感觉很奇怪，会有很多想吐槽的点，但久而久之，就会发现它的便捷之处。</p>
+<h2 id="安装sleep语言环境">安装Sleep语言环境</h2>
+<p>为了快速掌握Aggressor Script，需要先掌握和熟悉一些Sleep的语法，不然遇到错误无法发现自己错在哪里。</p>
+<p>Sleep语言下载地址：http://sleep.dashnine.org/download/sleep.jar</p>
+<p>启动Sleep脚本语言解释器：</p>
+<p><code>java -jar sleep.jar</code></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/e0f895f33d4158b26767d6589ecd9d39.png" alt="2020-03-01-11-37-38"></p>
+<h2 id="sleep语言数据类型">Sleep语言数据类型</h2>
+<ul>
+<li>数字</li>
+<li>字符串</li>
+<li>Arrays</li>
+<li>Lists</li>
+<li>Stacks</li>
+<li>Sets</li>
+<li>Hashs</li>
+</ul>
+<p>Sleep语法手册：http://sleep.dashnine.org/manual/</p>
+<p>这里主要介绍一些特殊的数据类型：Stacks、Lists、Hashs</p>
+<p>Array数据类型支持多种数据存放在一起，也就是说Array是一个复合数据类型；</p>
+<p>例如：</p>
+<pre><code># create a  List
+@foo = @('foo',123.0,'bar');
+println(@foo[0])
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/1c43ab77a1dffdac57cbad0d4585a570.png" alt="2020-03-01-11-37-53"></p>
+<p>遍历：</p>
+<pre><code>@foo = @('foo',123.0,'bar');
+foreach $var (@foo)
+{
+   println($var);
+}
+</code></pre><p>Stacks 栈 - “后进先出”</p>
+<pre><code># create a Stacks
+push(@stack, &quot;apple&quot;);
+push(@stack, &quot;banana&quot;);
+push(@stack, &quot;cucumber&quot;);
+
+println(&quot;Stack is: &quot; . @stack);
+$value = pop(@stack);
+println(&quot;Top item is: &quot; . $value);
+println(&quot;Stack is: &quot; . @stack[0]);
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/a2877a7bc5af430992a89b92c0eda12d.png" alt="2020-03-01-11-38-02"></p>
+<p>Hashes 更像是Python中的字典 Key-Value</p>
+<pre><code>$x = 3;
+%foo[&quot;name&quot;] = &quot;Raphael&quot;;
+%foo[&quot;job&quot;]  = &quot;wasting time&quot;;
+%foo[$x]     = &quot;Michelangelo&quot;;
+
+println(&quot;%foo is: &quot; . %foo);
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/610a7f003c87fdf43c9a94a145d9321f.png" alt="2020-03-01-11-38-12"></p>
+<h2 id="创建一个与用户交互的函数">创建一个与用户交互的函数</h2>
+<p>一般，我们通常会在beacon中输入命令给Cobalt Strike，这些命令背后的代码其实都被事件关联起来了，下面来一个示例，做一次我们自己的命令绑定。</p>
+<pre><code>sub print_hello{
+    println(&quot;Hello $1&quot;);
+}
+
+command say {
+	print_hello($1);
+}
+</code></pre><p>加载到Cobalt Strike后，在Aggressor Script控制台输入say Tom就可以运行脚本了：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/02dc973c9be7df456ab74cf746577b33.png" alt="2020-03-01-11-38-22"></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7c2bbddd45bf4c1c83998ea42b35f077.png" alt="2020-03-01-11-38-29"></p>
+<p>可以发现，Sleep的函数通过$数字来寻找函数参数，这个虽然友好，但是还是有说不出的难受&hellip;</p>
+<p>下一课介绍Cobalt Strike的菜单创建以及快捷键绑定。</p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

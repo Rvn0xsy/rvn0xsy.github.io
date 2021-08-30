@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>cURL工具的使用技巧</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <blockquote>
+<p>cURL是一个利用URL语法在命令行下工作的文件传输工具，1997年首次发行。它支持文件上传和下载，所以是综合传输工具，但按传统，习惯称cURL为下载工具。cURL还包含了用于程序开发的libcurl。
+&ndash; Baidu</p>
+</blockquote>
+<ul>
+<li>
+<p>官网：https://curl.haxx.se/</p>
+</li>
+<li>
+<p>当前版本：7.62.0</p>
+</li>
+<li>
+<p>目录
+{:toc}</p>
+</li>
+</ul>
+<h2 id="0x01-curl支持的协议">0x01 cURL支持的协议</h2>
+<p>DICT, FILE, FTP, FTPS, GOPHER, HTTP, HTTPS, IMAP, IMAPS, LDAP, LDAPS, POP3, POP3S, RTMP, RTSP, SCP, SFTP, SMB, SMBS, SMTP, SMTPS, TELNET, TFTP</p>
+<p>Ref:https://ec.haxx.se/protocols-curl.html</p>
+<h2 id="0x02-常用选项">0x02 常用选项</h2>
+<ul>
+<li>查看详细信息：<code>curl -v http://example.com</code></li>
+<li>跟随重定向： <code>curl -L http://example.com</code></li>
+<li>发送POST数据：<code>curl -d &quot;username=Rvn0xsy&quot; http://example.com</code></li>
+<li>下载文件：<code>curl -o ~/Download/down.zip http://example.com/download.zip</code></li>
+<li>查看进度表： <code>curl -s -o ~/Download/down.zip http://example.com/download.zip</code></li>
+<li>下载并覆盖本地副本：<code>curl -O ~/Download/down.zip http://example.com/download.zip</code></li>
+<li>限速：<code>curl http://example.com/ --limit-rate 200K</code></li>
+<li>最大文件大小：<code>curl --max-filesize 100000 http://example.com/</code></li>
+<li>偏移读取：<code>curl --range 100-1099 http://example.com/download.zip</code></li>
+<li>URL编码：<code>curl --data-urlencode &quot;name=John Doe (Junior)&quot; http://example.com</code></li>
+<li>URL编码-从文件读取：<code>curl --data-urlencode user@contents.txt http://example.com #user的内容再contents.txt中</code></li>
+<li>GET请求：<code>curl -G http://example.com</code></li>
+<li>添加请求头：<code>curl -H &quot;Transfer-Encoding: chunked&quot; http://example.com</code></li>
+<li>自定义user-agent：<code>curl --user-agent/-A/-H 'User-Agent: http://example.com'</code></li>
+</ul>
+<h2 id="0x03-认证">0x03 认证</h2>
+<p>cURL支持四种认证：</p>
+<ul>
+<li>&ndash;digest</li>
+<li>&ndash;negotiate</li>
+<li>&ndash;ntlm</li>
+<li><code>-u &lt;username:password&gt;</code></li>
+</ul>
+<h2 id="0x04-任意http方法">0x04 任意HTTP方法</h2>
+<p><code>cURL -X &lt;POST/GET/OPTIONS/PUT&gt; http://example.com</code></p>
+<h2 id="0x04-上传文件">0x04 上传文件</h2>
+<p>支持：FILE, FTP, FTPS, HTTP, HTTPS, IMAP, IMAPS, SCP, SFTP, SMB, SMBS, SMTP, SMTPS and TFTP.</p>
+<p>HTTP：<code>curl -T upload.zip http://example.com/ # PUT</code></p>
+<p>FTP：<code>curl -T upload.zip ftp://example.com/</code></p>
+<p>SMTP：<code>curl -T mail smtp://mail.example.com/ --mail-from user@example.com</code></p>
+<h2 id="0x05-网卡">0x05 网卡</h2>
+<pre><code>curl --interface eth1 https://www.example.com/
+
+curl --interface 192.168.0.2 https://www.example.com/
+
+curl --interface machine2 https://www.example.com/
+</code></pre><h2 id="0x06-指定源端口">0x06 指定源端口</h2>
+<pre><code>curl --local-port 4000-4200 https://example.com/
+</code></pre><h2 id="0x07-代理">0x07 代理</h2>
+<p>支持代理：</p>
+<ul>
+<li>http</li>
+<li>socks</li>
+</ul>
+<pre><code>curl -x 192.168.0.1:8080 http:/example.com/
+curl -x socks4://proxy.example.com http://www.example.com/
+curl --socks4 proxy.example.com http://www.example.com/
+curl --socks4a proxy.example.com http://www.example.com/
+curl -x socks4a://proxy.example.com http://www.example.com/
+curl -x socks5://proxy.example.com http://www.example.com/
+curl --socks5 proxy.example.com http://www.example.com/
+curl -x socks5h://proxy.example.com http://www.example.com/
+curl --socks5-hostname proxy.example.com http://www.example.com/
+</code></pre><h3 id="代理认证">代理认证</h3>
+<p><code>curl -U daniel:secr3t -x myproxy:80 http://example.com</code></p>
+<h2 id="0x08-html表单上传文件">0x08 HTML表单上传文件</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">form</span> <span style="color:#a6e22e">action</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;submit.cgi&#34;</span> <span style="color:#a6e22e">method</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;post&#34;</span> <span style="color:#a6e22e">enctype</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;multipart/form-data&#34;</span>&gt;
+   Name: &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;text&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;person&#34;</span>&gt;&lt;<span style="color:#f92672">br</span>&gt;
+   File: &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;file&#34;</span> <span style="color:#a6e22e">name</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;secret&#34;</span>&gt;&lt;<span style="color:#f92672">br</span>&gt;
+   &lt;<span style="color:#f92672">input</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;submit&#34;</span> <span style="color:#a6e22e">value</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Submit&#34;</span>&gt;
+&lt;/<span style="color:#f92672">form</span>&gt; 
+</code></pre></div><p><code>curl -F person=anonymous -F secret=@file.txt http://example.com/submit.cgi</code></p>
+<h2 id="0x09-cookie">0x09 COOKIE</h2>
+<h3 id="读取cookie">读取cookie</h3>
+<p><code>curl -L -b cookies.txt http://example.com</code></p>
+<h3 id="将cookie写入文件">将cookie写入文件</h3>
+<p><code>curl -c cookie-jar.txt http://example.com</code></p>
+<h2 id="ref">REF</h2>
+<ul>
+<li><a href="https://legacy.gitbook.com/book/bagder/everything-curl">https://legacy.gitbook.com/book/bagder/everything-curl</a></li>
+</ul>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

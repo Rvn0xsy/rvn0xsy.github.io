@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>应急响应 近期总结</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="0x00-应急响应">0x00 应急响应</h2>
+<p>简介：“应急响应”对应的英文是“Incident Response”或“Emergency Response”等，通常是指一个组织为了应对各种意外事件的发生所做的准备以及在事件发生后所采取的措施。 &ndash; Baidu</p>
+<h2 id="0x01-应急响应类型">0x01 应急响应类型</h2>
+<p>目前接触的那么多应急，基本上都是以下事件类型：</p>
+<ul>
+<li>勒索病毒</li>
+<li>挖矿木马</li>
+<li>数据丢失</li>
+<li>网页篡改</li>
+<li>流量异常</li>
+<li>&hellip;.</li>
+</ul>
+<h2 id="0x02-应急响应的几个主要原因">0x02 应急响应的几个主要原因</h2>
+<ul>
+<li>资产脆弱业务对外</li>
+<li>钓鱼邮件</li>
+<li>服务器弱口令</li>
+<li>内部工作人员作梗</li>
+<li>&hellip;&hellip;</li>
+</ul>
+<h2 id="0x03-应急响应---勒索病毒">0x03 应急响应 - 勒索病毒</h2>
+<p>勒索病毒的特征：一般会加密敏感文件，并会将文件重命名，加密过程中还会横向移动，横向移动的手段包含但不限于：</p>
+<ul>
+<li>服务器口令（RDP、SSH、SMB）爆破</li>
+<li>SMB共享</li>
+<li>WMIC</li>
+<li>抓取密码横向</li>
+<li>已知的RCE（Remote Code Execute）漏洞</li>
+<li>&hellip;.</li>
+</ul>
+<p>同时可能会产生大量网络认证失败的日志，加密完成后还会清除自身或者清除操作系统日志。</p>
+<p>非二进制方向的人处理方式基本上就是首先确定事件发生时间，其次根据操作系统日志排查病毒发作时间，缩小排查范围。</p>
+<h2 id="0x04-应急响应---挖矿木马">0x04 应急响应 - 挖矿木马</h2>
+<p>挖矿木马的特征：CPU、内存占用率很高，并且会连接一些IOC相关的域名或者于虚拟货币相关的域名来获取新的指令。</p>
+<p>某些情况下，还会创建系统启动项，计划任务等。</p>
+<p>一般情况下，这类情况都是未安装杀毒软件或杀毒软件病毒库太老。</p>
+<p>横向移动的手段与<strong>0x03</strong>很相近。</p>
+<blockquote>
+<p>IOC（Indicator of Compromise）入侵指标，目前可以理解为是一种威胁参考数据。</p>
+</blockquote>
+<h2 id="0x05-应急响应---数据丢失">0x05 应急响应 - 数据丢失</h2>
+<p>这种是处理起来比较棘手的事件了，需要画大量的时间分析日志，确定数据丢失的方式。</p>
+<p>首先需要网络日志和主机日志，从数据服务器反向跟踪：<strong>“我被谁访问，谁对我做了什么”</strong></p>
+<h2 id="0x06-应急响应---网页篡改">0x06 应急响应 - 网页篡改</h2>
+<p>分两种情况：</p>
+<ul>
+<li>自动化批量攻击</li>
+<li>定向入侵</li>
+</ul>
+<p>首先需要保留HTTP服务器日志，第一种情况就要判断HTTP服务器上是否有脆弱的Web应用，例如：远程代码执行、文件上传漏洞。第二种情况就要从网页篡改后第一发现的时间作为开始日志审计工作的启动时间。</p>
+<h2 id="0x07-应急响应---流量异常">0x07 应急响应 - 流量异常</h2>
+<p>这种情况一般是服务器被僵尸网络木马控制了，要么就是UDP服务对外 —— DRDOS这类也有可能。</p>
+<p>根据网络日志和主机日志慢慢审计，当然直接查进程列表是最先要做的。</p>
+<h2 id="0x08-应急响应---我的一般流程">0x08 应急响应 - 我的一般流程</h2>
+<h3 id="question">Question</h3>
+<ul>
+<li>现场现象，如何发现的（依据是什么）？</li>
+<li>什么时候发现的？</li>
+<li>目前是否有做物理隔离（断网）？</li>
+<li>受害机器是哪个？</li>
+<li>受害服务有几台？（1台/N台）</li>
+<li>最先发现是哪台？</li>
+<li>这台服务器对外有哪些服务？</li>
+<li>这台服务器于其他机器是否处于同一个内网？</li>
+</ul>
+<h3 id="how-to-do">How to do</h3>
+<ol>
+<li>查看进程列表</li>
+<li>查看进程创建Command Line</li>
+<li>查看网络连接状况</li>
+<li>校验进程、模块签名</li>
+<li>查看进程线程、子进程</li>
+<li>查看是否有开机启动项，与现场工作人员确认</li>
+<li>查看勒索提示文件创建时间</li>
+<li>查看服务器账户是否正常</li>
+<li>查看日志是否被清除</li>
+<li>查看认证日志</li>
+</ol>
+<p>查看进程列表：能够确定是否有木马、病毒还在运行，较为可疑的就是：powershell.exe、rundll32、regsvr32、cmd&hellip;</p>
+<p>查看进程创建Command Line：能够查看某些进程的执行路径是否正常、进程名是否是伪装的。</p>
+<p>查看网络连接状况：确认机器是否还在被控状态，根据连接状况可以定位到程序路径。</p>
+<p>校验进程、模块签名：有些病毒、木马会劫持操作系统的dll达到持久控制，通过校验签名可以确定文件是否是操作系统本身的。</p>
+<p>查看是否有开机启动项，与现场工作人员确认：现场服务器上的业务可能需要定时任务计划或者开机启动项，需要确认启动项是否存在敏感行为，系统启动项和定时任务是木马常用来持久控制的一种手段。</p>
+<p>查看勒索提示文件创建时间：这个信息虽然不准确，但是可以基本确定勒索病毒的活跃时间，同时根据勒索文件去查询对应的IOC信息。</p>
+<p>查看服务器账户是否正常：在服务器上添加隐藏账户也是持久控制的一种方式。</p>
+<p>查看日志是否被清除：判断日志清除时间，尽最大努力还原事件原委。</p>
+<p>查看认证日志：一般针对SMB和RDP服务，如果发现某个IP在2秒内登录&gt;3次，基本上是不正常的，一般病毒横向移动时，爆破的行为间隔时间非常短。</p>
+<h3 id="0x09-应急响应---常用工具">0x09 应急响应 - 常用工具</h3>
+<ul>
+<li><a href="http://www.xuetr.com/download/PCHunter_free.zip">PC-Hunter</a></li>
+<li><a href="https://download.sysinternals.com/files/Procdump.zip">Procdump</a></li>
+<li><a href="https://github.com/Microsoft/ProcDump-for-Linux">Procdump for Linux</a></li>
+<li><a href="https://processhacker.sourceforge.io/downloads.php">ProcessHacker</a></li>
+<li><a href="https://download.sysinternals.com/files/ProcessExplorer.zip">ProcessExplorer</a></li>
+<li><a href="https://download.sysinternals.com/files/ProcessMonitor.zip">ProcessMonitor</a></li>
+<li><a href="https://www.microsoft.com/en-us/download/details.aspx?id=24659">Log Parser</a></li>
+<li><a href="https://download.sysinternals.com/files/TCPView.zip">TCPView</a></li>
+<li><a href="https://download.sysinternals.com/files/PortMon.zip">Portmon</a></li>
+</ul>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>C语言strcat函数实现</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>本文记录一下实现strcat函数的过程</p>
+<ul>
+<li>目录
+{:toc}</li>
+</ul>
+<h2 id="0x01-strcat函数">0x01 strcat函数</h2>
+<h3 id="原型">原型：</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">strcat</span>(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>dest, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>src);
+</code></pre></div><h3 id="参数">参数</h3>
+<p><code>dest</code> 为目标字符串指针，<code>src</code> 为源字符串指针。</p>
+<h3 id="说明">说明</h3>
+<p><code>strcat()</code> 会将参数 <code>src</code> 字符串复制到参数 <code>dest</code> 所指的字符串尾部；<code>dest</code> 最后的结束字符 <code>NULL</code> 会被覆盖掉，并在连接后的字符串的尾部再增加一个 <code>NULL</code>。</p>
+<p><strong>注意： dest 与 src 所指的内存空间不能重叠，且 dest 要有足够的空间来容纳要复制的字符串</strong></p>
+<h3 id="返回值">返回值</h3>
+<p>返回<code>dest</code> 字符串起始地址。</p>
+<h2 id="0x02-实现原理">0x02 实现原理</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">char</span> dest[<span style="color:#ae81ff">20</span>] <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;a&#39;</span>,<span style="color:#e6db74">&#39;v&#39;</span>,<span style="color:#e6db74">&#39;8&#39;</span>,<span style="color:#e6db74">&#39;d&#39;</span>,<span style="color:#e6db74">&#39;\0&#39;</span>,<span style="color:#e6db74">&#39;7&#39;</span>,<span style="color:#e6db74">&#39;w&#39;</span>,<span style="color:#e6db74">&#39;s&#39;</span>};
+<span style="color:#66d9ef">char</span> src[<span style="color:#ae81ff">5</span>] <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#39;a&#39;</span>,<span style="color:#e6db74">&#39;v&#39;</span>,<span style="color:#e6db74">&#39;8&#39;</span>,<span style="color:#e6db74">&#39;d&#39;</span>,<span style="color:#e6db74">&#39;\0&#39;</span>};
+</code></pre></div><p>假设要将src拼接到dest后面，首先要找到第一个dest中的<code>\0</code>，然后在后面赋值。</p>
+<p>在网上找到了一个非常好的案例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">strconcat</span>(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>a,<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>b){
+    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>p<span style="color:#f92672">=</span>a;
+    <span style="color:#66d9ef">if</span>(a<span style="color:#f92672">==</span>NULL <span style="color:#f92672">||</span> b<span style="color:#f92672">==</span>NULL)
+        <span style="color:#66d9ef">return</span> NULL;
+    <span style="color:#66d9ef">while</span>(<span style="color:#f92672">*</span>p)
+        p<span style="color:#f92672">++</span>;
+    <span style="color:#66d9ef">while</span>(<span style="color:#f92672">*</span>p<span style="color:#f92672">++=*</span>b<span style="color:#f92672">++</span>);
+    <span style="color:#66d9ef">return</span> a;
+}
+</code></pre></div><p>首先创建一个指针变量，指向目标字符串的首地址，然后不断偏移……</p>
+<p><strong>while还真好用（真香）</strong></p>
+<p>等到<code>while</code>偏移到第一个<code>\0</code>的时候，将要拼接的字符串也逐个开始偏移、赋值。</p>
+<p>总之写的很精辟！</p>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

