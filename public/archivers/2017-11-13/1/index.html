@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>高效-搭建一个Github静态博客</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>本文介绍一下如何在Github搭建一个静态博客</p>
+<ul>
+<li>目录
+{:toc}</li>
+</ul>
+<h2 id="0x00-环境准备">0x00 环境准备</h2>
+<ul>
+<li>系统环境  Windows/Linux</li>
+<li>版本控制软件 Git</li>
+<li>一个Github账号</li>
+<li>支持markdown语法的编辑器 - Sublime</li>
+</ul>
+<p>关于版本控制软件的安装：</p>
+<p><code>https://git-scm.com/downloads</code> 可以在这里看到对应的系统版本去下载安装包</p>
+<p>注册一个github账号：<code>https://github.com/</code>  右侧就有注册表单，按规则填写注册即可</p>
+<p>Sublime下载地址：<code>http://www.sublimetext.com/3</code></p>
+<h2 id="0x01-选择一个适合你的主题">0x01 选择一个适合你的主题</h2>
+<p>访问Jeklly主题官网：http://jekyllthemes.org/</p>
+<p>这里我选择了一个<code>http://jekyllthemes.org/themes/fresh/</code></p>
+<p>页面中有<code>Download</code>按钮，可以直接下载主题，但是这样不利于我们后续的<code>push</code></p>
+<p>点击<code>HomePage</code> 进入作者的github仓库，我们在自己的电脑中选择一个适合写作的目录，执行<code>git clone https://github.com/artemsheludko/fresh</code></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-13/1.png" alt="clone"></p>
+<h2 id="0x02-更改配置文件">0x02 更改配置文件</h2>
+<p>我们找到目录中的<code>_config.yml</code></p>
+<p>我根据自己的需求，稍微改改，另外如果不知道如何修改，可以参考jekyll手册：</p>
+<p>目录结构介绍：http://jekyll.com.cn/docs/structure/</p>
+<p>配置参数介绍：http://jekyll.com.cn/docs/configuration/</p>
+<pre><code># Profile information
+name: godkiller
+title: godkiller
+description: &gt; # this means to ignore newlines until &quot;baseurl:&quot;
+  记录生活、总结学习经验
+permalink: ':title/'
+baseurl: &quot;/&quot; # the subpath of your site, e.g. /blog
+url: &quot;&quot; # the base hostname &amp; protocol for your site, e.g. http://example.com
+
+# Social
+facebook: #Add your Facebook
+twitter: #Add your Twitter
+google-plus: #Add your Google+
+github: #Add your Github
+
+# Contact form
+email: godkiller@aliyun.com
+
+# Comments
+discus-identifier: # Add your Disqus identifier
+
+# Paginate
+paginate: 5
+paginate_path: /page:num/
+
+# Build settings
+markdown: kramdown
+gems:
+  - jekyll-feed
+  - jekyll-paginate
+exclude:
+  - Gemfile
+  - Gemfile.lock
+include: [_pages]
+</code></pre><h2 id="创建一个仓库">创建一个仓库</h2>
+<p>登录github后，可以访问<code>https://github.com/new</code>来创建一个仓库，用来存放博客内容。</p>
+<p>注意：<code>Repository name</code>必须是以 <code>[github用户名].github.io</code> 来命名</p>
+<p>我的是<code>GuestKiller</code>，但是必须小写</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-13/2.png" alt="Resp"></p>
+<p>创建成功后，就可以存入博客内容了</p>
+<h2 id="push你的博客---扬帆起航">push你的博客 - 扬帆起航</h2>
+<p>在开始push之前，我们需要添加一个ssh公钥，以便于以后长期写作使用</p>
+<p>访问：https://github.com/settings/keys</p>
+<p>我们点击<code>NEW SSH Key</code>，进入添加页面后，在本地生成一个公钥。</p>
+<p>打开(Linux)终端或者(Windows)Git执行<code>ssh-keygen -t rsa</code>，有可能会询问你是否覆盖，输入<code>y</code>即可</p>
+<pre><code>Generating public/private rsa key pair.
+Enter file in which to save the key (/root/.ssh/id_rsa): 
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /root/.ssh/id_rsa.
+Your public key has been saved in /root/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:zZK0SQEXA6lX8aCQpp1rRrpDwcNwZV0qQaFeQojIqYY root@Kali
+The key's randomart image is:
++---[RSA 2048]----+
+|+.ooB+o=Oo       |
+|=+.oooo+.=       |
+|o=o+ooo.o .      |
+|Eo*o=..o *       |
+|. .= o  S o      |
+|  o +    .       |
+| . +             |
+|  o              |
+|   .             |
++----[SHA256]-----+
+</code></pre><p>出现上面的情况就代表生成成功了。</p>
+<p>Linux下直接按照下面的命令去查看：</p>
+<pre><code>root@Kali:~# cat ~/.ssh/id_rsa.pub 
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDhwvIIs9Nr9XDkX26C2XnU+8S7mE9clp9YkPMhAHvx5h0UHwMyW8elzqky7qnRvvS2TjUWX0Zmfk4Ezqni33x82WUoshs9a+yqhSByiVR1zQGMb3VO89hWcZrt8vwznDEBufpEB51o1EWGiSIwNa6BlNN3j++1bpYgoGsLG9UGRh5ymvHpmP0/rTlss5Xjc0E4UB3ZS2Oyv**********pVbnvTgJP6IRklcknZcJLXgK5UqTDrQBf7ctd9IVgvqQ0N43WINoWA10/62uxp6mgqxwOHveG70gOBIPTT8CHPYxiGjt4rm7/rtWzWWezt root@Kali
+</code></pre><p>Windows则打开当前用户的目录，然后找到<code>.ssh</code>目录中的<code>id_rsa.pub</code>，将文件内容复制出来即可。</p>
+<p>将这些字符串复制到key输入框内，Title自己定义</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-13/3.png" alt="ssh_key"></p>
+<p>添加好后就要学习Git的基本操作了</p>
+<pre><code>删除当前旧的远程仓库
+rm -rf .git
+
+clone新的仓库
+git clone git@github.com:GuestKiller/guestkiller.github.io.git
+
+将当前目录所有的博客文件放入guestkiller.github.io目录中
+
+
+root@Kali:~/guestkiller.github.io# ls
+assets       Gemfile       _includes   _layouts  _pages  README.md
+_config.yml  Gemfile.lock  index.html  LICENSE   _posts
+root@Kali:~/guestkiller.github.io# git status
+位于分支 master
+初始提交
+未跟踪的文件:
+  （使用 &quot;git add &lt;文件&gt;...&quot; 以包含要提交的内容）
+	Gemfile
+	Gemfile.lock
+	LICENSE
+	README.md
+	_config.yml
+	_includes/
+	_layouts/
+	_pages/
+	_posts/
+	assets/
+	index.html
+提交为空，但是存在尚未跟踪的文件（使用 &quot;git add&quot; 建立跟踪）
+root@Kali:~/guestkiller.github.io# git add .
+root@Kali:~/guestkiller.github.io# git commit -m '1'
+[master（根提交） f66f896] 1
+ Committer: root &lt;root@localhost.localdomain&gt;
+您的姓名和邮件地址基于登录名和主机名进行了自动设置。请检查它们正确
+与否。您可以对其进行设置以免再出现本提示信息。运行如下命令在编辑器
+中编辑您的配置文件：
+    git config --global --edit
+设置完毕后，您可以用下面的命令来修正本次提交所使用的用户身份：
+    git commit --amend --reset-author
+ 43 files changed, 5658 insertions(+)
+ create mode 100644 Gemfile
+ create mode 100644 Gemfile.lock
+ create mode 100644 LICENSE
+ create mode 100644 README.md
+ create mode 100644 _config.yml
+ create mode 100644 _includes/analytics.html
+ create mode 100644 _includes/disqus.html
+ create mode 100644 _includes/head.html
+ **********
+ create mode 100644 assets/img/zagreb_city.jpg
+ create mode 100644 index.html
+root@Kali:~/guestkiller.github.io# git push
+Warning: Permanently added the RSA host key for IP address '192.30.255.112' to the list of known hosts.
+对象计数中: 58, 完成.
+Delta compression using up to 2 threads.
+压缩对象中: 100% (56/56), 完成.
+写入对象中: 100% (58/58), 20.30 MiB | 1.32 MiB/s, 完成.
+Total 58 (delta 2), reused 0 (delta 0)
+remote: Resolving deltas: 100% (2/2), done.
+To github.com:GuestKiller/guestkiller.github.io.git
+ * [new branch]      master -&gt; master
+
+</code></pre><p>然后访问guestkiller.github.io即可~</p>
+<h2 id="总结">总结</h2>
+<p>文章写的粗糙，有问题可以联系我的微信：Guest_Killer_0nlis</p>
+<p>详情：<a href="/about/">关于我</a></p>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

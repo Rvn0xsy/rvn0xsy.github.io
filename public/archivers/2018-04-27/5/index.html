@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>OpenSSL心脏滴血漏洞</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>《Web安全测试学习手册》- OpenSSL心脏滴血漏洞</p>
+<ul>
+<li>目录
+{:toc}</li>
+</ul>
+<h2 id="0x00-openssl心脏滴血漏洞">0x00 OpenSSL心脏滴血漏洞</h2>
+<h3 id="1什么是openssl心脏滴血漏洞">1）什么是OpenSSL心脏滴血漏洞</h3>
+<p>2014年4月8日，互联网上曝出了严重一个漏洞称为Heartbleed，该漏洞由安全公司Codenomicon和谷歌安全工程师发现。Heartbleed漏洞，造成许任何人在互联网上阅读系统的内存保护脆弱的OpenSSL的软件版本。 这种妥协密钥用于识别服务提供者和加密流量,用户名和密码的和实际的内容。 这允许攻击者窃听通信、窃取数据直接从服务和用户和模拟服务和用户。</p>
+<h3 id="2openssl心脏滴血漏洞的特点">2）OpenSSL心脏滴血漏洞的特点</h3>
+<ul>
+<li>服务器端必须支持openssl加密协议，如：https</li>
+<li>危害大</li>
+</ul>
+<h2 id="0x01-openssl心脏滴血漏洞---风险等级">0x01 OpenSSL心脏滴血漏洞 - 风险等级</h2>
+<p><strong>高</strong></p>
+<h2 id="0x02-openssl心脏滴血漏洞---原理">0x02 OpenSSL心脏滴血漏洞 - 原理</h2>
+<p>2014年4月7日OpenSSL发布了安全公告，在OpenSSL1.0.1版本中存在严重漏洞（CVE-2014-0160），此次漏洞问题存在于ssl/dl_both.c文件中。</p>
+<p>OpenSSL在实现TLS和DTLS的心跳处理逻辑时，存在编码缺陷。OpenSSL的心跳处理逻辑没有检测心跳包中的长度字段是否和后续的数据字段相符合，攻击者可以利用这点，构造异常的数据包，来获取心跳数据所在的内存区域的后续数据。这些数据中可能包含了证书私钥、用户名、用户密码、用户邮箱等敏感信息。该漏洞允许攻击者，从内存中读取多达64KB的数据。</p>
+<h2 id="0x03-openssl心脏滴血漏洞---常见场景">0x03 OpenSSL心脏滴血漏洞 - 常见场景</h2>
+<ul>
+<li>使用了openssl扩展库加密的网络协议</li>
+<li>https</li>
+<li>SSL VPN</li>
+<li>邮件服务器</li>
+</ul>
+<h2 id="0x04-测试方案">0x04 测试方案</h2>
+<h3 id="方案一">方案一</h3>
+<p>使用Nmap扩展脚本进行扫描</p>
+<p>命令：<code>nmap -sV -p 443 --script ssl-heartbleed.nse [Target]</code></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-04-27/0x06.png" alt="OpenSSL心脏滴血漏洞"></p>
+<h3 id="方案二">方案二</h3>
+<p><a href="https://filippo.io/Heartbleed/">https://filippo.io/Heartbleed/</a></p>
+<h3 id="方案三">方案三</h3>
+<p><a href="http://wangzhan.360.cn/heartbleed/">http://wangzhan.360.cn/heartbleed/</a></p>
+<h2 id="0x05-修复方案">0x05 修复方案</h2>
+<ul>
+<li>1.将受影响的服务器下线，避免它继续泄露敏感信息。</li>
+<li>2.停止旧版的 openssl 服务，升级 openssl 到新版本，并重新启动。</li>
+<li>3.生成新密钥。（因为攻击者可能通过漏洞获取私钥。）将新密钥提交给你的CA，获得新的认证之后在服务器上安装新密钥。</li>
+<li>4.服务器上线。</li>
+<li>5.撤销旧认证。</li>
+<li>6.撤销现有的会话cookies。</li>
+<li>7.要求用户修改密码。</li>
+</ul>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

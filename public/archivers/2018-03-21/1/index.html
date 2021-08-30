@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Web安全测试学习手册</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>准备在博客记录Web安全测试学习手册，先把目录列出来，之前参考了OWASP测试指南，写了一份Word，但是在Word里不好阐述风险的成因以及危害，所以针对每个风险我会以环境来详细的扣清楚。</p>
+<ul>
+<li>目录
+{:toc}</li>
+</ul>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-04-17/0x00.png" alt="Web安全测试学习手册"></p>
+<h2 id="0x01-配置管理测试">0x01 配置管理测试</h2>
+<ul>
+<li>远程代码执行</li>
+<li>Slow HTTP DOS</li>
+<li>点击劫持：X-Frame-Options头丢失</li>
+<li>服务器启用了不安全的HTTP方法</li>
+<li>中间件版本信息泄露</li>
+<li>服务器端目录遍历</li>
+<li>中间件解析漏洞</li>
+<li>IIS短文件名漏洞</li>
+<li>应用程序未容错</li>
+<li>SVN文件泄露</li>
+<li>OpenSSL心脏出血漏洞</li>
+<li>SSL/TLS “受戒礼”漏洞</li>
+<li>SSL POODLE漏洞</li>
+<li>分布式部署文件可读</li>
+</ul>
+<h2 id="0x02-数据验证测试">0x02 数据验证测试</h2>
+<ul>
+<li>XSS跨站脚本攻击</li>
+<li>SQL注入</li>
+<li>任意文件读取</li>
+<li>任意文件上传漏洞</li>
+<li>XML实体注入</li>
+<li>代码注入</li>
+<li>命令注入</li>
+<li>任意文件下载</li>
+<li>本地文件包含</li>
+<li>远程文件包含</li>
+<li>框架注入</li>
+<li>链接注入</li>
+<li>SSRF服务器请求伪造</li>
+<li>CSRF跨站请求伪造</li>
+<li>任意URL跳转</li>
+<li>JSON劫持</li>
+</ul>
+<h2 id="0x03-会话管理测试">0x03 会话管理测试</h2>
+<ul>
+<li>会话固定</li>
+<li>多次登录错误锁定机制</li>
+<li>COOKIE未设置HTTP Only属性</li>
+</ul>
+<h2 id="0x04-业务逻辑测试">0x04 业务逻辑测试</h2>
+<ul>
+<li>任意用户密码重置</li>
+<li>图形验证码绕过</li>
+<li>短信验证码绕过</li>
+<li>短信验证码重放</li>
+<li>业务流程绕过</li>
+<li>加密算法脆弱</li>
+<li>支付逻辑漏洞</li>
+<li>条件竞争(HTTP并发)</li>
+<li>前端认证绕过</li>
+</ul>
+<h2 id="0x05-身份认证测试">0x05 身份认证测试</h2>
+<ul>
+<li>账号弱口令</li>
+<li>登录错误消息凭证枚举</li>
+<li>空口令攻击</li>
+<li>垂直越权</li>
+<li>水平越权</li>
+</ul>
+<h2 id="0x06-结语">0x06 结语</h2>
+<p>这些测试项参考了OWASP测试指南与AWVS扫描报告</p>
+<p>:D 如果有什么缺陷，还望联系我补充。</p>
+<p>另外，每一篇的参考链接都会放在文末，只是做一些方便工作归档的整理。</p>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

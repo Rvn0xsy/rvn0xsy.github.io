@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>渗透测试中使用Ubuntu的一些小技巧</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>本文记录一下Ubuntu的一些小技巧</p>
+<ul>
+<li>目录
+{:toc}</li>
+</ul>
+<h2 id="0x00-前言">0x00 前言</h2>
+<p>由于学习C、C++我喜欢在Linux平台，首选了Ubuntu这个发新版，目前已经做得很不错了，但是平常使用的时候会发现一些比较麻烦的事情。</p>
+<p>本文就把一些技巧分享、记录下来。</p>
+<p>操作系统版本：Ubuntu 17.10</p>
+<p>我的源：</p>
+<pre><code>
+deb http://cn.archive.ubuntu.com/ubuntu/ artful universe
+deb http://cn.archive.ubuntu.com/ubuntu/ artful-updates universe
+deb http://cn.archive.ubuntu.com/ubuntu/ artful multiverse
+deb http://cn.archive.ubuntu.com/ubuntu/ artful-updates multiverse
+deb http://cn.archive.ubuntu.com/ubuntu/ artful-backports main restricted universe multiverse
+deb http://security.ubuntu.com/ubuntu artful-security main restricted
+deb http://security.ubuntu.com/ubuntu artful-security universe
+deb http://security.ubuntu.com/ubuntu artful-security multiverse
+</code></pre><h2 id="0x01-右键">0x01 右键</h2>
+<p><code>nautilus-actions</code> 是一个提供用户自定义鼠标右键菜单的软件。</p>
+<p>我们可以通过<code>nautilus-actions-config-tool</code> 来配置自己想要的菜单</p>
+<p>安装方式很简单：<code>sudo apt-get install nautilus-actions</code></p>
+<p>在命令行中启动<code>nautilus-actions-config-tool</code>就可以打开配置页面</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-18/0x01.png" alt="enter description here" title="0x01"></p>
+<p>可以看到我已经自己添加了两个菜单，主要用于Nmap从文本中读取目标进行扫描</p>
+<p>Ubuntu默认情况下是没有新建文本这个菜单的，我们自己通过这个工具添加一下试试：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-18/0x02.png" alt="enter description here" title="0x02"></p>
+<p>配置一下命令：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-18/0x03.png" alt="enter description here" title="0x03"></p>
+<p>这里有几个变量介绍一下：</p>
+<ul>
+<li>%d 当前目录</li>
+<li>%f  当前选择的文件（单个）</li>
+<li>%F 当前选择的所有文件</li>
+<li>%b 当前文件</li>
+<li>&hellip;&hellip;</li>
+</ul>
+<p>剩下的自己摸索，以上的已经够用了</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-18/0x04.png" alt="enter description here" title="0x04"></p>
+<p>点击保存以后，我们就可以使用了</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-18/0x05.png" alt="enter description here" title="0x05"></p>
+<h2 id="0x02-nmap自动导入目标扫描">0x02 Nmap自动导入目标扫描</h2>
+<p>新建一个Document.txt，里面写入&quot;192.168.3.1&quot;</p>
+<p>我们在菜单里新建一个动作：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-18/0x06.png" alt="enter description here" title="0x06"></p>
+<p>解读一下：</p>
+<pre><code>
+/usr/bin/gnome-terminal
+
+-x bash -c &quot;/usr/bin/nmap -iL %f -oN %d/NmapScan10000Result.txt -A;bash&quot;
+
+
+</code></pre><p>这个参数是用于创建一个新的终端，并且执行Nmap。最后的<code>;bash</code>很重要，是用于保留终端不被关闭而写的</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-18/0x07.png" alt="enter description here" title="0x07"></p>
+<p>有了这个方式，我们可以自定义很多工具的参数传递，是不是很方便呢？</p>
+<h2 id="0x04-快捷键">0x04 快捷键</h2>
+<p>Windows下按<code>Print Screen</code>，而Linux需要自己安装软件</p>
+<p>安装命令：<code>sudo apt-get install shutter</code></p>
+<p>打开系统设置-&gt;设备-&gt;键盘</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-18/0x08.png" alt="enter description here" title="0x08"></p>
+<p>添加一个快捷键，并且输入名称、命令，按下快捷键：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-18/0x09.png" alt="enter description here" title="0x09"></p>
+<p>此时按下快捷键激活截图软件:</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-18/0x10.png" alt="enter description here" title="0x10"></p>
+<h2 id="0x03-参考">0x03 参考</h2>
+<ul>
+<li>
+<p><a href="https://www.omgubuntu.co.uk/2011/12/how-to-add-actions-emblem-support-back-to-nautilus-in-ubuntu-11-10/">https://www.omgubuntu.co.uk/2011/12/how-to-add-actions-emblem-support-back-to-nautilus-in-ubuntu-11-10/</a></p>
+</li>
+<li>
+<p><a href="https://www.linuxidc.com/Linux/2014-04/100984.htm">https://www.linuxidc.com/Linux/2014-04/100984.htm</a></p>
+</li>
+<li>
+<p><a href="https://lira.epac.to/DOCS/nautilus-actions/html/C/nact/nautilus-actions-config-tool.html#introduction">https://lira.epac.to/DOCS/nautilus-actions/html/C/nact/nautilus-actions-config-tool.html#introduction</a></p>
+</li>
+</ul>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

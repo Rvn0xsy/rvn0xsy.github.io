@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Django celery</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="0x01-环境">0x01 环境</h2>
+<p>python3.6+</p>
+<p>Repo:https://github.com/Cooolis/CooolisGather</p>
+<h2 id="0x02-主要库安装">0x02 主要库安装</h2>
+<pre><code>pip install celery==3.1.26.post2
+pip install celery-with-redis==3.0
+pip install Django
+pip install redis==2.10.6
+</code></pre><p>首先创建一个Django项目，再创建一个app。</p>
+<pre><code>django-admin startproject CooolisGather
+django-admin startapp gather
+</code></pre><p>修改Settings添加BROKER：</p>
+<pre><code>BROKER_URL = 'redis://127.0.0.1:6379/0'
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7a9e5dc28266e95df8ba0352ce1cf588.png" alt="2019-02-27-20-52-50"></p>
+<h2 id="0x03-配置celery">0x03 配置celery</h2>
+<p>在CooolisGather目录文件夹下新建一个<code>celery.py</code>文件：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> __future__ <span style="color:#f92672">import</span> absolute_import
+
+<span style="color:#f92672">import</span> os
+<span style="color:#f92672">import</span> django
+
+<span style="color:#f92672">from</span> celery <span style="color:#f92672">import</span> Celery
+<span style="color:#f92672">from</span> django.conf <span style="color:#f92672">import</span> settings
+
+os<span style="color:#f92672">.</span>environ<span style="color:#f92672">.</span>setdefault(<span style="color:#e6db74">&#39;DJANGO_SETTINGS_MODULE&#39;</span>, <span style="color:#e6db74">&#39;CooolisGather.settings&#39;</span>)
+django<span style="color:#f92672">.</span>setup()
+
+app <span style="color:#f92672">=</span> Celery(<span style="color:#e6db74">&#39;CooolisGather&#39;</span>)
+
+app<span style="color:#f92672">.</span>config_from_object(<span style="color:#e6db74">&#39;django.conf:settings&#39;</span>)
+app<span style="color:#f92672">.</span>autodiscover_tasks(<span style="color:#66d9ef">lambda</span>: settings<span style="color:#f92672">.</span>INSTALLED_APPS)
+</code></pre></div><h2 id="0x04-配置tasks">0x04 配置tasks</h2>
+<p>在<code>gather</code>目录下新建<code>tasks.py</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> CooolisGather.celery <span style="color:#f92672">import</span> app
+<span style="color:#f92672">from</span> .tasks_handle.port_scan_handle <span style="color:#f92672">import</span> PortScanTask
+
+
+<span style="color:#a6e22e">@app</span><span style="color:#f92672">.</span>task(base<span style="color:#f92672">=</span>PortScanTask)
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">hello_world</span>():
+    print(<span style="color:#e6db74">&#39;Hello World&#39;</span>)
+
+</code></pre></div><p>第一行主要是为了让<code>gather</code>找到<code>celery</code>的配置。</p>
+<p><code>tasks_handle</code>主要是为了在触发<code>tasks</code>时能有其他功能，例如下发了一个端口扫描任务，任务触发了<code>hello_world</code>，那么在执行完毕需要将扫描结果写入数据库等操作，这种需求下就可以让<code>@app.task</code>继承<code>base=PortScanTask</code>。</p>
+<h2 id="0x05-调用tasks">0x05 调用tasks</h2>
+<p>更改<code>gather/views.py</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<span style="color:#f92672">from</span> django.http <span style="color:#f92672">import</span> HttpResponse
+<span style="color:#f92672">from</span> .tasks <span style="color:#f92672">import</span> hello_world
+
+<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">index</span>(request):
+    hello_world<span style="color:#f92672">.</span>delay()
+    <span style="color:#66d9ef">return</span> HttpResponse(<span style="color:#e6db74">&#39;Hello&#39;</span>)
+</code></pre></div><p>其中<code>delay()</code>方法主要用于异步执行。</p>
+<h2 id="0x06-遇到的坑">0x06 遇到的坑</h2>
+<p>1.redis库版本不能太高
+2.使用pycharm进行调试celery时，启动celery它默认是调用的系统库，而不是env</p>
+<h2 id="0x07-启动项目">0x07 启动项目</h2>
+<pre><code>~# celery worker -A CooolisGather -l debug
+~# python manage.py runserver 8080
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/0f75407053db1761c436b65bf7b434a3.png" alt="2019-02-27-21-04-22"></p>
+<p>访问主页将会调用<code>tasks.hello_word</code>，而<code>tasks.hello_word</code>有继承于<code>PortScanTask</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">
+<span style="color:#f92672">from</span> celery <span style="color:#f92672">import</span> Task
+
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">PortScanTask</span>(Task):
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">on_success</span>(self, retval, task_id, args, kwargs):
+        print(<span style="color:#e6db74">&#34;Done&#34;</span>)
+        <span style="color:#66d9ef">return</span> super(PortScanTask, self)<span style="color:#f92672">.</span>on_success(retval, task_id, args, kwargs)
+
+</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/629441718c24835d3be64b374224da95.png" alt="2019-02-27-21-05-18"></p>
+<p><code>tasks.hello_word</code>在执行完毕任务后，会自动调用<code>on_success</code>。</p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

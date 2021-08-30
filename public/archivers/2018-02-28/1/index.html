@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>C&#43;&#43;/C实现DNS查询</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>本文简述一下使用C++/C发送A记录的DNS数据请求程序的开发过程。</p>
+<ul>
+<li>目录
+{:toc}</li>
+</ul>
+<h2 id="0x00-前言">0x00 前言</h2>
+<p>转眼间已经是2018年的二月末了，这一年来的太快，让我手忙脚乱……去年想做的事情都没有做的很成功，让我深感遗憾。</p>
+<hr>
+<p>创业不谈，谈一谈自己的收获和生活吧</p>
+<ul>
+<li>
+<p>1.安全内容运营</p>
+<p>起初大家好像都在注册自己的微信公众号，通过自己的积累，让自己能有更好的工作、更多的出路、亦或是一种分享精神。</p>
+</li>
+</ul>
+<p>我注册了 “知安小酒馆” ，目前并没有太多人关注，也就在恰逢值得纪念的日子给大家一些祝福。但在此之前从知乎引流到微信平台，再到我自己开发的漏洞平台，我敢说它就可以成为产品，只要坚持那么一点点，只要有人给我鼓励……</p>
+<p>作为干了两三个月的小编来说，码字已经是常事，写作这个习惯也潜移默化的改变我，让我的表达更加流畅，错别字越来越少，文章越来越有层次。</p>
+<ul>
+<li>
+<p>2.编程一直是我的习惯</p>
+<p>喜欢对自己刨根问底，在计算机刚开始发展的时候，协议、网络、软件、操作系统都在变化，而这些东西中包罗万象了许多科技进步留下的有趣故事。
+我更看重的是知识。是那“黑客”的本质所吸引我的一些“优点”。</p>
+</li>
+<li>
+<p>3.读书</p>
+<p>这个在年底的时候并没有坚持，仿佛对生活充满了厌恶，总想改变点什么，可却非常无力……</p>
+</li>
+<li>
+<p>4.看电影</p>
+<p>这项活动快成了我的生活不可或缺的一部分，看了很多高票房的电影，总是感触很深，尤其是《缝纫机乐队》，看哭了。</p>
+</li>
+<li>
+<p>5.吃火锅</p>
+<p>喜欢吃辣的，所以经常去一家火锅店，然后没太多闲钱，有时候还觉得不该花。可真的很好吃…… 大半夜的都饿了。。 <code>此时凌晨 04:53</code></p>
+</li>
+</ul>
+<h2 id="0x01-基础铺垫">0x01 基础铺垫</h2>
+<p>请结合前面一篇文章：http://payloads.online/archivers/2018-02-10/1</p>
+<h3 id="报文格式">报文格式</h3>
+<pre><code>
+    +---------------------+
+    |        Header       | 报文头
+    +---------------------+
+    |       Question      | 查询的问题
+    +---------------------+
+    |        Answer       | 应答
+    +---------------------+
+    |      Authority      | 授权应答
+    +---------------------+
+    |      Additional     | 附加信息
+    +---------------------+
+</code></pre><p>之前的方法是采用了拼接二进制数据包进行发送，后来我感觉这不是一个完整的请求，并且获取结果集还是需要定义结构体的，绕不过那就只能自己实现了~</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span>
+{
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> id; <span style="color:#75715e">// identification number
+</span><span style="color:#75715e"></span>
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> rd :<span style="color:#ae81ff">1</span>; <span style="color:#75715e">// recursion desired
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> tc :<span style="color:#ae81ff">1</span>; <span style="color:#75715e">// truncated message
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> aa :<span style="color:#ae81ff">1</span>; <span style="color:#75715e">// authoritive answer
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> opcode :<span style="color:#ae81ff">4</span>; <span style="color:#75715e">// purpose of message
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> qr :<span style="color:#ae81ff">1</span>; <span style="color:#75715e">// query/response flag
+</span><span style="color:#75715e"></span>
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> rcode :<span style="color:#ae81ff">4</span>; <span style="color:#75715e">// response code
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> cd :<span style="color:#ae81ff">1</span>; <span style="color:#75715e">// checking disabled
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> ad :<span style="color:#ae81ff">1</span>; <span style="color:#75715e">// authenticated data
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> z :<span style="color:#ae81ff">1</span>; <span style="color:#75715e">// its z! reserved
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> ra :<span style="color:#ae81ff">1</span>; <span style="color:#75715e">// recursion available
+</span><span style="color:#75715e"></span>
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> q_count; <span style="color:#75715e">// number of question entries
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> ans_count; <span style="color:#75715e">// number of answer entries
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> auth_count; <span style="color:#75715e">// number of authority entries
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> add_count; <span style="color:#75715e">// number of resource entries
+</span><span style="color:#75715e"></span>};
+
+<span style="color:#75715e">//Constant sized fields of query structure
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">QUESTION</span>
+{
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> qtype;
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> qclass;
+};
+
+<span style="color:#75715e">//Constant sized fields of the resource record structure
+</span><span style="color:#75715e"></span><span style="color:#75715e">#pragma pack(push, 1)
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">R_DATA</span>
+{
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> type;
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> _class;
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> ttl;
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> data_len;
+};
+<span style="color:#75715e">#pragma pack(pop)
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">//Pointers to resource record contents
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">RES_RECORD</span>
+{
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>name;
+    <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">R_DATA</span> <span style="color:#f92672">*</span>resource;
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>rdata;
+};
+
+<span style="color:#75715e">//Structure of a Query
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span>
+{
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>name;
+    <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">QUESTION</span> <span style="color:#f92672">*</span>ques;
+} QUERY;
+
+</code></pre></div><p>上面是固定的结构体，如果你要进行DNS客户端编程，完全可以直接拿来用。</p>
+<h2 id="0x02-数组的内存概念">0x02 数组的内存概念</h2>
+<p>大家都知道 <code>char buff[65535]</code> 意味着什么，65535个字节的<code>char</code>数组，也就是可以存储65535个字符。而我们的数据包没有那么大，可以先给它用<code>memset</code>清空为零。</p>
+<p>首先我们要设置一个DNS头</p>
+<pre><code>
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    |                      ID                       |
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    |QR|   Opcode |AA|TC|RD|RA|   Z    |   RCODE    |
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    |                    QDCOUNT                    |
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    |                    ANCOUNT                    |
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    |                    NSCOUNT                    |
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+    |                    ARCOUNT                    |
+    +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+</code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">
+<span style="color:#66d9ef">char</span> buff[<span style="color:#ae81ff">65535</span>];
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span> <span style="color:#f92672">*</span> dns <span style="color:#f92672">=</span> NULL;
+dns <span style="color:#f92672">=</span> (<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span> <span style="color:#f92672">*</span> )<span style="color:#f92672">&amp;</span>buff;
+    dns<span style="color:#f92672">-&gt;</span>id <span style="color:#f92672">=</span> (<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span>) htons(getpid());
+    dns<span style="color:#f92672">-&gt;</span>qr <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">//This is a query
+</span><span style="color:#75715e"></span>    dns<span style="color:#f92672">-&gt;</span>opcode <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">//This is a standard query
+</span><span style="color:#75715e"></span>    dns<span style="color:#f92672">-&gt;</span>aa <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">//Not Authoritative
+</span><span style="color:#75715e"></span>    dns<span style="color:#f92672">-&gt;</span>tc <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">//This message is not truncated
+</span><span style="color:#75715e"></span>    dns<span style="color:#f92672">-&gt;</span>rd <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; <span style="color:#75715e">//Recursion Desired
+</span><span style="color:#75715e"></span>    dns<span style="color:#f92672">-&gt;</span>ra <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">//Recursion not available! hey we dont have it (lol)
+</span><span style="color:#75715e"></span>    dns<span style="color:#f92672">-&gt;</span>z <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    dns<span style="color:#f92672">-&gt;</span>ad <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    dns<span style="color:#f92672">-&gt;</span>cd <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    dns<span style="color:#f92672">-&gt;</span>rcode <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    dns<span style="color:#f92672">-&gt;</span>q_count <span style="color:#f92672">=</span> htons(<span style="color:#ae81ff">1</span>); <span style="color:#75715e">//we have only 1 question
+</span><span style="color:#75715e"></span>    dns<span style="color:#f92672">-&gt;</span>ans_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    dns<span style="color:#f92672">-&gt;</span>auth_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    dns<span style="color:#f92672">-&gt;</span>add_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</code></pre></div><p>这块也是固定格式，当然在某些情况下你可以自行更改，具体看前一篇文章介绍…… <code>标志位</code>能看懂就可以</p>
+<p>此时假设<code>buff</code>的长度为<code>100%</code>，那么把<code>40%</code>已经给了DNS头。</p>
+<p>剩下的我们还需要指针不断的向下移动，不断向里面按照数据包规定的格式填充数据。</p>
+<h3 id="填充域名">填充域名</h3>
+<p>这里需要一个域名转换函数，因为：</p>
+<pre><code>
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+|                                               |
+|                     QNAME                     |
+|                                               |
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+|                     QTYPE                     |
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+|                     QCLASS                    |
++--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
+</code></pre><p><code>QNAME</code>  域名被编码为一些labels序列，每个labels包含一个字节表示后续字符串长度，以及这个字符串，以0长度和空字符串来表示域名结束。</p>
+<p>那么仅仅只需要一个<code>char * qname</code>来指向除去DNS头部后面的起始位置就可以了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">
+<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> qname <span style="color:#f92672">=</span> (<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>buff[<span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span>)];
+
+<span style="color:#66d9ef">void</span> dns<span style="color:#f92672">::</span>changeToDnsNameFormat(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> dns,<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> host)
+{
+    <span style="color:#66d9ef">int</span> lock <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span> , i;
+    strcat((<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)host,<span style="color:#e6db74">&#34;.&#34;</span>);
+
+    <span style="color:#66d9ef">for</span>(i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span> ; i <span style="color:#f92672">&lt;</span> strlen((<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)host) ; i<span style="color:#f92672">++</span>)
+    {
+        <span style="color:#66d9ef">if</span>(host[i]<span style="color:#f92672">==</span><span style="color:#e6db74">&#39;.&#39;</span>)
+        {
+            <span style="color:#f92672">*</span>dns<span style="color:#f92672">++</span> <span style="color:#f92672">=</span> i<span style="color:#f92672">-</span>lock;
+            <span style="color:#66d9ef">for</span>(;lock<span style="color:#f92672">&lt;</span>i;lock<span style="color:#f92672">++</span>)
+            {
+                <span style="color:#f92672">*</span>dns<span style="color:#f92672">++=</span>host[lock];
+            }
+            lock<span style="color:#f92672">++</span>; <span style="color:#75715e">//or lock=i+1;
+</span><span style="color:#75715e"></span>        }
+    }
+    <span style="color:#f92672">*</span>dns<span style="color:#f92672">++=</span><span style="color:#e6db74">&#39;\0&#39;</span>;
+}
+</code></pre></div><p>上面的函数主要是用来将域名<code>payloads.online</code>转换为<code>8payloads6online0</code></p>
+<p>此时<code>buff</code>的<code>50%</code>已经满了 ~</p>
+<p>继续使用其他结构体指针指向后面的剩余部分。</p>
+<h3 id="设置查询类型">设置查询类型</h3>
+<ul>
+<li><code>QTYPE</code>  <code>2个字节</code>表示查询类型，.取值可以为任何可用的类型值，以及通配码来表示所有的资源记录。</li>
+<li><code>QCLASS</code> <code>2个字节</code>表示查询的协议类，比如，IN代表Internet</li>
+</ul>
+<p>使用<code>struct QUESTION *</code>来填充。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">
+<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">QUESTION</span> <span style="color:#f92672">*</span> qinfo <span style="color:#f92672">=</span> (<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">QUESTION</span> <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>buff[<span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span>)<span style="color:#f92672">+</span>strlen((<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)qname)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>];
+qinfo<span style="color:#f92672">-&gt;</span>qtype<span style="color:#f92672">=</span> htons(<span style="color:#ae81ff">1</span>);
+qinfo<span style="color:#f92672">-&gt;</span>qclass<span style="color:#f92672">=</span> htons(<span style="color:#ae81ff">1</span>);
+</code></pre></div><h3 id="请求函数">请求函数</h3>
+<p>只需要发送一个UDP数据包即可~</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">
+<span style="color:#66d9ef">void</span> dns<span style="color:#f92672">::</span>requestDnsServer() {
+
+    sockaddr_in dest;
+    <span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#66d9ef">sizeof</span>(dest);
+    dnsSock <span style="color:#f92672">=</span> socket(AF_INET , SOCK_DGRAM , IPPROTO_UDP); <span style="color:#75715e">//UDP packet for DNS queries
+</span><span style="color:#75715e"></span>    dest.sin_family <span style="color:#f92672">=</span> AF_INET;
+    dest.sin_port <span style="color:#f92672">=</span> htons(<span style="color:#ae81ff">53</span>);
+    dest.sin_addr.s_addr <span style="color:#f92672">=</span> inet_addr(<span style="color:#e6db74">&#34;114.114.114.114&#34;</span>); <span style="color:#75715e">//dns servers
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span>(sendto(dnsSock,(<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)buff,<span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span>) <span style="color:#f92672">+</span> (strlen((<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)qname)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">QUESTION</span>),<span style="color:#ae81ff">0</span>,(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">sockaddr</span><span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>dest,<span style="color:#66d9ef">sizeof</span>(dest)) <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>)
+    {
+        <span style="color:#66d9ef">return</span>;
+    }
+    <span style="color:#66d9ef">if</span>(recvfrom (dnsSock,(<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)buff , <span style="color:#ae81ff">65536</span> , <span style="color:#ae81ff">0</span> , (<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">sockaddr</span><span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>dest , (socklen_t<span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>i ) <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>)
+    {
+        perror(<span style="color:#e6db74">&#34;recvfrom failed&#34;</span>);
+    }
+
+}
+</code></pre></div><p>整个数据包的长度 = sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)</p>
+<p>DNS头部+域名+查询类型+查询协议类</p>
+<h2 id="0x03-封装起来">0x03 封装起来</h2>
+<ul>
+<li>dns.h</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">
+<span style="color:#75715e">//
+</span><span style="color:#75715e">// Created by payloads on 18-2-27.
+</span><span style="color:#75715e">//
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#ifndef NEWPRO_DNS_H
+</span><span style="color:#75715e">#define NEWPRO_DNS_H
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cstring&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cstdlib&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;arpa/inet.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;cstdio&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;map&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#define T_A 1 </span><span style="color:#75715e">//Ipv4 address
+</span><span style="color:#75715e"></span><span style="color:#75715e">#define T_NS 2 </span><span style="color:#75715e">//Nameserver
+</span><span style="color:#75715e"></span><span style="color:#75715e">#define T_CNAME 5 </span><span style="color:#75715e">// canonical name
+</span><span style="color:#75715e"></span><span style="color:#75715e">#define T_SOA 6 </span><span style="color:#75715e">/* start of authority zone */</span><span style="color:#75715e">
+</span><span style="color:#75715e">#define T_PTR 12 </span><span style="color:#75715e">/* domain name pointer */</span><span style="color:#75715e">
+</span><span style="color:#75715e">#define T_MX 15 </span><span style="color:#75715e">//Mail server
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span>
+{
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> id; <span style="color:#75715e">// identification number
+</span><span style="color:#75715e"></span>
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> rd :<span style="color:#ae81ff">1</span>; <span style="color:#75715e">// recursion desired
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> tc :<span style="color:#ae81ff">1</span>; <span style="color:#75715e">// truncated message
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> aa :<span style="color:#ae81ff">1</span>; <span style="color:#75715e">// authoritive answer
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> opcode :<span style="color:#ae81ff">4</span>; <span style="color:#75715e">// purpose of message
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> qr :<span style="color:#ae81ff">1</span>; <span style="color:#75715e">// query/response flag
+</span><span style="color:#75715e"></span>
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> rcode :<span style="color:#ae81ff">4</span>; <span style="color:#75715e">// response code
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> cd :<span style="color:#ae81ff">1</span>; <span style="color:#75715e">// checking disabled
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> ad :<span style="color:#ae81ff">1</span>; <span style="color:#75715e">// authenticated data
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> z :<span style="color:#ae81ff">1</span>; <span style="color:#75715e">// its z! reserved
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> ra :<span style="color:#ae81ff">1</span>; <span style="color:#75715e">// recursion available
+</span><span style="color:#75715e"></span>
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> q_count; <span style="color:#75715e">// number of question entries
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> ans_count; <span style="color:#75715e">// number of answer entries
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> auth_count; <span style="color:#75715e">// number of authority entries
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> add_count; <span style="color:#75715e">// number of resource entries
+</span><span style="color:#75715e"></span>};
+
+<span style="color:#75715e">//Constant sized fields of query structure
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">QUESTION</span>
+{
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> qtype;
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> qclass;
+};
+
+<span style="color:#75715e">//Constant sized fields of the resource record structure
+</span><span style="color:#75715e"></span><span style="color:#75715e">#pragma pack(push, 1)
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">R_DATA</span>
+{
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> type;
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> _class;
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> ttl;
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> data_len;
+};
+<span style="color:#75715e">#pragma pack(pop)
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">//Pointers to resource record contents
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">RES_RECORD</span>
+{
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>name;
+    <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">R_DATA</span> <span style="color:#f92672">*</span>resource;
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>rdata;
+};
+
+<span style="color:#75715e">//Structure of a Query
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span>
+{
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>name;
+    <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">QUESTION</span> <span style="color:#f92672">*</span>ques;
+} QUERY;
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">dns</span> {
+
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    std<span style="color:#f92672">::</span>string dnsServer;
+
+<span style="color:#66d9ef">public</span><span style="color:#f92672">:</span>
+    dns();
+    <span style="color:#f92672">~</span>dns();
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">request</span>(std<span style="color:#f92672">::</span>string hostname);
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">changeToDnsNameFormat</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> dns,<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> host);
+    <span style="color:#66d9ef">int</span>  <span style="color:#a6e22e">setDnsServer</span>(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> dnsServer);
+
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">void</span> setDnsHeader(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span> <span style="color:#f92672">*</span> dns);
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setQname</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> hostname);
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">setQinfo</span>(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">QUESTION</span> <span style="color:#f92672">*</span>qinfo);
+    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">requestDnsServer</span>(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span> <span style="color:#f92672">*</span>dns);
+    u_char<span style="color:#f92672">*</span> <span style="color:#a6e22e">ReadName</span>(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> reader,<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> buffer,<span style="color:#66d9ef">int</span><span style="color:#f92672">*</span> count);
+<span style="color:#66d9ef">private</span><span style="color:#f92672">:</span>
+    <span style="color:#66d9ef">int</span> dnsSock;
+    <span style="color:#66d9ef">char</span> Server[<span style="color:#ae81ff">100</span>];
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> hostname[<span style="color:#ae81ff">100</span>];
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> buff[<span style="color:#ae81ff">65535</span>];
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> qname;
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> reader;
+    <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">RES_RECORD</span> answers[<span style="color:#ae81ff">20</span>],auth[<span style="color:#ae81ff">20</span>],addit[<span style="color:#ae81ff">20</span>];
+    std<span style="color:#f92672">::</span>map<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span>,std<span style="color:#f92672">::</span>string<span style="color:#f92672">&gt;</span> aResult;
+    sockaddr_in dest,a;
+};
+
+
+<span style="color:#75715e">#endif </span><span style="color:#75715e">//NEWPRO_DNS_H
+</span><span style="color:#75715e"></span>
+</code></pre></div><ul>
+<li>dns.cpp</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">
+<span style="color:#75715e">//
+</span><span style="color:#75715e">// Created by payloads on 18-2-27.
+</span><span style="color:#75715e">//
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;dns.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+
+dns<span style="color:#f92672">::</span>dns(){
+    strncpy(Server,<span style="color:#e6db74">&#34;114.114.114.114&#34;</span>,<span style="color:#ae81ff">20</span>);
+    <span style="color:#75715e">//aResult.insert(std::pair&lt;std::string,std::string&gt;(&#34;aaaaa&#34;,&#34;bbbbb&#34;));
+</span><span style="color:#75715e"></span>}
+
+
+dns<span style="color:#f92672">::~</span>dns(){
+
+    <span style="color:#66d9ef">auto</span> it <span style="color:#f92672">=</span> aResult.begin();
+    <span style="color:#66d9ef">for</span> (; it <span style="color:#f92672">!=</span> aResult.end(); <span style="color:#f92672">++</span>it) {
+        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;[*]&#34;</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>hostname <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34; =&gt; &#34;</span> <span style="color:#f92672">&lt;&lt;</span> (<span style="color:#f92672">*</span>it).second <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+    }
+}
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * @param hostname
+</span><span style="color:#75715e"> */</span>
+ <span style="color:#66d9ef">void</span> dns<span style="color:#f92672">::</span>request(std<span style="color:#f92672">::</span>string hostname) {
+
+    strcpy((<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)<span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>hostname,hostname.c_str());
+
+    <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span> <span style="color:#f92672">*</span> dns <span style="color:#f92672">=</span> NULL;
+    <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">QUESTION</span> <span style="color:#f92672">*</span>qinfo <span style="color:#f92672">=</span> NULL;
+
+    setDnsHeader(dns);
+    setQname((<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)hostname.c_str());
+    setQinfo(qinfo);
+
+
+    requestDnsServer(dns);
+    dns <span style="color:#f92672">=</span> (<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span><span style="color:#f92672">*</span>)buff;
+
+
+
+    reader <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>buff[<span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span>) <span style="color:#f92672">+</span> (strlen((<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)qname)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">QUESTION</span>)];
+    <span style="color:#75715e">/*
+</span><span style="color:#75715e">    printf(&#34;\nThe response contains : &#34;);
+</span><span style="color:#75715e">    printf(&#34;\n %d Questions.&#34;,ntohs(dns-&gt;q_count));
+</span><span style="color:#75715e">    printf(&#34;\n %d Answers.&#34;,ntohs(dns-&gt;ans_count));
+</span><span style="color:#75715e">    printf(&#34;\n %d Authoritative Servers.&#34;,ntohs(dns-&gt;auth_count));
+</span><span style="color:#75715e">    printf(&#34;\n %d Additional records.\n\n&#34;,ntohs(dns-&gt;add_count));
+</span><span style="color:#75715e">    */</span>
+    <span style="color:#66d9ef">int</span> stop<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;
+
+    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span>ntohs(dns<span style="color:#f92672">-&gt;</span>ans_count);i<span style="color:#f92672">++</span>)
+    {
+        answers[i].name<span style="color:#f92672">=</span>ReadName(reader,buff,<span style="color:#f92672">&amp;</span>stop);
+        reader <span style="color:#f92672">=</span> reader <span style="color:#f92672">+</span> stop;
+        answers[i].resource <span style="color:#f92672">=</span> (<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">R_DATA</span><span style="color:#f92672">*</span>)(reader);
+        reader <span style="color:#f92672">=</span> reader <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">R_DATA</span>);
+        <span style="color:#66d9ef">if</span>(ntohs(answers[i].resource<span style="color:#f92672">-&gt;</span>type) <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) <span style="color:#75715e">//if its an ipv4 address
+</span><span style="color:#75715e"></span>        {
+            answers[i].rdata <span style="color:#f92672">=</span> (<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)malloc(ntohs(answers[i].resource<span style="color:#f92672">-&gt;</span>data_len));
+
+            <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> j<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> ; j<span style="color:#f92672">&lt;</span>ntohs(answers[i].resource<span style="color:#f92672">-&gt;</span>data_len) ; j<span style="color:#f92672">++</span>)
+            {
+                answers[i].rdata[j]<span style="color:#f92672">=</span>reader[j];
+            }
+
+            answers[i].rdata[ntohs(answers[i].resource<span style="color:#f92672">-&gt;</span>data_len)] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;\0&#39;</span>;
+
+            reader <span style="color:#f92672">=</span> reader <span style="color:#f92672">+</span> ntohs(answers[i].resource<span style="color:#f92672">-&gt;</span>data_len);
+        }
+        <span style="color:#66d9ef">else</span>
+        {
+            answers[i].rdata <span style="color:#f92672">=</span> ReadName(reader,buff,<span style="color:#f92672">&amp;</span>stop);
+            reader <span style="color:#f92672">=</span> reader <span style="color:#f92672">+</span> stop;
+        }
+    }
+
+    printf(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">Answer Records : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span> , ntohs(dns<span style="color:#f92672">-&gt;</span>ans_count) );
+
+    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> ntohs(dns<span style="color:#f92672">-&gt;</span>ans_count) ; i<span style="color:#f92672">++</span>)
+    {
+        <span style="color:#75715e">//printf(&#34;Name : %s &#34;,answers[i].name);
+</span><span style="color:#75715e"></span>
+        <span style="color:#66d9ef">if</span>( ntohs(answers[i].resource<span style="color:#f92672">-&gt;</span>type) <span style="color:#f92672">==</span> T_A) <span style="color:#75715e">//IPv4 address
+</span><span style="color:#75715e"></span>        {
+
+            std<span style="color:#f92672">::</span>string ipAddress;
+            <span style="color:#66d9ef">long</span> <span style="color:#f92672">*</span>p;
+            p<span style="color:#f92672">=</span>(<span style="color:#66d9ef">long</span><span style="color:#f92672">*</span>)answers[i].rdata;
+            a.sin_addr.s_addr<span style="color:#f92672">=</span>(<span style="color:#f92672">*</span>p); <span style="color:#75715e">//working without ntohl
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">//printf(&#34;has IPv4 address : %s&#34;,inet_ntoa(a.sin_addr));
+</span><span style="color:#75715e"></span>            ipAddress<span style="color:#f92672">=</span>inet_ntoa(a.sin_addr);
+            aResult.insert(std<span style="color:#f92672">::</span>pair<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span>,std<span style="color:#f92672">::</span>string<span style="color:#f92672">&gt;</span>(i,ipAddress));
+            <span style="color:#75715e">//ipAddress.clear();
+</span><span style="color:#75715e"></span>        }
+
+        <span style="color:#66d9ef">if</span>(ntohs(answers[i].resource<span style="color:#f92672">-&gt;</span>type)<span style="color:#f92672">==</span><span style="color:#ae81ff">5</span>)
+        {
+            <span style="color:#75715e">//Canonical name for an alias
+</span><span style="color:#75715e"></span>            printf(<span style="color:#e6db74">&#34;has alias name : %s&#34;</span>,answers[i].rdata);
+        }
+
+        <span style="color:#75715e">//printf(&#34;\n&#34;);
+</span><span style="color:#75715e"></span>    }
+
+    <span style="color:#75715e">/*
+</span><span style="color:#75715e">    for (int k = 0; k &lt; ntohs(dns-&gt;ans_count); ++k) {
+</span><span style="color:#75715e">        free(answers[i].rdata);
+</span><span style="color:#75715e">    }
+</span><span style="color:#75715e">    */</span>
+    close(dnsSock);
+
+    <span style="color:#66d9ef">auto</span> it <span style="color:#f92672">=</span> aResult.begin();
+    <span style="color:#66d9ef">for</span> (; it <span style="color:#f92672">!=</span> aResult.end(); <span style="color:#f92672">++</span>it) {
+        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;[*]&#34;</span> <span style="color:#f92672">&lt;&lt;</span> hostname <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34; =&gt; &#34;</span> <span style="color:#f92672">&lt;&lt;</span> (<span style="color:#f92672">*</span>it).second <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+    }
+
+    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> ntohs(dns<span style="color:#f92672">-&gt;</span>ans_count) ; i<span style="color:#f92672">++</span>){
+        <span style="color:#66d9ef">if</span>(ntohs(answers[i].resource<span style="color:#f92672">-&gt;</span>type) <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) <span style="color:#75715e">//if its an ipv4 address
+</span><span style="color:#75715e"></span>        {
+            free(answers[i].rdata);
+        }
+    }
+    aResult.clear();
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>hostname[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;\0&#39;</span>;
+}
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * @param dns
+</span><span style="color:#75715e"> * @param host
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">void</span> dns<span style="color:#f92672">::</span>changeToDnsNameFormat(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> dns,<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> host)
+{
+    <span style="color:#66d9ef">int</span> lock <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span> , i;
+    strcat((<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)host,<span style="color:#e6db74">&#34;.&#34;</span>);
+
+    <span style="color:#66d9ef">for</span>(i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span> ; i <span style="color:#f92672">&lt;</span> strlen((<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)host) ; i<span style="color:#f92672">++</span>)
+    {
+        <span style="color:#66d9ef">if</span>(host[i]<span style="color:#f92672">==</span><span style="color:#e6db74">&#39;.&#39;</span>)
+        {
+            <span style="color:#f92672">*</span>dns<span style="color:#f92672">++</span> <span style="color:#f92672">=</span> i<span style="color:#f92672">-</span>lock;
+            <span style="color:#66d9ef">for</span>(;lock<span style="color:#f92672">&lt;</span>i;lock<span style="color:#f92672">++</span>)
+            {
+                <span style="color:#f92672">*</span>dns<span style="color:#f92672">++=</span>host[lock];
+            }
+            lock<span style="color:#f92672">++</span>; <span style="color:#75715e">//or lock=i+1;
+</span><span style="color:#75715e"></span>        }
+    }
+    <span style="color:#f92672">*</span>dns<span style="color:#f92672">++=</span><span style="color:#e6db74">&#39;\0&#39;</span>;
+}
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * @param dns
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">void</span> dns<span style="color:#f92672">::</span>setDnsHeader(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span> <span style="color:#f92672">*</span>dns) {
+    dns <span style="color:#f92672">=</span> (<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span> <span style="color:#f92672">*</span> )<span style="color:#f92672">&amp;</span>buff;
+    dns<span style="color:#f92672">-&gt;</span>id <span style="color:#f92672">=</span> (<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span>) htons(getpid());
+    dns<span style="color:#f92672">-&gt;</span>qr <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">//This is a query
+</span><span style="color:#75715e"></span>    dns<span style="color:#f92672">-&gt;</span>opcode <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">//This is a standard query
+</span><span style="color:#75715e"></span>    dns<span style="color:#f92672">-&gt;</span>aa <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">//Not Authoritative
+</span><span style="color:#75715e"></span>    dns<span style="color:#f92672">-&gt;</span>tc <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">//This message is not truncated
+</span><span style="color:#75715e"></span>    dns<span style="color:#f92672">-&gt;</span>rd <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; <span style="color:#75715e">//Recursion Desired
+</span><span style="color:#75715e"></span>    dns<span style="color:#f92672">-&gt;</span>ra <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">//Recursion not available! hey we dont have it (lol)
+</span><span style="color:#75715e"></span>    dns<span style="color:#f92672">-&gt;</span>z <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    dns<span style="color:#f92672">-&gt;</span>ad <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    dns<span style="color:#f92672">-&gt;</span>cd <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    dns<span style="color:#f92672">-&gt;</span>rcode <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    dns<span style="color:#f92672">-&gt;</span>q_count <span style="color:#f92672">=</span> htons(<span style="color:#ae81ff">1</span>); <span style="color:#75715e">//we have only 1 question
+</span><span style="color:#75715e"></span>    dns<span style="color:#f92672">-&gt;</span>ans_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    dns<span style="color:#f92672">-&gt;</span>auth_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    dns<span style="color:#f92672">-&gt;</span>add_count <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+}
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * @param hostname
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">void</span> dns<span style="color:#f92672">::</span>setQname(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>hostname) {
+    qname <span style="color:#f92672">=</span> (<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>buff[<span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span>)];
+    changeToDnsNameFormat(qname,hostname);
+}
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * @param qinfo
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">void</span> dns<span style="color:#f92672">::</span>setQinfo(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">QUESTION</span> <span style="color:#f92672">*</span>qinfo) {
+    qinfo <span style="color:#f92672">=</span> (<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">QUESTION</span> <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>buff[<span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span>)<span style="color:#f92672">+</span>strlen((<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)qname)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>];
+    qinfo<span style="color:#f92672">-&gt;</span>qtype<span style="color:#f92672">=</span> htons(<span style="color:#ae81ff">1</span>);
+    qinfo<span style="color:#f92672">-&gt;</span>qclass<span style="color:#f92672">=</span> htons(<span style="color:#ae81ff">1</span>);
+}
+
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * @param reader
+</span><span style="color:#75715e"> * @param buffer
+</span><span style="color:#75715e"> * @param count
+</span><span style="color:#75715e"> * @return
+</span><span style="color:#75715e"> */</span>
+u_char <span style="color:#f92672">*</span> dns<span style="color:#f92672">::</span>ReadName(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> reader,<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> buffer,<span style="color:#66d9ef">int</span><span style="color:#f92672">*</span> count)
+{
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>name;
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> p<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>,jumped<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>,offset;
+    <span style="color:#66d9ef">int</span> i , j;
+
+    <span style="color:#f92672">*</span>count <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+    name <span style="color:#f92672">=</span> (<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)malloc(<span style="color:#ae81ff">256</span>);
+
+    name[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;\0&#39;</span>;
+
+    <span style="color:#75715e">//read the names in 3www6google3com format
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">while</span>(<span style="color:#f92672">*</span>reader<span style="color:#f92672">!=</span><span style="color:#ae81ff">0</span>)
+    {
+        <span style="color:#66d9ef">if</span>(<span style="color:#f92672">*</span>reader<span style="color:#f92672">&gt;=</span><span style="color:#ae81ff">192</span>)
+        {
+            offset <span style="color:#f92672">=</span> (<span style="color:#f92672">*</span>reader)<span style="color:#f92672">*</span><span style="color:#ae81ff">256</span> <span style="color:#f92672">+</span> <span style="color:#f92672">*</span>(reader<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">-</span> <span style="color:#ae81ff">49152</span>; <span style="color:#75715e">//49152 = 11000000 00000000 ;)
+</span><span style="color:#75715e"></span>            reader <span style="color:#f92672">=</span> buffer <span style="color:#f92672">+</span> offset <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>;
+            jumped <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; <span style="color:#75715e">//we have jumped to another location so counting wont go up!
+</span><span style="color:#75715e"></span>        }
+        <span style="color:#66d9ef">else</span>
+        {
+            name[p<span style="color:#f92672">++</span>]<span style="color:#f92672">=*</span>reader;
+        }
+
+        reader <span style="color:#f92672">=</span> reader<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>;
+
+        <span style="color:#66d9ef">if</span>(jumped<span style="color:#f92672">==</span><span style="color:#ae81ff">0</span>)
+        {
+            <span style="color:#f92672">*</span>count <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>count <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>; <span style="color:#75715e">//if we havent jumped to another location then we can count up
+</span><span style="color:#75715e"></span>        }
+    }
+
+    name[p]<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;\0&#39;</span>; <span style="color:#75715e">//string complete
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span>(jumped<span style="color:#f92672">==</span><span style="color:#ae81ff">1</span>)
+    {
+        <span style="color:#f92672">*</span>count <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>count <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>; <span style="color:#75715e">//number of steps we actually moved forward in the packet
+</span><span style="color:#75715e"></span>    }
+
+    <span style="color:#75715e">//now convert 3www6google3com0 to www.google.com
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">for</span>(i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span>(<span style="color:#66d9ef">int</span>)strlen((<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)name);i<span style="color:#f92672">++</span>)
+    {
+        p<span style="color:#f92672">=</span>name[i];
+        <span style="color:#66d9ef">for</span>(j<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;j<span style="color:#f92672">&lt;</span>(<span style="color:#66d9ef">int</span>)p;j<span style="color:#f92672">++</span>)
+        {
+            name[i]<span style="color:#f92672">=</span>name[i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>];
+            i<span style="color:#f92672">=</span>i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>;
+        }
+        name[i]<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;.&#39;</span>;
+    }
+    name[i<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;\0&#39;</span>; <span style="color:#75715e">//remove the last dot
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> name;
+}
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * set name server
+</span><span style="color:#75715e"> * @param dnsServer
+</span><span style="color:#75715e"> * @return
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">int</span> dns<span style="color:#f92672">::</span>setDnsServer(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> dnsServer) {
+    strncpy(Server,dnsServer,strlen(dnsServer)<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">100</span><span style="color:#f92672">?</span><span style="color:#ae81ff">99</span><span style="color:#f92672">:</span>strlen(dnsServer));
+}
+
+
+<span style="color:#66d9ef">void</span> dns<span style="color:#f92672">::</span>requestDnsServer(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span> <span style="color:#f92672">*</span> dns) {
+    <span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#66d9ef">sizeof</span>(dest);
+    dnsSock <span style="color:#f92672">=</span> socket(AF_INET , SOCK_DGRAM , IPPROTO_UDP); <span style="color:#75715e">//UDP packet for DNS queries
+</span><span style="color:#75715e"></span>    dest.sin_family <span style="color:#f92672">=</span> AF_INET;
+    dest.sin_port <span style="color:#f92672">=</span> htons(<span style="color:#ae81ff">53</span>);
+    dest.sin_addr.s_addr <span style="color:#f92672">=</span> inet_addr(Server); <span style="color:#75715e">//dns servers
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span>(sendto(dnsSock,(<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)buff,<span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">DNS_HEADER</span>) <span style="color:#f92672">+</span> (strlen((<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)qname)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">QUESTION</span>),<span style="color:#ae81ff">0</span>,(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">sockaddr</span><span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>dest,<span style="color:#66d9ef">sizeof</span>(dest)) <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>)
+    {
+        <span style="color:#66d9ef">return</span>;
+    }
+    <span style="color:#66d9ef">if</span>(recvfrom (dnsSock,(<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)buff , <span style="color:#ae81ff">65536</span> , <span style="color:#ae81ff">0</span> , (<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">sockaddr</span><span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>dest , (socklen_t<span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>i ) <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>)
+    {
+        perror(<span style="color:#e6db74">&#34;recvfrom failed&#34;</span>);
+    }
+
+}
+
+</code></pre></div><h2 id="0x04-解析接收的数据">0x04 解析接收的数据</h2>
+<p>由于DNS的数据包比较简单，发送的结构与响应结构基本相同。</p>
+<p><a href="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-02-28/0x01.png">响应数据包</a></p>
+<p>可以看到<code>QR</code>的标志位是1，证明是一个响应数据包。</p>
+<p><code>Answer RRs</code>为2，证明有两条结果……</p>
+<p>我们翻到最后看出的确有两个A记录结果，且IP地址都不相同</p>
+<p>在C++/C里面如何获取到A记录的结果呢？</p>
+<p>同样的，我们还是要将接受到的数据使用结构体指针分割，这样可以很方便的获取到记录。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">
+<span style="color:#66d9ef">if</span>(recvfrom (dnsSock,(<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)buff , <span style="color:#ae81ff">65536</span> , <span style="color:#ae81ff">0</span> , (<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">sockaddr</span><span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>dest , (socklen_t<span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>i ) <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">0</span>)
+{
+    perror(<span style="color:#e6db74">&#34;recvfrom failed&#34;</span>);
+}
+</code></pre></div><p>这一句是将接收到的数据写入<code>buff</code>数组。</p>
+<p>先解析DNS头，可以获取有几条结果:</p>
+<p><code>dns = (struct DNS_HEADER*)buff;</code></p>
+<p><code>dns-&gt;ans_count</code></p>
+<p>接下来可以进行读取：</p>
+<p>reader = &amp;buff[sizeof(struct DNS_HEADER) + (strlen((const char*)qname)+1) + sizeof(struct QUESTION)];</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">
+u_char <span style="color:#f92672">*</span> dns<span style="color:#f92672">::</span>ReadName(<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> reader,<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> buffer,<span style="color:#66d9ef">int</span><span style="color:#f92672">*</span> count)
+{
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>name;
+    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">int</span> p<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>,jumped<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>,offset;
+    <span style="color:#66d9ef">int</span> i , j;
+
+    <span style="color:#f92672">*</span>count <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+    name <span style="color:#f92672">=</span> (<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)malloc(<span style="color:#ae81ff">256</span>);
+
+    name[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;\0&#39;</span>;
+
+    <span style="color:#75715e">//read the names in 3www6google3com format
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">while</span>(<span style="color:#f92672">*</span>reader<span style="color:#f92672">!=</span><span style="color:#ae81ff">0</span>)
+    {
+        <span style="color:#66d9ef">if</span>(<span style="color:#f92672">*</span>reader<span style="color:#f92672">&gt;=</span><span style="color:#ae81ff">192</span>)
+        {
+            offset <span style="color:#f92672">=</span> (<span style="color:#f92672">*</span>reader)<span style="color:#f92672">*</span><span style="color:#ae81ff">256</span> <span style="color:#f92672">+</span> <span style="color:#f92672">*</span>(reader<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>) <span style="color:#f92672">-</span> <span style="color:#ae81ff">49152</span>; <span style="color:#75715e">//49152 = 11000000 00000000 ;)
+</span><span style="color:#75715e"></span>            reader <span style="color:#f92672">=</span> buffer <span style="color:#f92672">+</span> offset <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>;
+            jumped <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>; <span style="color:#75715e">//we have jumped to another location so counting wont go up!
+</span><span style="color:#75715e"></span>        }
+        <span style="color:#66d9ef">else</span>
+        {
+            name[p<span style="color:#f92672">++</span>]<span style="color:#f92672">=*</span>reader;
+        }
+
+        reader <span style="color:#f92672">=</span> reader<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>;
+
+        <span style="color:#66d9ef">if</span>(jumped<span style="color:#f92672">==</span><span style="color:#ae81ff">0</span>)
+        {
+            <span style="color:#f92672">*</span>count <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>count <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>; <span style="color:#75715e">//if we havent jumped to another location then we can count up
+</span><span style="color:#75715e"></span>        }
+    }
+
+    name[p]<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;\0&#39;</span>; <span style="color:#75715e">//string complete
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span>(jumped<span style="color:#f92672">==</span><span style="color:#ae81ff">1</span>)
+    {
+        <span style="color:#f92672">*</span>count <span style="color:#f92672">=</span> <span style="color:#f92672">*</span>count <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>; <span style="color:#75715e">//number of steps we actually moved forward in the packet
+</span><span style="color:#75715e"></span>    }
+
+    <span style="color:#75715e">//now convert 3www6google3com0 to www.google.com
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">for</span>(i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span>(<span style="color:#66d9ef">int</span>)strlen((<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)name);i<span style="color:#f92672">++</span>)
+    {
+        p<span style="color:#f92672">=</span>name[i];
+        <span style="color:#66d9ef">for</span>(j<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;j<span style="color:#f92672">&lt;</span>(<span style="color:#66d9ef">int</span>)p;j<span style="color:#f92672">++</span>)
+        {
+            name[i]<span style="color:#f92672">=</span>name[i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>];
+            i<span style="color:#f92672">=</span>i<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>;
+        }
+        name[i]<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;.&#39;</span>;
+    }
+    name[i<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;\0&#39;</span>; <span style="color:#75715e">//remove the last dot
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> name;
+}
+</code></pre></div><p>固定函数，直接可以拿来用~</p>
+<h3 id="获取记录结果">获取记录结果</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">
+	<span style="color:#66d9ef">int</span> stop<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;
+
+    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span>ntohs(dns<span style="color:#f92672">-&gt;</span>ans_count);i<span style="color:#f92672">++</span>)
+    {
+        answers[i].name<span style="color:#f92672">=</span>ReadName(reader,buff,<span style="color:#f92672">&amp;</span>stop);
+        reader <span style="color:#f92672">=</span> reader <span style="color:#f92672">+</span> stop;
+        answers[i].resource <span style="color:#f92672">=</span> (<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">R_DATA</span><span style="color:#f92672">*</span>)(reader);
+        reader <span style="color:#f92672">=</span> reader <span style="color:#f92672">+</span> <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">R_DATA</span>);
+        <span style="color:#66d9ef">if</span>(ntohs(answers[i].resource<span style="color:#f92672">-&gt;</span>type) <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) <span style="color:#75715e">//if its an ipv4 address
+</span><span style="color:#75715e"></span>        {
+            answers[i].rdata <span style="color:#f92672">=</span> (<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span>)malloc(ntohs(answers[i].resource<span style="color:#f92672">-&gt;</span>data_len));
+
+            <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> j<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> ; j<span style="color:#f92672">&lt;</span>ntohs(answers[i].resource<span style="color:#f92672">-&gt;</span>data_len) ; j<span style="color:#f92672">++</span>)
+            {
+                answers[i].rdata[j]<span style="color:#f92672">=</span>reader[j];
+            }
+
+            answers[i].rdata[ntohs(answers[i].resource<span style="color:#f92672">-&gt;</span>data_len)] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;\0&#39;</span>;
+
+            reader <span style="color:#f92672">=</span> reader <span style="color:#f92672">+</span> ntohs(answers[i].resource<span style="color:#f92672">-&gt;</span>data_len);
+        }
+        <span style="color:#66d9ef">else</span>
+        {
+            answers[i].rdata <span style="color:#f92672">=</span> ReadName(reader,buff,<span style="color:#f92672">&amp;</span>stop);
+            reader <span style="color:#f92672">=</span> reader <span style="color:#f92672">+</span> stop;
+        }
+    }
+
+    printf(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">Answer Records : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span> , ntohs(dns<span style="color:#f92672">-&gt;</span>ans_count) );
+
+    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> ntohs(dns<span style="color:#f92672">-&gt;</span>ans_count) ; i<span style="color:#f92672">++</span>)
+    {
+        <span style="color:#75715e">//printf(&#34;Name : %s &#34;,answers[i].name);
+</span><span style="color:#75715e"></span>
+        <span style="color:#66d9ef">if</span>( ntohs(answers[i].resource<span style="color:#f92672">-&gt;</span>type) <span style="color:#f92672">==</span> T_A) <span style="color:#75715e">//IPv4 address
+</span><span style="color:#75715e"></span>        {
+
+            std<span style="color:#f92672">::</span>string ipAddress;
+            <span style="color:#66d9ef">long</span> <span style="color:#f92672">*</span>p;
+            p<span style="color:#f92672">=</span>(<span style="color:#66d9ef">long</span><span style="color:#f92672">*</span>)answers[i].rdata;
+            a.sin_addr.s_addr<span style="color:#f92672">=</span>(<span style="color:#f92672">*</span>p); <span style="color:#75715e">//working without ntohl
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">//printf(&#34;has IPv4 address : %s&#34;,inet_ntoa(a.sin_addr));
+</span><span style="color:#75715e"></span>            ipAddress<span style="color:#f92672">=</span>inet_ntoa(a.sin_addr);
+            aResult.insert(std<span style="color:#f92672">::</span>pair<span style="color:#f92672">&lt;</span><span style="color:#66d9ef">int</span>,std<span style="color:#f92672">::</span>string<span style="color:#f92672">&gt;</span>(i,ipAddress)); <span style="color:#75715e">// 这里我用了容器
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">//ipAddress.clear();
+</span><span style="color:#75715e"></span>        }
+
+        <span style="color:#66d9ef">if</span>(ntohs(answers[i].resource<span style="color:#f92672">-&gt;</span>type)<span style="color:#f92672">==</span><span style="color:#ae81ff">5</span>)
+        {
+            <span style="color:#75715e">//Canonical name for an alias
+</span><span style="color:#75715e"></span>            printf(<span style="color:#e6db74">&#34;has alias name : %s&#34;</span>,answers[i].rdata);
+        }
+
+        <span style="color:#75715e">//printf(&#34;\n&#34;);
+</span><span style="color:#75715e"></span>    }
+
+    <span style="color:#75715e">/*
+</span><span style="color:#75715e">    for (int k = 0; k &lt; ntohs(dns-&gt;ans_count); ++k) {
+</span><span style="color:#75715e">        free(answers[i].rdata);
+</span><span style="color:#75715e">    }
+</span><span style="color:#75715e">    */</span>
+    close(dnsSock);
+
+    <span style="color:#66d9ef">auto</span> it <span style="color:#f92672">=</span> aResult.begin();
+    <span style="color:#66d9ef">for</span> (; it <span style="color:#f92672">!=</span> aResult.end(); <span style="color:#f92672">++</span>it) {
+        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;[*]&#34;</span> <span style="color:#f92672">&lt;&lt;</span> hostname <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34; =&gt; &#34;</span> <span style="color:#f92672">&lt;&lt;</span> (<span style="color:#f92672">*</span>it).second <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+    }
+
+    <span style="color:#66d9ef">for</span>(<span style="color:#66d9ef">int</span> i<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> ntohs(dns<span style="color:#f92672">-&gt;</span>ans_count) ; i<span style="color:#f92672">++</span>){
+        <span style="color:#66d9ef">if</span>(ntohs(answers[i].resource<span style="color:#f92672">-&gt;</span>type) <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) <span style="color:#75715e">//if its an ipv4 address
+</span><span style="color:#75715e"></span>        {
+            free(answers[i].rdata);
+        }
+    }
+    aResult.clear();
+    <span style="color:#66d9ef">this</span><span style="color:#f92672">-&gt;</span>hostname[<span style="color:#ae81ff">0</span>]<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;\0&#39;</span>;
+
+</code></pre></div><p>获取到的A记录会都保存到map容器中。</p>
+<p>下面给出main.cpp的内容：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">
+<span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;dns.h&#34;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc,<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> argv[]) {
+
+    dns dd;
+    dd.request(<span style="color:#e6db74">&#34;payloads.online&#34;</span>);
+
+}
+
+</code></pre></div><p>输出结果：</p>
+<pre><code>
+
+Answer Records : 2 
+[*]payloads.online =&gt; 192.30.252.153
+[*]payloads.online =&gt; 192.30.252.154
+
+</code></pre><p>后续再加把劲吧，争取把 DNS、HTTP相关的信息搜集轮子造好！！</p>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

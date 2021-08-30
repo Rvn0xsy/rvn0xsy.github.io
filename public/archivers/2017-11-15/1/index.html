@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>小型Web安全加固方案</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>本文介绍一下小型Web应用的加固方案，内容均为原创</p>
+<ul>
+<li>目录
+{:toc}</li>
+</ul>
+<h2 id="0x00-配置管理安全">0x00 配置管理安全</h2>
+<p>即使在存在某些高危漏洞的情况下，我们只要做好配置方面的安全加固即可防御许多攻击。</p>
+<h3 id="列目录---显示目录索引">列目录 - 显示目录索引</h3>
+<h4 id="apache">Apache</h4>
+<h5 id="修改站点目录对应的配置文件">修改站点目录对应的配置文件</h5>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x00.png" alt="列出目录索引"></p>
+<pre><code>&lt;Directory /&gt;
+    Options +Indexes +FollowSymLinks # 将 &quot;+&quot; 与 Indexes 去掉即可限制列出目录索引
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+    Require all granted
+&lt;/Directory&gt;
+</code></pre><p>修改后：</p>
+<pre><code>&lt;Directory /&gt;
+    Options FollowSymLinks
+    AllowOverride All
+    Order allow,deny
+    Allow from all
+    Require all granted
+&lt;/Directory&gt;
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x01.png" alt="不列出目录索引"></p>
+<h5 id="创建directoryindex默认文件">创建DirectoryIndex默认文件</h5>
+<p>大家都见过很多框架的每个目录都有一个<code>index.html</code>文件，这个文件的存在是非常有意义的，很多线上的Web服务器都没有合格配置<code>列出目录索引</code>。导致网站内部许多文件都被攻击者查看到，泄漏大量信息。</p>
+<p>为了防止列出目录索引，我们可以在站点的每个文件夹中创建一个<code>index.html</code>，这个文件内容是什么都无所谓了。当攻击者想通过列目录的手法访问你站点文件夹的时候，Web服务器将会判断当前目录下有没有<code>DirectoryIndex</code>默认首页，如果存在就显示<code>DirectoryIndex</code>对应的文件名的内容，这样攻击者就无法查看该目录下有什么文件了。</p>
+<h4 id="tomcat">Tomcat</h4>
+<h5 id="修改confwebxml配置文件">修改conf/web.xml配置文件</h5>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x02.png" alt="列出目录索引"></p>
+<pre><code>&lt;init-param&gt;
+            &lt;param-name&gt;listings&lt;/param-name&gt; 
+            &lt;param-value&gt;true&lt;/param-value&gt; &lt;!-- 将true改为false --&gt;
+&lt;/init-param&gt;
+</code></pre><p>修改后：</p>
+<pre><code>&lt;init-param&gt;
+            &lt;param-name&gt;listings&lt;/param-name&gt; 
+            &lt;param-value&gt;false&lt;/param-value&gt;
+&lt;/init-param&gt;
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x03.png" alt="不列出目录索引"></p>
+<h4 id="nginx">Nginx</h4>
+<h5 id="修改confnginxconf配置文件">修改conf/nginx.conf配置文件</h5>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x05.png" alt="列出目录索引"></p>
+<pre><code>location / {
+            index  index.html index.htm index.php l.php;
+           autoindex on;  
+}
+</code></pre><p>修改后：</p>
+<pre><code>location / {
+            index  index.html index.htm index.php l.php;
+           autoindex off;  
+}
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x04.png" alt="不列出目录索引"></p>
+<h4 id="iis">IIS</h4>
+<h4 id="设置目录浏览权限">设置&quot;目录浏览&quot;权限</h4>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x06.png" alt="列出目录索引"></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x08.png" alt="设置目录索引"></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x07.png" alt="不列出目录索引"></p>
+<h3 id="隐藏服务器版本信息">隐藏服务器版本信息</h3>
+<h4 id="apache-1">Apache</h4>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x09.png" alt="存在信息"></p>
+<p>将以下配置加入<code>conf/httpd.conf</code>：</p>
+<pre><code>ServerTokens Prod
+ServerSignature Off
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x10.png" alt="不存在信息"></p>
+<h4 id="php">PHP</h4>
+<p>修改<code>php.ini</code>，将<code>expose_php On</code>改为：<code>expose_php Off</code></p>
+<h4 id="iis-1">IIS</h4>
+<p>找到<code>HTTP响应头</code>设置响应报文内容，可以将<code>ASP.NET</code>随意更改，甚至删除</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x11.png" alt="IIS"></p>
+<h4 id="nginx-1">Nginx</h4>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x12.png" alt="存在信息"></p>
+<p>在加入<code>conf/nginx.conf</code>一行：</p>
+<pre><code>server_tokens off;
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x13.png" alt="不存在信息"></p>
+<h4 id="tomcat-1">Tomcat</h4>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x15.png" alt="存在信息"></p>
+<p>到apache-tomcat安装目录下的lib子文件夹，找到catalina.jar这包，并进行解解压</p>
+<p>修改:<code>lib\catalina.zip\org\apache\catalina\util\ServerInfo.properties</code></p>
+<pre><code>server.info=X
+server.number=5.5
+server.built=Dec 1 2015 22:30:46 UTC
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x14.png" alt="更改文件"></p>
+<p>或者直接更改<code>web.xml</code>，找到<code>Connector</code>，添加一个<code>server</code>属性：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;Connector</span> <span style="color:#a6e22e">connectionTimeout=</span><span style="color:#e6db74">&#34;20000&#34;</span> <span style="color:#a6e22e">port=</span><span style="color:#e6db74">&#34;8080&#34;</span> <span style="color:#a6e22e">protocol=</span><span style="color:#e6db74">&#34;HTTP/1.1&#34;</span> <span style="color:#a6e22e">redirectPort=</span><span style="color:#e6db74">&#34;8443&#34;</span> <span style="color:#a6e22e">server=</span><span style="color:#e6db74">&#34;IIS Server&#34;</span> <span style="color:#f92672">/&gt;</span>
+</code></pre></div><h3 id="目录安全">目录安全</h3>
+<p>攻击者上传恶意脚本（Webshell）到服务器端后，该脚本会被当做可信任的代码执行，这并不是我们想看到的。</p>
+<h4 id="apache-2">Apache</h4>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x16.png" alt="脚本被执行"></p>
+<p>更改配置文件：</p>
+<pre><code>&lt;Directory &quot;C:/phpstudy2/WWW/uploads&quot;&gt;
+    &lt;FilesMatch &quot;\.(?i:php|php3|php4|php5)$&quot;&gt; 
+    Order allow,deny
+    Deny from all
+    &lt;/FilesMatch&gt;
+&lt;/Directory&gt;
+</code></pre><p><code>C:/phpstudy2/WWW/uploads</code> 为要禁止执行的目录，<code>\.(?i:php|php3|php4|php5)$</code>中可以添加多个文件扩展名，例如：<code>.htaccess</code></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x17.png" alt="脚本不执行"></p>
+<p>上面的方法已经杜绝了Webshell的执行，但是如果 - 在根目录创建 <code>.htaccess</code>分布式部署文件，也能够执行脚本。</p>
+<p>服务器端配置必须满足以下三个条件：</p>
+<ul>
+<li>能够在目录中写入任意文件</li>
+<li>AllowOverride 为 All</li>
+<li>开启modules/mod_rewrite.so</li>
+</ul>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x18.png" alt="脚本被执行"></p>
+<p>我们现在先来做一个加固：</p>
+<pre><code>&lt;Files ~ &quot;^.(htaccess|htpasswd)$&quot;&gt;
+deny from all
+&lt;/Files&gt;
+</code></pre><p>禁止所有人访问<code>.htaccess</code>和<code>.htpasswd</code>文件。</p>
+<p>接下来要做的就是设置<code>AllowOverride</code>为<code>None</code></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x19.png" alt="脚本不执行"></p>
+<h4 id="nginx-2">Nginx</h4>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x20.png" alt="脚本被执行"></p>
+<pre><code>location ~* ^/uploads/.*.(php|php5)$ {
+      deny all;
+}
+</code></pre><p>注意事项：</p>
+<ul>
+<li>$ 与 { 之间有空格</li>
+<li>以上的配置文件代码需要放到 <code>location ~ .php {...}</code>上面，如果放到下面是无效的</li>
+<li>uploads需要写相对路径，不能写绝对路径</li>
+<li>修改后重启Nginx</li>
+</ul>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x21.png" alt="脚本不执行"></p>
+<h4 id="iis-2">IIS</h4>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x22.png" alt="脚本被执行"></p>
+<p>设置<code>处理程序映射</code>即可：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x23.png" alt="设置脚本不执行"></p>
+<p>设置后：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-15/0x24.png" alt="脚本不执行"></p>
+<h4 id="tomcat-2">Tomcat</h4>
+<p>可以采用Apache配置，后续再更新关于Tomcat的配置</p>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

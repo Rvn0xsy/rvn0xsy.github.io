@@ -1,0 +1,57 @@
+title = "倾旋的博客"
+baseURL = "https://payloads.online"
+theme = "researcher"
+disableKinds = ["taxonomy", "term"]
+enableEmoji = true
+math = false
+googleAnalytics = ""
+rssLimit = 20
+
+[params]
+  author = "倾旋"
+  description = "倾旋的博客"
+  favicon = "favicon.ico"  # path to a .ico to use as favicon
+  logo = ""  # url or path to a logo to put in the header
+  [params.footer]
+    text = "- PAYLOADS.ONLINE -"
+    url = "https://payloads.online"
+  [params.style]  # appearance options (can be omitted)
+    fontFamily = "Inconsolata"
+    pageWidth = "750px"
+    avatarSize = "90px"
+    colorBlack = "#222222"
+    colorRed = "#dc3545"
+  [[params.socialIcons]]
+    icon = "fab fa-twitter"
+    title = "Twitter"
+    url = "https://twitter.com/Rvn0xsy"
+  [[params.socialIcons]]
+    icon = "fas fa-envelope"
+    title = "E-mail"
+    url = "mailto:rvn0xsy@gmail.com"
+
+
+
+[menu]
+  [[menu.main]]
+    name = "About"
+    url = "/about"
+    weight = 1
+  [[menu.main]]
+    name = "Posts"
+    url = "/post/"
+  [[menu.main]]
+    name = "Rss"
+    url = "/index.xml"
+  [[menu.main]]
+    name = "Links"
+    url = "/links/"
+
+[markup.goldmark.renderer]
+  unsafe = true  # allow raw HTML in markdown files
+
+[sitemap]
+changefreq = 'monthly'
+filename = 'sitemap.xml'
+priority = 0.5
+

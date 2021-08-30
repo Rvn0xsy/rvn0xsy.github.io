@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>在Docker中安装openvas</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>本文简述docker安装openvas</p>
+<ul>
+<li>目录
+{:toc}</li>
+</ul>
+<h2 id="安装过程">安装过程</h2>
+<p>镜像是从阿里云pull下来的：<code>docker pull  registry.cn-hangzhou.aliyuncs.com/secends/openvas</code></p>
+<p>安装过程：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">liyingzhe@ThundeRobot:~/下载$ docker pull  registry.cn-hangzhou.aliyuncs.com/secends/openvas
+Using default tag: latest
+latest: Pulling from secends/openvas
+
+6599cadaf950: Pull complete 
+23eda618d451: Pull complete 
+f0be3084efe9: Pull complete 
+52de432f084b: Pull complete 
+a3ed95caeb02: Pull complete 
+7f9ef9bd6c98: Pull complete 
+323caba9d1cc: Pull complete 
+73a9f4a66d02: Pull complete 
+Digest: sha256:adaf2ce11c97e9a924a053a97edf2b159daa0c8cd575ae5c5e2fe7a7cdb2c190
+Status: Downloaded newer image <span style="color:#66d9ef">for</span> registry.cn-hangzhou.aliyuncs.com/secends/openvas:latest
+liyingzhe@ThundeRobot:~/下载$ docker images
+REPOSITORY                                           TAG                 IMAGE ID            CREATED             SIZE
+registry.cn-hangzhou.aliyuncs.com/imxieke/kali       latest              6759704c31d9        <span style="color:#ae81ff">4</span> months ago        1.668 GB
+registry.cn-hangzhou.aliyuncs.com/gengxiaoxin/lnmp   latest              4f9feeb5a907        <span style="color:#ae81ff">11</span> months ago       318.2 MB
+registry.cn-hangzhou.aliyuncs.com/secends/openvas    latest              f254e0f3b11d        <span style="color:#ae81ff">14</span> months ago       3.51 GB
+<span style="color:#75715e">#把80映射到本机9392</span>
+liyingzhe@ThundeRobot:~/下载$ docker run -it -p 9392:80 f254e0f3b11d
+Starting Redis
+Starting Openvas...
+Starting gsad
+Starting rebuild process...
+This may take a minute or two...
+Checking setup
+openvas-check-setup 2.3.3
+  Test completeness and readiness of OpenVAS-8
+  <span style="color:#f92672">(</span>add <span style="color:#e6db74">&#39;--v6&#39;</span> or <span style="color:#e6db74">&#39;--v7&#39;</span> or <span style="color:#e6db74">&#39;--v9&#39;</span>
+   <span style="color:#66d9ef">if</span> you want to check <span style="color:#66d9ef">for</span> another OpenVAS version<span style="color:#f92672">)</span>
+
+  Please report us any non-detected problems and
+  help us to improve this check routine:
+  http://lists.wald.intevation.org/mailman/listinfo/openvas-discuss
+
+  Send us the log-file <span style="color:#f92672">(</span>/tmp/openvas-check-setup.log<span style="color:#f92672">)</span> to help analyze the problem.
+
+Step 1: Checking OpenVAS Scanner ... 
+        OK: OpenVAS Scanner is present in version 5.0.5.
+        OK: OpenVAS Scanner CA Certificate is present as /var/lib/openvas/CA/cacert.pem.
+        OK: redis-server is present in version v<span style="color:#f92672">=</span>2.8.4.
+        OK: scanner <span style="color:#f92672">(</span>kb_location setting<span style="color:#f92672">)</span> is configured properly using the redis-server socket: /var/run/redis/redis.sock
+        OK: redis-server is running and listening on socket: /var/run/redis/redis.sock.
+        OK: redis-server configuration is OK and redis-server is running.
+        OK: NVT collection in /var/lib/openvas/plugins contains <span style="color:#ae81ff">47056</span> NVTs.
+        WARNING: Signature checking of NVTs is not enabled in OpenVAS Scanner.
+        SUGGEST: Enable signature checking <span style="color:#f92672">(</span>see http://www.openvas.org/trusted-nvts.html<span style="color:#f92672">)</span>.
+        OK: The NVT cache in /var/cache/openvas contains <span style="color:#ae81ff">47056</span> files <span style="color:#66d9ef">for</span> <span style="color:#ae81ff">47056</span> NVTs.
+Step 2: Checking OpenVAS Manager ... 
+        OK: OpenVAS Manager is present in version 6.0.8.
+        OK: OpenVAS Manager client certificate is present as /var/lib/openvas/CA/clientcert.pem.
+        OK: OpenVAS Manager database found in /var/lib/openvas/mgr/tasks.db.
+        OK: Access rights <span style="color:#66d9ef">for</span> the OpenVAS Manager database are correct.
+        OK: sqlite3 found, extended checks of the OpenVAS Manager installation enabled.
+        OK: OpenVAS Manager database is at revision 146.
+        OK: OpenVAS Manager expects database at revision 146.
+        OK: Database schema is up to date.
+        OK: OpenVAS Manager database contains information about <span style="color:#ae81ff">47056</span> NVTs.
+        OK: At least one user exists.
+        OK: OpenVAS SCAP database found in /var/lib/openvas/scap-data/scap.db.
+        OK: OpenVAS CERT database found in /var/lib/openvas/cert-data/cert.db.
+        OK: xsltproc found.
+Step 3: Checking user configuration ... 
+        WARNING: Your password policy is empty.
+        SUGGEST: Edit the /etc/openvas/pwpolicy.conf file to set a password policy.
+Step 4: Checking Greenbone Security Assistant <span style="color:#f92672">(</span>GSA<span style="color:#f92672">)</span> ... 
+        OK: Greenbone Security Assistant is present in version 6.0.10.
+Step 5: Checking OpenVAS CLI ... 
+        SKIP: Skipping check <span style="color:#66d9ef">for</span> OpenVAS CLI.
+Step 6: Checking Greenbone Security Desktop <span style="color:#f92672">(</span>GSD<span style="color:#f92672">)</span> ... 
+        SKIP: Skipping check <span style="color:#66d9ef">for</span> Greenbone Security Desktop.
+Step 7: Checking <span style="color:#66d9ef">if</span> OpenVAS services are up and running ... 
+        OK: netstat found, extended checks of the OpenVAS services enabled.
+        ERROR: OpenVAS Scanner is NOT running!
+        FIX: Start OpenVAS Scanner <span style="color:#f92672">(</span>openvassd<span style="color:#f92672">)</span>.
+        OK: OpenVAS Manager is running and listening on all interfaces.
+        OK: OpenVAS Manager is listening on port 9390, which is the default port.
+        OK: Greenbone Security Assistant is listening on port 80, which is the default port.
+
+ ERROR: Your OpenVAS-8 installation is not yet complete!
+
+Please follow the instructions marked with FIX above and run this
+script again.
+
+If you think this result is wrong, please report your observation
+and help us to improve this check routine:
+http://lists.wald.intevation.org/mailman/listinfo/openvas-discuss
+Please attach the log-file <span style="color:#f92672">(</span>/tmp/openvas-check-setup.log<span style="color:#f92672">)</span> to help us analyze the problem.
+
+Done.
+Starting infinite loop...
+Press <span style="color:#f92672">[</span>CTRL+C<span style="color:#f92672">]</span> to stop..
+</code></pre></div><h2 id="遇到的问题">遇到的问题</h2>
+<p>openvas密码忘记问题：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">liyingzhe@ThundeRobot:~/下载$ docker exec 9a57ef793c73 openvasmd --delete-user<span style="color:#f92672">=</span>admin  <span style="color:#75715e">#删除用户admin</span>
+User deleted.
+liyingzhe@ThundeRobot:~/下载$ docker exec 9a57ef793c73 openvasmd --create-user<span style="color:#f92672">=</span>admin  <span style="color:#75715e">#创建用户，并且生产密码</span>
+User created with password <span style="color:#e6db74">&#39;4fb3b80b-c1e8-413d-985f-9574c6aca9b5&#39;</span>.
+</code></pre></div><p>此时就可以愉快的使用了！</p>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

