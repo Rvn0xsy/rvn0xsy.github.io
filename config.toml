@@ -3,7 +3,6 @@ baseURL = "https://payloads.online"
 theme = "researcher"
 disableKinds = ["taxonomy", "term"]
 enableEmoji = true
-math = false
 googleAnalytics = ""
 rssLimit = 20
 
