@@ -11,6 +11,7 @@ rssLimit = 20
   description = "倾旋的博客"
   favicon = "favicon.ico"  # path to a .ico to use as favicon
   logo = ""  # url or path to a logo to put in the header
+  plantuml = true
   [params.footer]
     text = "- PAYLOADS.ONLINE -"
     url = "https://payloads.online"
