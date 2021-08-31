@@ -80,15 +80,45 @@
 <hr>
 <div id="content">
 <div class="container">
-    <h2 id="0x00-前言">0x00 前言</h2>
+    <h2 id="0x00-自动化搭建">0x00 自动化搭建</h2>
 <ul>
 <li>准备环境</li>
 <li>Windows 2008 R2 X64</li>
+<li>Windows 2016</li>
 <li>Windows 10</li>
-<li>一杯茶</li>
-<li>一包烟</li>
 </ul>
-<h2 id="0x01-配置静态ip">0x01 配置静态IP</h2>
+<p>首先我先介绍自动化的方式搭建，后面再介绍手动方式。</p>
+<p>在微软官方的手册中，有提到如何使用Powershell去安装活动目录服务：<a href="https://github.com/MicrosoftDocs/windowsserverdocs/blob/master/WindowsServerDocs/identity/ad-ds/deploy/Install-Active-Directory-Domain-Services--Level-100-.md">Install Active Directory Domain Services (Level 100)</a></p>
+<p>第一步：安装活动目录服务</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">$ Install-Windowsfeature AD-Domain-Services
+</code></pre></div><p>第二步：导入<a href="https://docs.microsoft.com/en-us/powershell/module/addsdeployment/?redirectedfrom=MSDN&amp;view=windowsserver2019-ps">Addsdeployment</a>模块</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">Import-Module Addsdeployment
+</code></pre></div><p>第三步：调用<a href="https://github.com/MicrosoftDocs/windowsserverdocs/blob/master/WindowsServerDocs/identity/ad-ds/deploy/Install-Active-Directory-Domain-Services--Level-100-.md">Install-ADDSForest</a>设置域的信息执行安装</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">Install-ADDSForest -CreateDnsDelegation<span style="color:#960050;background-color:#1e0010">:</span>$false -DomainMode <span style="color:#e6db74">&#34;7&#34;</span> -DomainName <span style="color:#e6db74">&#34;PAYLOADS.ONLINE&#34;</span> -DomainNetbiosName <span style="color:#e6db74">&#34;PAYLOADS&#34;</span> -ForestMode <span style="color:#e6db74">&#34;7&#34;</span> -InstallDns<span style="color:#960050;background-color:#1e0010">:</span>$true -NoRebootOnCompletion<span style="color:#960050;background-color:#1e0010">:</span>$false -Force<span style="color:#960050;background-color:#1e0010">:</span>$true
+</code></pre></div><p>Install-ADDSForest 的参数解释：</p>
+<ul>
+<li>CreateDnsDelegation 是否创建引用与域控制器一起安装的新DNS服务器的DNS委派。 仅对 Active Directory“集成 DNS 有效。默认值是根据环境自动计算的。</li>
+<li>DomainMode 指定创建新林时第一个域的域功能级别。
+<ul>
+<li>Windows Server 2003: 2 or Win2003</li>
+<li>Windows Server 2008: 3 or Win2008</li>
+<li>Windows Server 2008 R2: 4 or Win2008R2</li>
+<li>Windows Server 2012: 5 or Win2012</li>
+<li>Windows Server 2012 R2: 6 or Win2012R2</li>
+<li>Windows Server 2016: 7 or WinThreshold</li>
+</ul>
+</li>
+<li>DomainName 域名</li>
+<li>DomainNetbiosName 域的Netbios名称</li>
+<li>ForestMode 与 DomainMode 等同，该选项主要用于尽可能的自动化</li>
+<li>InstallDns 是否安装DNS服务</li>
+<li>NoRebootOnCompletion 不重启完成安装</li>
+</ul>
+<p>总结：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-powershell" data-lang="powershell">Install-Windowsfeature AD-Domain-Services
+Import-Module Addsdeployment
+Install-ADDSForest -CreateDnsDelegation<span style="color:#960050;background-color:#1e0010">:</span>$false -DomainMode <span style="color:#e6db74">&#34;7&#34;</span> -DomainName <span style="color:#e6db74">&#34;PAYLOADS.ONLINE&#34;</span> -DomainNetbiosName <span style="color:#e6db74">&#34;PAYLOADS&#34;</span> -ForestMode <span style="color:#e6db74">&#34;7&#34;</span> -InstallDns<span style="color:#960050;background-color:#1e0010">:</span>$true -NoRebootOnCompletion<span style="color:#960050;background-color:#1e0010">:</span>$false -Force<span style="color:#960050;background-color:#1e0010">:</span>$true
+</code></pre></div><h2 id="0x01-配置静态ip">0x01 配置静态IP</h2>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/26e63f2b671f2fbd7f51aa72d7a6dfbd.png" alt="2019-04-13-00-08-08"></p>
 <p>设置一个DNS指向本机，因为它后面是一个域控的角色。</p>
 <h2 id="0x02-安装活动目录角色">0x02 安装活动目录角色</h2>
