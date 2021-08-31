@@ -80,8 +80,7 @@
 <hr>
 <div id="content">
 <div class="container">
-    <p>360安全大脑监测到通过”驱动人生”供应链攻击传播的挖矿木马在1月30日下午4时左右再次更新……</p>
-<h2 id="0x00-事件背景">0x00 事件背景</h2>
+    <h2 id="0x00-事件背景">0x00 事件背景</h2>
 <p>360安全大脑监测到通过&quot;驱动人生&quot;供应链攻击传播的挖矿木马在1月30日下午4时左右再次更新。此次更新中，木马在此前抓取系统帐户密码的基础上增加了抓取密码hash值的功能，并试图通过pass the hash攻击进行横向渗透，使得该木马的传播能力进一步加强，即使是有高强度口令的机器也有可能被攻陷。</p>
 <p>pass the hash也称作哈希传递攻击，攻击者可以直接通过密码的哈希值访问远程主机或服务，而不用提供明文密码。攻击者使用pass the hash技术尝试在系统登录密码非弱口令并且无法抓取登录密码的情况下进行横向攻击，增加攻击成功率。</p>
 <h2 id="0x01-分析研讨">0x01 分析研讨</h2>
@@ -222,6 +221,7 @@ Microsoft\cred.ps1&quot; /F}}catch{}[System.Threading.Thread]::Sleep(3000)Stop-P
 <p>最主要就是禁止与<code>172.104.177.202</code>进行通信。</p>
 <p>下载器样本：https://payloads.online/scripts/2019-02-23-downloader.txt</p>
 <p>木马本体（解密后）：https://payloads.online/scripts/2019-02-23-res.txt</p>
+
 </div>
 
         </div><div id="footer" class="mb-5">
