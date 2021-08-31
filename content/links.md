@@ -9,7 +9,7 @@ author: Rvn0xsy
 ## 友情链接
 
 - [晏子霜's blog](http://www.whsgwl.net/)
-- [三米前有蕉皮's blog](https://www.cnblogs.com/Kali-Team/)
+- [三米前有蕉皮's blog](https://blog.kali-team.cn/)
 - [Key's blog](http://gh0st.cn/)
 - [Akkuman's blog](http://hacktech.cn/)
 - [Wolvez's blog](http://wolvez.club/)
