@@ -70,6 +70,22 @@
 <div id="content"><div class="container">
     <section id="posts" class="posts"><article class="post">
     <header class="post-header">
+      <h2 class="post-title"><a class="post-link" href="/archivers/2017-03-06/1/">渗透测试中的Bypass技巧（二）</a></h2>
+      <div class="post-meta">
+        <span class="post-time"> 2017-03-06 </span>
+      </div>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        第二篇 应用层过WAF
+      </div>
+      <div class="post-link">
+        <a href="/archivers/2017-03-06/1/" class="read-more-link"> Read More » </a>
+      </div>
+    </div>
+  </article>
+        <article class="post">
+    <header class="post-header">
       <h2 class="post-title"><a class="post-link" href="/archivers/2017-03-05/1/">渗透测试中的Bypass技巧（一）</a></h2>
       <div class="post-meta">
         <span class="post-time"> 2017-03-05 </span>
@@ -132,22 +148,6 @@
       </div>
     </div>
   </article>
-        <article class="post">
-    <header class="post-header">
-      <h2 class="post-title"><a class="post-link" href="/archivers/2015-11-20/1/">华为交换机Telnet远程登录</a></h2>
-      <div class="post-meta">
-        <span class="post-time"> 2015-11-20 </span>
-      </div>
-    </header>
-    <div class="post-content">
-      <div class="post-summary">
-        本文记录一下华为交换机Telnet远程登录的简单配置
-      </div>
-      <div class="post-link">
-        <a href="/archivers/2015-11-20/1/" class="read-more-link"> Read More » </a>
-      </div>
-    </div>
-  </article>
         </section>
   </div>
   <div class="container">
@@ -181,5 +181,22 @@
         </div>
     
 </div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
 </body>
 </html>

@@ -70,6 +70,38 @@
 <div id="content"><div class="container">
     <section id="posts" class="posts"><article class="post">
     <header class="post-header">
+      <h2 class="post-title"><a class="post-link" href="/archivers/2017-11-08/2/">Kali Linux 优化</a></h2>
+      <div class="post-meta">
+        <span class="post-time"> 2017-11-08 </span>
+      </div>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        本文介绍几个优化Kali Linux的方式
+      </div>
+      <div class="post-link">
+        <a href="/archivers/2017-11-08/2/" class="read-more-link"> Read More » </a>
+      </div>
+    </div>
+  </article>
+        <article class="post">
+    <header class="post-header">
+      <h2 class="post-title"><a class="post-link" href="/archivers/2017-11-08/1/">Windows下命令行下载文件总结</a></h2>
+      <div class="post-meta">
+        <span class="post-time"> 2017-11-08 </span>
+      </div>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        
+      </div>
+      <div class="post-link">
+        <a href="/archivers/2017-11-08/1/" class="read-more-link"> Read More » </a>
+      </div>
+    </div>
+  </article>
+        <article class="post">
+    <header class="post-header">
       <h2 class="post-title"><a class="post-link" href="/archivers/2017-10-17/2/">使用C&#43;&#43;操作Postgresql</a></h2>
       <div class="post-meta">
         <span class="post-time"> 2017-10-17 </span>
@@ -116,38 +148,6 @@
       </div>
     </div>
   </article>
-        <article class="post">
-    <header class="post-header">
-      <h2 class="post-title"><a class="post-link" href="/archivers/2017-08-21/1/">Tomcat 开启 https支持</a></h2>
-      <div class="post-meta">
-        <span class="post-time"> 2017-08-21 </span>
-      </div>
-    </header>
-    <div class="post-content">
-      <div class="post-summary">
-        本文介绍一下tomcat 开启 https支持
-      </div>
-      <div class="post-link">
-        <a href="/archivers/2017-08-21/1/" class="read-more-link"> Read More » </a>
-      </div>
-    </div>
-  </article>
-        <article class="post">
-    <header class="post-header">
-      <h2 class="post-title"><a class="post-link" href="/archivers/2017-08-21/2/">几个扫描https漏洞的工具</a></h2>
-      <div class="post-meta">
-        <span class="post-time"> 2017-08-21 </span>
-      </div>
-    </header>
-    <div class="post-content">
-      <div class="post-summary">
-        本文介绍一下几个扫描https漏洞的工具
-      </div>
-      <div class="post-link">
-        <a href="/archivers/2017-08-21/2/" class="read-more-link"> Read More » </a>
-      </div>
-    </div>
-  </article>
         </section>
   </div>
   <div class="container">
@@ -187,5 +187,22 @@
         </div>
     
 </div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
 </body>
 </html>

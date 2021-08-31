@@ -70,6 +70,38 @@
 <div id="content"><div class="container">
     <section id="posts" class="posts"><article class="post">
     <header class="post-header">
+      <h2 class="post-title"><a class="post-link" href="/archivers/2018-08-08/2/">C语言内存控制函数总结</a></h2>
+      <div class="post-meta">
+        <span class="post-time"> 2018-08-08 </span>
+      </div>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        本文记录一些C语言内存控制函数
+      </div>
+      <div class="post-link">
+        <a href="/archivers/2018-08-08/2/" class="read-more-link"> Read More » </a>
+      </div>
+    </div>
+  </article>
+        <article class="post">
+    <header class="post-header">
+      <h2 class="post-title"><a class="post-link" href="/archivers/2018-08-08/1/">C语言字符串函数</a></h2>
+      <div class="post-meta">
+        <span class="post-time"> 2018-08-08 </span>
+      </div>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        本文记录一些C语言字符串函数
+      </div>
+      <div class="post-link">
+        <a href="/archivers/2018-08-08/1/" class="read-more-link"> Read More » </a>
+      </div>
+    </div>
+  </article>
+        <article class="post">
+    <header class="post-header">
       <h2 class="post-title"><a class="post-link" href="/archivers/2018-08-07/1/">C语言strcat函数实现</a></h2>
       <div class="post-meta">
         <span class="post-time"> 2018-08-07 </span>
@@ -116,38 +148,6 @@
       </div>
     </div>
   </article>
-        <article class="post">
-    <header class="post-header">
-      <h2 class="post-title"><a class="post-link" href="/archivers/2018-08-03/1/">搭建小团队的Github</a></h2>
-      <div class="post-meta">
-        <span class="post-time"> 2018-08-03 </span>
-      </div>
-    </header>
-    <div class="post-content">
-      <div class="post-summary">
-        如何搭建小团队的Github
-      </div>
-      <div class="post-link">
-        <a href="/archivers/2018-08-03/1/" class="read-more-link"> Read More » </a>
-      </div>
-    </div>
-  </article>
-        <article class="post">
-    <header class="post-header">
-      <h2 class="post-title"><a class="post-link" href="/archivers/2018-08-03/2/">近期的生活</a></h2>
-      <div class="post-meta">
-        <span class="post-time"> 2018-08-03 </span>
-      </div>
-    </header>
-    <div class="post-content">
-      <div class="post-summary">
-        本文记录一下在上海的这三个月
-      </div>
-      <div class="post-link">
-        <a href="/archivers/2018-08-03/2/" class="read-more-link"> Read More » </a>
-      </div>
-    </div>
-  </article>
         </section>
   </div>
   <div class="container">
@@ -187,5 +187,22 @@
         </div>
     
 </div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
 </body>
 </html>

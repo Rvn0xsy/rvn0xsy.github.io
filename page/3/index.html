@@ -70,6 +70,38 @@
 <div id="content"><div class="container">
     <section id="posts" class="posts"><article class="post">
     <header class="post-header">
+      <h2 class="post-title"><a class="post-link" href="/archivers/2020-03-21/1/">Windows特权提升漏洞-符号</a></h2>
+      <div class="post-meta">
+        <span class="post-time"> 2020-03-21 </span>
+      </div>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        Windows 特权提升相信大家已经不陌生了，常见的场景如：NETWORK SERVICE → SYSTEM但从漏洞原理去了解，会发现利用漏洞利用本就是一个“使程序逻辑不按照正常方向运转”的过程...
+      </div>
+      <div class="post-link">
+        <a href="/archivers/2020-03-21/1/" class="read-more-link"> Read More » </a>
+      </div>
+    </div>
+  </article>
+        <article class="post">
+    <header class="post-header">
+      <h2 class="post-title"><a class="post-link" href="/archivers/2020-03-02/4/">Cobalt Strike Aggressor Script （第一课）</a></h2>
+      <div class="post-meta">
+        <span class="post-time"> 2020-03-02 </span>
+      </div>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        在后渗透阶段，目前较为流行的C2平台就属Cobalt Strike做的比较优秀了；目前国内的论坛、网站上已经放出很多版本，最新的为Cobalt Strike 3.14，目前最新版本4.0已不再有试用版。
+      </div>
+      <div class="post-link">
+        <a href="/archivers/2020-03-02/4/" class="read-more-link"> Read More » </a>
+      </div>
+    </div>
+  </article>
+        <article class="post">
+    <header class="post-header">
       <h2 class="post-title"><a class="post-link" href="/archivers/2020-03-02/5/">Cobalt Strike Aggressor Script （第二课）</a></h2>
       <div class="post-meta">
         <span class="post-time"> 2020-03-02 </span>
@@ -116,38 +148,6 @@
       </div>
     </div>
   </article>
-        <article class="post">
-    <header class="post-header">
-      <h2 class="post-title"><a class="post-link" href="/archivers/2020-03-02/1/">通过反射DLL注入来构建后渗透模块（第一课）</a></h2>
-      <div class="post-meta">
-        <span class="post-time"> 2020-03-02 </span>
-      </div>
-    </header>
-    <div class="post-content">
-      <div class="post-summary">
-        Aggressor Script是Cobalt Strike 3.0版本以上的一个内置脚本语言....
-      </div>
-      <div class="post-link">
-        <a href="/archivers/2020-03-02/1/" class="read-more-link"> Read More » </a>
-      </div>
-    </div>
-  </article>
-        <article class="post">
-    <header class="post-header">
-      <h2 class="post-title"><a class="post-link" href="/archivers/2020-02-05/1/">红队行动之鱼叉攻击-研究分享</a></h2>
-      <div class="post-meta">
-        <span class="post-time"> 2020-02-05 </span>
-      </div>
-    </header>
-    <div class="post-content">
-      <div class="post-summary">
-        这个议题是我在公司年会上分享的，但正逢招人浪潮袭来，抱着和大家交流技术的想法的同时，想寻觅几个志同道合的同学来一起做研究！议题我将会总结成文字，为大家分享我的学习成果。
-      </div>
-      <div class="post-link">
-        <a href="/archivers/2020-02-05/1/" class="read-more-link"> Read More » </a>
-      </div>
-    </div>
-  </article>
         </section>
   </div>
   <div class="container">
@@ -187,5 +187,22 @@
         </div>
     
 </div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
 </body>
 </html>

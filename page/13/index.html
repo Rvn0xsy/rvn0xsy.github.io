@@ -70,6 +70,38 @@
 <div id="content"><div class="container">
     <section id="posts" class="posts"><article class="post">
     <header class="post-header">
+      <h2 class="post-title"><a class="post-link" href="/archivers/2015-11-20/2/">华为RIP协议</a></h2>
+      <div class="post-meta">
+        <span class="post-time"> 2018-03-16 </span>
+      </div>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        本文记录一下华为RIP协议的简单配置
+      </div>
+      <div class="post-link">
+        <a href="/archivers/2015-11-20/2/" class="read-more-link"> Read More » </a>
+      </div>
+    </div>
+  </article>
+        <article class="post">
+    <header class="post-header">
+      <h2 class="post-title"><a class="post-link" href="/archivers/2018-03-05/1/">C/C&#43;&#43; 子域名A记录枚举(多线程)</a></h2>
+      <div class="post-meta">
+        <span class="post-time"> 2018-03-05 </span>
+      </div>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        分享一个C/C&#43;&#43; 子域名A记录枚举的一个工具，可以根据自己的需求再改进
+      </div>
+      <div class="post-link">
+        <a href="/archivers/2018-03-05/1/" class="read-more-link"> Read More » </a>
+      </div>
+    </div>
+  </article>
+        <article class="post">
+    <header class="post-header">
       <h2 class="post-title"><a class="post-link" href="/archivers/2018-03-04/1/">使用C语言发送伪造源IP的UDP请求及DRDOS拒绝服务攻击原理剖析</a></h2>
       <div class="post-meta">
         <span class="post-time"> 2018-03-04 </span>
@@ -116,38 +148,6 @@
       </div>
     </div>
   </article>
-        <article class="post">
-    <header class="post-header">
-      <h2 class="post-title"><a class="post-link" href="/archivers/2018-02-07/1/">关于CVE-2018-6580其他Tips分析</a></h2>
-      <div class="post-meta">
-        <span class="post-time"> 2018-02-07 </span>
-      </div>
-    </header>
-    <div class="post-content">
-      <div class="post-summary">
-        本文分析一下CVE-2018-6580漏洞的产生原因
-      </div>
-      <div class="post-link">
-        <a href="/archivers/2018-02-07/1/" class="read-more-link"> Read More » </a>
-      </div>
-    </div>
-  </article>
-        <article class="post">
-    <header class="post-header">
-      <h2 class="post-title"><a class="post-link" href="/archivers/2018-02-05/1/">Fuzzing With FuzzDB to Web Attack</a></h2>
-      <div class="post-meta">
-        <span class="post-time"> 2018-02-05 </span>
-      </div>
-    </header>
-    <div class="post-content">
-      <div class="post-summary">
-        本文介绍一个使用FUZZDB在Web环境下的测试方法
-      </div>
-      <div class="post-link">
-        <a href="/archivers/2018-02-05/1/" class="read-more-link"> Read More » </a>
-      </div>
-    </div>
-  </article>
         </section>
   </div>
   <div class="container">
@@ -187,5 +187,22 @@
         </div>
     
 </div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
 </body>
 </html>

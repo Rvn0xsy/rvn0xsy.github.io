@@ -70,6 +70,38 @@
 <div id="content"><div class="container">
     <section id="posts" class="posts"><article class="post">
     <header class="post-header">
+      <h2 class="post-title"><a class="post-link" href="/archivers/2018-04-18/1/">服务器启用了不安全的HTTP方法</a></h2>
+      <div class="post-meta">
+        <span class="post-time"> 2018-04-18 </span>
+      </div>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        《Web安全测试学习手册》- 服务器启用了不安全的HTTP方法
+      </div>
+      <div class="post-link">
+        <a href="/archivers/2018-04-18/1/" class="read-more-link"> Read More » </a>
+      </div>
+    </div>
+  </article>
+        <article class="post">
+    <header class="post-header">
+      <h2 class="post-title"><a class="post-link" href="/archivers/2018-04-16/2/">Slow HTTP DOS</a></h2>
+      <div class="post-meta">
+        <span class="post-time"> 2018-04-16 </span>
+      </div>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        《Web安全测试学习手册》- Slow HTTP DOS
+      </div>
+      <div class="post-link">
+        <a href="/archivers/2018-04-16/2/" class="read-more-link"> Read More » </a>
+      </div>
+    </div>
+  </article>
+        <article class="post">
+    <header class="post-header">
       <h2 class="post-title"><a class="post-link" href="/archivers/2018-04-16/3/">点击劫持：X-Frame-Options头丢失</a></h2>
       <div class="post-meta">
         <span class="post-time"> 2018-04-16 </span>
@@ -116,38 +148,6 @@
       </div>
     </div>
   </article>
-        <article class="post">
-    <header class="post-header">
-      <h2 class="post-title"><a class="post-link" href="/archivers/2018-03-21/1/">Web安全测试学习手册</a></h2>
-      <div class="post-meta">
-        <span class="post-time"> 2018-03-21 </span>
-      </div>
-    </header>
-    <div class="post-content">
-      <div class="post-summary">
-        准备在博客记录Web安全测试学习手册
-      </div>
-      <div class="post-link">
-        <a href="/archivers/2018-03-21/1/" class="read-more-link"> Read More » </a>
-      </div>
-    </div>
-  </article>
-        <article class="post">
-    <header class="post-header">
-      <h2 class="post-title"><a class="post-link" href="/archivers/2018-03-20/1/">浅谈使用C语言开发服务端漏洞扫描设计</a></h2>
-      <div class="post-meta">
-        <span class="post-time"> 2018-03-20 </span>
-      </div>
-    </header>
-    <div class="post-content">
-      <div class="post-summary">
-        本文记录一下自己学习这么久以来，目前设计的漏洞扫描最好的方式
-      </div>
-      <div class="post-link">
-        <a href="/archivers/2018-03-20/1/" class="read-more-link"> Read More » </a>
-      </div>
-    </div>
-  </article>
         </section>
   </div>
   <div class="container">
@@ -187,5 +187,22 @@
         </div>
     
 </div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
 </body>
 </html>
