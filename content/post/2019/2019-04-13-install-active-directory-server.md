@@ -5,13 +5,59 @@ title: 最快的方式搭建域环境
 url: /archivers/2019-04-13/1
 ---
 
-## 0x00 前言
+## 0x00 自动化搭建
 
 - 准备环境
  - Windows 2008 R2 X64
+ - Windows 2016
  - Windows 10
-- 一杯茶
-- 一包烟
+
+首先我先介绍自动化的方式搭建，后面再介绍手动方式。
+
+在微软官方的手册中，有提到如何使用Powershell去安装活动目录服务：[Install Active Directory Domain Services (Level 100)](https://github.com/MicrosoftDocs/windowsserverdocs/blob/master/WindowsServerDocs/identity/ad-ds/deploy/Install-Active-Directory-Domain-Services--Level-100-.md)
+
+第一步：安装活动目录服务
+
+```powershell
+$ Install-Windowsfeature AD-Domain-Services
+```
+
+第二步：导入[Addsdeployment](https://docs.microsoft.com/en-us/powershell/module/addsdeployment/?redirectedfrom=MSDN&view=windowsserver2019-ps)模块
+
+```powershell
+Import-Module Addsdeployment
+```
+
+第三步：调用[Install-ADDSForest](https://github.com/MicrosoftDocs/windowsserverdocs/blob/master/WindowsServerDocs/identity/ad-ds/deploy/Install-Active-Directory-Domain-Services--Level-100-.md)设置域的信息执行安装
+
+```powershell
+Install-ADDSForest -CreateDnsDelegation:$false -DomainMode "7" -DomainName "PAYLOADS.ONLINE" -DomainNetbiosName "PAYLOADS" -ForestMode "7" -InstallDns:$true -NoRebootOnCompletion:$false -Force:$true
+```
+
+Install-ADDSForest 的参数解释：
+
+* CreateDnsDelegation 是否创建引用与域控制器一起安装的新DNS服务器的DNS委派。 仅对 Active Directory“集成 DNS 有效。默认值是根据环境自动计算的。
+* DomainMode 指定创建新林时第一个域的域功能级别。
+    - Windows Server 2003: 2 or Win2003
+    - Windows Server 2008: 3 or Win2008
+    - Windows Server 2008 R2: 4 or Win2008R2
+    - Windows Server 2012: 5 or Win2012
+    - Windows Server 2012 R2: 6 or Win2012R2
+    - Windows Server 2016: 7 or WinThreshold
+* DomainName 域名
+* DomainNetbiosName 域的Netbios名称
+* ForestMode 与 DomainMode 等同，该选项主要用于尽可能的自动化
+* InstallDns 是否安装DNS服务
+* NoRebootOnCompletion 不重启完成安装
+
+
+总结：
+
+```powershell
+Install-Windowsfeature AD-Domain-Services
+Import-Module Addsdeployment
+Install-ADDSForest -CreateDnsDelegation:$false -DomainMode "7" -DomainName "PAYLOADS.ONLINE" -DomainNetbiosName "PAYLOADS" -ForestMode "7" -InstallDns:$true -NoRebootOnCompletion:$false -Force:$true
+```
 
 ## 0x01 配置静态IP
 
