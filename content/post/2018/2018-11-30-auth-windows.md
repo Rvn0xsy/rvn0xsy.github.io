@@ -24,8 +24,6 @@ url: /archivers/2018-11-30/1
 <iframe src="//player.bilibili.com/player.html?aid=51717543&cid=&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width="95%" height="450">
 </iframe>
 
-* 目录
-{:toc}
 
 ## 0x00 本地认证
 

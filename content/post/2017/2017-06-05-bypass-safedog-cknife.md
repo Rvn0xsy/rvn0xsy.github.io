@@ -4,10 +4,6 @@ description: 本文简述一下配置CKnife达到bypass软WAF的实例
 title: Cknife Bypass WAF
 url: /archivers/2017-06-05/1
 ---
-本文简述一下配置CKnife达到bypass软WAF的实例
-<!--more-->
-* 目录
-{:toc}
 
 ## 0x00 前言
 

@@ -6,11 +6,6 @@ title: Windows 本地特权提升技巧
 url: /archivers/2018-10-08/1
 ---
 
-本文总结几个Windows 本地特权提升技巧
-<!--more-->
-
-* 目录
-{:toc}
 
 ## 0x00 前言
 

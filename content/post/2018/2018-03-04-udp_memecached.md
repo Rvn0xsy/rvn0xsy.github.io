@@ -5,11 +5,7 @@ description: 本文概述一下使用C语言发送伪造源IP的UDP请求及DRDo
 title: 使用C语言发送伪造源IP的UDP请求及DRDOS拒绝服务攻击原理剖析
 url: /archivers/2018-03-04/1
 ---
-本文概述一下使用C语言发送伪造源IP的UDP请求及DRDoS拒绝服务攻击原理剖析
-<!--more-->
 
-* 目录
-{:toc}
 
 ## 0x01 什么是DRDOS
 

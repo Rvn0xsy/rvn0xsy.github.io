@@ -6,11 +6,7 @@ title: COM Hijacking
 url: /archivers/2018-10-14/1
 ---
 
-本文介绍一下COM劫持的原理
-<!--more-->
 
-* 目录
-{:toc}
 
 ## 0x00 COM介绍
 

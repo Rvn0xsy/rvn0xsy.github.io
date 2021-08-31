@@ -6,10 +6,7 @@ title: Microsoft DirectX SDK June 2010 Xact3.exe DLL Hijacking复现
 url: /archivers/2018-08-15/1
 ---
 
-本文记录DirectX SDK的DLL劫持漏洞，虽说官方已经废弃了，但是还是有一些学习方法的。
-<!--more-->
-* 目录
-{:toc}
+
 
 ## 0x00 前言
 

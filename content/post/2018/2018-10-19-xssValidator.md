@@ -6,12 +6,6 @@ title: xssValidator
 url: /archivers/2018-10-19/1
 ---
 
-本文记录一下xss Validator的使用方法
-<!--more-->
-
-* 目录
-{:toc}
-
 ## 0x00 前言
 
 xss Validator是一个Burp商店的一个高分插件，该插件依赖于[phantomjs](http://phantomjs.org)项目以及Burp的Intruder模块。

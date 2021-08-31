@@ -5,10 +5,6 @@ description: 本文介绍一下tomcat 开启 https支持
 title: Tomcat 开启 https支持
 url: /archivers/2017-08-21/1
 ---
-本文介绍一下tomcat 开启 https支持
-<!--more-->
-* 目录
-{:toc}
 
 ## 0x00 配置keystore
 
