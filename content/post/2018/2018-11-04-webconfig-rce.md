@@ -6,12 +6,10 @@ title: Web.config RCE
 url: /archivers/2018-11-04/1
 ---
 
-tips
-<!--more-->
+
 
 ## Web.config
 
-谢谢@九世分享。
 
 来源：https://poc-server.com/blog/2018/05/22/rce-by-uploading-a-web-config/
 

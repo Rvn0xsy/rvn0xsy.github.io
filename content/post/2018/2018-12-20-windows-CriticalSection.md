@@ -1,5 +1,5 @@
 ---
-categories: C++/C
+categories: C/C++
 date: "2018-12-20T00:00:00Z"
 description: 使用临界区保证多个线程读写全局变量进行同步。
 title: Windows - 线程同步

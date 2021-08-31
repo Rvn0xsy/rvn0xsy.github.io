@@ -6,10 +6,6 @@ title: Python virtualenv
 url: /archivers/2018-08-16/1
 ---
 
-本文记录virtualenv的使用。
-<!--more-->
-* 目录
-{:toc}
 
 ## 0x00 virtualenv 简介
 
