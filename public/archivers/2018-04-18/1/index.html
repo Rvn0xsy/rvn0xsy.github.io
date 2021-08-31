@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>服务器启用了不安全的HTTP方法</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>《Web安全测试学习手册》- 服务器启用了不安全的HTTP方法</p>
+<ul>
+<li>目录
+{:toc}</li>
+</ul>
+<h2 id="0x00-不安全的http方法">0x00 不安全的HTTP方法</h2>
+<h3 id="1什么是不安全的http方法">1）什么是不安全的HTTP方法</h3>
+<p>开发人员、运维人员一般可能用于调试服务器，开启了一些客户端能够直接读写服务器端文件的方法，例如： DELETE, PUT, COPY, MOVE, PROPFIND, PROPPATCH, SEARCH, LOCK, UNLOCK 等HTTP协议支持的方法。</p>
+<h3 id="2不安全的http方法特点">2）不安全的HTTP方法特点</h3>
+<p>可通过浏览器直接读写服务器端文件</p>
+<h2 id="0x01-不安全的http方法---风险等级">0x01 不安全的HTTP方法 - 风险等级</h2>
+<p><strong>高</strong></p>
+<h2 id="0x02-不安全的http方法---原理">0x02 不安全的HTTP方法 - 原理</h2>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PUT</td>
+<td>向指定的目录上载文件</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>删除指定的资源</td>
+</tr>
+<tr>
+<td>COPY</td>
+<td>将指定的资源复制到Destination消息头指定的位置</td>
+</tr>
+<tr>
+<td>MOVE</td>
+<td>将指定的资源移动到Destination消息头指定的位置</td>
+</tr>
+<tr>
+<td>SEARCH</td>
+<td>在一个目录路径中搜索资源</td>
+</tr>
+<tr>
+<td>PROPFIND</td>
+<td>获取与指定资源有关的信息，如作者、大小与内容类型</td>
+</tr>
+<tr>
+<td>TRACE</td>
+<td>在响应中返回服务器收到的原始请求</td>
+</tr>
+</tbody>
+</table>
+<p>服务器端由于配置权限不当，导致允许了客户端发送 DELETE, PUT, COPY, MOVE, PROPFIND, PROPPATCH, SEARCH, LOCK, UNLOCK等请求，并且解析请求进行操作文件。</p>
+<h2 id="0x03-不安全的http方法---常见场景">0x03 不安全的HTTP方法 - 常见场景</h2>
+<ul>
+<li>Tomcat 中间件</li>
+<li>IIS 中间件</li>
+</ul>
+<h2 id="0x04-测试方案">0x04 测试方案</h2>
+<p>使用CURL发送OPTIONS请求，查看响应头中的Allow行</p>
+<p>命令：<code>curl -I -X OPTIONS http://payloads.online</code></p>
+<pre><code>➜  ~ curl -I -X OPTIONS http://10.211.55.16/
+HTTP/1.1 200 OK
+Date: Wed, 18 Apr 2018 02:17:47 GMT
+Server: Microsoft-IIS/6.0
+MS-Author-Via: DAV
+Content-Length: 0
+Accept-Ranges: none
+DASL: &lt;DAV:sql&gt;
+DAV: 1, 2
+Public: OPTIONS, TRACE, GET, HEAD, DELETE, PUT, POST, COPY, MOVE, MKCOL, PROPFIND, PROPPATCH, LOCK, UNLOCK, SEARCH
+Allow: OPTIONS, TRACE, GET, HEAD, DELETE, COPY, MOVE, PROPFIND, PROPPATCH, SEARCH, MKCOL, LOCK, UNLOCK
+Cache-Control: private
+</code></pre><p>若出现PUT、DELETE&hellip;.等方法，则存在此风险</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-04-18/0x00.png" alt="0x00"></p>
+<h2 id="0x05-修复方案">0x05 修复方案</h2>
+<h3 id="iis">IIS</h3>
+<p>修改站点权限，取消“写入”</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-04-18/0x01.gif" alt="0x01"></p>
+<h3 id="tomcat">Tomcat</h3>
+<p>修改<code>web.xml</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#f92672">&lt;security-constraint&gt;</span>
+<span style="color:#f92672">&lt;web-resource-collection&gt;</span>
+<span style="color:#f92672">&lt;web-resource-name&gt;</span>fortune<span style="color:#f92672">&lt;/web-resource-name&gt;</span>
+<span style="color:#f92672">&lt;url-pattern&gt;</span>/*<span style="color:#f92672">&lt;/url-pattern&gt;</span>
+<span style="color:#f92672">&lt;http-method&gt;</span>PUT<span style="color:#f92672">&lt;/http-method&gt;</span>
+<span style="color:#f92672">&lt;http-method&gt;</span>DELETE<span style="color:#f92672">&lt;/http-method&gt;</span>
+<span style="color:#f92672">&lt;http-method&gt;</span>HEAD<span style="color:#f92672">&lt;/http-method&gt;</span>
+<span style="color:#f92672">&lt;http-method&gt;</span>OPTIONS<span style="color:#f92672">&lt;/http-method&gt;</span>
+<span style="color:#f92672">&lt;http-method&gt;</span>TRACE<span style="color:#f92672">&lt;/http-method&gt;</span>
+<span style="color:#f92672">&lt;/web-resource-collection&gt;</span>
+<span style="color:#f92672">&lt;auth-constraint&gt;&lt;/auth-constraint&gt;</span>
+<span style="color:#f92672">&lt;/security-constraint&gt;</span>
+<span style="color:#f92672">&lt;login-config&gt;</span>
+<span style="color:#f92672">&lt;auth-method&gt;</span>BASIC<span style="color:#f92672">&lt;/auth-method&gt;</span>
+<span style="color:#f92672">&lt;/login-config&gt;</span>
+</code></pre></div><h3 id="nginx">Nginx</h3>
+<p>在 <code>server</code>代码块内写入如下代码，用于屏蔽非GET、POST请求：</p>
+<pre><code>if ($request_method !~* GET|POST) {
+            return 403;
+
+   }
+</code></pre>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

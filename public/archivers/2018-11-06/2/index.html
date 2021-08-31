@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Linux账户登录加固</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>Linux账户登录加固</p>
+<h2 id="0x00-用户账户添加与删除">0x00 用户账户添加与删除</h2>
+<h3 id="添加用户">添加用户</h3>
+<p><strong>useradd</strong></p>
+<p>参考：https://www.cnblogs.com/irisrain/p/4324593.html</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">useradd <span style="color:#f92672">[</span>-d home<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-s shell<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-c comment<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-m <span style="color:#f92672">[</span>-k template<span style="color:#f92672">]]</span> <span style="color:#f92672">[</span>-f inactive<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-e expire <span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-p passwd<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>-r<span style="color:#f92672">]</span> name
+
+    -c：加上备注文字，备注文字保存在passwd的备注栏中。
+
+　　-d：指定用户登入时的主目录，替换系统默认值/home/&lt;用户名&gt;
+
+　　-D：变更预设值。
+
+　　-e：指定账号的失效日期，日期格式为MM/DD/YY，例如06/30/12。缺省表示永久有效。
+
+　　-f：指定在密码过期后多少天即关闭该账号。如果为0账号立即被停用；如果为-1则账号一直可用。默认值为-1.
+
+　　-g：指定用户所属的群组。值可以使组名也可以是GID。用户组必须已经存在的，期默认值为100，即users。
+
+　　-G：指定用户所属的附加群组。
+
+　　-m：自动建立用户的登入目录。
+
+　　-M：不要自动建立用户的登入目录。
+
+　　-n：取消建立以用户名称为名的群组。
+
+　　-r：建立系统账号。
+
+　　-s：指定用户登入后所使用的shell。默认值为/bin/bash。
+
+　　-u：指定用户ID号。该值在系统中必须是唯一的。0~499默认是保留给系统用户账号使用的，所以该值必须大于499。
+</code></pre></div><p>添加一个user1用户：</p>
+<ul>
+<li>允许shell登录</li>
+<li>自动创建home目录</li>
+<li>指定home目录</li>
+<li>设置用户3天后禁止登录</li>
+<li>设置uid为599</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">useradd -d /home/test -m -u <span style="color:#ae81ff">599</span> -s /bin/bash -f <span style="color:#ae81ff">3</span> user1
+</code></pre></div><p><strong>adduser</strong></p>
+<p>参考：http://www.runoob.com/linux/linux-comm-adduser.html</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">adduser <span style="color:#f92672">[</span>--home DIR<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--shell SHELL<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--no-create-home<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--uid ID<span style="color:#f92672">]</span>
+<span style="color:#f92672">[</span>--firstuid ID<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--lastuid ID<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--gecos GECOS<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--ingroup GROUP | --gid ID<span style="color:#f92672">]</span>
+<span style="color:#f92672">[</span>--disabled-password<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--disabled-login<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--encrypt-home<span style="color:#f92672">]</span> USER
+   Add a normal user
+
+adduser --system <span style="color:#f92672">[</span>--home DIR<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--shell SHELL<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--no-create-home<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--uid ID<span style="color:#f92672">]</span>
+<span style="color:#f92672">[</span>--gecos GECOS<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--group | --ingroup GROUP | --gid ID<span style="color:#f92672">]</span> <span style="color:#f92672">[</span>--disabled-password<span style="color:#f92672">]</span>
+<span style="color:#f92672">[</span>--disabled-login<span style="color:#f92672">]</span> USER
+   Add a system user
+
+adduser --group <span style="color:#f92672">[</span>--gid ID<span style="color:#f92672">]</span> GROUP
+addgroup <span style="color:#f92672">[</span>--gid ID<span style="color:#f92672">]</span> GROUP
+   Add a user group
+
+addgroup --system <span style="color:#f92672">[</span>--gid ID<span style="color:#f92672">]</span> GROUP
+   Add a system group
+
+adduser USER GROUP
+   Add an existing user to an existing group
+
+general options:
+  --quiet | -q      don<span style="color:#960050;background-color:#1e0010">&#39;</span>t give process information to stdout
+  --force-badname   allow usernames which <span style="color:#66d9ef">do</span> not match the
+                    NAME_REGEX<span style="color:#f92672">[</span>_SYSTEM<span style="color:#f92672">]</span> configuration variable
+  --help | -h       usage message
+  --version | -v    version number and copyright
+  --conf | -c FILE  use FILE as configuration file
+</code></pre></div><p>添加一个user2用户：</p>
+<ul>
+<li>允许shell登录</li>
+<li>自动创建home目录</li>
+<li>指定home目录</li>
+<li>设置用户3天后禁止登录</li>
+<li>设置uid为599</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">adduser --shell /bin/bash --home /home/test --uid <span style="color:#ae81ff">599</span>
+</code></pre></div><h3 id="删除用户">删除用户</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">userdel <span style="color:#f92672">[</span>usernames<span style="color:#f92672">]</span>
+</code></pre></div><h2 id="0x01-用户锁定与解锁">0x01 用户锁定与解锁</h2>
+<p>锁定：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">passwd -l <span style="color:#f92672">[</span>usernames<span style="color:#f92672">]</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">usermod -L <span style="color:#f92672">[</span>usernames<span style="color:#f92672">]</span>
+</code></pre></div><p>解锁：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">usermod -U <span style="color:#f92672">[</span>usernames<span style="color:#f92672">]</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">passwd -u <span style="color:#f92672">[</span>usernames<span style="color:#f92672">]</span>
+</code></pre></div><h2 id="0x02-ssh-加固">0x02 SSH 加固</h2>
+<p>参考：http://www.jinbuguo.com/openssh/sshd_config.html</p>
+<p>禁止ROOT登录：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">vim /etc/ssh/sshd_config
+PermitRootLogin without-password 改为 PermitRootLogin no
+</code></pre></div><p>禁止某用户登录：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">DenyUsers root    <span style="color:#75715e">#Linux系统账户</span>
+</code></pre></div><p>允许某用户登录：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">AllowUsers root
+</code></pre></div><p>设置user1不允许登录：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">usermod -s /usr/sbin/nologin user1
+</code></pre></div><p>不允许密码登录：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">PermitRootLogin without-password
+</code></pre></div><p>设置authorized_keys目录：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">AuthorizedKeysFile %h/.ssh/authorized_keys
+
+             存放该用户可以用来登录的 RSA/DSA 公钥。
+             该指令中可以使用下列根据连接时的实际情况进行展开的符号：
+             %% 表示<span style="color:#e6db74">&#39;%&#39;</span>、%h 表示用户的主目录、%u 表示该用户的用户名。
+             经过扩展之后的值必须要么是绝对路径，要么是相对于用户主目录的相对路径。
+             默认值是<span style="color:#e6db74">&#34;.ssh/authorized_keys&#34;</span>。
+</code></pre></div><p>端口：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">Port <span style="color:#ae81ff">2243</span>
+</code></pre></div><p>添加公钥：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">ssh-copy-id -i ~/.ssh/id_rsa.pub root@xxx.xxx.xxx.xxx
+</code></pre></div>
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>

