@@ -80,12 +80,7 @@
 <hr>
 <div id="content">
 <div class="container">
-    <p>本文介绍一下COM劫持的原理</p>
-<ul>
-<li>目录
-{:toc}</li>
-</ul>
-<h2 id="0x00-com介绍">0x00 COM介绍</h2>
+    <h2 id="0x00-com介绍">0x00 COM介绍</h2>
 <p>COM是Component Object Model （组件对象模型）的缩写。</p>
 <p>COM是微软公司为了计算机工业的软件生产更加符合人类的行为方式开发的一种新的软件开发技术。在COM构架下，人们可以开发出各种各样的功能专一的组件，然后将它们按照需要组合起来，构成复杂的应用系统。</p>
 <h2 id="0x01-应用程序与com注册表的关系">0x01 应用程序与COM注册表的关系</h2>
@@ -293,6 +288,7 @@ reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F42449
 <p>因为<code>eventvwr.exe</code>如果是被管理员组的用户打开，将会自动提升权限，Windows中会有很多这类的应用程序。</p>
 <p>正是因为具有自动提升权限的属性，我们劫持后，就不会触发UAC了，直接获得有管理员权限。</p>
 <p>上面说的只是一种方式，还有多种方式，后面我将会介绍：UAC基础、如何挖掘Bypass UAC的方法。</p>
+
 </div>
 
         </div><div id="footer" class="mb-5">

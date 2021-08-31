@@ -80,12 +80,7 @@
 <hr>
 <div id="content">
 <div class="container">
-    <p>本文记录一下针对CVE-2017-11882的漏洞复现</p>
-<ul>
-<li>目录
-{:toc}</li>
-</ul>
-<h2 id="0x00-前言">0x00 前言</h2>
+    <h2 id="0x00-前言">0x00 前言</h2>
 <p>参考backlion师傅的PDF，记录一下这个过程。</p>
 <p>2017年11月14日，微软发布了11月份的安全补丁更新，其中比较引人关注的莫过于悄然修复了潜伏17年之久的Office远程代码执行漏洞（CVE-2017-11882）。该漏洞为Office内存破坏漏洞，影响目前流行的所有Office版本。攻击者可以利用漏洞以当前登录的用户的身份执行任意命令。
 由于漏洞影响面较广，漏洞披露后，金睛安全研究团队持续对漏洞相关攻击事件进行关注。11月19日，监控到了已有漏洞POC在网上流传，随即迅速对相关样本进行了分析。目前该样本全球仅微软杀毒可以检测。</p>
@@ -132,6 +127,7 @@
 <li>输入以下两条命令：
 <code>reg add  “HKLM\SOFTWARE\Microsoft\Office\Common\COM Compatibility\{0002CE02-0000-0000-C000-000000000046} ” /v “Compatibility  Flags”  /t  REG_DWORD /d    0x400</code></li>
 </ul>
+
 </div>
 
         </div><div id="footer" class="mb-5">

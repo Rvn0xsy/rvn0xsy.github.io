@@ -80,12 +80,7 @@
 <hr>
 <div id="content">
 <div class="container">
-    <p>本文介绍一下tomcat 开启 https支持</p>
-<ul>
-<li>目录
-{:toc}</li>
-</ul>
-<h2 id="0x00-配置keystore">0x00 配置keystore</h2>
+    <h2 id="0x00-配置keystore">0x00 配置keystore</h2>
 <p>要使用ssl connector，必须先创建一个keystore。他包含了服务器中被客户端用于验证服务器的数字证书。一旦客户端接受了这个证书，客户端就可以使用public key去加密他们要发送的数据。而服务器，拥有一个private key，作为唯一解密数据的密钥。</p>
 <p>进入JDK环境的bin目录，调用keytool来完成我们的证书生成：</p>
 <p><code>keytool -genkey -alias tomcat -keyalg RSA</code></p>
@@ -114,6 +109,7 @@
                 <span style="color:#a6e22e">keystoreFile=</span><span style="color:#e6db74">&#34;keystore文件路径&#34;</span>   
           <span style="color:#a6e22e">keystorePass=</span><span style="color:#e6db74">&#34;口令&#34;</span> <span style="color:#f92672">/&gt;</span>
 </code></pre></div><p>重启tomcat后生效~</p>
+
 </div>
 
         </div><div id="footer" class="mb-5">

@@ -80,12 +80,7 @@
 <hr>
 <div id="content">
 <div class="container">
-    <p>某些Web服务器的特性不一，导致WAF在判断时候无法完全工作。经常出现的情况大部分都是协议层与Web服务器之间WAF没有很好的处理请求，导致无法拦截很多生僻的攻击手法，那么我们先从GET、POST先说起。</p>
-<ul>
-<li>目录
-{:toc}</li>
-</ul>
-<h2 id="0x00-匹配资源大小限制">0x00 匹配资源大小限制</h2>
+    <h2 id="0x00-匹配资源大小限制">0x00 匹配资源大小限制</h2>
 <p>某些Web服务器的特性不一，导致WAF在判断时候无法完全工作。经常出现的情况大部分都是协议层与Web服务器之间WAF没有很好的处理请求，导致无法拦截很多生僻的攻击手法，那么我们先从GET、POST先说起。</p>
 <p>Get方法提交的数据大小长度并没有限制，HTTP协议规范没有对URL长度进行限制。这个限制是特定的浏览器及服务器对它的限制。可见WAF可能在处理GET请求的时候，根据客户端（浏览器）规定的长度去匹配了，这就造成了一个缺陷。我们可以把有效数据放在这个限制的零界点，攻击语句放在零界点后方，让WAF以为这是一个正常请求，就随之放行，达到了攻击效果。</p>
 <p>理论上讲，POST是没有大小限制的。HTTP协议规范也没有进行大小限制，起限制作用的是服务器的处理程序的处理能力。</p>
@@ -182,6 +177,7 @@ __priority__ <span style="color:#f92672">=</span> PRIORITY<span style="color:#f9
 <p>支持布尔值注入</p>
 <p>支持union注入</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-091cfa9e51da47e78bf301db3c35f95b_hd.jpg" alt="enter description here"></p>
+
 </div>
 
         </div><div id="footer" class="mb-5">
