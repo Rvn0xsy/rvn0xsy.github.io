@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Windows活动目录中的LDAP</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/projects/" title="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/tools/" title="Tools">
+                        Tools
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="ldap基础概念">LDAP基础概念</h2>
+<h3 id="条目entry">条目（Entry）</h3>
+<p>一个条目有若干个属性，每一个属性应对一个或多个值，有些条目可以包含若干个子条目。</p>
+<p>这里使用Active Directory Explorer连接一个域环境进行展示：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/3ff7db44c9c4e2410c69c12f5028bda6.png" alt="2021-08-11-11-56-03"></p>
+<p>其中 <code>DC=domain.16,DC=local</code> 以下（包含本身），都是条目，每一个条目点开都拥有N个属性名和属性值，右侧密密麻麻的就是属性名和属性值。</p>
+<h3 id="识别名distinguished-name-dn">识别名（Distinguished Name, DN）</h3>
+<p>它表示条目在LDAP目录树中从根出发的绝对路径，是条目的唯一标识。其中上一节中的DC=domain16,DC=local就是域的根，这个根的DN就是DC=domain16,DC=local，根的DN通常被称为Base DN。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/11914e7ec7a6f6ad7fd01827f690ae8f.png" alt="2021-08-11-11-56-39"></p>
+<p>我们随便点开一个计算机条目观看，发现他们都拥有一个objectCatory属性，这个属性的值就是用于描述条目的路径，也就是说，如果要从LDAP中精确的寻找到某个对象，就可以通过DN来寻找，编程的思路也是如此。</p>
+<h3 id="相对识别名relative-distinguished-name-rdn">相对识别名（Relative Distinguished Name, RDN）</h3>
+<p>例如上方的USERPC1的DN为：CN=USERPC1,CN=Computers,DC=domain16,DC=local，那么CN=USERPC1,CN=Computers就是RDN，RDN是相对于Base DN的DN。</p>
+<p>在一般情况下，RDN 以 dc=、ou=、c=、o= 开头的条目为容器，可以包含子条目。</p>
+<h3 id="模式schema">模式（Schema）</h3>
+<p>模式是对象类（ObjectClass）、属性类型（AttributeType）、属性语法（Syntax）和匹配规则（MatchingRules）的集合。</p>
+<h3 id="对象类objectclass">对象类（ObjectClass）</h3>
+<p>对象类封装了必选的属性和可选的属性，同时对象类也是支持继承的。通过对象类可以很方便地指定条目的类型，一个条目也可以绑定多个对象类。</p>
+<p>例如在Windows域内，每一个计算机都至少继承了computer类：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/50598e9dd51c011fd20d74474fd888b7.png" alt="2021-08-11-11-56-58"></p>
+<h3 id="属性类型attributetype">属性类型（AttributeType）</h3>
+<p>属性类型定义了属性值的设定规则（属性语法），以及同一个属性的各个数据相互比较的规则等。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/79d8eee422f219bb35de90a2555345aa.png" alt="2021-08-11-11-57-13"></p>
+<h2 id="ldap-filter-进阶">LDAP Filter 进阶</h2>
+<h3 id="ldap-objectcategory与objectclass">LDAP objectCategory与objectClass</h3>
+<p>微软的网站上有一篇关于LDAP Filter非常详细的文章：<a href="https://social.technet.microsoft.com/wiki/contents/articles/5392.active-directory-ldap-syntax-filters.aspx">https://social.technet.microsoft.com/wiki/contents/articles/5392.active-directory-ldap-syntax-filters.aspx</a></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7e14c25dc1adc3d8abba859d71d2519a.png" alt="2021-08-11-12-00-24"></p>
+<h3 id="获取所有域内计算机对象">获取所有域内计算机对象</h3>
+<p>通过ldapsearch可以跟进不同的条件去检索域内的数据，上面的表格中明确了objectCategory属性与objectClass属性组合可以获取指定对象，通过这个表格，我们尝试获取域内的所有机器:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ldapsearch -h 192.168.49.132 -b dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -D cn<span style="color:#f92672">=</span>zhangsan,ou<span style="color:#f92672">=</span>officeuser,dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -w San@123 objectClass<span style="color:#f92672">=</span>computer dn
+</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/b2dee0041f172d8c0ebe2f48c095d4ab.png" alt="2021-08-11-12-00-55"></p>
+<p>LDAP Search Option 说明:</p>
+<ul>
+<li><code>-H</code>	ldapuri，格式为ldap://机器名或者IP:端口号，不能与-h和-p同时使用</li>
+<li><code>-h</code>	LDAP服务器IP或者可解析的hostname，与-p可结合使用，不能与-H同时使用</li>
+<li><code>-p</code>	LDAP服务器端口号，与-h可结合使用，不能与-H同时使用</li>
+<li><code>-x</code>	使用简单认证方式</li>
+<li><code>-D</code>	所绑定的服务器的DN</li>
+<li><code>-w</code>	绑定DN的密码，与-W二者选一</li>
+<li><code>-W</code>	不输入密码，会交互式的提示用户输入密码，与-w二者选一</li>
+<li><code>-f</code>	指定输入条件，在RFC 4515中有更详细的说明</li>
+<li><code>-c</code>	出错后忽略当前错误继续执行，缺省情况下遇到错误即终止</li>
+<li><code>-n</code>	模拟操作但并不实际执行，用于验证，常与-v一同使用进行问题定位</li>
+<li><code>-v</code>	显示详细信息</li>
+<li><code>-d</code>	显示debug信息，可设定级别</li>
+<li><code>-s</code>	指定搜索范围, 可选值：base|one|sub|children</li>
+</ul>
+<h3 id="获取所有域内用户对象">获取所有域内用户对象</h3>
+<p>这里涉及到LDAP的条件逻辑运算，LDAP共有6个逻辑运算符，分别如下：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/f9ac35ef1c1bd1d2e5cab6bcf273384f.png" alt="2021-08-11-12-02-01"></p>
+<p>逻辑运算语法：<code>(逻辑运算符(条件1)(条件2)....)</code></p>
+<p>例如获取所有用户对象的条件语句：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>&amp;
+<span style="color:#f92672">(</span>objectCategory<span style="color:#f92672">=</span>person<span style="color:#f92672">)</span>
+<span style="color:#f92672">(</span>objectClass<span style="color:#f92672">=</span>user<span style="color:#f92672">)</span>
+<span style="color:#f92672">)</span>
+</code></pre></div><p>ldapsearch的操作示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ldapsearch -h 192.168.49.132 -b dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -D cn<span style="color:#f92672">=</span>zhangsan,ou<span style="color:#f92672">=</span>officeuser,dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -w San@123 <span style="color:#e6db74">&#34;(&amp;(objectCategory=person)(objectClass=user))&#34;</span> dn | grep dn
+</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/d7e09ddfe40aa09f4b5732141dc3f39d.png" alt="2021-08-11-12-02-40"></p>
+<h3 id="获取所有启用用户">获取所有启用用户</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ldapsearch -h 192.168.49.132 -b dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -D cn<span style="color:#f92672">=</span>zhangsan,ou<span style="color:#f92672">=</span>officeuser,dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -w San@123 <span style="color:#e6db74">&#34;(&amp;(objectCategory=person)(objectClass=user)
+</span><span style="color:#e6db74">(!(userAccountControl:1.2.840.113556.1.4.803:=2)))&#34;</span> dn | grep dn
+</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/68a289bbcc5e248c724885d93ebcee71.png" alt="2021-08-11-12-02-55"></p>
+<h3 id="特殊字符对照表">特殊字符对照表</h3>
+<p>其中\2A等都是特殊字符，为了和LDAP语义进行区分，因此有一个对照表：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/f468b788e29e49c6677019802e3fd4d1.png" alt="2021-08-11-12-03-52"></p>
+<h2 id="查看域内dns解析数据">查看域内DNS解析数据</h2>
+<p>通过ADExplorer，可以看到域内存在关于DNS的DN：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/aefcdd3f01b5cec4014116c88d5d8ab1.png" alt="2021-08-11-12-04-10"></p>
+<p>其中DN为DC=mailserver,DC=domain16.local,CN=MicrosoftDNS,DC=DomainDnsZones,DC=domain16,DC=local的对象存在一个属性叫dnsRecord，通过参考adidnsdump 中代码，发现dnsRecord是一个文档化过的结构体。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/bf21ab3e66d337e9bb5e9fd46b1e22e7.png" alt="2021-08-11-12-04-22"></p>
+<p>利用MS-DNSP文档能够构造结构体，从LDAP读取数据，自己也可以动手写一个收集域内DNS的工具。</p>
+<h2 id="go语言操作ldap">Go语言操作LDAP</h2>
+<p>开源地址：https://github.com/Rvn0xsy/goDomain</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/9cb3aa909bf2979c194af9053ece8fa0.png" alt="2021-08-11-12-04-39"></p>
+<p>使用go-ldap库能够连接LDAP服务，主要流程：</p>
+<ul>
+<li>连接LDAP服务器（支持TCP）</li>
+<li>账户密码认证</li>
+<li>执行LDAP语句，获取结果内容</li>
+<li>遍历属性名来读取数据</li>
+</ul>
+<h3 id="获取非约束委派与约束委派机器">获取非约束委派与约束委派机器</h3>
+<p>约束委派语法：<code>Query: (&amp;(samAccountType=805306369)(msds-allowedtodelegateto=*)(objectClass=computer))</code></p>
+<p>非约束委派语法：<code>(&amp;(samAccountType=805306369)(userAccountControl:1.2.840.113556.1.4.803:=524288)(objectClass=computer))</code></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2a035c04516e089022fab752a752208e.png" alt="2021-08-11-12-04-54"></p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>

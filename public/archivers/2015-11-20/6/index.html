@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>华为MSTP协议</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/projects/" title="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/tools/" title="Tools">
+                        Tools
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>本文记录一下华为MSTP协议配置</p>
+<ul>
+<li>
+<p>1.创建四个VLAN在四个交换机上,分别是 10 20 30 40。</p>
+</li>
+<li>
+<p>2.分别设置trunk链路</p>
+</li>
+<li>
+<p>3.进入STP配置视图</p>
+</li>
+<li>
+<p>4.设置域名和修订级别</p>
+</li>
+<li>
+<p>5.创建两个实例</p>
+</li>
+<li>
+<p>6.激活实例</p>
+</li>
+<li>
+<p>7.设置实例的优先级别，指定实例的根桥</p>
+</li>
+</ul>
+<h2 id="0x01-创建四个vlan">0x01 创建四个VLAN</h2>
+<pre><code>
+&lt;Huawei&gt;sys
+
+[Huawei]vlan batch 10 20 30 40
+</code></pre><h2 id="0x02-分别设置trunk链路">0x02 分别设置trunk链路</h2>
+<pre><code>
+[Huawei]port-group group-member e 0/0/1 to e 0/0/2
+
+[Huawei-port-group]port link-type trunk
+
+[Huawei-port-group]port trunk allow-pass vlan all
+</code></pre><p>说明：在每个交换机都要创建四个VLAN、并且都设置trunk链路</p>
+<h2 id="0x03-进入stp配置视图">0x03 进入STP配置视图</h2>
+<pre><code>
+[Huawei]stp region-configuration
+</code></pre><h2 id="0x04-创建域名以及修订级别">0x04 创建域名以及修订级别</h2>
+<pre><code>
+[Huawei-mst-region]region-name xinhua
+
+[Huawei-mst-region]revision-level 1
+</code></pre><h2 id="0x05-创建两个实例分别加入vlan">0x05 创建两个实例分别加入vlan</h2>
+<pre><code>
+[Huawei-mst-region]instance 1 vlan 10 20
+
+[Huawei-mst-region]instance 2 vlan 30 40
+</code></pre><h2 id="0x06-激活实例">0x06 激活实例</h2>
+<pre><code>
+[Huawei-mst-region]active region-configuration
+</code></pre><h2 id="0x07-设置实例的优先级别指定实例根桥">0x07 设置实例的优先级别、指定实例根桥</h2>
+<p>首先查看一下LSW3：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-16/0x13.png" alt="enter description here" title="0x13"></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-16/0x14.png" alt="enter description here" title="0x14"></p>
+<p>可以看到LSW3是总根桥</p>
+<p>在LSW4查看STP：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-16/0x15.png" alt="enter description here" title="0x15"></p>
+<p>然后设置实例2的优先级别为0</p>
+<p><code>[Huawei]stp instance 2 priority 0</code></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-16/0x16.png" alt="enter description here" title="0x16"></p>
+<p>实验文件链接：http://pan.baidu.com/s/1pJpcY1P 密码：1vp9</p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>

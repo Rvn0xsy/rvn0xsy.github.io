@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Windows 2019 Bypass (UAC、Defender) to Metasploit</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/projects/" title="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/tools/" title="Tools">
+                        Tools
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="0x00-前言">0x00 前言</h2>
+<p>昨天下午在小密圈看到一篇文章：https://egre55.github.io/system-properties-uac-bypass/</p>
+<p>文中指出 <code>SystemPropertiesAdvanced.exe</code> 有DLL劫持漏洞，经过分析，在Windows 10下无法复现</p>
+<p>之前也做过关于DLL劫持、Bypass UAC的议题：<a href="https://payloads.online/archivers/2018-12-22/1">DLL Hijacking &amp; COM Hijacking ByPass UAC - 议题解读</a></p>
+<p>在向下阅读前，请先掌握DLL劫持和Bypass UAC的基本知识。</p>
+<p>微信交流群，加我微信：Guest_Killer_0nlis。</p>
+<h2 id="0x01-cooolis">0x01 Cooolis</h2>
+<p>Cooolis是我写的一个支持MSF与Cobaltstrike上线的加载器，能够100%绕过绝大部分杀软，包含国内90%以上、Windows Defender等。</p>
+<p>之前发出了演示视频，在这里可以看到：<a href="https://payloads.online/archivers/2019-01-21/1">Cobalt Strike - Metasploit Bypass AV</a></p>
+<p>然后这个操作系统缺陷由于拥有自动权限提升的权限 <code>autoElevate</code>属性，我们可以利用它来执行Cooolis，使得Coolis上线的会话同样拥有管理员权限。</p>
+<p>关于Bypass UAC的挖掘方法与原理，我的议题已经转化成了视频：</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/1ErymFEn3rg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<h2 id="0x02-效果演示">0x02 效果演示</h2>
+<p>Windows 2019中的<code>C:\Windows\SysWOW64\SystemPropertiesAdvanced.exe</code>在运行时，会寻找<code>srrstr.dll</code>，这个DLL文件并不存在于：</p>
+<ul>
+<li>C:\Windows\SysWOW64\srrstr.dll</li>
+<li>C:\Windows\System\srrstr.dll</li>
+<li>C:\Windows\srrstr.dll</li>
+<li>C:\Windows\SysWOW64\wbem\srrstr.dll</li>
+<li>C:\Windows\SysWOW64\WindowsPowershell\v1.0\srrstr.dll</li>
+<li>C:\Users&lt;Username&gt;\APPData\Local\Microsoft\WindowsApps\srrstr.dll</li>
+</ul>
+<p>在最后它会寻找<code>C:\Users\&lt;Username&gt;\APPData\Local\Microsoft\WindowsApps\</code>这个目录，而这个目录的读写是不需要触发UAC获得管理员权限来操作的。</p>
+<p>由此，可以利用该缺陷，将Coolis转换成DLL，上传至<code>C:\Users\&lt;Username&gt;\APPData\Local\Microsoft\WindowsApps\</code>，紧接着执行SystemPropertiesAdvanced.exe，它会自动将<code>srrstr.dll</code>加载至SystemPropertiesAdvanced.exe进程的内存，同样的，我们也就拥有了管理员权限。</p>
+<p>在此之前，我有想过在下列模块里做一些优化：</p>
+<ul>
+<li>exploit/windows/local/bypassuac_fodhelper</li>
+<li>exploit/windows/local/bypassuac_injection</li>
+<li>exploit/windows/local/bypassuac_comhijack</li>
+</ul>
+<p>我觉得COM劫持的空间还是很大的，并且也一定程度上能够bypass AV。</p>
+<p>Demo：</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/sJvDxh63Ptg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<h2 id="0x03-总结">0x03 总结</h2>
+<p>UAC、DLL劫持、COM劫持的问题肯定还会有很多、但是以前的轮子到现在拿起来用基本上都会被行为拦截，这就需要掌握原理去自己探索、创造。</p>
+<p>系统镜像：<code>ed2k://|file|cn_windows_server_2019_x64_dvd_4de40f33.iso|5086887936|7DCDDD6B0C60A0D019B6A93D8F2B6D31|/</code></p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>

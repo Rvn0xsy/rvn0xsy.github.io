@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>通过OXID解析器获取Windows远程主机上网卡地址</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/projects/" title="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/tools/" title="Tools">
+                        Tools
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="0x00-背景">0x00 背景</h2>
+<p>Nicolas Delhaye在AIRBUS上分享了一篇<a href="https://airbus-cyber-security.com/the-oxid-resolver-part-1-remote-enumeration-of-network-interfaces-without-any-authentication/">The OXID Resolver [Part 1] – Remote enumeration of network interfaces without any authentication</a>，通过这篇文章我们可以掌握通过Windows的一些DCOM接口进行网卡进行信息枚举，它最大的魅力在于无需认证，只要目标的135端口开放即可获得信息。</p>
+<h2 id="0x01-oxid-resolver---交互过程分析">0x01 OXID Resolver - 交互过程分析</h2>
+<p>OXID Resolver是在支持COM +的每台计算机上运行的服务。</p>
+<p>它执行两项重要职责：</p>
+<ul>
+<li>它存储与远程对象连接所需的RPC字符串绑定，并将其提供给本地客户端。</li>
+<li>它将ping消息发送到本地计算机具有客户端的远程对象，并接收在本地计算机上运行的对象的ping消息。OXID解析器的此方面支持COM +垃圾回收机制。</li>
+</ul>
+<p>Nicolas Delhaye在原文提供的脚本是需要依赖imapcket的，而我只关注在Socket RAW上的实现，这样能够减小工具的体积，并且其他语言也能够轻松复刻整个过程。</p>
+<p>这个协议Wireshark已经内置了，我们可以直接进行抓包分析。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/797b841317603acbc8778d69e3de739b.png" alt="2020-07-16-10-28-54"></p>
+<p>前三个不需要关注，主要是TCP的三次握手，后面的四次交互才是我们需要重点关注的。</p>
+<p>第一个数据包 72 Bytes （主要用于协商版本等等）：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2c08cc923ddc16200a70060cb334324a.png" alt="2020-07-16-10-35-51"></p>
+<pre><code>\x05\x00\x0b\x03\x10\x00\x00\x00\x48\x00\x00\x00\x01\x00\x00\x00\xb8\x10\xb8\x10\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x01\x00\xc4\xfe\xfc\x99\x60\x52\x1b\x10\xbb\xcb\x00\xaa\x00\x21\x34\x7a\x00\x00\x00\x00\x04\x5d\x88\x8a\xeb\x1c\xc9\x11\x9f\xe8\x08\x00\x2b\x10\x48\x60\x02\x00\x00\x00
+</code></pre><p>第二个数据包：</p>
+<p>这个包无需关注，因为我们最终要获得的是第四个数据包。</p>
+<pre><code>&quot;\x05\x00\x0c\x03\x10\x00\x00\x00\x3c\x00\x00\x00\x01\x00\x00\x00&quot; \
+&quot;\xb8\x10\xb8\x10\x0a\x13\x00\x00\x04\x00\x31\x33\x35\x00\x00\x00&quot; \
+&quot;\x01\x00\x00\x00\x00\x00\x00\x00\x04\x5d\x88\x8a\xeb\x1c\xc9\x11&quot; \
+&quot;\x9f\xe8\x08\x00\x2b\x10\x48\x60\x02\x00\x00\x00&quot;
+</code></pre><p>可以选中对应的节点，直接复制<code>... as Escaped String</code>，这样就能够拿到十六进制Code。</p>
+<p>第三个数据包：</p>
+<pre><code>&quot;\x05\x00\x00\x03\x10\x00\x00\x00\x18\x00\x00\x00\x01\x00\x00\x00&quot; \
+&quot;\x00\x00\x00\x00\x00\x00\x05\x00&quot;
+</code></pre><p>第四个数据包：</p>
+<pre><code>&quot;\x05\x00\x02\x03\x10\x00\x00\x00\xec\x00\x00\x00\x01\x00\x00\x00&quot; \
+&quot;\xd4\x00\x00\x00\x00\x00\x00\x00\x05\x00\x07\x00\x00\x00\x02\x00&quot; \
+&quot;\x5d\x00\x00\x00\x5d\x00\x47\x00\x07\x00\x44\x00\x45\x00\x53\x00&quot; \
+&quot;\x4b\x00\x54\x00\x4f\x00\x50\x00\x2d\x00\x41\x00\x44\x00\x47\x00&quot; \
+&quot;\x33\x00\x33\x00\x31\x00\x32\x00\x00\x00\x07\x00\x31\x00\x39\x00&quot; \
+&quot;\x32\x00\x2e\x00\x31\x00\x36\x00\x38\x00\x2e\x00\x38\x00\x30\x00&quot; \
+&quot;\x2e\x00\x31\x00\x00\x00\x07\x00\x31\x00\x39\x00\x32\x00\x2e\x00&quot; \
+&quot;\x31\x00\x36\x00\x38\x00\x2e\x00\x32\x00\x30\x00\x31\x00\x2e\x00&quot; \
+&quot;\x31\x00\x00\x00\x07\x00\x31\x00\x30\x00\x2e\x00\x32\x00\x30\x00&quot; \
+&quot;\x2e\x00\x35\x00\x36\x00\x2e\x00\x38\x00\x33\x00\x00\x00\x07\x00&quot; \
+&quot;\x31\x00\x3a\x00\x3a\x00\x32\x00\x35\x00\x36\x00\x3a\x00\x66\x00&quot; \
+&quot;\x64\x00\x00\x00\x00\x00\x09\x00\xff\xff\x00\x00\x1e\x00\xff\xff&quot; \
+&quot;\x00\x00\x10\x00\xff\xff\x00\x00\x0a\x00\xff\xff\x00\x00\x16\x00&quot; \
+&quot;\xff\xff\x00\x00\x1f\x00\xff\xff\x00\x00\x0e\x00\xff\xff\x00\x00&quot; \
+&quot;\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00&quot;
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/b45ced6211f748aeee7cc4c24f6bb096.png" alt="2020-07-16-10-49-31"></p>
+<p>第四个数据包返回的永远是不定长的数据，所以需要参考文档进行解析，我下载了一份包含了OXID的文档，看起来非常的吃力，虽然有结构体，但是并没有给出一个通用的解决方案。</p>
+<h2 id="0x03-数据解析过程">0x03 数据解析过程</h2>
+<p>规律：</p>
+<ul>
+<li>每一个String Binding都以<code>\x07\x00</code>开头。</li>
+<li>每一个StringBinding都以<code>\x00\x00</code>分割，一直到第一个Security Binding是<code>\x09\x00</code>开头。</li>
+</ul>
+<p>因此，当recv的数据直到<code>\x09\x00</code>结束，开头就比较好办了，第四个数据包起始位置往后偏移42个字节就可以到达第一个String Binding。</p>
+<p>代码如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">packet_v2 <span style="color:#f92672">=</span> packet[<span style="color:#ae81ff">42</span>:]
+packet_v2_end <span style="color:#f92672">=</span> packet_v2<span style="color:#f92672">.</span>find(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x09\x00\xff\xff\x00\x00</span><span style="color:#e6db74">&#34;</span>)
+packet_v2 <span style="color:#f92672">=</span> packet_v2[:packet_v2_end]
+hostname_list <span style="color:#f92672">=</span> packet_v2<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00\x00</span><span style="color:#e6db74">&#34;</span>)
+result <span style="color:#f92672">=</span> {ip:[]}
+print(<span style="color:#e6db74">&#34;[*] &#34;</span> <span style="color:#f92672">+</span> ip)
+<span style="color:#66d9ef">for</span> h <span style="color:#f92672">in</span> hostname_list:
+    h <span style="color:#f92672">=</span> h<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\x07\x00</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74">&#39;&#39;</span>)
+    h <span style="color:#f92672">=</span> h<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74">&#39;&#39;</span>)
+    <span style="color:#66d9ef">if</span> h <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;&#39;</span>:
+        <span style="color:#66d9ef">continue</span>
+    print(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">[-&gt;]&#34;</span> <span style="color:#f92672">+</span> h)
+    result[ip]<span style="color:#f92672">.</span>append(h)
+print result
+</code></pre></div><h2 id="0x04-多线程实现效果">0x04 多线程实现效果</h2>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/69467333bcc317951a365c9a2c079a7c.png" alt="2020-07-16-10-57-59"></p>
+<p>优点：</p>
+<ul>
+<li>不依赖impacket</li>
+</ul>
+<p>通过本文的分析，可以有效提高内网渗透的效率，定位多网卡主机，同时可以复刻这个方法来实现其他语言的版本。</p>
+<p>Github 源代码地址：https://github.com/Rvn0xsy/OXID-Find/</p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>

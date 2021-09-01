@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>华为交换机MUX-VLAN</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/projects/" title="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/tools/" title="Tools">
+                        Tools
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <p>本文记录一下华为交换机MUX-VLAN配置</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-16/0x11.png" alt="enter description here" title="0x11"></p>
+<pre><code>
+&lt;Huawei&gt;sys
+
+[Huawei]vlan batch 100 20 30 10
+
+提示：此操作可能耗时较长。请稍等…完成。
+
+[Huawei]port-group group-member e0/0/2 to e0/0/4
+
+[Huawei-port-group]port link-type access
+
+[Huawei-Ethernet0/0/2]port link-type access
+
+[Huawei-Ethernet0/0/3]port link-type access
+
+[Huawei-Ethernet0/0/4]port link-type access
+
+[Huawei-port-group]port default vlan 100
+
+[Huawei-Ethernet0/0/2]port default vlan 100
+
+[Huawei-Ethernet0/0/3]port default vlan 100
+
+[Huawei-Ethernet0/0/4]port default vlan 100
+
+[Huawei]port-group group-member e 0/0/5 to e0/0/6
+
+[Huawei-port-group]port link-type access
+
+[Huawei-Ethernet0/0/5]port link-type access
+
+[Huawei-Ethernet0/0/6]port link-type access
+
+[Huawei-port-group]port default vlan 10
+
+[Huawei-Ethernet0/0/5]port default vlan 10
+
+[Huawei-Ethernet0/0/6]port default vlan 10
+
+[Huawei-port-group]q
+
+[Huawei]int e0/0/20
+
+[Huawei-Ethernet0/0/20]port link-type access
+
+[Huawei-Ethernet0/0/20]port default vlan 20
+
+[Huawei-Ethernet0/0/20]int e0/0/1
+
+[Huawei-Ethernet0/0/1]port link-type access
+
+[Huawei-Ethernet0/0/1]port default vlan 30
+
+[Huawei-Ethernet0/0/1]q
+
+[Huawei]vlan 30
+
+[Huawei-vlan30]mux-vlan
+
+[Huawei-vlan30]subordinate group 10 20
+
+[Huawei-vlan30]subordinate separate 100
+
+[Huawei]port-group group-member e0/0/1 to e0/0/22
+
+[Huawei-port-group]port mux-vlan enable
+
+[Huawei-Ethernet0/0/1]port mux-vlan enable
+
+[Huawei-Ethernet0/0/2]port mux-vlan enable
+
+[Huawei-Ethernet0/0/3]port mux-vlan enable
+
+[Huawei-Ethernet0/0/4]port mux-vlan enable
+
+[Huawei-Ethernet0/0/5]port mux-vlan enable
+
+[Huawei-Ethernet0/0/6]port mux-vlan enable
+
+[Huawei-port-group]q
+
+&lt;Huawei&gt;save
+</code></pre><p>将把当前的配置保存到存储设备中。</p>
+<p>是否继续？[Y/N]Y</p>
+<p>正在将运行时的配置写入到存储设备0。</p>
+<p>保存配置成功。</p>
+<p>实验链接：http://pan.baidu.com/s/1jGFBAKI 密码：c9pe</p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>

