@@ -121,12 +121,12 @@
 <h3 id="流量导入socks代理">流量导入Socks代理</h3>
 <p>通过将规则插入到<code>NAT</code>表的<code>PREROUTING</code>链中，可以轻松地重定向传入流量。</p>
 <p>例如：</p>
-<pre><code>iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
+<pre tabindex="0"><code>iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
 </code></pre><blockquote>
 <p>所有访问eth0网卡80端口的流量，都会被重定向到8080端口。</p>
 </blockquote>
 <p>它不同于端口转发，<code>REDIRECT</code>的<code>--dport</code>端口并不会被<code>iptables</code>进行监听。</p>
-<pre><code class="language-plantuml" data-lang="plantuml">title iptables的流量在规则链中的走向图
+<pre tabindex="0"><code class="language-plantuml" data-lang="plantuml">title iptables的流量在规则链中的走向图
 
 PREROUTING -&gt; INPUT
 INPUT -&gt; POSTROUTING
@@ -141,7 +141,7 @@ POSTROUTING -&gt; OUTPUT
 <li>CentOS : <code>yum install libevent-devel git gcc</code></li>
 </ul>
 <p>编译代码：</p>
-<pre><code>git clone https://github.com/darkk/redsocks
+<pre tabindex="0"><code>git clone https://github.com/darkk/redsocks
 cd redsocks
 make
 </code></pre><ol>
@@ -154,13 +154,13 @@ make
 </ol>
 <h3 id="配置redsocks代理服务器">配置redsocks代理服务器</h3>
 <p>在<code>/etc/redsocks.conf</code>第61行-62行是设置Socks5服务器IP和端口的：</p>
-<pre><code>// `ip' and `port' are IP and tcp-port of proxy-server
+<pre tabindex="0"><code>// `ip' and `port' are IP and tcp-port of proxy-server
 // You can also use hostname instead of IP, only one (random)
 // address of multihomed host will be used.
 ip=***;
 port=***;
 </code></pre><h3 id="配置redsocks启动身份">配置redsocks启动身份</h3>
-<pre><code class="language-plantuml" data-lang="plantuml">title 数据回环
+<pre tabindex="0"><code class="language-plantuml" data-lang="plantuml">title 数据回环
 
 浏览器 -&gt; PREROUTING
 PREROUTING -&gt; Redsocks
@@ -173,7 +173,7 @@ PREROUTING -&gt; Redsocks
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">groupadd redsocks
 useradd -g redsocks redsocks
 </code></pre></div><p>将<code>/etc/redsocks.conf</code>的启动用户名和用户组进行更改：</p>
-<pre><code>user = redsocks;
+<pre tabindex="0"><code>user = redsocks;
 group = redsocks;
 </code></pre><p>对应的防火墙规则：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">iptables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner redsocks  -j REDSOCKS
@@ -182,7 +182,7 @@ group = redsocks;
 </blockquote>
 <h2 id="0x04-打点模式-配置代理链">0x04 打点模式-配置代理链</h2>
 <h3 id="创建自定义规则链">创建自定义规则链</h3>
-<pre><code>iptables -t nat -N REDSOCKS 
+<pre tabindex="0"><code>iptables -t nat -N REDSOCKS 
 # 建立REDSOCKS链
 iptables -t nat -A PREROUTING -p tcp -j REDSOCKS 
 # 将所有的TCP流量经过REDSOCKS链
@@ -207,14 +207,14 @@ iptables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner redsocks  -j REDSOCKS
 <p>31338是redsocks的默认端口。</p>
 </blockquote>
 <h3 id="启动redsocks">启动redsocks</h3>
-<pre><code>sudo /usr/bin/redsocks -c /etc/redsocks.conf
+<pre tabindex="0"><code>sudo /usr/bin/redsocks -c /etc/redsocks.conf
 </code></pre><blockquote>
 <p>启动redsocks后，进程的所属者会被自动更改为redsocks。</p>
 </blockquote>
 <p>这时访问公网查看出口IP，会变成Socks5代理服务器的出口IP，实现打点模式的透明代理。</p>
 <h2 id="0x05-内网模式-配置代理链">0x05 内网模式-配置代理链</h2>
 <p>内网与打点模式不同，主要是实现指定IP地址范围的代理，打点是“放哪些”，内网是“要哪些”。</p>
-<pre><code>iptables -t nat -N REDSOCKS
+<pre tabindex="0"><code>iptables -t nat -N REDSOCKS
 iptables -t nat -F REDSOCKS # 清空
 
 iptables -t nat -A PREROUTING -p tcp -j REDSOCKS
@@ -229,7 +229,7 @@ iptables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner $redsocks_user  -j REDSO
 <li>192.168.0.0/16</li>
 </ul>
 <p>如果要添加专网的地址，可以手动添加：</p>
-<pre><code>iptables -t nat -A REDSOCKS -p tcp -d XXX.XXX.XX.XX/XX -j REDIRECT --to-port 31338
+<pre tabindex="0"><code>iptables -t nat -A REDSOCKS -p tcp -d XXX.XXX.XX.XX/XX -j REDIRECT --to-port 31338
 </code></pre><p>启用以上防火墙规则后，我可以不需要使用proxychains，直接可以用nmap探测端口，自定义的工具也能够像在内网一样工作，本机开的虚拟机切换到NAT模式也能够“身处”内网。</p>
 <h2 id="0x06-自动化实现">0x06 自动化实现</h2>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
@@ -386,10 +386,10 @@ sudo ./socks-switch.sh pentest &lt;Socks IP&gt; &lt;Socks Port&gt;
 <p>这个是我在熟悉透明代理后产生的想法，适合“团队作战”，尤其是Web渗透这块最消耗IP了，实验室的小伙伴大多也都是笔记本，因此想出了用树莓派实现6小时切换一次出口的WiFi，当然了，也能把穿透内网的Socks变成一个WiFi :)</p>
 <h3 id="更改redsocks监听地址">更改redsocks监听地址</h3>
 <p>如果是多网卡需要把redsocks配置文件<code>/etc/redsocks.conf</code>的监听IP地址改为：0.0.0.0，不然在<code>wlan0</code>的流量转向<code>eth0</code>的时候，会找不到31338端口。</p>
-<pre><code>local_ip = 0.0.0.0;
+<pre tabindex="0"><code>local_ip = 0.0.0.0;
 local_port = 31338;
 </code></pre><h3 id="安装创建ap的工具">安装创建AP的工具</h3>
-<pre><code>sudo apt-get install util-linux procps hostapd iproute2 iw haveged dnsmasq
+<pre tabindex="0"><code>sudo apt-get install util-linux procps hostapd iproute2 iw haveged dnsmasq
 sudo git clone https://github.com/oblique/create_ap
 cd create_ap
 sudo make install
@@ -399,7 +399,7 @@ sudo make install
 </blockquote>
 <h3 id="编写ap服务脚本">编写AP服务脚本</h3>
 <p>在 <code>/usr/lib/systemd/system/</code>创建<code>wifi.service</code></p>
-<pre><code>[Unit]
+<pre tabindex="0"><code>[Unit]
 Description=Create AP Service
 After=network.target
 
@@ -422,7 +422,7 @@ systemctl stop wifi <span style="color:#75715e"># 先停止WiFi</span>
 ./socks-switch.sh start <span style="color:#75715e"># 启用规则</span>
 systemctl start wifi <span style="color:#75715e"># 创建WiFi</span>
 </code></pre></div><p><code>sudo crontab -e</code>进入root用户的计划任务编写：</p>
-<pre><code>* */6 * * * /home/pi/socks-switch/random-wifi.sh # 每隔六小时重置一次，并获取新的出口代理
+<pre tabindex="0"><code>* */6 * * * /home/pi/socks-switch/random-wifi.sh # 每隔六小时重置一次，并获取新的出口代理
 </code></pre><h3 id="待完善的缺点">待完善的缺点</h3>
 <p>比如在切换新的出口时，WiFi是关闭的，现在的客户端一般都是会自动寻找下一个WiFi自动连接的，如果工具正在扫描会导致真实出口IP被发现。</p>
 <p>思路：在切换WiFi前，将<code>wlan0</code>网卡的流量全部<code>DROP</code>，这样WiFi也不需要重启。</p>

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang=""><head>
+	<meta name="generator" content="Hugo 0.88.0" />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>华为RIP协议</title>
+    <title>倾旋的博客</title>
     <meta name="description" content="倾旋的博客">
     <meta name="author" content='倾旋'>
 
@@ -18,6 +19,8 @@
         <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
     
 
+    <link rel="alternate" type="application/rss+xml" href="https://payloads.online/index.xml" title="倾旋的博客" />
+    <link rel="alternate" type="application/rss+xml" href="https://payloads.online/index.xml" title="倾旋的博客" />
     
         
     
@@ -78,155 +81,39 @@
     </nav>
 </div>
 <hr>
-<div id="content">
-<div class="container">
-    <p>本文记录一下华为RIP协议的简单配置</p>
-<p><strong>CLINET1：</strong></p>
-<p>IP：192.168.1.10</p>
-<p>掩码：255.255.255.0</p>
-<p>网关：192.168.1.1</p>
-<p><strong>CLINET2：</strong></p>
-<p>IP：192.168.2.10</p>
-<p>掩码：255.255.255.0</p>
-<p>网关：192.168.2.1</p>
-<p>用到的网段有：</p>
-<ul>
-<li>
-<p>192.168.1.0/24</p>
-</li>
-<li>
-<p>192.168.2.0/24</p>
-</li>
-<li>
-<p>192.168.5.0/24</p>
-</li>
-<li>
-<p>192.168.6.0/24</p>
-</li>
-</ul>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-16/0x06.png" alt="enter description here" title="0x06"></p>
-<p><strong>配置接口IP:</strong></p>
-<blockquote>
-<p>[AR1]配置命令如下——————————————————————- &raquo;</p>
-</blockquote>
-<pre tabindex="0"><code>
-&lt;Huawei&gt;sys
+<div id="content"><div class="container">
+    <section id="posts" class="posts"><article class="post">
+    <header class="post-header">
+      <h2 class="post-title"><a class="post-link" href="/archivers/2015-11-20/3/">华为路由OSPF被动接口配置</a></h2>
+      <div class="post-meta">
+        <span class="post-time"> 2015-11-20 </span>
+      </div>
+    </header>
+    <div class="post-content">
+      <div class="post-summary">
+        本文记录一下华为路由OSPF被动接口配置
+      </div>
+      <div class="post-link">
+        <a href="/archivers/2015-11-20/3/" class="read-more-link"> Read More » </a>
+      </div>
+    </div>
+  </article>
+        </section>
+  </div>
+  <div class="container">
+    <br>
+  <p>
+  <span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+          <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"></path>
+        </svg>
+      <a class="prev" href="/page/11/">
+      PrevPage
+      </a>
+  </span>
+|
 
-Enter system view, return user view with Ctrl+Z.
-
-[Huawei]sysname AR1
-
-[AR1]int
-
-Nov? 6 2015 11:33:00-05:13 AR1 %%01IFPDT/4/IF_STATE(l)[0]:Interface GigabitEthern
-
-et0/0/1 has turned into UP state.
-
-[AR1]int G0/0/0
-
-[AR1-GigabitEthernet0/0/0]ip add 192.168.1.1 24
-
-[AR1-GigabitEthernet0/0/0]
-
-Nov? 6 2015 11:33:27-05:13 AR1 %%01IFNET/4/LINK_STATE(l)[1]:The line protocol IP
-
-on the interface GigabitEthernet0/0/0 has entered the UP state.
-
-[AR1-GigabitEthernet0/0/0]int g0/0/1
-
-[AR1-GigabitEthernet0/0/1]ip add 192.168.5.1 24
-
-[AR1-GigabitEthernet0/0/1]
-
-Nov? 6 2015 11:34:19-05:13 AR1 %%01IFNET/4/LINK_STATE(l)[2]:The line protocol IP
-
-on the interface GigabitEthernet0/0/1 has entered the UP state.
-
-[AR1-GigabitEthernet0/0/1]
-
-[AR1-GigabitEthernet0/0/1]q
-
-[AR1]rip
-
-[AR1-rip-1]version 1
-
-[AR1-rip-1]network 192.168.5.0
-
-[AR1-rip-1]network 192.168.1.0
-</code></pre><blockquote>
-<p>[AR2]配置命令如下——————————————————————- &raquo;</p>
-</blockquote>
-<pre tabindex="0"><code>&lt;Huawei&gt;sys
-
-Enter system view, return user view with Ctrl+Z.
-
-[Huawei]sysname AR2
-
-[AR2]int g0/0/0
-
-[AR2-GigabitEthernet0/0/0]ip add 192.168.5.2 24
-
-[AR2-GigabitEthernet0/0/0]
-
-Nov? 6 2015 11:34:41-05:13 AR2 %%01IFNET/4/LINK_STATE(l)[0]:The line protocol IP
-
-on the interface GigabitEthernet0/0/0 has entered the UP state.
-
-[AR2-GigabitEthernet0/0/0]int g0/0/1
-
-[AR2-GigabitEthernet0/0/1]ip add 192.168.6.1 24
-
-[AR2-GigabitEthernet0/0/1]
-
-Nov? 6 2015 11:34:54-05:13 AR2 %%01IFNET/4/LINK_STATE(l)[1]:The line protocol IP
-
-on the interface GigabitEthernet0/0/1 has entered the UP state.
-
-[AR2-GigabitEthernet0/0/1]
-
-[AR2-GigabitEthernet0/0/1]q
-
-[AR2-rip-1]version 1
-
-[AR2-rip-1]network 192.168.5.0
-
-[AR2-rip-1]network 192.168.6.0
-</code></pre><blockquote>
-<p>[AR3]配置命令如下——————————————————————- &raquo;</p>
-</blockquote>
-<pre tabindex="0"><code>
-&lt;Huawei&gt;sys
-
-Enter system view, return user view with Ctrl+Z.
-
-[Huawei]sysname AR3
-
-[AR3]int G0/0/0
-
-[AR3-GigabitEthernet0/0/0]ip add 192.168.6.2 24
-
-[AR3-GigabitEthernet0/0/0]
-
-Nov? 6 2015 11:35:20-05:13 AR3 %%01IFNET/4/LINK_STATE(l)[0]:The line protocol IP
-
-on the interface GigabitEthernet0/0/0 has entered the UP state.
-
-[AR3-GigabitEthernet0/0/0]int G0/0/1
-
-[AR3-GigabitEthernet0/0/1]ip add 192.168.2.1 24
-
-[AR3]rip
-
-[AR3-rip-1]version 1
-
-[AR3-rip-1]network 192.168.6.0
-
-[AR3-rip-1]
-
-[AR3-rip-1]network 192.168.2.0
-</code></pre><p><strong>配置结果：</strong></p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-16/0x07.png" alt="enter description here" title="0x07"></p>
-<p>实验链接：http://pan.baidu.com/s/1dDhVMxj 密码：xfnv</p>
+  </p>
 </div>
 
         </div><div id="footer" class="mb-5">

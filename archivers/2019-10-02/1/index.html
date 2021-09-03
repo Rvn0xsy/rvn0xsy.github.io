@@ -177,13 +177,13 @@ DLLIMPORT <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">Hr
 <hr>
 <p><strong>并不是所有的dll都能够被rundll32运行。</strong> 为何这么说，因为rundll32只支持特定的函数声明方式，并且该函数必须在dll文件的导出表中。关于导出表的知识可以阅读 - 《Windows PE权威指南》 👍</p>
 <p>rundll32.exe支持的函数原型如下：</p>
-<pre><code>VOID CALLBACK FunctionName (HWND hwnd,HINSTANCE hinst,LPTSTR lpCmdLine,INT nCmdShow);
+<pre tabindex="0"><code>VOID CALLBACK FunctionName (HWND hwnd,HINSTANCE hinst,LPTSTR lpCmdLine,INT nCmdShow);
 </code></pre><p>通过原型可以发现，与Windows平台下的<code>WinMain</code>一模一样，可以理解为rundll32调用的函数就是一段代码的入口函数。</p>
 <p>下面来写一个支持rundll32运行的dll：</p>
 <ol>
 <li>使用visual studio新建一个dll工程，并声明函数：<code>rundll</code></li>
 </ol>
-<pre><code>#include &lt;Windows.h&gt;
+<pre tabindex="0"><code>#include &lt;Windows.h&gt;
 
 
 extern &quot;C&quot; __declspec(dllexport) void rundll(HWND hwnd,HINSTANCE hinst,LPTSTR lpCmdLine,INT nCmdShow){

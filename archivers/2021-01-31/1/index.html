@@ -255,7 +255,7 @@ ntdll<span style="color:#f92672">!</span>_SECURITY_DESCRIPTOR
 <p>场景：某些终端安全软件禁止用户转储lsass.exe进程内存，但我们可以先进程注入到lsass.exe，然后再转储内存。</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/1295bf932f2f68f39bc801ab2685f4e2.png" alt="2021-01-31-22-16-26"></p>
 <p>小技巧：有些软件在失败后返回一些数字，其实是Windows错误代码，我们可以通过<code>net helpmsg</code>命令来查看详情。</p>
-<pre><code>net helpmsg &lt;错误代码&gt;
+<pre tabindex="0"><code>net helpmsg &lt;错误代码&gt;
 </code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/d0a32acc8540964e278cadc2b4ebc1ef.png" alt="2021-01-31-22-17-03"></p>
 <h2 id="0x09-文件的权限修改">0x09 文件的权限修改</h2>
 <p>在Windows系统中，除了用户交互的窗口以外，还可以通过icacls命令修改文件的权限。</p>

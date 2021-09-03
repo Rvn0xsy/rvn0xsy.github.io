@@ -131,7 +131,7 @@
 <p>另外，还有令牌中的权限列表，权限与对象访问无关，所以与安全描述符，SID等无关。当线程执行一些管理相关的操作时，系统会检查该线程的令牌中是否含有特定的权限，如果有，则允许线程执行该操作，否则拒绝。要查看完整的权限列表，可以运行gpedit.msc，然后定位到“计算机配置-Windows设置-安全设置-本地策略-用户权利指派”。</p>
 <p>— 引自：<a href="https://www.cnblogs.com/zplutor/archive/2010/01/05/1639892.html">Zplutor&rsquo;s</a></p>
 <p>令牌结构：</p>
-<pre><code> lkd&gt; **dt nt!_token**
+<pre tabindex="0"><code> lkd&gt; **dt nt!_token**
        +0x000 TokenSource      : _TOKEN_SOURCE
        +0x010 TokenId          : _LUID
        +0x018 AuthenticationId : _LUID
@@ -171,7 +171,7 @@
 <p><code>HKLM\SOFTWARE\Microsoft\Tracing</code> 注册表项任意用户（Everyone）可写可读，Tracing注册表项主要用于Windows服务跟踪调试，调试过程中会以SYSTEM权限产生一个日志文件：</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/1267d4510ea569498c9a72c6bb091746.png" alt="2020-03-21-16-53-22"></p>
 <p>其中：<code>FileDirectory</code> 项主要用于设置日志产生的目录，经过作者分析发现，日志文件名不可控、日志内容更不可控，其次，当日志文件大小超过了<code>MaxFileSize</code>时，会将文件重命名到当前目录，扩展名改为OLD。</p>
-<pre><code>    \RPC Control\RASTAPI.LOG -&gt; \??\C:\EXPLOIT\FakeDll.dll (owner = current user)
+<pre tabindex="0"><code>    \RPC Control\RASTAPI.LOG -&gt; \??\C:\EXPLOIT\FakeDll.dll (owner = current user)
     \RPC Control\RASTAPI.OLD -&gt; \??\C:\Windows\System32\WindowsCoreDeviceInfo.dll
 </code></pre><p>这个过程中，作者利用了两个**<a href="https://github.com/googleprojectzero/symboliclink-testing-tools">符号链接</a>**，将自己的DLL文件轻松写入<code>C:\Windows\system32\</code>目录。</p>
 <h3 id="符号链接">符号链接</h3>

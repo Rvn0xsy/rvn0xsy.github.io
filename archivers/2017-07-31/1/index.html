@@ -103,14 +103,14 @@
 </ul>
 <h3 id="传输文件">传输文件</h3>
 <p>服务端：</p>
-<pre><code>root@Kali:~$ ncat -lnv 1788 &gt; tmp.txt
+<pre tabindex="0"><code>root@Kali:~$ ncat -lnv 1788 &gt; tmp.txt
 Ncat: Version 7.01 ( https://nmap.org/ncat )
 Ncat: Listening on :::1788
 Ncat: Listening on 0.0.0.0:1788
 Ncat: Connection from 172.17.0.2.
 Ncat: Connection from 172.17.0.2:48004.
 </code></pre><p>客户端：</p>
-<pre><code>root@504d96ae69cc:/docker_files# cat tmp.txt 
+<pre tabindex="0"><code>root@504d96ae69cc:/docker_files# cat tmp.txt 
 hello :)
 root@504d96ae69cc:/docker_files# ncat -nv 172.17.0.1 1788 &lt; tmp.txt 
 Ncat: Version 7.50 ( https://nmap.org/ncat )
@@ -151,7 +151,7 @@ make install
 <p>| 服务端 | <code>socat tcp-listen:1234 tcp-listen:22</code> | 外网IP(<code>60.*.*.*</code>)
 | 客户端 | <code>socat tcp:60.*.*.*:1234 tcp:192.168.3.1:22</code> | 内网IP(192.168.3.1)</p>
 <h3 id="内网转发到公网">内网转发到公网</h3>
-<pre><code>                  ------------
+<pre tabindex="0"><code>                  ------------
                  |   Server   |
                  |  60.*.*.*  |
                   ------------

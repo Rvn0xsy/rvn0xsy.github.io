@@ -97,7 +97,7 @@ without storing on the disk first.</p>
 <h1 id="windows-executables---the-pe-format">Windows executables - the PE format</h1>
 <p>Most windows binaries that can contain executable code (.exe, .dll, .sys)
 share a common file format that consists of the following parts:</p>
-<pre><code>+----------------+
+<pre tabindex="0"><code>+----------------+
 | DOS header     |
 |                |
 | DOS stub       |
@@ -165,7 +165,7 @@ about symbols, etc::</p>
 </code></pre></div><p>.. _OptionalHeader:</p>
 <p>The <code>OptionalHeader</code> contains informations about the <em>logical</em> format of the library,
 including required OS version, memory requirements and entry points::</p>
-<pre><code>    typedef struct _IMAGE_OPTIONAL_HEADER {
+<pre tabindex="0"><code>    typedef struct _IMAGE_OPTIONAL_HEADER {
         //
         // Standard fields.
         //
@@ -210,7 +210,7 @@ including required OS version, memory requirements and entry points::</p>
 </code></pre><p>.. _DataDirectory:</p>
 <p>The <code>DataDirectory</code> contains 16 (<code>IMAGE_NUMBEROF_DIRECTORY_ENTRIES</code>) entries
 defining the logical components of the library:</p>
-<pre><code>===== ==========================
+<pre tabindex="0"><code>===== ==========================
 Index Description
 ===== ==========================
 0     Exported functions

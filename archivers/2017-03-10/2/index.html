@@ -178,7 +178,7 @@ $data <span style="color:#f92672">=</span> <span style="color:#a6e22e">mysql_fet
 <p>我们查一查r的ASCII码为114</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-cda4c871c85ff5ce00c8e4202e75145a_r.jpg" alt="enter description here"></p>
 <p>现在我们构造语句：</p>
-<pre><code>
+<pre tabindex="0"><code>
 And '1' like IF(ascii(substr(user(),1,1)) LiKe 113,1,sleep(5))
 </code></pre><p>这段语句简单解释下，大牛直接跳过。</p>
 <p>Substr()截取user()用户名第一位 为r</p>
@@ -189,7 +189,7 @@ And '1' like IF(ascii(substr(user(),1,1)) LiKe 113,1,sleep(5))
 <p>最后答案 114不等于113</p>
 <p>剩下盲注出你想要的数据就要慢慢去测试了</p>
 <p>最终Payload:</p>
-<pre><code>and '1' like if(ascii(substr(user(),1,1)) like 113,1,sleep(5))
+<pre tabindex="0"><code>and '1' like if(ascii(substr(user(),1,1)) like 113,1,sleep(5))
 
 </code></pre><p>能遇到某锁不拦截这些函数感觉也挺奇怪的</p>
 <p>下面讲一下如果拦截我们应该使用什么方法绕过呢</p>

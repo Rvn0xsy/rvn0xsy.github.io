@@ -308,7 +308,7 @@
 }
 </code></pre></div><h2 id="0x05-其他方式">0x05 其他方式</h2>
 <p>Python Scapy 伪造网络数据包</p>
-<pre><code>
+<pre tabindex="0"><code>
 &gt;&gt;&gt; data = &quot;Hello Scapy&quot;
 &gt;&gt;&gt; pkt = IP(src='172.16.2.135', dst='172.16.2.91')/UDP(sport=12345, dport=5555)/data
 &gt;&gt;&gt; send(pkt, inter=1, count=1)

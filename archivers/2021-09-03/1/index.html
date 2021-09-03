@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>MASM中VirtualProtect函数的分析</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/projects/" title="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/tools/" title="Tools">
+                        Tools
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="0x00-调用约定">0x00 调用约定</h2>
+<p><a href="https://docs.microsoft.com/en-us/cpp/cpp/stdcall?view=msvc-160">__stdcall</a>关键字用于约定调用Win32 API函数的参数入栈顺序，它的入栈顺序是由右向左，一般C/C++语言代码中没有声明调用约定的话，默认就是<code>__stdcall</code>调用约定。</p>
+<p>C++中如果要声明函数的调用约定，可以通过以下格式：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C++" data-lang="C++"><span style="color:#66d9ef">void</span> <span style="color:#66d9ef">__stdcall</span> CMyClass<span style="color:#f92672">::</span>mymethod() { 
+    <span style="color:#66d9ef">return</span>; 
+}
+</code></pre></div><h2 id="0x01-栈与调用约定的关系">0x01 栈与调用约定的关系</h2>
+<p>提到栈，这已经是计算机知识体系里面老生常谈的技术了，并且互联网上已经有大量的文章去讲解栈的工作机制。</p>
+<p>下面说说我对栈的理解：</p>
+<ul>
+<li>函数调用离不开栈</li>
+<li>栈用于完整保留调用前CPU的状态值，堆用于保留临时变量，实现了在函数体内部共享内存</li>
+<li>栈溢出一般是由于局部变量填满了栈的空间，没有及时释放，导致溢出，比如递归<code>stack overflow</code></li>
+<li>栈遵循先入后出的原则</li>
+<li>&hellip;..</li>
+</ul>
+<p>写一段汇编：</p>
+<pre tabindex="0"><code>push 10h ; 代表第 1 个参数
+push 20h ; 代表第 2 个参数
+pop eax ; eax = 20h
+pop ebx ; ebx = 10h
+</code></pre><p>栈遵循先入后出的原则，栈顶ESP是低地址，栈底EBP是高地址。</p>
+<h2 id="0x02-使用汇编调用win32-api">0x02 使用汇编调用Win32 API</h2>
+<p>环境：Visual Studio 2019 （MSVC工具集版本14.26以下）</p>
+<p>MSVC工具集版本14.26以下才能够编译MASM正常调用Win32 API的代码，这里我使用的是<code>14.21.27702</code>。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/802d2174a0c4a6462e3250e7ac375190.png" alt="2021-09-03-11-12-09"></p>
+<h3 id="安装低版本msvc工具集版本">安装低版本MSVC工具集版本</h3>
+<p>打开Visual Studio Installer，点击<code>修改</code>：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/e8cde694d7924207236d20859be3cfef.png" alt="2021-09-03-11-14-46"></p>
+<p>红框内的工具集版本都支持正常编译。</p>
+<h3 id="masm-invoke">MASM INVOKE</h3>
+<p>32位模式中，可以用Microsoft的INVOKE、PROTO 和扩展 PROC 伪指令新建多模块程序。与更加传统的CALL和EXTERN相比，它们的主要优势在于：能够将INVOKE传递的参数列表与PROC声明的相应列表进行匹配。</p>
+<p>INVOKE方便了我们将参数与官方文档的API的参数顺序进行对应，例如在MASM汇编中调用MessageBox函数：</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">.686
+.model flat, stdcall
+include windows.inc
+includelib user32.lib
+includelib kernel32.lib
+.data
+title db &quot;Hello,World&quot;,0
+buf db &quot;Message....&quot;,0
+.code
+start:
+INVOKE MessageBox, NULL, addr buf, addr title, MB_OK
+end stat
+</code></pre><p>如果要转为纯汇编的方式，就要手动压栈了：</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">.686
+.model flat, stdcall
+include windows.inc
+includelib user32.lib
+includelib kernel32.lib
+.data
+title db &quot;Hello,World&quot;,0
+buf db &quot;Message....&quot;,0
+.code
+start:
+push MB_OK
+push addr title
+push addr buf
+push NULL
+call MessageBox
+end start
+</code></pre><h2 id="0x03-自定义函数分析调用过程">0x03 自定义函数分析调用过程</h2>
+<p>实现功能：将某块内存设置为可执行属性</p>
+<p>涉及Windows API：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C++" data-lang="C++">BOOL <span style="color:#a6e22e">VirtualProtect</span>(  
+  LPVOID lpAddress,  
+  DWORD dwSize,  
+  DWORD flNewProtect,  
+  PDWORD lpflOldProtect  
+);
+</code></pre></div><p>部分汇编代码：</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">; edx = lpflOldProtect
+; eax = lpAddress
+; ebx = dwSize
+AddExecutePage PROC
+    push ebp
+    mov ebp,esp
+    sub esp,4
+    push eax ; 
+    lea edx,dword ptr ds:[ebp-4]
+    invoke VirtualProtect,ebx,eax,PAGE_EXECUTE,edx
+    pop eax
+    add esp,4
+    mov esp,ebp
+    pop ebp
+    ret
+AddExecutePage ENDP
+</code></pre><p><code>AddExecutePage</code>是我自己在项目中定义个一个过程，其中寄存器的状态值已经给出，经过调试我发现INVOKE调用VirtualProtect的参数传递顺序和Windows API文档存在差异，就是<code>dwSize</code>与<code>lpAddress</code>的顺序不一样。</p>
+<p>按常理来讲，最先入栈的数据是函数最右边的参数，入栈顺序是：</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">push lpflOldProtect
+push flNewProtect
+push dwSize
+push lpAddress
+call VirtualProtect
+</code></pre><p>但事实情况是：</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">push lpflOldProtect
+push flNewProtect
+push lpAddress
+push dwSize
+call VirtualProtect
+</code></pre><p>调试一下看看情况</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/6d2397c664ec6fc9761cb8d300106283.png" alt="2021-09-03-12-32-02"></p>
+<p>此时<code>EAX = 0x00170000</code>指向了要改变属性的内存地址，但第一个<code>push eax</code>并不是开始给<code>VirtualProtect</code>传递参数，而是从<code>call</code>往上数四个<code>push</code>指令，这些<code>push</code>的数据才是<code>VirtualProtect</code>的参数。</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">00E6102B   | 8D55 FC         | lea edx,dword ptr ss:[ebp-4]                   |
+00E6102E   | 52              | push edx                                       |
+00E6102F   | 6A 10           | push 10                                        |
+00E61031   | 50              | push eax                                       |
+00E61032   | 53              | push ebx                                       |
+00E61033   | E8 E6FFFFFF     | call &lt;JMP.&amp;VirtualProtect&gt;                     |
+</code></pre><p><code>lea edx,dword ptr ss:[ebp-4]</code>代表把ebp-4的地址复制给edx，<code>EBP=0014F830</code>，<code>0014F830-4=0014F82C</code>，那么<code>edx=0014F82C</code>，下一句<code>push edx</code>作为<code>VirtualProtect</code>的第一个参数<code>lpflOldProtect</code>传递进去。</p>
+<p>注：<code>lpflOldProtect</code>的数据类型是<code>PDWORD</code>，也就是DWORD的指针，传指针而非传递值。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/b64c399cc0f9c59f1fe0767208873880.png" alt="2021-09-03-12-37-46"></p>
+<p>第二个<code>push 10</code>，代表了<code>flNewProtect</code>，0x10代表了<a href="https://docs.microsoft.com/en-us/windows/win32/memory/memory-protection-constants">内存属性常量</a><code>PAGE_EXECUTE</code>。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/f0a60d7138dceb042838b92b4b28626e.png" alt="常见的内存属性常量"></p>
+<p>第三个<code>push eax</code>，代表了<code>lpAddress</code>，指向要改变的内存地址。</p>
+<p>第四个<code>push ebx</code>，代表了<code>dwSize</code>，ebx的值是<code>000000C1</code>，说明要改变内存属性的内存大小是0xC1个字节。</p>
+<p>其中，第三个push和第四个push的顺序按照函数声明的格式是先传递大小，后传递内存地址的，经过分析，我发现必须先传递内存地址后传递大小才能正常执行。</p>
+<p>继续跟入后，发现会通过VirtualProtect调用VirtualProtectEx。</p>
+<pre tabindex="0"><code class="language-assembly" data-lang="assembly">75CC22C0   | 8BEC            | mov ebp,esp                                    |
+75CC22C2   | FF75 14         | push dword ptr ss:[ebp+14]                     |
+75CC22C5   | FF75 10         | push dword ptr ss:[ebp+10]                     |
+75CC22C8   | FF75 0C         | push dword ptr ss:[ebp+C]                      |
+75CC22CB   | FF75 08         | push dword ptr ss:[ebp+8]                      |
+75CC22CE   | 6A FF           | push FFFFFFFF                                  |
+75CC22D0   | E8 09000000     | call &lt;kernelbase.VirtualProtectEx&gt;             |
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/22cf20a421d28267db4555c6575a79a7.png" alt="2021-09-03-12-49-31"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C++" data-lang="C++">BOOL <span style="color:#a6e22e">VirtualProtectEx</span>(
+  HANDLE hProcess,
+  LPVOID lpAddress,
+  SIZE_T dwSize,
+  DWORD  flNewProtect,
+  PDWORD lpflOldProtect
+);
+</code></pre></div><p>按照函数声明，从右向左对应入栈值：</p>
+<ul>
+<li><code>lpflOldProtect -&gt; 0x14F820</code></li>
+<li><code>flNewProtect -&gt; 0x10</code></li>
+<li><code>dwSize -&gt; 0x170000</code></li>
+<li><code>lpAddress -&gt; 0xC1</code></li>
+<li><code>hProcess -&gt; FFFFFFFF</code></li>
+</ul>
+<p>这个时候发现<code>VirtualProtectEx</code>的顺序也有问题，理想情况下应该是：</p>
+<ul>
+<li><code>lpflOldProtect -&gt; 0x14F820</code></li>
+<li><code>flNewProtect -&gt; 0x10</code></li>
+<li><code>dwSize -&gt; 0xC1</code></li>
+<li><code>lpAddress -&gt; 0x170000</code></li>
+<li><code>hProcess -&gt; FFFFFFFF</code></li>
+</ul>
+<h2 id="0x04-结论">0x04 结论</h2>
+<p>测试通过Windows 10、Windows 7以后，我最终的解决办法还是要把<code>dwSize</code>和<code>lpAddress</code>的入栈顺序进行调换，发现程序可以正常运行。</p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>

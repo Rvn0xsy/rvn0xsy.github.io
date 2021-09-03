@@ -100,7 +100,7 @@
 <p>下载socat源代码包：http://www.dest-unreach.org/socat/download/</p>
 <h3 id="编译安装">编译安装</h3>
 <p>把下载的软件包解压后按照传统的方式编译安装：</p>
-<pre><code>./configure
+<pre tabindex="0"><code>./configure
 make
 make install
 </code></pre><p>具体的细节可以参考安装文档 README 。</p>
@@ -115,7 +115,7 @@ make install
 <li>第二种是安装fips</li>
 </ul>
 <p>首先到网站http://www.openssl.org/source/ 下载openssl-fips安装包，然后解压安装：</p>
-<pre><code>./config
+<pre tabindex="0"><code>./config
 make
 make install
 </code></pre><h2 id="socat的使用">socat的使用</h2>
@@ -147,18 +147,18 @@ make install
 <p>TCP</p>
 </li>
 </ul>
-<pre><code>TCP:&lt;host&gt;:&lt;port&gt; 目标机器IP对应端口port
+<pre tabindex="0"><code>TCP:&lt;host&gt;:&lt;port&gt; 目标机器IP对应端口port
 TCP-LISTEN:&lt;port&gt; 本机监听端口。
 </code></pre><ul>
 <li>UDP</li>
 </ul>
-<pre><code>UDP:&lt;host&gt;:&lt;port&gt; 目标机器host对应端口port
+<pre tabindex="0"><code>UDP:&lt;host&gt;:&lt;port&gt; 目标机器host对应端口port
 UDP-LISTEN:&lt;port&gt; 本机监听端口。
 </code></pre><ul>
 <li>OPENSSL</li>
 </ul>
 <p>需要一个证书,否则会失败提示: 2012/04/06 11:29:11 socat[1614] E SSL_connect(): error:14077410:SSL routines:SSL23_GET_SERVER_HELLO:sslv3 alert handshake failure</p>
-<pre><code>OPENSSL:&lt;host&gt;:&lt;port&gt; 目标机器host对应端口port
+<pre tabindex="0"><code>OPENSSL:&lt;host&gt;:&lt;port&gt; 目标机器host对应端口port
 OPENSSL-LISTEN:&lt;port&gt; 本机监听端口。
 </code></pre><ul>
 <li>TUN</li>
@@ -224,7 +224,7 @@ on server:</p>
 <p>这个命令实现一个假的web server，客户端连过来之后，就把read.txt里面的内容发过去，同时把客户的数据保存到write.txt里面。”！！”符号用户合并读写流，前面的用于读，后面的用于写。</p>
 <h3 id="通过openssl来加密传输过程">通过openssl来加密传输过程</h3>
 <p>证书生成</p>
-<pre><code>FILENAME=60.*.*.*
+<pre tabindex="0"><code>FILENAME=60.*.*.*
 openssl genrsa -out $FILENAME.key 1024
 openssl req -new -key $FILENAME.key -x509 -days 3653 -out $FILENAME.crtcat $FILENAME.key $FILENAME.crt &gt;$FILENAME.pem
 </code></pre><p>在当前目录下生成 <code>server.pem 、server.crt</code></p>

@@ -84,7 +84,7 @@
 <p>获取Webshell后，但是机器不出网（DNS、TCP、UDP）等常规端口都进行了尝试。</p>
 <p>不出网的解释：内部的Webshell服务器无法连接互联网。</p>
 <p>尝试过的方案有：</p>
-<pre><code class="language-plantuml" data-lang="plantuml">title 出网探测方式
+<pre tabindex="0"><code class="language-plantuml" data-lang="plantuml">title 出网探测方式
 state TCP {
 WindowsHttp : certutil -f -split -urlcache http://domain/com
 LinuxHttp: wget &lt;URL&gt;
@@ -104,7 +104,7 @@ state ICMP{
 <li>&hellip;</li>
 </ul>
 <p>这种类型的工具往往都有一个特性：通过脚本帮助我们把HTTP协议转换成Socks，由于HTTP协议无状态，因此需要发送大量数据包。</p>
-<pre><code class="language-plantuml" data-lang="plantuml">title 脚本代理
+<pre tabindex="0"><code class="language-plantuml" data-lang="plantuml">title 脚本代理
 浏览器  -&gt; 本地Socks代理服务 : （1）连接
 本地Socks代理服务 &lt;--&gt; 本地HTTP客户端: （2）转换协议
 本地HTTP客户端 -&gt; Web服务器脚本: （3）不断请求
@@ -115,14 +115,14 @@ note right: 倾旋的博客:https://payloads.online
 </code></pre><p>但是这个场景以上方案都使用起来都不能给出一个很好的效果，因为网络延迟、系统卡顿等等问题，想要传递工具到服务器上变得困难。</p>
 <h2 id="0x02-尝试理解目标网络架构">0x02 尝试理解目标网络架构</h2>
 <p>这里我画了一个简单的架构图：</p>
-<pre><code class="language-plantuml" data-lang="plantuml">title 目标网络架构
+<pre tabindex="0"><code class="language-plantuml" data-lang="plantuml">title 目标网络架构
 浏览器  -&gt; 防火墙 : （1）连接 8080 端口
 防火墙 &lt;-&gt; 内网Web服务器: （2）NAT转发8080端口
 防火墙 -&gt; 浏览器: （3）将结果数据转发
 note right: 倾旋的博客:https://payloads.online
 </code></pre><p>类似这种场景在企业种非常的常见，网络管理员应业务部门的要求，利用NAT端口映射的技术可以直接将DMZ区域的某台机器上的某个端口对外网开放。</p>
 <p>这里我使用Docker搭建了一个简单的靶场：</p>
-<pre><code class="language-plantuml" data-lang="plantuml">title 靶场结构
+<pre tabindex="0"><code class="language-plantuml" data-lang="plantuml">title 靶场结构
 
 
 state 互联网防火墙172.17.0.2{
@@ -174,7 +174,7 @@ iptables-save
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/51330e9e0c0d862859468f98cba68cab.png" alt="2020-11-01-22-32-56"></p>
 <p>通过信息收集，了解到内网IP端口是192.168.1.128。</p>
 <p>映射关系：</p>
-<pre><code class="language-plantuml" data-lang="plantuml">title 靶场结构
+<pre tabindex="0"><code class="language-plantuml" data-lang="plantuml">title 靶场结构
 
 state 互联网防火墙172.17.0.2{
     [*] --&gt; 防火墙规则1
@@ -216,7 +216,7 @@ iptables-save
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7091e7b3063f741e7c602605482c2bee.png" alt="2020-11-01-23-14-06"></p>
 <h3 id="如何利用">如何利用？</h3>
 <p>我们可以将nc这个程序换成别的，比如：socks5的服务端程序，监听8081端口，如此一来就能够直接连接 <code>socks5:172.17.0.2:8081</code>作为内网的入口。</p>
-<pre><code class="language-plantuml" data-lang="plantuml">title 利用图
+<pre tabindex="0"><code class="language-plantuml" data-lang="plantuml">title 利用图
 
 state 互联网防火墙172.17.0.2{
     [*] --&gt; 防火墙规则1

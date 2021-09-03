@@ -95,7 +95,7 @@
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2254f77d861f4e0ed512fb96cbf4e0cc.png" alt="2020-03-21-17-01-01"></p>
 <p><strong>客户端应用HTTP代理后，可通过代理服务器访问内网HTTP协议资源</strong></p>
 <p><strong>而在SSRF场景，需要SSRF具备支持HTTP两大请求方式：GET、POST，且有响应Body</strong></p>
-<pre><code>POST /application/services/proxy/doPostAndGet HTTP/1.1
+<pre tabindex="0"><code>POST /application/services/proxy/doPostAndGet HTTP/1.1
 Host: app.domain.com
 Connection: keep-alive
 Content-Length: XX
@@ -121,7 +121,7 @@ app <span style="color:#f92672">=</span> Flask(__name__)
 <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">hello_world</span>():
     <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;Hello, World!&#39;</span>
 </code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/bd5986bb7d7072741938d609bcbcbbac.png" alt="2020-03-21-17-02-36"></p>
-<pre><code>$ export FLASK_APP=hello.py
+<pre tabindex="0"><code>$ export FLASK_APP=hello.py
 $ python -m flask run
  * Running on http://127.0.0.1:5000/
 </code></pre><h3 id="flask-框架的请求流程">Flask 框架的请求流程</h3>

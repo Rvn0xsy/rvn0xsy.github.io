@@ -271,7 +271,7 @@ action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function
 <p>在Nse扩展库中，无法与外部地址(除去扫描范围以外的目标)进行Socket连接。</p>
 <p>因为大部分函数都接收绑定函数中的Host与Port参数，他们是一个table数据类型。</p>
 <p>于是我翻阅API扩展，发现了一个方法可以直接获取一个IP+端口的套接字：</p>
-<pre><code>socket = nmap.new_socket()
+<pre tabindex="0"><code>socket = nmap.new_socket()
 socket:set_timeout(1000)
 socket:connect(HOST_ADDRESS,PORT_NUMBER)
 </code></pre><p>如上方法我们可以直接传递IP地址与端口号就可以获得套接字了。</p>

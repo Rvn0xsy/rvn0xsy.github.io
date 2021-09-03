@@ -84,10 +84,10 @@
 <h3 id="设置执行策略set-executionpolicy">设置执行策略(Set-ExecutionPolicy)</h3>
 <p>Powershell默认的权限策略是：“Restricted”</p>
 <p>查看当前执行策略：</p>
-<pre><code>PS C:&gt; Get-ExecutionPolicy
+<pre tabindex="0"><code>PS C:&gt; Get-ExecutionPolicy
 Restricted
 </code></pre><p>查看所有执行策略：</p>
-<pre><code>PS E:&gt;  [System.Enum]::GetNames([Microsoft.PowerShell.ExecutionPolicy])
+<pre tabindex="0"><code>PS E:&gt;  [System.Enum]::GetNames([Microsoft.PowerShell.ExecutionPolicy])
 Unrestricted # 权限最高，可以不受限制执行任何脚本。
 RemoteSigned # 本地脚本无限制，但是对来自网络的脚本必须经过签名
 AllSigned    # 所有脚本都必须经过签名才能在运行
@@ -96,12 +96,12 @@ Default      # 为Powershell默认的策略
 Bypass       # 无任何限制策略，不警告、不提示
 Undefined    # 当前范围中没有设置执行策略
 </code></pre><p>设置执行策略：</p>
-<pre><code>Set-ExecutionPolicy -ExecutionPolicy &lt;PolicyName&gt;
+<pre tabindex="0"><code>Set-ExecutionPolicy -ExecutionPolicy &lt;PolicyName&gt;
 </code></pre><p>设置执行策略，并设置影响对象：</p>
-<pre><code>Set-ExecutionPolicy -ExecutionPolicy &lt;PolicyName&gt; -Scope &lt;scope&gt;
+<pre tabindex="0"><code>Set-ExecutionPolicy -ExecutionPolicy &lt;PolicyName&gt; -Scope &lt;scope&gt;
 </code></pre><h3 id="执行策略影响范围scope">执行策略影响范围（Scope）</h3>
 <p>影响范围：Scope ，设置策略时选择影响对象。</p>
-<pre><code>PS C:&gt;Get-ExecutionPolicy -List
+<pre tabindex="0"><code>PS C:&gt;Get-ExecutionPolicy -List
         Scope ExecutionPolicy
         ----- ---------------
 MachinePolicy       Undefined
@@ -116,22 +116,22 @@ MachinePolicy       Undefined
 </ul>
 <p><strong>修改执行策略需要管理员权限</strong></p>
 <h3 id="删除执行策略">删除执行策略</h3>
-<pre><code>Set-ExecutionPolicy Undefined
-</code></pre><pre><code>Set-ExecutionPolicy Undefined -Scope LocalMachine
+<pre tabindex="0"><code>Set-ExecutionPolicy Undefined
+</code></pre><pre tabindex="0"><code>Set-ExecutionPolicy Undefined -Scope LocalMachine
 </code></pre><h3 id="设置会话执行策略">设置会话执行策略</h3>
-<pre><code>powershell -ExecutionPolicy Bypass ...
+<pre tabindex="0"><code>powershell -ExecutionPolicy Bypass ...
 </code></pre><h2 id="0x01-nishang">0x01 Nishang</h2>
 <p>Nishang is a framework and collection of scripts and payloads which enables usage of PowerShell for offensive security, penetration testing and red teaming. Nishang is useful during all phases of penetration testing.</p>
 <h2 id="0x02-usage">0x02 Usage</h2>
 <p>Import all the scripts in the current PowerShell session (PowerShell v3 onwards).</p>
 <p>如何使用：导入所有的脚本到当前的Powershell会话中，但是Powershell的版本必须是version 3。</p>
 <p><strong>导入命令：</strong></p>
-<pre><code>PS C:\nishang&gt; Import-Module .\nishang.psm1
+<pre tabindex="0"><code>PS C:\nishang&gt; Import-Module .\nishang.psm1
 </code></pre><p>单独导入：</p>
-<pre><code>PS C:\nishang&gt; . C:\nishang\Gather\Get-Information.ps1
+<pre tabindex="0"><code>PS C:\nishang&gt; . C:\nishang\Gather\Get-Information.ps1
 PS C:\nishang&gt; Get-Information
 </code></pre><p>获取函数的帮助信息可以这样输入：</p>
-<pre><code>To get help about any script or function, use:
+<pre tabindex="0"><code>To get help about any script or function, use:
 
 PS C:\nishang&gt; Get-Help [scriptname] -full
 </code></pre><h2 id="0x03-模块分类">0x03 模块分类</h2>
@@ -316,7 +316,7 @@ Create network relays between computers.</p>
 <p>[ExetoText]</p>
 <p>[TexttoExe]</p>
 <h2 id="0x04-卸载系统补丁">0x04 卸载系统补丁</h2>
-<pre><code>PS C:\Users\Rvn0xsy\Downloads\nishang-master&gt; systeminfo
+<pre tabindex="0"><code>PS C:\Users\Rvn0xsy\Downloads\nishang-master&gt; systeminfo
 
 主机名:           DESKTOP-7KT7GL1
 OS 名称:          Microsoft Windows 10 企业版

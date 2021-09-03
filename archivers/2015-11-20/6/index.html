@@ -105,12 +105,12 @@
 </li>
 </ul>
 <h2 id="0x01-创建四个vlan">0x01 创建四个VLAN</h2>
-<pre><code>
+<pre tabindex="0"><code>
 &lt;Huawei&gt;sys
 
 [Huawei]vlan batch 10 20 30 40
 </code></pre><h2 id="0x02-分别设置trunk链路">0x02 分别设置trunk链路</h2>
-<pre><code>
+<pre tabindex="0"><code>
 [Huawei]port-group group-member e 0/0/1 to e 0/0/2
 
 [Huawei-port-group]port link-type trunk
@@ -118,20 +118,20 @@
 [Huawei-port-group]port trunk allow-pass vlan all
 </code></pre><p>说明：在每个交换机都要创建四个VLAN、并且都设置trunk链路</p>
 <h2 id="0x03-进入stp配置视图">0x03 进入STP配置视图</h2>
-<pre><code>
+<pre tabindex="0"><code>
 [Huawei]stp region-configuration
 </code></pre><h2 id="0x04-创建域名以及修订级别">0x04 创建域名以及修订级别</h2>
-<pre><code>
+<pre tabindex="0"><code>
 [Huawei-mst-region]region-name xinhua
 
 [Huawei-mst-region]revision-level 1
 </code></pre><h2 id="0x05-创建两个实例分别加入vlan">0x05 创建两个实例分别加入vlan</h2>
-<pre><code>
+<pre tabindex="0"><code>
 [Huawei-mst-region]instance 1 vlan 10 20
 
 [Huawei-mst-region]instance 2 vlan 30 40
 </code></pre><h2 id="0x06-激活实例">0x06 激活实例</h2>
-<pre><code>
+<pre tabindex="0"><code>
 [Huawei-mst-region]active region-configuration
 </code></pre><h2 id="0x07-设置实例的优先级别指定实例根桥">0x07 设置实例的优先级别、指定实例根桥</h2>
 <p>首先查看一下LSW3：</p>
