@@ -13,7 +13,7 @@ url: /archivers/2021-01-31/1
 
 在Windows中，每一个安全对象实体都拥有一个安全描述符，安全描述符包含了被保护对象相关联的安全信息的数据结构，它的作用主要是为了给操作系统提供判断来访对象的权限。
 
-```cpp
+```
 0:000> dt nt!_security_descriptor
 ntdll!_SECURITY_DESCRIPTOR
    +0x000 Revision         : UChar  # 版本
@@ -67,7 +67,7 @@ DACL通过一系列ACE定义了所有被允许或者禁止的安全对象的访�
 
 每个参与权限决策的角色都拥有一个SID，这个SID为了保证角色的唯一性。
 
-```cpp
+```
 S-[修订级别]-[权值]-[标识符]
 ```
 
@@ -88,7 +88,7 @@ SID分为两种：
 
 ### 相对标识符(Relative Identifer, RID)
 
-```cpp
+```
 S-[修订级别]-[权值]-[标识符]-[相对标识符]
 ```
 
@@ -249,14 +249,12 @@ net helpmsg <错误代码>
 
 在Windows系统中，除了用户交互的窗口以外，还可以通过icacls命令修改文件的权限。
 
-```cpp
+```
 icacls c:\windows\* /save AclFile /T
-  - 将 c:\windows 及其子目录下所有文件的
-     ACL 保存到 AclFile。
+  - 将 c:\windows 及其子目录下所有文件的ACL 保存到 AclFile。
 
   icacls c:\windows\ /restore AclFile
-  - 将还原 c:\windows 及其子目录下存在的 AclFile 内
-    所有文件的 ACL。
+  - 将还原 c:\windows 及其子目录下存在的 AclFile 内所有文件的 ACL。
 
   icacls file /grant Administrator:(D,WDAC)
   - 将授予用户对文件删除和写入 DAC 的管理员权限。
@@ -275,7 +273,7 @@ icacls c:\windows\* /save AclFile /T
 
 在内网渗透中，经常会需要一个机器的共享作为中转，因此可以使用net share命令快速开启一个任意用户可读可写的共享。
 
-```cpp
+```
 net share everyone=C:\Windows /grant:everyone,full
 ```
 
@@ -309,7 +307,7 @@ net share everyone=C:\Windows /grant:everyone,full
 
 使用Powershell修改服务的权限可以使用Set-Service：
 
-```cpp
+```
 $SDDL = "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;SU)"
 Set-Service -Name "BITS" -SecurityDescriptorSddl $SDDL
 ```
@@ -320,7 +318,7 @@ Set-Service -Name "BITS" -SecurityDescriptorSddl $SDDL
 
 ![2021-01-31-22-27-28](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/15e51162189ade667eab88c3dee28e33.png)
 
-```cpp
+```
 sc setsd <Service Name> <SDDL String>
 sc sdset defragsvc "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)"
 ```
