@@ -84,16 +84,16 @@
 <p>近年来终端安全检测与响应的产品发展迅速，我们不得不意识到，安全是在一个循环中发展的，从人们意识到安全开始，大部分了解到层面都是病毒、木马，然后接着是浏览器相关的Web安全领域，最后又开始回到终端。这个议题我们通过了解Windows操作系统下的访问控制技术，站在攻防的不同角度去进行对抗，提升自身的知识储备，个人觉得这些知识适用于许多使用Windows操作系统的用户。</p>
 <h2 id="0x01-安全描述符security-descriptorssd">0X01 安全描述符(Security Descriptors，SD)</h2>
 <p>在Windows中，每一个安全对象实体都拥有一个安全描述符，安全描述符包含了被保护对象相关联的安全信息的数据结构，它的作用主要是为了给操作系统提供判断来访对象的权限。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#ae81ff">0</span><span style="color:#f92672">:</span><span style="color:#ae81ff">000</span><span style="color:#f92672">&gt;</span> dt nt<span style="color:#f92672">!</span>_security_descriptor
-ntdll<span style="color:#f92672">!</span>_SECURITY_DESCRIPTOR
-   <span style="color:#f92672">+</span><span style="color:#ae81ff">0x000</span> Revision         : UChar  <span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#960050;background-color:#1e0010">版本</span>
-   <span style="color:#f92672">+</span><span style="color:#ae81ff">0x001</span> Sbz1             : UChar  <span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#960050;background-color:#1e0010">大小</span>
-   <span style="color:#f92672">+</span><span style="color:#ae81ff">0x002</span> Control          : Uint2B <span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#960050;background-color:#1e0010">一组标志，用于限定安全描述符或安全描述符的各个字段的含义</span>
-   <span style="color:#f92672">+</span><span style="color:#ae81ff">0x008</span> Owner            : Ptr64 Void <span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#960050;background-color:#1e0010">指定对象的所有者（</span>SID<span style="color:#960050;background-color:#1e0010">）</span>
-   <span style="color:#f92672">+</span><span style="color:#ae81ff">0x010</span> Group            : Ptr64 Void <span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#960050;background-color:#1e0010">指定对象的主组（</span>SID<span style="color:#960050;background-color:#1e0010">）</span>
-   <span style="color:#f92672">+</span><span style="color:#ae81ff">0x018</span> Sacl             : Ptr64 _ACL <span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#960050;background-color:#1e0010">系统访问控制列表</span>
-   <span style="color:#f92672">+</span><span style="color:#ae81ff">0x020</span> Dacl             : Ptr64 _ACL <span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#960050;background-color:#1e0010">自主访问控制列表</span>
-</code></pre></div><h3 id="windows具体有哪些安全对象">Windows具体有哪些安全对象？</h3>
+<pre tabindex="0"><code>0:000&gt; dt nt!_security_descriptor
+ntdll!_SECURITY_DESCRIPTOR
+   +0x000 Revision         : UChar  # 版本
+   +0x001 Sbz1             : UChar  # 大小
+   +0x002 Control          : Uint2B # 一组标志，用于限定安全描述符或安全描述符的各个字段的含义
+   +0x008 Owner            : Ptr64 Void # 指定对象的所有者（SID）
+   +0x010 Group            : Ptr64 Void # 指定对象的主组（SID）
+   +0x018 Sacl             : Ptr64 _ACL # 系统访问控制列表
+   +0x020 Dacl             : Ptr64 _ACL # 自主访问控制列表
+</code></pre><h3 id="windows具体有哪些安全对象">Windows具体有哪些安全对象？</h3>
 <ul>
 <li>进程</li>
 <li>线程</li>
@@ -124,8 +124,8 @@ ntdll<span style="color:#f92672">!</span>_SECURITY_DESCRIPTOR
 <h3 id="什么是sidsecurity-identifiersid">什么是SID（Security Identifier，SID）</h3>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/3689a630b8ae676d5f75b65e4bd985f1.png" alt="2021-01-31-21-49-18"></p>
 <p>每个参与权限决策的角色都拥有一个SID，这个SID为了保证角色的唯一性。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">S<span style="color:#f92672">-</span>[<span style="color:#960050;background-color:#1e0010">修订级别</span>]<span style="color:#f92672">-</span>[<span style="color:#960050;background-color:#1e0010">权值</span>]<span style="color:#f92672">-</span>[<span style="color:#960050;background-color:#1e0010">标识符</span>]
-</code></pre></div><p>SID分为两种：</p>
+<pre tabindex="0"><code>S-[修订级别]-[权值]-[标识符]
+</code></pre><p>SID分为两种：</p>
 <ul>
 <li>内置SID</li>
 <li>自动分配SID</li>
@@ -141,8 +141,8 @@ ntdll<span style="color:#f92672">!</span>_SECURITY_DESCRIPTOR
 <li>&hellip;</li>
 </ul>
 <h3 id="相对标识符relative-identifer-rid">相对标识符(Relative Identifer, RID)</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">S<span style="color:#f92672">-</span>[<span style="color:#960050;background-color:#1e0010">修订级别</span>]<span style="color:#f92672">-</span>[<span style="color:#960050;background-color:#1e0010">权值</span>]<span style="color:#f92672">-</span>[<span style="color:#960050;background-color:#1e0010">标识符</span>]<span style="color:#f92672">-</span>[<span style="color:#960050;background-color:#1e0010">相对标识符</span>]
-</code></pre></div><p>例如：</p>
+<pre tabindex="0"><code>S-[修订级别]-[权值]-[标识符]-[相对标识符]
+</code></pre><p>例如：</p>
 <ul>
 <li>S-1-5-21-xxxx-xxx-500 (Administrator) 本地管理员</li>
 <li>S-1-5-21-xxxx-xxx-501 (Guest) 本地来宾用户</li>
@@ -259,26 +259,24 @@ ntdll<span style="color:#f92672">!</span>_SECURITY_DESCRIPTOR
 </code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/d0a32acc8540964e278cadc2b4ebc1ef.png" alt="2021-01-31-22-17-03"></p>
 <h2 id="0x09-文件的权限修改">0x09 文件的权限修改</h2>
 <p>在Windows系统中，除了用户交互的窗口以外，还可以通过icacls命令修改文件的权限。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">icacls c:<span style="color:#960050;background-color:#1e0010">\</span>windows<span style="color:#960050;background-color:#1e0010">\</span><span style="color:#f92672">*</span> <span style="color:#f92672">/</span>save AclFile <span style="color:#f92672">/</span>T
-  <span style="color:#f92672">-</span> <span style="color:#960050;background-color:#1e0010">将</span> c:<span style="color:#960050;background-color:#1e0010">\</span>windows <span style="color:#960050;background-color:#1e0010">及其子目录下所有文件的</span>
-     ACL <span style="color:#960050;background-color:#1e0010">保存到</span> AclFile<span style="color:#960050;background-color:#1e0010">。</span>
+<pre tabindex="0"><code>icacls c:\windows\* /save AclFile /T
+  - 将 c:\windows 及其子目录下所有文件的ACL 保存到 AclFile。
 
-  icacls c:<span style="color:#960050;background-color:#1e0010">\</span>windows<span style="color:#960050;background-color:#1e0010">\</span> <span style="color:#f92672">/</span>restore AclFile
-  <span style="color:#f92672">-</span> <span style="color:#960050;background-color:#1e0010">将还原</span> c:<span style="color:#960050;background-color:#1e0010">\</span>windows <span style="color:#960050;background-color:#1e0010">及其子目录下存在的</span> AclFile <span style="color:#960050;background-color:#1e0010">内</span>
-    <span style="color:#960050;background-color:#1e0010">所有文件的</span> ACL<span style="color:#960050;background-color:#1e0010">。</span>
+  icacls c:\windows\ /restore AclFile
+  - 将还原 c:\windows 及其子目录下存在的 AclFile 内所有文件的 ACL。
 
-  icacls file <span style="color:#f92672">/</span>grant Administrator:(D,WDAC)
-  <span style="color:#f92672">-</span> <span style="color:#960050;background-color:#1e0010">将授予用户对文件删除和写入</span> DAC <span style="color:#960050;background-color:#1e0010">的管理员权限。</span>
+  icacls file /grant Administrator:(D,WDAC)
+  - 将授予用户对文件删除和写入 DAC 的管理员权限。
 
-  icacls file <span style="color:#f92672">/</span>grant <span style="color:#f92672">*</span>S<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span><span style="color:#f92672">-</span><span style="color:#ae81ff">0</span><span style="color:#f92672">:</span>(D,WDAC)
-  <span style="color:#f92672">-</span> <span style="color:#960050;background-color:#1e0010">将授予由</span> sid S<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span><span style="color:#f92672">-</span><span style="color:#ae81ff">1</span><span style="color:#f92672">-</span><span style="color:#ae81ff">0</span> <span style="color:#960050;background-color:#1e0010">定义的用户对文件删除和写入</span> DAC <span style="color:#960050;background-color:#1e0010">的权限。</span>
-</code></pre></div><p>还可以查看文件的权限，例如常见的Shift后门：</p>
+  icacls file /grant *S-1-1-0:(D,WDAC)
+  - 将授予由 sid S-1-1-0 定义的用户对文件删除和写入 DAC 的权限。
+</code></pre><p>还可以查看文件的权限，例如常见的Shift后门：</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/a51beeb1dc8a459081c277b5d73055dd.png" alt="2021-01-31-22-17-42"></p>
 <p>现如今普通用户，包括管理员、系统账户都不能随意更改这个文件了，能够看出Windows对这块有做加强。</p>
 <h3 id="创建匿名共享">创建匿名共享</h3>
 <p>在内网渗透中，经常会需要一个机器的共享作为中转，因此可以使用net share命令快速开启一个任意用户可读可写的共享。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">net share everyone<span style="color:#f92672">=</span>C:<span style="color:#960050;background-color:#1e0010">\</span>Windows <span style="color:#f92672">/</span>grant:everyone,full
-</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/36fa07c6a69d5488ae07ff181e1e9a1d.png" alt="2021-01-31-22-18-14"></p>
+<pre tabindex="0"><code>net share everyone=C:\Windows /grant:everyone,full
+</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/36fa07c6a69d5488ae07ff181e1e9a1d.png" alt="2021-01-31-22-18-14"></p>
 <h2 id="0x10-创造提权漏洞服务后门">0x10 创造提权漏洞——服务后门</h2>
 <p>前面提到可以通过API修改内核对象的ACL，那么是否可以通过代码帮助我们完成一些窗口无法做到的操作，例如：任意用户可以读写的内核对象。</p>
 <p>我尝试过以下几种方案用作后门：</p>
@@ -298,14 +296,14 @@ ntdll<span style="color:#f92672">!</span>_SECURITY_DESCRIPTOR
 <h3 id="powershell更改服务权限">Powershell更改服务权限</h3>
 <p><a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/set-service?view=powershell-7.1">https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/set-service?view=powershell-7.1</a></p>
 <p>使用Powershell修改服务的权限可以使用Set-Service：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#960050;background-color:#1e0010">$</span>SDDL <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;SU)&#34;</span>
-Set<span style="color:#f92672">-</span>Service <span style="color:#f92672">-</span>Name <span style="color:#e6db74">&#34;BITS&#34;</span> <span style="color:#f92672">-</span>SecurityDescriptorSddl <span style="color:#960050;background-color:#1e0010">$</span>SDDL
-</code></pre></div><h3 id="cmd修改服务权限">CMD修改服务权限</h3>
+<pre tabindex="0"><code>$SDDL = &quot;D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;SU)&quot;
+Set-Service -Name &quot;BITS&quot; -SecurityDescriptorSddl $SDDL
+</code></pre><h3 id="cmd修改服务权限">CMD修改服务权限</h3>
 <p>想象一个场景，如果随时都拥有一个服务器的权限，但是不能长时间登录某个特权账户，那么可以留置一个任意用户可以修改的系统服务，方便随时提权。</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/15e51162189ade667eab88c3dee28e33.png" alt="2021-01-31-22-27-28"></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">sc setsd <span style="color:#f92672">&lt;</span>Service Name<span style="color:#f92672">&gt;</span> <span style="color:#f92672">&lt;</span>SDDL String<span style="color:#f92672">&gt;</span>
-sc sdset defragsvc <span style="color:#e6db74">&#34;D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)&#34;</span>
-</code></pre></div><h2 id="0x11-windows域下的dcsync攻击及后门实现">0x11 Windows域下的DCSync攻击及后门实现</h2>
+<pre tabindex="0"><code>sc setsd &lt;Service Name&gt; &lt;SDDL String&gt;
+sc sdset defragsvc &quot;D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)&quot;
+</code></pre><h2 id="0x11-windows域下的dcsync攻击及后门实现">0x11 Windows域下的DCSync攻击及后门实现</h2>
 <p>DCSync是域控之间同步域数据的一个传递方式，一旦攻击者获取了具有域复制权限的特权帐户，攻击者就可以利用复制协议来模仿域控制器，诱使域控制器将域用户相关的数据发送出来。</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/096326c7f2f688515dfa17874be3f91c.png" alt="2021-01-31-22-28-23"></p>
 <p>其中最核心的一步就是调用 <a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-drsr/b63730ac-614c-431c-9501-28d6aca91894?redirectedfrom=MSDN">GetNCChanges</a> 复制用户凭据。</p>
