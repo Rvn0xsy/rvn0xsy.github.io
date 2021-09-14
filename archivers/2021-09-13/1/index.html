@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang=""><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>BeingDebugged反调试技巧 « 倾旋的博客</title>
+    <meta name="description" content="倾旋的博客">
+    <meta name="author" content='倾旋'>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
+
+    
+    <link rel="stylesheet" href="/sass/researcher.min.css">
+
+    
+        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
+    
+
+    
+        
+    
+</head>
+
+    <body><div class="container mt-5">
+    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
+        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
+          
+          倾旋的博客
+        </a>
+        <div class="navbar-nav flex-row flex-wrap justify-content-center">
+            
+                
+                
+                    <a class="nav-item nav-link" href="/about" title="About">
+                        About
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/projects/" title="Projects">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/links/" title="Links">
+                        Links
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/post/" title="Posts">
+                        Posts
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
+                        Rss
+                    </a>
+                    
+                        <span class="nav-item navbar-text mx-1">/</span>
+                    
+                
+                    <a class="nav-item nav-link" href="/tools/" title="Tools">
+                        Tools
+                    </a>
+                    
+                
+            
+        </div>
+    </nav>
+</div>
+<hr>
+<div id="content">
+<div class="container">
+    <h2 id="0x01-windows-pebprocess-environment-block">0x01 Windows PEB(Process Environment Block)</h2>
+<p>Windows <a href="https://docs.microsoft.com/en-us/windows/win32/api/winternl/ns-winternl-peb">PEB</a>，中文的含义是进程环境块，意味着其中包含了很多与进程相关的复杂信息。微软官方给出了Windows PEB的结构体标准，每一个字段都代表了特定的意义。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _PEB {
+  BYTE                          Reserved1[<span style="color:#ae81ff">2</span>];
+  BYTE                          BeingDebugged;
+  BYTE                          Reserved2[<span style="color:#ae81ff">1</span>];
+  PVOID                         Reserved3[<span style="color:#ae81ff">2</span>];
+  PPEB_LDR_DATA                 Ldr;
+  PRTL_USER_PROCESS_PARAMETERS  ProcessParameters;
+  PVOID                         Reserved4[<span style="color:#ae81ff">3</span>];
+  PVOID                         AtlThunkSListPtr;
+  PVOID                         Reserved5;
+  ULONG                         Reserved6;
+  PVOID                         Reserved7;
+  ULONG                         Reserved8;
+  ULONG                         AtlThunkSListPtr32;
+  PVOID                         Reserved9[<span style="color:#ae81ff">45</span>];
+  BYTE                          Reserved10[<span style="color:#ae81ff">96</span>];
+  PPS_POST_PROCESS_INIT_ROUTINE PostProcessInitRoutine;
+  BYTE                          Reserved11[<span style="color:#ae81ff">128</span>];
+  PVOID                         Reserved12[<span style="color:#ae81ff">1</span>];
+  ULONG                         SessionId;
+} PEB, <span style="color:#f92672">*</span>PPEB;
+</code></pre></div><p>在Windbg中可以直观的看到PEB字段的详细信息：</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/10c591855248c50b8fa0c9e3f75d888d.png" alt="2021-09-14-09-56-44"></p>
+<h3 id="shellcode">Shellcode</h3>
+<p>shellcode是一段用于利用软件漏洞而执行的代码，shellcode执行后经常让攻击者获得shell而得名。一个漏洞从发现到利用，是艰巨的任务，因此往往编写shellcode是对漏洞挖掘黑客的一个风水岭。大部分shellcode编写知识都与Windows PEB结构紧密相连，Windows PEB结构中保存了当前进程的复杂信息，这些复杂信息中包含了PE文件的内存地址，通过解析PE文件，可以直接寻找到<code>kernel32.dll</code>模块，利用这个模块中的<code>Loadlibrary</code>API可以导入Windows所有的模块，最终能够在目标进程实现所有代码的执行。在实际应用领域的shellcode并不会太长，不同的漏洞利用对shellcode长度限制不同，所以越短越能直接达到目的的shellcode才是好code。</p>
+<p>那么，如何找到PEB呢？ - Thread Environment Block (TEB structure)</p>
+<p>Windows操作系统中，CPU的FS寄存器指向当前活动线程的TEB结构（线程结构），TEB结构中包含了PEB结构：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _TEB {
+  PVOID Reserved1[<span style="color:#ae81ff">12</span>];
+  PPEB  ProcessEnvironmentBlock; <span style="color:#75715e">//  PEB 结构
+</span><span style="color:#75715e"></span>  PVOID Reserved2[<span style="color:#ae81ff">399</span>];
+  BYTE  Reserved3[<span style="color:#ae81ff">1952</span>];
+  PVOID TlsSlots[<span style="color:#ae81ff">64</span>];
+  BYTE  Reserved4[<span style="color:#ae81ff">8</span>];
+  PVOID Reserved5[<span style="color:#ae81ff">26</span>];
+  PVOID ReservedForOle;
+  PVOID Reserved6[<span style="color:#ae81ff">4</span>];
+  PVOID TlsExpansionSlots;
+} TEB, <span style="color:#f92672">*</span>PTEB;
+</code></pre></div><p>从这一点，我们就更能深刻理解，线程才是一个程序的执行单元，进程只是一个“容器”。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/1cd30543a74908166cab95a58cea6515.png" alt="2021-09-14-10-59-33"></p>
+<h2 id="0x02-使用汇编语言访问peb">0x02 使用汇编语言访问PEB</h2>
+<p>我的理解：汇编语言分为纯汇编、伪汇编、宏汇编</p>
+<ol>
+<li>纯汇编是机器代码，是编译器最终生成的代码</li>
+<li>伪汇编是与一定开发环境绑定在一起使用的汇编代码，例如C语言中的<code>__asm { }</code></li>
+<li>宏汇编是一定程度上将汇编语言进行了抽象、过程封装，比如MASM调用Windows只需要INVOKE即可，不需要关注保存现场、堆栈情况。</li>
+</ol>
+<p>这里我使用C语言内置的汇编块进行获取PEB中<code>BeingDebugged</code>的值，它只有1个字节。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+{
+	DWORD dwIsDebug <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+	<span style="color:#66d9ef">__asm</span> {
+		pushad
+		mov eax, fs: [<span style="color:#ae81ff">30</span>h]
+		movzx eax, byte ptr[eax <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>]
+		mov dword ptr [dwIsDebug], eax
+		popad
+	}
+	<span style="color:#66d9ef">if</span> (dwIsDebug) {
+		printf(<span style="color:#e6db74">&#34;Debug.....&#34;</span>);
+	}
+	printf(<span style="color:#e6db74">&#34;Debug : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, dwIsDebug);
+	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+</code></pre></div><p>这个程序在没有调试的情况下启动，会输出<code>Debug : 0</code>，如果有调试器进行调试，会输出<code>Debug.....Debug : 1</code>。</p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/357b03f2f6b84c8a8f9e10246dea7214.png" alt="2021-09-14-11-39-43"></p>
+<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/bbb72dc94e8175f8585aa43cd8d2b86f.png" alt="2021-09-14-11-41-12"></p>
+<p>如果想要判断当前程序是否被调试，可以获取PEB中的<code>BeingDebugged</code>的值，看看它是否为1即可。</p>
+<h2 id="0x03-反调试代码优化">0x03 反调试代码优化</h2>
+<p>有些时候调试沙箱会自动跳过一些判断，让程序继续执行，这样一定程度会绕过反调试代码，所以判断是否被调试的代码最好不要用<code>if...else</code>语法去写。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+{
+	DWORD dwIsDebug <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    <span style="color:#66d9ef">__asm</span> {
+        pushad
+        mov eax, fs: [<span style="color:#ae81ff">30</span>h]
+        movzx ecx, byte ptr[eax <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>]
+        cmp ecx, <span style="color:#ae81ff">1</span>
+        jz Again
+        jmp Bye
+        Again :
+            <span style="color:#66d9ef">int</span> <span style="color:#ae81ff">3</span>
+        Bye :
+            popad
+    }
+    printf(<span style="color:#e6db74">&#34;HelloWorld...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+}
+</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/a6aee33e67558bd0d8f1d10791a01550.png" alt="2021-09-14-11-47-16"></p>
+<p>上图中，如果遇到调试器，将会无限触发断点，而这个汇编代码块，在Windows代码中也是可以通用的。</p>
+<p><strong>编译器生成的机器代码其实往往并不是可控的，都是有迹可循的。</strong></p>
+<h2 id="0x04-总结">0x04 总结</h2>
+<p>本文对反调试技术有了一个初步认识，并了解了shellcode的编写过程，以及通过一个小例子实践了反调试代码。</p>
+
+</div>
+
+        </div><div id="footer" class="mb-5">
+    <hr>
+    <div class="container text-center">
+        
+            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
+        
+            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
+        
+    </div>
+    
+        <div class="container text-center">
+            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+        </div>
+    
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
+<script>
+(function(){
+  let plantumlPrefix = "language-plantuml";
+  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
+    let image = document.createElement("IMG");
+    image.loading = 'lazy'; 
+    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
+    code.parentNode.insertBefore(image, code);
+    code.style.display = 'none';
+  });
+})();
+</script>
+
+</body>
+</html>

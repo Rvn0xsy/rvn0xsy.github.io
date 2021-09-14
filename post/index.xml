@@ -5,7 +5,16 @@
     <link>https://payloads.online/post/</link>
     <description>Recent content in Posts on 倾旋的博客</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Fri, 03 Sep 2021 10:10:08 +0800</lastBuildDate><atom:link href="https://payloads.online/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 13 Sep 2021 10:10:08 +0800</lastBuildDate><atom:link href="https://payloads.online/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>BeingDebugged反调试技巧</title>
+      <link>https://payloads.online/archivers/2021-09-13/1/</link>
+      <pubDate>Mon, 13 Sep 2021 10:10:08 +0800</pubDate>
+      
+      <guid>https://payloads.online/archivers/2021-09-13/1/</guid>
+      <description>了解Windows PEB结构，学习Shellcode编写流程，使用汇编语言进行反调试检测</description>
+    </item>
+    
     <item>
       <title>MASM中VirtualProtect函数的分析</title>
       <link>https://payloads.online/archivers/2021-09-03/1/</link>
@@ -175,15 +184,6 @@
       
       <guid>https://payloads.online/archivers/2020-04-02/1/</guid>
       <description>本文不涉及Pass The Hash的攻击手段，因为使用C/C++实现起来很麻烦，因此本文只围绕Psexec这款工具的实现原理、防御、其他思路展开...</description>
-    </item>
-    
-    <item>
-      <title>SSRF漏洞配合Flask的巧妙利用 - 内网漫游</title>
-      <link>https://payloads.online/archivers/2020-03-21/2/</link>
-      <pubDate>Sat, 21 Mar 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://payloads.online/archivers/2020-03-21/2/</guid>
-      <description>SSRF(Server-side Request Forge, 服务端请求伪造)。由攻击者构造的攻击链接传给服务端执行造成的漏洞，一般用来在外网探测或攻击内网服务...</description>
     </item>
     
   </channel>
