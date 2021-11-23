@@ -1,6 +1,5 @@
 :root{--bg:#0f0e17;--color:#ddd;--subtle:#bbb;--heading:#fffffe;--highlight:#07a7f7;--contrast:orange}
 *,::after,::before{box-sizing:border-box}
-a:link{text-decoration:none;}
 blockquote,body,dd,dl,figure,h1,h2,h3,h4,p{margin:0}
 ol[role=list],ul[role=list]{list-style:none}
 html:focus-within{scroll-behavior:smooth}
@@ -34,12 +33,7 @@ h2{font-size:2rem}
 blockquote{padding:.5rem 0 .5rem .75rem;border-left:4px solid var(--subtle);font-style:italic;font-size:1.2em;margin-top:2rem;margin-bottom:2rem}
 blockquote>:first-child{margin-top:0}
 blockquote cite{text-align:right;display:block}
-pre{
-    padding: 0.5em;
-    background-color: #272822;
-    overflow: auto;
-    margin:2rem auto
-}
+pre{margin:2rem auto}
 p img:only-child{margin:2rem auto}
 img:not([alt]){filter:none}
 ol,ul{padding-left:1em}
@@ -61,8 +55,7 @@ td,th{padding:.25em .5em}
 thead tr{border-bottom:1px solid rgba(255,255,255,.1)}
 a.button,button{color:var(--bg);background:var(--contrast);padding:.75rem 1rem;border:3px solid #c56824;text-transform:uppercase;font-weight:700;letter-spacing:.05em;border-radius:3px;cursor:pointer;transition:all .2s ease}
 a.button:hover,button:hover{background:var(--bg);color:#fff;border-color:var(--contrast)}
-code[class*=language-],pre[class*=language-]{
-    color:#f8f8f2;background:0 0;font-family:Consolas,Monaco,"Andale Mono","Ubuntu Mono",monospace;text-align:left;word-spacing:normal;word-break:normal;word-wrap:normal;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}
+code[class*=language-],pre[class*=language-]{color:#f8f8f2;background:0 0;font-family:Consolas,Monaco,"Andale Mono","Ubuntu Mono",monospace;text-align:left;word-spacing:normal;word-break:normal;word-wrap:normal;-moz-tab-size:2;-o-tab-size:2;tab-size:2;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}
 :not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal}
 .token.cdata,.token.comment,.token.doctype,.token.prolog{color:#d4d0ab}
 .token.punctuation{color:#fefefe}

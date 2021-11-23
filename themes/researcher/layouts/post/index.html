@@ -1,3 +1,4 @@
+
 <div class="container">
     <section id="posts" class="posts">
         {{- $paginator := .Paginate (where (where .Site.RegularPages "Type" "post") ".Params.hiddenfromhomepage" "!=" true) }}

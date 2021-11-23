@@ -1,16 +1,42 @@
-<div id="footer" class="mb-5">
-    <hr>
-    <div class="container text-center">
-        {{ range $item := .Site.Params.socialIcons }}
-            <a href="{{ $item.url }}" class="{{ $item.icon }} fa-1x" title="{{ $item.title }}"></a>
-        {{ end }}
-    </div>
-    {{ with .Site.Params.footer }}
-        <div class="container text-center">
-            <a href="{{ .url | absURL }}" title="{{ .text }}"><small>{{ .text }}</small></a>
+
+<footer class="site-footer">
+    <div class="container">
+        <div class="site-footer__col">
+        <h5>Get in touch</h5>
+        <p>
+            If you like my project or have some questions,feel free
+            to contact me</a>.
+        </p>
         </div>
-    {{ end }}
-</div>
+        <div class="site-footer__col site-footer__col--links">
+        <h5>Me Elsewhere</h5>
+        <ul>
+        {{ range $item := .Site.Params.socialIcons }}
+                <li>
+                    <a href="{{ $item.url }}"><i class="{{ $item.icon }}"></i> {{ $item.title }}</a>
+                    
+                </li>
+        {{ end }}
+        </ul>
+        </div>
+        <div class="site-footer__col site-footer__col--links">
+        <h5>Meta Links</h5>
+        <ul>
+            {{ with .Site.Menus.main }}
+                {{ $navbar_len := len . }}
+                {{ range $i, $nav_item := . }}
+                    <li class="">
+                        <a href="{{ $nav_item.URL }}"><i class="{{ $nav_item.Pre }}"></i> {{ $nav_item.Name }}</a>
+                    </li>
+                {{ end }}
+            {{ end }}
+        </ul>
+        </div>
+        <p class="site-footer__copyright">
+        © 倾旋 2021. All rights reserved.
+        </p>
+    </div>
+    </footer>
 
 {{ if or .Page.Params.plantuml .Site.Params.plantuml }}
 <!-- PlantUML -->

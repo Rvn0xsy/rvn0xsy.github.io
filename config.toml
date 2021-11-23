@@ -1,7 +1,6 @@
 title = "倾旋的博客"
 baseURL = "https://payloads.online"
 theme = "researcher"
-disableKinds = ["taxonomy", "term"]
 enableEmoji = true
 googleAnalytics = ""
 rssLimit = 20
@@ -12,15 +11,6 @@ rssLimit = 20
   favicon = "favicon.ico"  # path to a .ico to use as favicon
   logo = ""  # url or path to a logo to put in the header
   plantuml = true
-  [params.footer]
-    text = "- PAYLOADS.ONLINE -"
-    url = "https://payloads.online"
-  [params.style]  # appearance options (can be omitted)
-    fontFamily = "Inconsolata"
-    pageWidth = "750px"
-    avatarSize = "90px"
-    colorBlack = "#222222"
-    colorRed = "#dc3545"
   [[params.socialIcons]]
     icon = "fab fa-twitter"
     title = "Twitter"
@@ -29,37 +19,39 @@ rssLimit = 20
     icon = "fas fa-envelope"
     title = "E-mail"
     url = "mailto:rvn0xsy@gmail.com"
-
+  [[params.socialIcons]]
+    icon = "fab fa-github"
+    title = "Github"
+    url = "https://github.com/Rvn0xsy"
 
 
 [menu]
   [[menu.main]]
-    name = "About"
-    url = "/about"
-    weight = 1
-  [[menu.main]]
+    pre = "fa fa-file-alt"
     name = "Posts"
     url = "/post/"
   [[menu.main]]
+    pre = "fa fa-rss-square"
     name = "Rss"
     url = "/index.xml"
   [[menu.main]]
+    pre = "fas fa-link"
     name = "Links"
     url = "/links/"
   [[menu.main]]
+    pre = "fas fa-tools"
     name = "Tools"
     url = "/tools/"
   [[menu.main]]
-    pre = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> '
+    pre = "fas fa-code"
     name = "Projects"
     url = "/projects/"
     weight = 2
-
-[markup.goldmark.renderer]
-  unsafe = true  # allow raw HTML in markdown files
 
 [sitemap]
 changefreq = 'monthly'
 filename = 'sitemap.xml'
 priority = 0.5
 
+[markup.goldmark.renderer]
+  unsafe = true  # allow raw HTML in markdown files

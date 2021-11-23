@@ -1,5 +1,10 @@
 {{ define "main" }}
+
 <div class="container">
+    <h1>{{ .Title }}</h1>
     {{ .Content }}
+</div>
+<div class="container">
+    {{ template "about.html" .}}
 </div>
 {{ end }}
