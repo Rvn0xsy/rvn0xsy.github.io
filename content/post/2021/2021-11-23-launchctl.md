@@ -98,7 +98,7 @@ $ launchctl load com.drink.water.launchctl.plist #加载并运行任务
         <string>/usr/bin/say</string>
         <string>该喝水了！</string>
     </array>
-    <key>StartCalendarInterval</key>
+    <key>StartInterval</key>
     <dict>
         <key>Hour</key>
         <integer>2</integer>
