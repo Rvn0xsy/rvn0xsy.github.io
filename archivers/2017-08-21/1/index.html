@@ -8,12 +8,12 @@
     <meta name="author" content='倾旋'>
 
     <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+   
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
 
     
     <link rel="stylesheet" href="/sass/researcher.min.css">
-
+    
     
         <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
     
@@ -23,63 +23,33 @@
     
 </head>
 
-    <body><div class="container mt-5">
-    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
-        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
-          
-          倾旋的博客
-        </a>
-        <div class="navbar-nav flex-row flex-wrap justify-content-center">
-            
-                
-                
-                    <a class="nav-item nav-link" href="/about" title="About">
-                        About
-                    </a>
-                    
-                        <span class="nav-item navbar-text mx-1">/</span>
-                    
-                
-                    <a class="nav-item nav-link" href="/projects/" title="Projects">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
-                    </a>
-                    
-                        <span class="nav-item navbar-text mx-1">/</span>
-                    
-                
-                    <a class="nav-item nav-link" href="/links/" title="Links">
-                        Links
-                    </a>
-                    
-                        <span class="nav-item navbar-text mx-1">/</span>
-                    
-                
-                    <a class="nav-item nav-link" href="/post/" title="Posts">
-                        Posts
-                    </a>
-                    
-                        <span class="nav-item navbar-text mx-1">/</span>
-                    
-                
-                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
-                        Rss
-                    </a>
-                    
-                        <span class="nav-item navbar-text mx-1">/</span>
-                    
-                
-                    <a class="nav-item nav-link" href="/tools/" title="Tools">
-                        Tools
-                    </a>
-                    
-                
-            
-        </div>
-    </nav>
-</div>
-<hr>
-<div id="content">
+    <body>
+<input type="checkbox" id="menu-toggle" class="menu-toggle">
+<label tabindex="0" for="menu-toggle" class="burger"><span></span> <span></span> <span></span><div class="burger-text">Menu</div></label>
+<nav class="main-nav">
+    
+    <ul>
+    
+        
+        
+            <li><a href="/projects/">Projects</a></li>
+        
+            <li><a href="/links/">Links</a></li>
+        
+            <li><a href="/post/">Posts</a></li>
+        
+            <li><a href="/index.xml">Rss</a></li>
+        
+            <li><a href="/tools/">Tools</a></li>
+        
+    
+    </ul>
+   
+</nav>
+<nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
+
 <div class="container">
+    <h1>Tomcat 开启 https支持</h1>
     <h2 id="0x00-配置keystore">0x00 配置keystore</h2>
 <p>要使用ssl connector，必须先创建一个keystore。他包含了服务器中被客户端用于验证服务器的数字证书。一旦客户端接受了这个证书，客户端就可以使用public key去加密他们要发送的数据。而服务器，拥有一个private key，作为唯一解密数据的密钥。</p>
 <p>进入JDK环境的bin目录，调用keytool来完成我们的证书生成：</p>
@@ -111,22 +81,82 @@
 </code></pre></div><p>重启tomcat后生效~</p>
 
 </div>
-
-        </div><div id="footer" class="mb-5">
-    <hr>
-    <div class="container text-center">
-        
-            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
-        
-            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
-        
+<div class="container">
+    <section class="bio" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <div class="bio__blurb">
+        <h2 class="site-h2">我是一个在中国南部的网络安全爱好者和开发人员。</h2>
+        <p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分研究的技术成果。</p>
     </div>
-    
-        <div class="container text-center">
-            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
-        </div>
-    
+<div class="bio__avatar">
+    <img src="/avatar.jpeg" alt="Duncan McDougall and heir apparent">
+</div></section>
 </div>
+
+        </div>
+<footer class="site-footer">
+    <div class="container">
+        <div class="site-footer__col">
+        <h5>Get in touch</h5>
+        <p>
+            If you like my project or have some questions,feel free
+            to contact me</a>.
+        </p>
+        </div>
+        <div class="site-footer__col site-footer__col--links">
+        <h5>Me Elsewhere</h5>
+        <ul>
+        
+                <li>
+                    <a href="https://twitter.com/Rvn0xsy"><i class="fab fa-twitter"></i> Twitter</a>
+                    
+                </li>
+        
+                <li>
+                    <a href="mailto:rvn0xsy@gmail.com"><i class="fas fa-envelope"></i> E-mail</a>
+                    
+                </li>
+        
+                <li>
+                    <a href="https://github.com/Rvn0xsy"><i class="fab fa-github"></i> Github</a>
+                    
+                </li>
+        
+        </ul>
+        </div>
+        <div class="site-footer__col site-footer__col--links">
+        <h5>Meta Links</h5>
+        <ul>
+            
+                
+                
+                    <li class="">
+                        <a href="/projects/"><i class="fas fa-code"></i> Projects</a>
+                    </li>
+                
+                    <li class="">
+                        <a href="/links/"><i class="fas fa-link"></i> Links</a>
+                    </li>
+                
+                    <li class="">
+                        <a href="/post/"><i class="fa fa-file-alt"></i> Posts</a>
+                    </li>
+                
+                    <li class="">
+                        <a href="/index.xml"><i class="fa fa-rss-square"></i> Rss</a>
+                    </li>
+                
+                    <li class="">
+                        <a href="/tools/"><i class="fas fa-tools"></i> Tools</a>
+                    </li>
+                
+            
+        </ul>
+        </div>
+        <p class="site-footer__copyright">
+        © 倾旋 2021. All rights reserved.
+        </p>
+    </div>
+    </footer>
 
 
 

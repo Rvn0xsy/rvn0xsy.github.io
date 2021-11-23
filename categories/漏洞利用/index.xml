@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>漏洞利用 on 倾旋的博客</title>
+    <link>https://payloads.online/categories/%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/</link>
+    <description>Recent content in 漏洞利用 on 倾旋的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Wed, 22 Nov 2017 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CVE-2017-11882钓鱼攻击</title>
+      <link>https://payloads.online/archivers/2017-11-22/1/</link>
+      <pubDate>Wed, 22 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2017-11-22/1/</guid>
+      <description>本文概述一次钓鱼攻击</description>
+    </item>
+    
+  </channel>
+</rss>

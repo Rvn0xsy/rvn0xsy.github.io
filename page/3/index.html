@@ -1,5 +1,7 @@
+
 <!DOCTYPE html>
-<html lang=""><head>
+<html>
+    <head>
 	<meta name="generator" content="Hugo 0.89.4" />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -9,12 +11,12 @@
     <meta name="author" content='倾旋'>
 
     <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+   
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous">
 
     
     <link rel="stylesheet" href="/sass/researcher.min.css">
-
+    
     
         <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
     
@@ -26,142 +28,121 @@
     
 </head>
 
-    <body><div class="container mt-5">
-    <nav class="navbar navbar-expand-sm flex-column flex-sm-row text-nowrap p-0">
-        <a class="navbar-brand mx-0 mr-sm-auto" style="color: #dc3545;" href="https://payloads.online" title="倾旋的博客">
-          
-          倾旋的博客
-        </a>
-        <div class="navbar-nav flex-row flex-wrap justify-content-center">
-            
-                
-                
-                    <a class="nav-item nav-link" href="/about" title="About">
-                        About
-                    </a>
-                    
-                        <span class="nav-item navbar-text mx-1">/</span>
-                    
-                
-                    <a class="nav-item nav-link" href="/projects/" title="Projects">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-terminal-fill" viewBox="0 0 16 16"><path d="M0 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3zm9.5 5.5h-3a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1zm-6.354-.354a.5.5 0 1 0 .708.708l2-2a.5.5 0 0 0 0-.708l-2-2a.5.5 0 1 0-.708.708L4.793 6.5 3.146 8.146z"/></svg> Projects
-                    </a>
-                    
-                        <span class="nav-item navbar-text mx-1">/</span>
-                    
-                
-                    <a class="nav-item nav-link" href="/links/" title="Links">
-                        Links
-                    </a>
-                    
-                        <span class="nav-item navbar-text mx-1">/</span>
-                    
-                
-                    <a class="nav-item nav-link" href="/post/" title="Posts">
-                        Posts
-                    </a>
-                    
-                        <span class="nav-item navbar-text mx-1">/</span>
-                    
-                
-                    <a class="nav-item nav-link" href="/index.xml" title="Rss">
-                        Rss
-                    </a>
-                    
-                        <span class="nav-item navbar-text mx-1">/</span>
-                    
-                
-                    <a class="nav-item nav-link" href="/tools/" title="Tools">
-                        Tools
-                    </a>
-                    
-                
-            
-        </div>
-    </nav>
+<body>
+
+<div class="container">
+    <h1>倾旋的博客</h1>
+    <section class="bio" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+    <div class="bio__blurb">
+        <h2 class="site-h2">我是一个在中国南部的网络安全爱好者和开发人员。</h2>
+        <p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分研究的技术成果。</p>
+    </div>
+<div class="bio__avatar">
+    <img src="/avatar.jpeg" alt="Duncan McDougall and heir apparent">
+</div></section>
 </div>
-<hr>
-<div id="content"><div class="container">
+
+<div class="container">
     <section id="posts" class="posts"><article class="post">
-    <header class="post-header">
-      <h2 class="post-title"><a class="post-link" href="/archivers/2020-04-02/1/">如何实现一个Psexec</a></h2>
-      <div class="post-meta">
-        <span class="post-time"> 2020-04-02 </span>
+    <li>
+      <header class="post-header">
+        <h2 class="post-title"><a class="post-link" href="/archivers/2020-04-02/1/">如何实现一个Psexec</a></h2>
+        <div class="post-meta">
+          <time class="small" datetime='2020-04-02'>2020-04-02</time>
+          
+        </div>
+      </header>
+      <div class="post-content">
+        <div class="post-summary">
+          本文不涉及Pass The Hash的攻击手段，因为使用C/C&#43;&#43;实现起来很麻烦，因此本文只围绕Psexec这款工具的实现原理、防御、其他思路展开...
+        </div>
+        <div class="post-link">
+          <a href="/archivers/2020-04-02/1/" class="read-more-link"> Read More » </a>
+        </div>
       </div>
-    </header>
-    <div class="post-content">
-      <div class="post-summary">
-        本文不涉及Pass The Hash的攻击手段，因为使用C/C&#43;&#43;实现起来很麻烦，因此本文只围绕Psexec这款工具的实现原理、防御、其他思路展开...
-      </div>
-      <div class="post-link">
-        <a href="/archivers/2020-04-02/1/" class="read-more-link"> Read More » </a>
-      </div>
-    </div>
+    </li>
   </article>
+
         <article class="post">
-    <header class="post-header">
-      <h2 class="post-title"><a class="post-link" href="/archivers/2020-03-21/2/">SSRF漏洞配合Flask的巧妙利用 - 内网漫游</a></h2>
-      <div class="post-meta">
-        <span class="post-time"> 2020-03-21 </span>
+    <li>
+      <header class="post-header">
+        <h2 class="post-title"><a class="post-link" href="/archivers/2020-03-21/2/">SSRF漏洞配合Flask的巧妙利用 - 内网漫游</a></h2>
+        <div class="post-meta">
+          <time class="small" datetime='2020-03-21'>2020-03-21</time>
+          
+        </div>
+      </header>
+      <div class="post-content">
+        <div class="post-summary">
+          SSRF(Server-side Request Forge, 服务端请求伪造)。由攻击者构造的攻击链接传给服务端执行造成的漏洞，一般用来在外网探测或攻击内网服务...
+        </div>
+        <div class="post-link">
+          <a href="/archivers/2020-03-21/2/" class="read-more-link"> Read More » </a>
+        </div>
       </div>
-    </header>
-    <div class="post-content">
-      <div class="post-summary">
-        SSRF(Server-side Request Forge, 服务端请求伪造)。由攻击者构造的攻击链接传给服务端执行造成的漏洞，一般用来在外网探测或攻击内网服务...
-      </div>
-      <div class="post-link">
-        <a href="/archivers/2020-03-21/2/" class="read-more-link"> Read More » </a>
-      </div>
-    </div>
+    </li>
   </article>
+
         <article class="post">
-    <header class="post-header">
-      <h2 class="post-title"><a class="post-link" href="/archivers/2020-03-21/1/">Windows特权提升漏洞-符号</a></h2>
-      <div class="post-meta">
-        <span class="post-time"> 2020-03-21 </span>
+    <li>
+      <header class="post-header">
+        <h2 class="post-title"><a class="post-link" href="/archivers/2020-03-21/1/">Windows特权提升漏洞-符号</a></h2>
+        <div class="post-meta">
+          <time class="small" datetime='2020-03-21'>2020-03-21</time>
+          
+        </div>
+      </header>
+      <div class="post-content">
+        <div class="post-summary">
+          Windows 特权提升相信大家已经不陌生了，常见的场景如：NETWORK SERVICE → SYSTEM但从漏洞原理去了解，会发现利用漏洞利用本就是一个“使程序逻辑不按照正常方向运转”的过程...
+        </div>
+        <div class="post-link">
+          <a href="/archivers/2020-03-21/1/" class="read-more-link"> Read More » </a>
+        </div>
       </div>
-    </header>
-    <div class="post-content">
-      <div class="post-summary">
-        Windows 特权提升相信大家已经不陌生了，常见的场景如：NETWORK SERVICE → SYSTEM但从漏洞原理去了解，会发现利用漏洞利用本就是一个“使程序逻辑不按照正常方向运转”的过程...
-      </div>
-      <div class="post-link">
-        <a href="/archivers/2020-03-21/1/" class="read-more-link"> Read More » </a>
-      </div>
-    </div>
+    </li>
   </article>
+
         <article class="post">
-    <header class="post-header">
-      <h2 class="post-title"><a class="post-link" href="/archivers/2020-03-02/4/">Cobalt Strike Aggressor Script （第一课）</a></h2>
-      <div class="post-meta">
-        <span class="post-time"> 2020-03-02 </span>
+    <li>
+      <header class="post-header">
+        <h2 class="post-title"><a class="post-link" href="/archivers/2020-03-02/4/">Cobalt Strike Aggressor Script （第一课）</a></h2>
+        <div class="post-meta">
+          <time class="small" datetime='2020-03-02'>2020-03-02</time>
+          
+        </div>
+      </header>
+      <div class="post-content">
+        <div class="post-summary">
+          在后渗透阶段，目前较为流行的C2平台就属Cobalt Strike做的比较优秀了；目前国内的论坛、网站上已经放出很多版本，最新的为Cobalt Strike 3.14，目前最新版本4.0已不再有试用版。
+        </div>
+        <div class="post-link">
+          <a href="/archivers/2020-03-02/4/" class="read-more-link"> Read More » </a>
+        </div>
       </div>
-    </header>
-    <div class="post-content">
-      <div class="post-summary">
-        在后渗透阶段，目前较为流行的C2平台就属Cobalt Strike做的比较优秀了；目前国内的论坛、网站上已经放出很多版本，最新的为Cobalt Strike 3.14，目前最新版本4.0已不再有试用版。
-      </div>
-      <div class="post-link">
-        <a href="/archivers/2020-03-02/4/" class="read-more-link"> Read More » </a>
-      </div>
-    </div>
+    </li>
   </article>
+
         <article class="post">
-    <header class="post-header">
-      <h2 class="post-title"><a class="post-link" href="/archivers/2020-03-02/5/">Cobalt Strike Aggressor Script （第二课）</a></h2>
-      <div class="post-meta">
-        <span class="post-time"> 2020-03-02 </span>
+    <li>
+      <header class="post-header">
+        <h2 class="post-title"><a class="post-link" href="/archivers/2020-03-02/5/">Cobalt Strike Aggressor Script （第二课）</a></h2>
+        <div class="post-meta">
+          <time class="small" datetime='2020-03-02'>2020-03-02</time>
+          
+        </div>
+      </header>
+      <div class="post-content">
+        <div class="post-summary">
+          本节课带大家做一个Say-Hello的脚本来熟悉菜单的构建以及对话框的使用
+        </div>
+        <div class="post-link">
+          <a href="/archivers/2020-03-02/5/" class="read-more-link"> Read More » </a>
+        </div>
       </div>
-    </header>
-    <div class="post-content">
-      <div class="post-summary">
-        本节课带大家做一个Say-Hello的脚本来熟悉菜单的构建以及对话框的使用
-      </div>
-      <div class="post-link">
-        <a href="/archivers/2020-03-02/5/" class="read-more-link"> Read More » </a>
-      </div>
-    </div>
+    </li>
   </article>
+
         </section>
   </div>
   <div class="container">
@@ -186,21 +167,71 @@
   </p>
 </div>
 
-        </div><div id="footer" class="mb-5">
-    <hr>
-    <div class="container text-center">
-        
-            <a href="https://twitter.com/Rvn0xsy" class="fab fa-twitter fa-1x" title="Twitter"></a>
-        
-            <a href="mailto:rvn0xsy@gmail.com" class="fas fa-envelope fa-1x" title="E-mail"></a>
-        
-    </div>
-    
-        <div class="container text-center">
-            <a href="https://payloads.online" title="- PAYLOADS.ONLINE -"><small>- PAYLOADS.ONLINE -</small></a>
+
+<footer class="site-footer">
+    <div class="container">
+        <div class="site-footer__col">
+        <h5>Get in touch</h5>
+        <p>
+            If you like my project or have some questions,feel free
+            to contact me</a>.
+        </p>
         </div>
-    
-</div>
+        <div class="site-footer__col site-footer__col--links">
+        <h5>Me Elsewhere</h5>
+        <ul>
+        
+                <li>
+                    <a href="https://twitter.com/Rvn0xsy"><i class="fab fa-twitter"></i> Twitter</a>
+                    
+                </li>
+        
+                <li>
+                    <a href="mailto:rvn0xsy@gmail.com"><i class="fas fa-envelope"></i> E-mail</a>
+                    
+                </li>
+        
+                <li>
+                    <a href="https://github.com/Rvn0xsy"><i class="fab fa-github"></i> Github</a>
+                    
+                </li>
+        
+        </ul>
+        </div>
+        <div class="site-footer__col site-footer__col--links">
+        <h5>Meta Links</h5>
+        <ul>
+            
+                
+                
+                    <li class="">
+                        <a href="/projects/"><i class="fas fa-code"></i> Projects</a>
+                    </li>
+                
+                    <li class="">
+                        <a href="/links/"><i class="fas fa-link"></i> Links</a>
+                    </li>
+                
+                    <li class="">
+                        <a href="/post/"><i class="fa fa-file-alt"></i> Posts</a>
+                    </li>
+                
+                    <li class="">
+                        <a href="/index.xml"><i class="fa fa-rss-square"></i> Rss</a>
+                    </li>
+                
+                    <li class="">
+                        <a href="/tools/"><i class="fas fa-tools"></i> Tools</a>
+                    </li>
+                
+            
+        </ul>
+        </div>
+        <p class="site-footer__copyright">
+        © 倾旋 2021. All rights reserved.
+        </p>
+    </div>
+    </footer>
 
 
 
@@ -217,6 +248,7 @@
   });
 })();
 </script>
+
 
 </body>
 </html>

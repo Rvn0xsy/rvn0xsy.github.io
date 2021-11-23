@@ -290,6 +290,13 @@
   </url>
   
   <url>
+    <loc>https://payloads.online/categories/</loc>
+    <lastmod>2019-10-02T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://payloads.online/archivers/2019-10-02/1/</loc>
     <lastmod>2019-10-02T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
@@ -297,7 +304,21 @@
   </url>
   
   <url>
+    <loc>https://payloads.online/categories/windows%E7%BC%96%E7%A8%8B%E6%8A%80%E6%9C%AF/</loc>
+    <lastmod>2019-10-02T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://payloads.online/archivers/2019-05-09/1/</loc>
+    <lastmod>2019-05-09T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://payloads.online/categories/%E9%AB%98%E6%95%88/</loc>
     <lastmod>2019-05-09T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -332,6 +353,13 @@
   </url>
   
   <url>
+    <loc>https://payloads.online/categories/%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91/</loc>
+    <lastmod>2019-04-24T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://payloads.online/archivers/2019-04-13/1/</loc>
     <lastmod>2019-04-13T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
@@ -340,6 +368,13 @@
   
   <url>
     <loc>https://payloads.online/archivers/2019-04-08/1/</loc>
+    <lastmod>2019-04-08T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://payloads.online/categories/%E7%94%9F%E6%B4%BB/</loc>
     <lastmod>2019-04-08T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -374,8 +409,29 @@
   </url>
   
   <url>
+    <loc>https://payloads.online/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/</loc>
+    <lastmod>2019-03-30T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://payloads.online/archivers/2019-03-14/1/</loc>
     <lastmod>2019-03-14T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://payloads.online/categories/windows/</loc>
+    <lastmod>2019-03-14T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://payloads.online/categories/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/</loc>
+    <lastmod>2019-02-23T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -514,6 +570,13 @@
   </url>
   
   <url>
+    <loc>https://payloads.online/categories/web%E5%AE%89%E5%85%A8/</loc>
+    <lastmod>2018-11-04T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://payloads.online/archivers/2018-10-30/1/</loc>
     <lastmod>2018-10-30T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
@@ -556,8 +619,22 @@
   </url>
   
   <url>
+    <loc>https://payloads.online/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/</loc>
+    <lastmod>2018-08-15T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://payloads.online/archivers/2018-08-03/2/</loc>
     <lastmod>2018-08-03T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://payloads.online/categories/nmap/</loc>
+    <lastmod>2018-07-27T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -598,6 +675,13 @@
   </url>
   
   <url>
+    <loc>https://payloads.online/categories/linux/</loc>
+    <lastmod>2018-03-20T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://payloads.online/archivers/2018-03-20/1/</loc>
     <lastmod>2018-03-20T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
@@ -613,6 +697,13 @@
   
   <url>
     <loc>https://payloads.online/archivers/2015-11-20/2/</loc>
+    <lastmod>2018-03-16T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://payloads.online/categories/%E7%BD%91%E7%BB%9C%E5%B7%A5%E7%A8%8B/</loc>
     <lastmod>2018-03-16T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -654,7 +745,21 @@
   </url>
   
   <url>
+    <loc>https://payloads.online/categories/%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/</loc>
+    <lastmod>2017-11-22T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://payloads.online/archivers/2017-11-21/1/</loc>
+    <lastmod>2017-11-21T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://payloads.online/categories/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/</loc>
     <lastmod>2017-11-21T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
@@ -814,7 +919,31 @@
   </url>
   
   <url>
+    <loc>https://payloads.online/categories/c&#43;&#43;/c/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://payloads.online/categories/c/c&#43;&#43;/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://payloads.online/categories/link/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://payloads.online/projects/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://payloads.online/tags/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

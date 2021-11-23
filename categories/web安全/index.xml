@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>web安全 on 倾旋的博客</title>
+    <link>https://payloads.online/categories/web%E5%AE%89%E5%85%A8/</link>
+    <description>Recent content in web安全 on 倾旋的博客</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Sun, 04 Nov 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/web%E5%AE%89%E5%85%A8/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Web.config RCE</title>
+      <link>https://payloads.online/archivers/2018-11-04/1/</link>
+      <pubDate>Sun, 04 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2018-11-04/1/</guid>
+      <description>tips</description>
+    </item>
+    
+    <item>
+      <title>xssValidator</title>
+      <link>https://payloads.online/archivers/2018-10-19/1/</link>
+      <pubDate>Fri, 19 Oct 2018 00:00:44 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2018-10-19/1/</guid>
+      <description>本文记录一下xss Validator的使用方法</description>
+    </item>
+    
+    <item>
+      <title>CTF - 美眉的手机号</title>
+      <link>https://payloads.online/archivers/2017-11-14/1/</link>
+      <pubDate>Tue, 14 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2017-11-14/1/</guid>
+      <description>本文介绍一个在CTF中遇到的经典二次注入</description>
+    </item>
+    
+    <item>
+      <title>Tomcat 开启 https支持</title>
+      <link>https://payloads.online/archivers/2017-08-21/1/</link>
+      <pubDate>Mon, 21 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2017-08-21/1/</guid>
+      <description>本文介绍一下tomcat 开启 https支持</description>
+    </item>
+    
+  </channel>
+</rss>
