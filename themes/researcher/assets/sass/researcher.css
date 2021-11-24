@@ -88,7 +88,7 @@ pre[class*=language-]{background:#28253b;overflow-x:scroll;border-radius:3px;pad
 .header{margin-top:4rem;margin-bottom:2rem}
 .site-footer{margin-top:4rem;background:#000;padding:3rem 0}
 .site-footer .container{display:flex;flex-direction:row;flex-wrap:wrap}
-.site-footer__col{padding-right:2rem;flex:1 0 auto}
+.site-footer__col{padding-right:2rem;}
 .site-footer__col:last-of-type{padding-right:0}
 .site-footer__copyright{width:100%;font-size:.8rem;opacity:.8;text-align:center}
 @media screen and (min-width:1000px){.site-footer__col{width:50%}
