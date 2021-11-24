@@ -5,8 +5,6 @@ url: /archivers/2021-11-23/1
 description: 使用launchctl注册喝水任务
 ---
 
-# MacOS任务计划
-
 ## 0x00 launchctl
 
 > launchctl是一个统一的服务管理框架，启动、停止和管理守护进程、应用程序、进程和脚本。
