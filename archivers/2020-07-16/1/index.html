@@ -61,10 +61,10 @@
 </ul>
 <p>Nicolas Delhaye在原文提供的脚本是需要依赖imapcket的，而我只关注在Socket RAW上的实现，这样能够减小工具的体积，并且其他语言也能够轻松复刻整个过程。</p>
 <p>这个协议Wireshark已经内置了，我们可以直接进行抓包分析。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/797b841317603acbc8778d69e3de739b.png" alt="2020-07-16-10-28-54"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a0b800d2-4f5f-11ec-b585-00d861bf4abb.png" alt="2020-07-16-10-28-54"></p>
 <p>前三个不需要关注，主要是TCP的三次握手，后面的四次交互才是我们需要重点关注的。</p>
 <p>第一个数据包 72 Bytes （主要用于协商版本等等）：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2c08cc923ddc16200a70060cb334324a.png" alt="2020-07-16-10-35-51"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a0f3cc5c-4f5f-11ec-9d59-00d861bf4abb.png" alt="2020-07-16-10-35-51"></p>
 <pre tabindex="0"><code>\x05\x00\x0b\x03\x10\x00\x00\x00\x48\x00\x00\x00\x01\x00\x00\x00\xb8\x10\xb8\x10\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x01\x00\xc4\xfe\xfc\x99\x60\x52\x1b\x10\xbb\xcb\x00\xaa\x00\x21\x34\x7a\x00\x00\x00\x00\x04\x5d\x88\x8a\xeb\x1c\xc9\x11\x9f\xe8\x08\x00\x2b\x10\x48\x60\x02\x00\x00\x00
 </code></pre><p>第二个数据包：</p>
 <p>这个包无需关注，因为我们最终要获得的是第四个数据包。</p>
@@ -92,7 +92,7 @@
 &quot;\x00\x00\x10\x00\xff\xff\x00\x00\x0a\x00\xff\xff\x00\x00\x16\x00&quot; \
 &quot;\xff\xff\x00\x00\x1f\x00\xff\xff\x00\x00\x0e\x00\xff\xff\x00\x00&quot; \
 &quot;\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00&quot;
-</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/b45ced6211f748aeee7cc4c24f6bb096.png" alt="2020-07-16-10-49-31"></p>
+</code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a12a1550-4f5f-11ec-bd3c-00d861bf4abb.png" alt="2020-07-16-10-49-31"></p>
 <p>第四个数据包返回的永远是不定长的数据，所以需要参考文档进行解析，我下载了一份包含了OXID的文档，看起来非常的吃力，虽然有结构体，但是并没有给出一个通用的解决方案。</p>
 <h2 id="0x03-数据解析过程">0x03 数据解析过程</h2>
 <p>规律：</p>
@@ -117,7 +117,7 @@ print(<span style="color:#e6db74">&#34;[*] &#34;</span> <span style="color:#f926
     result[ip]<span style="color:#f92672">.</span>append(h)
 print result
 </code></pre></div><h2 id="0x04-多线程实现效果">0x04 多线程实现效果</h2>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/69467333bcc317951a365c9a2c079a7c.png" alt="2020-07-16-10-57-59"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a16d0220-4f5f-11ec-a9ff-00d861bf4abb.png" alt="2020-07-16-10-57-59"></p>
 <p>优点：</p>
 <ul>
 <li>不依赖impacket</li>

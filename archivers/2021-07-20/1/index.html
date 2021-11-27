@@ -55,7 +55,7 @@
 </blockquote>
 <h2 id="0x01-kubernetes-简介">0x01 Kubernetes 简介</h2>
 <p>Kubernetes 是一个可移植的、可扩展的开源平台，用于管理容器化的工作负载和服务，可促进声明式配置和自动化。 Kubernetes 拥有一个庞大且快速增长的生态系统。Kubernetes 的服务、支持和工具广泛可用。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/60ab9641f6ec3ecfec996616ef0837ab.png" alt="2021-07-20-11-19-39"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b3682bc6-4f5f-11ec-a3a0-00d861bf4abb.png" alt="2021-07-20-11-19-39"></p>
 <p><strong>传统部署时代：</strong></p>
 <p>早期，各个组织机构在物理服务器上运行应用程序。无法为物理服务器中的应用程序定义资源边界，这会导致资源分配问题。 例如，如果在物理服务器上运行多个应用程序，则可能会出现一个应用程序占用大部分资源的情况， 结果可能导致其他应用程序的性能下降。 一种解决方案是在不同的物理服务器上运行每个应用程序，但是由于资源利用不足而无法扩展， 并且维护许多物理服务器的成本很高。</p>
 <p><strong>虚拟化部署时代：</strong></p>
@@ -76,7 +76,7 @@
 </ol>
 <h3 id="节点node">节点(Node)</h3>
 <p>Kubernetes 通过将容器放入在节点（Node）上运行的 Pod 中来执行你的工作负载。 节点可以是一个虚拟机或者物理机器，取决于所在的集群配置。最容易理解的例子：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/527d6800fc5f0a462b9dc90a1c3908f9.png" alt="2021-07-20-10-38-26"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b3b30a38-4f5f-11ec-8073-00d861bf4abb.png" alt="2021-07-20-10-38-26"></p>
 <p>该集群有三个节点，我可以在这三个节点上创建很多个Pod，而Pod中可以包含多个容器。在所有的节点中，至少要有一个Master节点，Master节点是第一个加入集群的机器，它具有整个集群的最高权限，本文的目的就是研究如何通过其他节点，横向移动到Master节点，因为Secret敏感信息(令牌、账户密码、公私钥等等)都存储在Kubernetes的etcd数据库上。</p>
 <h3 id="pod">Pod</h3>
 <p>Pod是可以在 Kubernetes 中创建和管理的、最小的可部署的计算单元。</p>
@@ -88,14 +88,14 @@
 <p>节点亲和性 是Pod的一种属性，它使 Pod 被吸引到一类特定的节点 （这可能出于一种偏好，也可能是硬性要求）。 污点（Taint）则相反——它使节点能够排斥一类特定的 Pod。容忍度（Toleration）是应用于 Pod 上的，允许（但并不要求）Pod 调度到带有与之匹配的污点的节点上。<strong>我们可以控制Pod创建时候的污点来向集群内的节点进行喷射创建。</strong></p>
 <h2 id="0x03-环境介绍">0x03 环境介绍</h2>
 <p>当前实验环境有三个节点，其中一个为Master节点，其余的都是普通节点。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/fb788c1977b181ed1fcebec421adaee0.png" alt="2021-07-20-10-56-11"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b3ef7cfc-4f5f-11ec-984e-00d861bf4abb.png" alt="2021-07-20-10-56-11"></p>
 <p>当前机器是node1，普通节点，节点全部为健康状态，接下来要利用创建Pod的功能，横向到k8s-master。</p>
 <h2 id="0x04-利用创建pod横向移动">0x04 利用创建Pod横向移动</h2>
 <ol>
 <li>确认Master节点的容忍度</li>
 </ol>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl describe node &lt;Node Name&gt;
-</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/4de02e057736c6c005e1a521fc7ad7d7.png" alt="2021-07-20-10-59-50"></p>
+</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b454933a-4f5f-11ec-a431-00d861bf4abb.png" alt="2021-07-20-10-59-50"></p>
 <ol start="2">
 <li>创建带有容忍参数的Pod</li>
 </ol>
@@ -122,9 +122,9 @@
 <span style="color:#f92672">hostPath</span>:
 <span style="color:#f92672">path</span>: <span style="color:#ae81ff">/</span>
 <span style="color:#f92672">type</span>: <span style="color:#ae81ff">Directory</span>
-</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/a092be4614e40a1c419aeb417f00d5c5.png" alt="2021-07-20-11-02-18"></p>
+</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b4bba0de-4f5f-11ec-b260-00d861bf4abb.png" alt="2021-07-20-11-02-18"></p>
 <p>在多次创建Pod后，会发现Pod会在Master节点上出现，再利用kubectl进入容器，执行逃逸。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/71842cf8d76f15aa1b04260f2186cf21.png" alt="2021-07-20-11-06-24"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b5136788-4f5f-11ec-9315-00d861bf4abb.png" alt="2021-07-20-11-06-24"></p>
 <p>至此，逃逸完成，能够通过写公私钥的方式控制Master宿主机。</p>
 <h2 id="0x05-总结">0x05 总结</h2>
 <p>本文通过了解Kubernetes的一些基本概念，完成了在节点中进行横向逃逸，但我没有实现指定节点的逃逸过程，因为在Kubernetes中低权限的节点无法修改Master节点的容忍度，因此要完成逃逸，需要在每一个节点上至少创建一个Pod，如果集群中节点数量庞大的话&hellip;.</p>

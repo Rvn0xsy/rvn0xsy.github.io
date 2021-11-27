@@ -55,7 +55,7 @@
 </blockquote>
 <iframe src="//player.bilibili.com/player.html?aid=51718274&page=1&cid" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width="95%" height="450"> </iframe>
 <h2 id="0x00-前言">0x00 前言</h2>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x00.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/44d01a48-4f5f-11ec-8721-00d861bf4abb.png" alt=""></p>
 <p>本文章只是方便阅读PPT，对于深入的去理解没有太大帮助，只是做个知识索引。</p>
 <p>目录如下：</p>
 <ul>
@@ -80,7 +80,7 @@
 <p>即：“在正常事物发生之前进行一个旁路操作”</p>
 <h2 id="0x02-dll是什么">0x02 DLL是什么</h2>
 <p>DLL(Dynamic Link Library)文件为动态链接库文件，又称“应用程序拓展”，是软件文件类型。 在Windows中，许多应用程序并不是一个完整的可执行文件，它们被分割成一些相对独立的动态链接库，即DLL文件，放置于系统中。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x01.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4516d88e-4f5f-11ec-971e-00d861bf4abb.png" alt=""></p>
 <p>在Windows平台下，我们使用的应用程序中的功能其实大多都很相似，窗口调用窗口的模块，分配内存调用内存管理的模块，文件操作调用IO模块，这些模块在Windows里的具体表现就是DLL文件。</p>
 <h2 id="0x03-dll的加载过程">0X03 DLL的加载过程</h2>
 <ul>
@@ -93,10 +93,10 @@
 </ul>
 <p>PS：Windows操作系统通过“DLL路径搜索目录顺序”和“Know DLLs注册表项”的机制来确定应用程序所要调用的DLL的路径，之后，应用程序就将DLL载入了自己的内存空间，执行相应的函数功能。</p>
 <p>注册表路径：HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\KnownDLLs</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x02.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/456a6e72-4f5f-11ec-b36a-00d861bf4abb.png" alt=""></p>
 <h3 id="dll的加载过程--know-dlls注册表项">DLL的加载过程 – Know DLLs注册表项</h3>
 <p>Know DLLs注册表项里的DLL列表在应用程序运行后就已经加入到了内核空间中，多个进程公用这些模块，必须具有非常高的权限才能修改。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x03.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/45b927d8-4f5f-11ec-9b6b-00d861bf4abb.png" alt=""></p>
 <h3 id="dll的加载过程--process-monitor">DLL的加载过程 – Process Monitor</h3>
 <p>Process Monitor是Windows的高级监视工具，可显示实时文件系统，注册表和进程/线程活动。</p>
 <p>它结合了两个传统Sysinternals实用程序Filemon和Regmon的功能，并添加了大量增强功能，包括丰富和非破坏性过滤，全面的事件属性，如会话ID和用户名，可靠的流程信息，带有集成符号支持的完整线程堆栈 对于每个操作，同时记录到文件等等。 其独特的强大功能将使Process Monitor成为系统故障排除和恶意软件搜索工具包的核心实用程序。</p>
@@ -104,7 +104,7 @@
 <h3 id="dll的加载过程--process-monitor-filter">DLL的加载过程 – Process Monitor Filter</h3>
 <p>Process Monitor Filter是用于过滤应用程序输出的一部分功能，可以使得进程事件结果成为你想要的内容。</p>
 <p>常用过滤条件：Process Name，Path，Result</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x04.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/46146f58-4f5f-11ec-89a8-00d861bf4abb.png" alt=""></p>
 <h2 id="0x04-dll劫持的原理">0x04 DLL劫持的原理</h2>
 <p>DLL寻找过程：</p>
 <ul>
@@ -187,9 +187,9 @@
 </ul>
 <h3 id="自动化测试">自动化测试</h3>
 <p>Rattler：https://github.com/sensepost/rattler</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x05.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4660fe7c-4f5f-11ec-8fcf-00d861bf4abb.png" alt=""></p>
 <p>Robber：https://github.com/MojtabaTajik/Robber</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x06.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/46b0698a-4f5f-11ec-a6f3-00d861bf4abb.png" alt=""></p>
 <h2 id="0x06-什么是com">0x06 什么是COM</h2>
 <p>COM是Component Object Model （组件对象模型）的缩写。
 COM是微软公司为了计算机工业的软件生产更加符合人类的行为方式开发的一种新的软件开发技术。在COM构架下，人们可以开发出各种各样的功能专一的组件，然后将它们按照需要组合起来，构成复杂的应用系统。</p>
@@ -234,7 +234,7 @@ COM是微软公司为了计算机工业的软件生产更加符合人类的行�
 <h3 id="应用程序与com注册表的关系---clsid">应用程序与COM注册表的关系 - CLSID</h3>
 <p>首先需要介绍一下CLSID(Class Identifier)，中文翻译为：“全局唯一标识符”。</p>
 <p>CLSID是指Windows系统对于不同的应用程序，文件类型，OLE对象，特殊文件夹以及各种系统组件分配的一个唯一表示它的ID代码，用于对其身份的标识和与其他对象进行区分。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x07.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/46eebd16-4f5f-11ec-ab2c-00d861bf4abb.png" alt=""></p>
 <h3 id="应用程序与com注册表的关系---使用com组件">应用程序与COM注册表的关系 - 使用COM组件</h3>
 <p>按下Ctrl+R打开运行窗口，键入
 ::{20D04FE0-3AEA-1069-A2D8-08002B30309D} 即可打开“我的电脑”</p>
@@ -280,7 +280,7 @@ CLSID结构体<span style="color:#960050;background-color:#1e0010">：</span>
 <li>2.HKCR\CLSID</li>
 <li>3.HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\ShellCompatibility\Objects\</li>
 </ul>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x08.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/473132a4-4f5f-11ec-ad42-00d861bf4abb.png" alt=""></p>
 <h2 id="0x09-com组件的劫持原理">0x09 COM组件的劫持原理</h2>
 <p>当进程寻找COM组件时，首先会寻找：</p>
 <pre tabindex="0"><code>HKCU\Software\Classes\CLSID
@@ -288,21 +288,21 @@ CLSID结构体<span style="color:#960050;background-color:#1e0010">：</span>
 <p>与DLL劫持原理相近，但是COM组件的劫持可以拓展很多东西，劫持的目标不一定是一个进程，劫持所需的文件不一定是一个DLL，它可以是一个.com文件、二进制PE文件、DLL文件，劫持的目标也可以是一个Windows API。</p>
 <h2 id="0x10-实现一个com组件劫持">0x10 实现一个COM组件劫持</h2>
 <p>MSF:/opt/metasploit-framework/embedded/framework/modules/exploits/windows/local/bypassuac_comhijack.rb</p>
-<video src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/com_hijacking.mp4" controls="controls" width="500px">
+<video src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3fc3f9a2-4f5f-11ec-aaeb-00d861bf4abb.mp4" controls="controls" width="500px">
 哎呀~ 换个浏览器试试吧！
 </video>
 <h3 id="实现一个com组件劫持--分析">实现一个COM组件劫持 – 分析</h3>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x09.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4776c77e-4f5f-11ec-8dcc-00d861bf4abb.png" alt=""></p>
 <p>bypassuac_comhijack模块有两个方法：</p>
 <ul>
 <li>Event Viewer</li>
 <li>Computer Managment</li>
 </ul>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x10.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/47b474ca-4f5f-11ec-bf64-00d861bf4abb.png" alt=""></p>
 <p>经过分析，该模块是通过更改注册表，然后创建进程实现的bypassUAC。</p>
 <h2 id="0x11-uac简介">0x11 UAC简介</h2>
 <p>用户帐户控制（User Account Control，简写作UAC)是微软公司在其Windows Vista及更高版本操作系统中采用的一种控制机制。其原理是通知用户是否对应用程序使用硬盘驱动器和系统文件授权，以达到帮助阻止恶意程序（有时也称为“恶意软件”）损坏系统的效果。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x11.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/480733ae-4f5f-11ec-825d-00d861bf4abb.png" alt=""></p>
 <p>UAC需要授权的动作包括：</p>
 <ul>
 <li>1.配置Windows Update</li>
@@ -333,10 +333,10 @@ CLSID结构体<span style="color:#960050;background-color:#1e0010">：</span>
 <h2 id="0x14-bypass-uac演示---fodhelperexe">0x14 Bypass UAC演示 - fodhelper.exe</h2>
 <p>Path：C:\Windows\system32\fodhelper.exe</p>
 <p>REG：HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x12.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/483fee7e-4f5f-11ec-b5bb-00d861bf4abb.png" alt=""></p>
 <pre tabindex="0"><code>reg add HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command /d C:\Windows\System32\cmd.exe /f
 reg add HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command /v DelegateExecute /t REG_DWORD /d 00000000 /f
-</code></pre><video src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/bypass_uac.mp4" controls="controls" width="500px">
+</code></pre><video src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4349f414-4f5f-11ec-8821-00d861bf4abb.mp4" controls="controls" width="500px">
 哎呀~ 换个浏览器试试吧！
 </video>
 <h3 id="bypass-uac演示---fodhelperexe自动化分析">ByPass UAC演示 - fodhelper.exe（自动化分析）</h3>
@@ -345,11 +345,11 @@ reg add HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command /v Del
 <li>eventvwr.exe</li>
 </ul>
 <p>配置项：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x14.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/48c3f25a-4f5f-11ec-bcfc-00d861bf4abb.png" alt=""></p>
 <p>调用进程：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x15.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/49031fb6-4f5f-11ec-afdd-00d861bf4abb.png" alt=""></p>
 <p>利用过程：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x16.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/496370dc-4f5f-11ec-8fdc-00d861bf4abb.png" alt=""></p>
 <h2 id="0x15-挖掘bypass-uac的方法">0x15 挖掘ByPass UAC的方法</h2>
 <h3 id="寻找自动提升权限的应用程序--sigcheckexe">寻找自动提升权限的应用程序 – Sigcheck.exe</h3>
 <p>Strings与Sigcheck，这两款工具目前均由微软官方提供，主要用于查看文件相关信息。</p>
@@ -360,11 +360,11 @@ reg add HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command /v Del
 </ul>
 <h3 id="寻找自动提升权限的应用程序-stringsexe">寻找自动提升权限的应用程序 Strings.exe</h3>
 <p>最好将string.exe放入C:\Windows\System32</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x17.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/49ab6e96-4f5f-11ec-9486-00d861bf4abb.png" alt=""></p>
 <h3 id="寻找自动提升权限的应用程序-sigcheckexe">寻找自动提升权限的应用程序 Sigcheck.exe</h3>
 <p>使用Python脚本调用：</p>
 <p><a href="https://gist.githubusercontent.com/riyazwalikar/cd31948f247b96d472b97be2a36030b4/raw/a7379c4f5c015e46d65703ee73e674b1c4315810/findelevate.py">https://gist.githubusercontent.com/riyazwalikar/cd31948f247b96d472b97be2a36030b4/raw/a7379c4f5c015e46d65703ee73e674b1c4315810/findelevate.py</a></p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x18.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4a14bf54-4f5f-11ec-99d6-00d861bf4abb.png" alt=""></p>
 <h2 id="0x16-参考">0x16 参考</h2>
 <ul>
 <li><a href="https://www.gdatasoftware.com/blog/2014/10/23941-com-object-hijacking-the-discreet-way-of-persistence">https://www.gdatasoftware.com/blog/2014/10/23941-com-object-hijacking-the-discreet-way-of-persistence</a></li>
@@ -382,14 +382,14 @@ reg add HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command /v Del
 <li><a href="https://docs.microsoft.com/zh-cn/sysinternals/downloads/strings">https://docs.microsoft.com/zh-cn/sysinternals/downloads/strings</a></li>
 <li><a href="https://docs.microsoft.com/zh-cn/sysinternals/downloads/sigcheck">https://docs.microsoft.com/zh-cn/sysinternals/downloads/sigcheck</a></li>
 </ul>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x19.png" alt=""></p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x20.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4a57b462-4f5f-11ec-9003-00d861bf4abb.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4aad6628-4f5f-11ec-bafe-00d861bf4abb.png" alt=""></p>
 <h2 id="0x17-关于我的安全成长口袋">0x17 关于“我的安全成长口袋”</h2>
 <p>本圈主要用来记录自己技术生涯中短小的收获和知识的备忘，还有就是一些做安全服务工作中的感受。</p>
 <p>方向可能会在不断改变：渗透测试、CTF、高效生活、应急响应、安全建设、读后感、代码审计、漏洞复现、运维杂项等等… 我暂时关闭了发帖权限、分享权限； 因为我有一个小的朋友圈，经常讨论一些技术，会在这里用评论交流。</p>
 <p>关闭发帖权限是因为不指望加入的朋友分享，我发表的都是我的收获，不想因为别人影响自己的东西，妨碍搜索和温习。</p>
 <p>扫码可免费加入：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x24.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/44952636-4f5f-11ec-8c41-00d861bf4abb.png" alt=""></p>
 
 </div>
 <div class="container">

@@ -161,18 +161,18 @@ extern &quot;C&quot; __declspec(dllexport) void rundll(HWND hwnd,HINSTANCE hinst
 	MessageBox(NULL,TEXT(&quot;-Test-&quot;),TEXT(&quot;Rundll32&quot;),MB_OK);
 
 }
-</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/00fc4fb53fc6fe2066e0273a84b03e28.png" alt="2019-10-02-19-58-36"></p>
+</code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/75e720c2-4f5f-11ec-9c41-00d861bf4abb.png" alt="2019-10-02-19-58-36"></p>
 <ol start="2">
 <li>使用rundll32运行dll</li>
 </ol>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/1dfbb642309ac2a2a741c529751ce50c.png" alt="2019-10-02-20-00-18"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/76283bde-4f5f-11ec-93a3-00d861bf4abb.png" alt="2019-10-02-20-00-18"></p>
 <p>通过进程列表查看：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7c1e7c60d47a3d76d7f47a40c1354d68.png" alt="2019-10-02-20-00-54"></p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/f7afbb1ba62e1a1280cb3d1df141ad21.png" alt="2019-10-02-20-04-38"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/76705fd6-4f5f-11ec-b23c-00d861bf4abb.png" alt="2019-10-02-20-00-54"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/76b1dda8-4f5f-11ec-8072-00d861bf4abb.png" alt="2019-10-02-20-04-38"></p>
 <p>使用<code>wmic process get commandline</code>也可以获得命令行详情：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/b29994c93ed7dd8514360df92fbca405.png" alt="2019-10-02-20-02-49"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/76f1a816-4f5f-11ec-8683-00d861bf4abb.png" alt="2019-10-02-20-02-49"></p>
 <p>还有一种方式是获得该进程加载的模块，这是最精确的了；但windows 7不能直接看到，需要借助工具。（win10可以通过任务查看器看到..）</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/55c8bd2002161bf855fffea28e31c05d.png" alt="2019-10-02-20-08-24"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/772f8302-4f5f-11ec-ae6b-00d861bf4abb.png" alt="2019-10-02-20-08-24"></p>
 <p><strong>这个dll是没有DllMain也能够正常运行的，并不是所有的dll都有DllMain这个函数</strong></p>
 <p>我经过实验后发现，一个dll有没有DllMain完全取决于当前这个dll对于功能的需求，如果对装载方式的状态没有特定的要求，完全可以省去编写DllMain，因为DllMain不是一个导出函数，永远是一个由系统被动调用的函数。</p>
 

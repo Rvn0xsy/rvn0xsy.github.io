@@ -89,14 +89,14 @@
 <li>-D_GNU_SOURCE 以GNU规范标准编译</li>
 </ul>
 <p>编写好劫持puts函数的代码后，需要先生成一个Metasploit木马，使得在系统调用puts函数之前，都执行一次木马。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/a981d7261f39ee47c93b0e42a8a68a39.png" alt="2020-01-03-13-09-24"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7b96fd80-4f5f-11ec-83b8-00d861bf4abb.png" alt="2020-01-03-13-09-24"></p>
 <p><code>exploit/multi/script/web_delivery</code> 模块能够直接生成一条Python命令，这能够非常方便的获得Meterpreter。
 接下来，将劫持puts函数的代码做一些小改动，在执行puts之前，调用系统函数system来运行python命令，这样每次调用puts都可以获得Meterpreter会话。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/453478b8e6f0c711e8e33e92ff55600e.png" alt="2020-01-03-13-09-40"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7be0a598-4f5f-11ec-925d-00d861bf4abb.png" alt="2020-01-03-13-09-40"></p>
 <p>正常执行的过程：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/00ff5dc344eedf05cecd3480d2396db1.png" alt="2020-01-03-13-09-51"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7c18aa06-4f5f-11ec-a1ce-00d861bf4abb.png" alt="2020-01-03-13-09-51"></p>
 <p>执行whoami后，由于底层会调用puts函数，因此也会执行python命令，Metasploit不出意外的获得了Meterpreter：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/ad5b8eaa7081113775743b6929919ee4.png" alt="2020-01-03-13-10-01"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7c58f930-4f5f-11ec-9d8e-00d861bf4abb.png" alt="2020-01-03-13-10-01"></p>
 <p>接着，为了防止在短时间内获得多个重复的会话，因此需要优化一下代码，例如以某个文件行数和调用puts函数的次数进行取余，就能够达到执行多少次puts函数获得一次Meterpreter。
 优化代码如下：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
@@ -154,9 +154,9 @@
   result <span style="color:#f92672">=</span> new_puts(message);
   <span style="color:#66d9ef">return</span> result;
 }
-</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/6923c9d63c7a4b9563bd298f01df9c98.png" alt="2020-01-03-13-10-13"></p>
+</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7c9b8e1c-4f5f-11ec-be9d-00d861bf4abb.png" alt="2020-01-03-13-10-13"></p>
 <p>在执行至第零次、五次时，成功返回了会话：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7462655c88874bbc909aa75c7cb940f2.png" alt="2020-01-03-13-10-21"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7cdacac8-4f5f-11ec-bdf0-00d861bf4abb.png" alt="2020-01-03-13-10-21"></p>
 <p>COMMAND_NUM 可自定义</p>
 
 </div>

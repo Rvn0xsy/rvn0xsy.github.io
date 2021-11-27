@@ -68,7 +68,7 @@
 2 directories, 7 files
 </code></pre><h2 id="0x01-新建模块---窃取凭证">0x01 新建模块 - 窃取凭证</h2>
 <p>首先用VScode打开项目目录，在modules中新建一个<code>getpass.js</code>文件：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/91f74f861a47b14a69d9a40596642ffb.png" alt="2021-02-18-01-05-16"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b15016dc-4f5f-11ec-9920-00d861bf4abb.png" alt="2021-02-18-01-05-16"></p>
 <p>写入代码：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#75715e">/*
 </span><span style="color:#75715e">模拟一个对话框
@@ -98,13 +98,13 @@
     <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">cert</span>;
 }
 </code></pre></div><p>最后在<code>static.js</code>中引入：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7a4050bb1bbc64687ea77fd0b6482a20.png" alt="2021-02-18-01-07-02"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b1850a18-4f5f-11ec-9e2c-00d861bf4abb.png" alt="2021-02-18-01-07-02"></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#66d9ef">import</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">as</span> <span style="color:#a6e22e">GetPassword</span> <span style="color:#a6e22e">from</span> <span style="color:#e6db74">&#34;./modules/getpass.js&#34;</span>
 <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">GetPassword</span>.<span style="color:#a6e22e">getPassword</span>(<span style="color:#e6db74">&#34;请输入账号：&#34;</span>, <span style="color:#e6db74">&#34;请输入密码：&#34;</span>));
 </code></pre></div><p>查看站点：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/424eedccafdde55ecbf8152c96b831fe.png" alt="2021-02-18-01-09-04"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b1c06a22-4f5f-11ec-a9c9-00d861bf4abb.png" alt="2021-02-18-01-09-04"></p>
 <p>访问页面就会自动弹出提示框，当完成输入后，控制台会打印明文账号密码。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/4d15d223c8c24d184c4004a20b5801e6.png" alt="2021-02-18-01-10-02"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b1fdd51a-4f5f-11ec-b3a8-00d861bf4abb.png" alt="2021-02-18-01-10-02"></p>
 <h2 id="0x02-窃取凭证模块的思考">0x02 窃取凭证模块的思考</h2>
 <p>现阶段大部分网站已经解决了明文传输的问题，基本上很多都是通过JS进行加密，这让获取明文密码变得更加“麻烦了点”。</p>
 <p>上述演示的模块是在每一个HTTP请求中都会执行，肯定是不友好的，因此可以根据判断页面内容来进行弹出，还需要不断优化。</p>

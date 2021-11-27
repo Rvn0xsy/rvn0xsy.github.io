@@ -65,7 +65,7 @@
 <h2 id="0x01-网络套接字socket">0x01 网络套接字(SOCKET)</h2>
 <h3 id="什么是套接字">什么是套接字</h3>
 <p>在我的理解中，网络套接字是一个被封装在传输层与应用层之间的API接口。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-20/0x01.jpg" alt="enter description here" title="0x01"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/22779e12-4f5f-11ec-928f-00d861bf4abb.jpg" alt="enter description here" title="0x01"></p>
 <p>每一个方法都被操作系统支持，我们只需要知道创建套接字的流程以及网络基本知识就可以进行套接字的编程了。</p>
 <p>许多的远程利用攻击、漏洞验证工具都离不开套接字，没有套接字就没有现在能够进行“进程”与“进程”之间通信的过程实现。</p>
 <p>下面引用百科的解释：</p>
@@ -120,9 +120,9 @@
 <p>网络字节顺序是TCP/IP中规定好的一种数据表示格式，它与具体的CPU类型、操作系统等无关，从而可以保证数据在不同主机之间传输时能够被正确解释。网络字节顺序采用大端排序方式。</p>
 <p>而我们的操作系统，一般是小端排序方式，所以需要进行字节序的转换。</p>
 <h3 id="创建套接字的过程">创建套接字的过程</h3>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-20/0x02.jpg" alt="enter description here" title="0x02"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/22b224ba-4f5f-11ec-a5d3-00d861bf4abb.jpg" alt="enter description here" title="0x02"></p>
 <p>到这里，我们就需要动手写代码了！</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-20/0x03.png" alt="enter description here" title="0x03"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/22ecc1ec-4f5f-11ec-850e-00d861bf4abb.png" alt="enter description here" title="0x03"></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
 <span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
 </span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
@@ -178,7 +178,7 @@ UDP没有拥塞控制，因此网络出现拥塞不会使源主机的发送速�
 <h2 id="0x03-服务端模型">0x03 服务端模型</h2>
 <p>终于等到本文的重点了！</p>
 <p>先来个图：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-20/0x04.png" alt="enter description here" title="0x04"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/23324b40-4f5f-11ec-8d1b-00d861bf4abb.png" alt="enter description here" title="0x04"></p>
 <h3 id="模型解读">模型解读</h3>
 <p>首先，主进程用于创建套接字，管理僵尸进程，子进程用于服务监听，接收客户端发送来的数据，它主要用于创建孙进程，客户端派发N个任务就创建N个孙进程。</p>
 <p>这个模型很适合UDP协议呀，有木有！</p>
@@ -243,7 +243,7 @@ UDP没有拥塞控制，因此网络出现拥塞不会使源主机的发送速�
 </code></pre></div><h2 id="0x04-信号处理">0x04 信号处理</h2>
 <p>信号机制是进程之间相互传递消息的一种方法，信号全称为软中断信号，也有人称软中断。从它的命名可以看出，它的实质和使用很像中断，所有，信号可以说是进程控制的一部分</p>
 <p>这段话写的可能有点晦涩难懂，我就写一个程序给你看看：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-20/0x05.png" alt="enter description here" title="0x05"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/23685e4c-4f5f-11ec-8cac-00d861bf4abb.png" alt="enter description here" title="0x05"></p>
 <p>这段程序运行以后，我们一直按一次CTRL+C，会输出：“Are you sure quit this program ??”</p>
 <p>然后过10秒后，程序会输出“Exiting&hellip;..”，然后会自动退出……</p>
 <h3 id="信号列表">信号列表</h3>

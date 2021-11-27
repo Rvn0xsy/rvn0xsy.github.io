@@ -68,7 +68,7 @@
 <p>在第一行添加：</p>
 <p><code>print(&quot;[*] nse_main.lua first excute ... \n&quot;)</code></p>
 <p>保存后，使用一个脚本观察效果：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/f49c27bfcd565d76e90d9ddb703c9724.png" alt="2019-04-24-09-57-34"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6d832994-4f5f-11ec-9c52-00d861bf4abb.png" alt="2019-04-24-09-57-34"></p>
 <p>可以发现，在nmap启动后就会执行nse_main.lua中的代码。</p>
 <h2 id="0x03-扩展脚本执行规则">0x03 扩展脚本执行规则</h2>
 <p>在nse_main.lua的64行左右，定义了一些规则：</p>
@@ -106,7 +106,7 @@ postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function
 	print(<span style="color:#e6db74">&#34;postrule()&#34;</span>)
 <span style="color:#66d9ef">end</span>
 </code></pre></div><p>使用nmap扫描一个主机调用这个脚本看看执行效果：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/0e02fc3de8ab518d7526b6b68245222d.png" alt="2019-04-24-09-59-40"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6deab500-4f5f-11ec-980d-00d861bf4abb.png" alt="2019-04-24-09-59-40"></p>
 <p>至此我们就清楚了扩展脚本的执行流程，后续我们将会慢慢细化其中的知识点。</p>
 <h2 id="0x04-扩展脚本action函数">0x04 扩展脚本—action函数</h2>
 <p>在前面一小节的代码中，我们发现了action这个函数，它的主要作用是用于在portrule或hostrule返回true之后自动执行的函数。</p>
@@ -125,7 +125,7 @@ action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function
 postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
 <span style="color:#66d9ef">end</span>
 </code></pre></div><p>我本机开启了一个80端口，但是action执行了两次：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/57adafe5f7191efea541d46accaee428.png" alt="2019-04-24-10-00-22"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6e23d7b8-4f5f-11ec-bb71-00d861bf4abb.png" alt="2019-04-24-10-00-22"></p>
 <p>第一次是hostrule返回true而调用的，第二次是由portrule函数扫描到80端口返回true而调用的。</p>
 <p>下一章：扩展脚本-主机、端口对象</p>
 

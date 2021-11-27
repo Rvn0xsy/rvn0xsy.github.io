@@ -98,7 +98,7 @@ http {
 </code></pre><p>当OpenResty环境以<code>nginx.conf</code>作为配置文件启动的话，访问网站会输出<code>Hello,Rvn0xsy</code>。</p>
 <h3 id="lua-ngx-api---block">Lua Ngx API - Block</h3>
 <p>《OpenResty 最佳实践》中提供了一个流程图：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/5f574b2d15e2743767e2914af6691728.png" alt="2021-02-16-16-48-59"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b04661e2-4f5f-11ec-ad0b-00d861bf4abb.png" alt="2021-02-16-16-48-59"></p>
 <p>根据这个流程图，可以将Lua代码放入不同的流程中对数据进行修改、删除、添加等。</p>
 <p>如上面的<code>Hello,Rvn0xsy</code>例子，就是通过<code>content_by_lua_block</code>这个环节对响应内容进行修改。</p>
 <p>本文用到的Block有：</p>
@@ -165,7 +165,7 @@ http {
 <h3 id="使用es6标准将js模块化">使用ES6+标准将JS模块化</h3>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;/7276df76835ed2272cc0e59f55e49902/static.js&#39;</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;module&#39;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;
 </code></pre></div><p>其中<code>static.js</code>就是引入的Evil JS，添加了<code>type='module'</code>是为了启用<a href="https://www.freecodecamp.org/news/learn-modern-javascript/">ES6+</a>标准。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/8e4954b7fb5035a91688a21d78633140.png" alt="2021-02-16-17-10-54"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b087b05c-4f5f-11ec-8b14-00d861bf4abb.png" alt="2021-02-16-17-10-54"></p>
 <p>为了不和源站的目录冲突，<code>7276df76835ed2272cc0e59f55e49902</code>其实是一个虚拟的目录，通过<code>location</code>映射即可。</p>
 <pre tabindex="0"><code>location ^~ /7276df76835ed2272cc0e59f55e49902/ {
                 alias    /tmp/pricking/static/;
@@ -298,9 +298,9 @@ echo <span style="color:#e6db74">&#34;[+] Evil js URL :  </span>$PROXY_PASS_HOST
       <span style="color:#f92672">PROXY_SOURCE_HOST</span>: <span style="color:#ae81ff">payloads.online</span>
       <span style="color:#f92672">NGINX_LISTEN_PORT</span>: <span style="color:#ae81ff">80</span>
       <span style="color:#f92672">EVIL_JS_URI</span>: <span style="color:#ae81ff">b026324c6904b2a9cb4b88d6d61c81d1</span>
-</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/90e7da8488bdf08b40b763330aaa583f.png" alt="2021-02-16-17-40-24"></p>
+</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b0c41b32-4f5f-11ec-a953-00d861bf4abb.png" alt="2021-02-16-17-40-24"></p>
 <p>日志：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2bbb5c207533adc7845d579c730bdd84.png" alt="2021-02-16-17-41-55"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b1008158-4f5f-11ec-b052-00d861bf4abb.png" alt="2021-02-16-17-41-55"></p>
 <h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://github.com/openresty/docker-openresty">https://github.com/openresty/docker-openresty</a></li>

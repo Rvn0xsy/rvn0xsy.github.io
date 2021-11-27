@@ -50,7 +50,7 @@
 
 <div class="container">
     <h1>Cobalt Strike Aggressor Script （第二课）</h1>
-    <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/e320cfd0c5bfb563f43f2d9f3c4f090c.png" alt=""></p>
+    <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/928c40c2-4f5f-11ec-83fc-00d861bf4abb.png" alt=""></p>
 <h2 id="基础菜单">基础菜单</h2>
 <p>以popup当做修饰符号的函数体是菜单，一般是Cobalt Strike的菜单栏；</p>
 <p>先构建一个简单的菜单：</p>
@@ -70,19 +70,19 @@
 }
 </code></pre><p>紧接着还有一个重要的菜单函数：<code>menubar(&quot;Event-Say&quot;, &quot;event_say&quot;);</code></p>
 <p>第一个参数是菜单名称，第二个是函数名称，这个函数通过参数将菜单名称与函数名绑定起来。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/e41d4bbf548823ea9628a2851132845b.png" alt="2020-03-01-11-43-30"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/92da6cd4-4f5f-11ec-9f1d-00d861bf4abb.png" alt="2020-03-01-11-43-30"></p>
 <h2 id="日志函数">日志函数</h2>
 <p>通过elog函数可以打印事件日志：</p>
 <pre tabindex="0"><code>elog(&quot;something ...&quot;);
-</code></pre><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/8f4661412f64e8f45c087dc08bd28ffc.png" alt="2020-03-01-11-43-38"></p>
+</code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/93151ca8-4f5f-11ec-8a98-00d861bf4abb.png" alt="2020-03-01-11-43-38"></p>
 <p>我们可以封装一个函数，名为say：</p>
 <pre tabindex="0"><code>sub say {
 	elog(&quot;\c3Hello Everyone!&quot;);
 }
 </code></pre><p><code>\c</code>是Cobalt Strike的彩色样式开关，类似的还有其他颜色：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/917bec98b3cc352ce80d10861909f4ae.png" alt="2020-03-01-11-43-47"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/937309da-4f5f-11ec-86b9-00d861bf4abb.png" alt="2020-03-01-11-43-47"></p>
 <p>执行结果：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7bbc5f8ebe902195f3b44bd096184988.png" alt="2020-03-01-11-43-53"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/93bef9bc-4f5f-11ec-b54d-00d861bf4abb.png" alt="2020-03-01-11-43-53"></p>
 <h2 id="对话框-输入">对话框-输入</h2>
 <pre tabindex="0"><code>dialog(&quot;Hello&quot;, # 对话框标题-字符串 
 %(name =&gt; &quot;tom&quot;),  # 对话框输入项及默认值-hashes
@@ -112,8 +112,8 @@ dbutton_action($dialog, &quot;Go&quot;);
 
 </code></pre><p>dialog的手册：https://cobaltstrike.com/aggressor-script/functions.html#dialog</p>
 <p>当点击 菜单项时，弹出对话框：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/999e906c81ed31d4e3dadb432c2b2a30.png" alt="2020-03-01-11-44-03"></p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/67afe867ab28b61c48f028a8bcec5baf.png" alt="2020-03-01-11-44-10"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/940884d8-4f5f-11ec-9437-00d861bf4abb.png" alt="2020-03-01-11-44-03"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9451dc00-4f5f-11ec-bcca-00d861bf4abb.png" alt="2020-03-01-11-44-10"></p>
 
 </div>
 <div class="container">

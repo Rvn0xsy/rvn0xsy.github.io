@@ -140,8 +140,8 @@ iptables-save
 <li>寻找未被使用的NAT端口</li>
 </ol>
 <p>如何判断目标正在使用这个NAT端口，我的办法是使用Nmap进行扫描。一些NAT规则大多数会采用相同端口映射的关系，比如：8080:8080。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/4177c26e5b36be59f6fb04e9a065ef89.png" alt="2020-11-01-22-31-26"></p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/51330e9e0c0d862859468f98cba68cab.png" alt="2020-11-01-22-32-56"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a3247094-4f5f-11ec-8ef1-00d861bf4abb.png" alt="2020-11-01-22-31-26"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a366145e-4f5f-11ec-b458-00d861bf4abb.png" alt="2020-11-01-22-32-56"></p>
 <p>通过信息收集，了解到内网IP端口是192.168.1.128。</p>
 <p>映射关系：</p>
 <pre tabindex="0"><code class="language-plantuml" data-lang="plantuml">title 靶场结构
@@ -164,11 +164,11 @@ note left: 假设172.17.0.1是攻击者出口
 攻击者IP --&gt; 防火墙规则1 : 访问第一个业务
 防火墙规则1 -&gt; DMZ网站业务1: NAT
 </code></pre><p>这个时候扫描172.17.0.2查看开放状态：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/e371feffc3460b67740da6806cb0519f.png" alt="2020-11-01-22-36-44"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a39ded20-4f5f-11ec-be81-00d861bf4abb.png" alt="2020-11-01-22-36-44"></p>
 <p>我为了模拟真实环境，还映射了其他端口：8081。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/bce334e86115fadb4963a8cdaa409128.png" alt="2020-11-01-22-38-21"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a3dda3b6-4f5f-11ec-8c80-00d861bf4abb.png" alt="2020-11-01-22-38-21"></p>
 <p>真实场景下，如果是非映射端口，将会是filtered，这种的情况是数据包到达防火墙后就被DROP掉了。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/48d002a99bbf98eb2ea4d93d1d85af4a.png" alt="2020-11-01-22-42-16"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a416ea5e-4f5f-11ec-b2b4-00d861bf4abb.png" alt="2020-11-01-22-42-16"></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8080</span> -j DNAT --to-destination 192.168.1.128:8080
 iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style="color:#ae81ff">8080</span> -j SNAT --to-source 192.168.1.129
 
@@ -179,11 +179,11 @@ iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#a
 iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style="color:#ae81ff">8081</span> -j SNAT --to-source 192.168.1.129
 iptables -P INPUT DROP
 iptables-save
-</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/a74ede94f9c8c01b663e60550499847d.png" alt="2020-11-01-23-10-02"></p>
+</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a4529b9e-4f5f-11ec-b01a-00d861bf4abb.png" alt="2020-11-01-23-10-02"></p>
 <p>倘若在8081 closed情况下，我们可以直接nc监听起来进行测试：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/190df37938b39aea055cc83808cb351c.png" alt="2020-11-01-23-12-54"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a48c4d12-4f5f-11ec-91c1-00d861bf4abb.png" alt="2020-11-01-23-12-54"></p>
 <p>这个时候，内网的服务器监听了8081端口，成功的利用NAT规则使得我们可以直接正向连接到NC。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7091e7b3063f741e7c602605482c2bee.png" alt="2020-11-01-23-14-06"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a4c64e5e-4f5f-11ec-8081-00d861bf4abb.png" alt="2020-11-01-23-14-06"></p>
 <h3 id="如何利用">如何利用？</h3>
 <p>我们可以将nc这个程序换成别的，比如：socks5的服务端程序，监听8081端口，如此一来就能够直接连接 <code>socks5:172.17.0.2:8081</code>作为内网的入口。</p>
 <pre tabindex="0"><code class="language-plantuml" data-lang="plantuml">title 利用图

@@ -66,7 +66,7 @@ $ docker-compose up -d
 <li>攻击者域名 proxy.payloads.online -&gt; 127.0.0.1</li>
 </ul>
 <p>假设受害服务器（172.16.42.135 ）有一个站点：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/6b41bbce9503d7a27873e067c0121213.png" alt="2021-02-18-00-47-16"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b25032a6-4f5f-11ec-ba4c-00d861bf4abb.png" alt="2021-02-18-00-47-16"></p>
 <p>需要用户输入正确的账号密码才可以访问内部的功能。</p>
 <p>修改docker-compose.yml:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">version</span>: <span style="color:#e6db74">&#39;3&#39;</span>
@@ -83,11 +83,11 @@ $ docker-compose up -d
       <span style="color:#f92672">PROXY_SOURCE_HOST</span>: <span style="color:#ae81ff">172.16.42.135</span>
       <span style="color:#f92672">NGINX_LISTEN_PORT</span>: <span style="color:#ae81ff">80</span>
       <span style="color:#f92672">EVIL_JS_URI</span>: <span style="color:#ae81ff">b026324c6904b2a9cb4b88d6d61c81d1</span>
-</code></pre></div><p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2afb4b2a080c085b332acf5e5b356187.png" alt="2021-02-18-00-52-45"></p>
+</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b2851dfe-4f5f-11ec-a2e4-00d861bf4abb.png" alt="2021-02-18-00-52-45"></p>
 <p>此时访问http://proxy.payloads.online 就等同于访问受害服务器（172.16.42.135 ）。</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/25c6eeb1a9ac59b47e0ae9d92e132558.png" alt="2021-02-18-00-53-45"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b2bef9de-4f5f-11ec-874c-00d861bf4abb.png" alt="2021-02-18-00-53-45"></p>
 <p>当用户输入凭证或访问水坑网站，在<a href="https://github.com/Rvn0xsy/Pricking">Pricking</a>项目目录中会生成<code>access.log</code>：</p>
-<p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/c0d9624a54036a0c6a92a25e22bd721a.png" alt="2021-02-18-00-55-35"></p>
+<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b3146d74-4f5f-11ec-8daa-00d861bf4abb.png" alt="2021-02-18-00-55-35"></p>
 
 </div>
 <div class="container">
