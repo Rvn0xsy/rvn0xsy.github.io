@@ -23,7 +23,7 @@ jobs:
         run: grep -rl ../../../static ./content/post
         
       - name: Replace Image Path
-        run: pwd && ls -al && sed -i "s/..\/..\/..\/static\/images/https:\/\/cdn.jsdelivr.net\/gh\/Rvn0xsy\/rvn0xsy.github.io\/static\/images/g" `grep -rl ../../../static ./content/post`
+        run: sed -i "s/..\/..\/..\/static\/images/https:\/\/cdn.jsdelivr.net\/gh\/Rvn0xsy\/rvn0xsy.github.io\/static\/images/g" ./content/post/2021/2021-11-27-test.md
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
