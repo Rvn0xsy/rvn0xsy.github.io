@@ -16,6 +16,15 @@
     </item>
     
     <item>
+      <title>图床测试</title>
+      <link>https://payloads.online/archivers/2021-11-27/1/</link>
+      <pubDate>Tue, 23 Nov 2021 10:10:08 +0800</pubDate>
+      
+      <guid>https://payloads.online/archivers/2021-11-27/1/</guid>
+      <description>测试图床加载</description>
+    </item>
+    
+    <item>
       <title>BeingDebugged反调试技巧</title>
       <link>https://payloads.online/archivers/2021-09-13/1/</link>
       <pubDate>Mon, 13 Sep 2021 10:10:08 +0800</pubDate>
@@ -175,15 +184,6 @@
       
       <guid>https://payloads.online/archivers/2020-07-16/1/</guid>
       <description>本文主要参考通过OXID解析器获取Windows远程主机上网卡地址的拓展...</description>
-    </item>
-    
-    <item>
-      <title>如何实现一个Atexec</title>
-      <link>https://payloads.online/archivers/2020-06-28/1/</link>
-      <pubDate>Sun, 28 Jun 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://payloads.online/archivers/2020-06-28/1/</guid>
-      <description>本文主要从程序编写的角度实现atexec...</description>
     </item>
     
   </channel>
