@@ -18,6 +18,9 @@ jobs:
 
       - name: Build 
         run: hugo
+      
+      - name: Get Replace Markdown Files
+        run: grep -rl ../../../static ./content/post
         
       - name: Replace Image Path
         run: pwd && ls -al && sed -i "s/..\/..\/..\/static\/images/https:\/\/cdn.jsdelivr.net\/gh\/Rvn0xsy\/rvn0xsy.github.io\/static\/images/g" `grep -rl ../../../static ./content/post`
