@@ -11,7 +11,7 @@ url: /archivers/2021-07-20/1
 
 Kubernetes 是一个可移植的、可扩展的开源平台，用于管理容器化的工作负载和服务，可促进声明式配置和自动化。 Kubernetes 拥有一个庞大且快速增长的生态系统。Kubernetes 的服务、支持和工具广泛可用。
 
-![2021-07-20-11-19-39](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/60ab9641f6ec3ecfec996616ef0837ab.png)
+![2021-07-20-11-19-39](../../../static/images/b3682bc6-4f5f-11ec-a3a0-00d861bf4abb.png)
 
 **传统部署时代：**
 
@@ -44,7 +44,7 @@ Kubernetes有如下几个与本文相关的概念：
 
 Kubernetes 通过将容器放入在节点（Node）上运行的 Pod 中来执行你的工作负载。 节点可以是一个虚拟机或者物理机器，取决于所在的集群配置。最容易理解的例子：
 
-![2021-07-20-10-38-26](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/527d6800fc5f0a462b9dc90a1c3908f9.png)
+![2021-07-20-10-38-26](../../../static/images/b3b30a38-4f5f-11ec-8073-00d861bf4abb.png)
 
 该集群有三个节点，我可以在这三个节点上创建很多个Pod，而Pod中可以包含多个容器。在所有的节点中，至少要有一个Master节点，Master节点是第一个加入集群的机器，它具有整个集群的最高权限，本文的目的就是研究如何通过其他节点，横向移动到Master节点，因为Secret敏感信息(令牌、账户密码、公私钥等等)都存储在Kubernetes的etcd数据库上。
 
@@ -71,7 +71,7 @@ Kubernetes可以约束一个 Pod 只能在特定的节点上运行。
 
 当前实验环境有三个节点，其中一个为Master节点，其余的都是普通节点。
 
-![2021-07-20-10-56-11](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/fb788c1977b181ed1fcebec421adaee0.png)
+![2021-07-20-10-56-11](../../../static/images/b3ef7cfc-4f5f-11ec-984e-00d861bf4abb.png)
 
 当前机器是node1，普通节点，节点全部为健康状态，接下来要利用创建Pod的功能，横向到k8s-master。
 
@@ -84,7 +84,7 @@ Kubernetes可以约束一个 Pod 只能在特定的节点上运行。
 $ kubectl describe node <Node Name>
 ```
 
-![2021-07-20-10-59-50](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/4de02e057736c6c005e1a521fc7ad7d7.png)
+![2021-07-20-10-59-50](../../../static/images/b454933a-4f5f-11ec-a431-00d861bf4abb.png)
 
 2. 创建带有容忍参数的Pod
 
@@ -118,13 +118,13 @@ path: /
 type: Directory
 ```
 
-![2021-07-20-11-02-18](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/a092be4614e40a1c419aeb417f00d5c5.png)
+![2021-07-20-11-02-18](../../../static/images/b4bba0de-4f5f-11ec-b260-00d861bf4abb.png)
 
 
 在多次创建Pod后，会发现Pod会在Master节点上出现，再利用kubectl进入容器，执行逃逸。
 
 
-![2021-07-20-11-06-24](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/71842cf8d76f15aa1b04260f2186cf21.png)
+![2021-07-20-11-06-24](../../../static/images/b5136788-4f5f-11ec-9315-00d861bf4abb.png)
 
 至此，逃逸完成，能够通过写公私钥的方式控制Master宿主机。
 

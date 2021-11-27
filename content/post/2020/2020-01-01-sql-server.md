@@ -15,7 +15,7 @@ url: /archivers/2020-01-01/3
 
 一开始在一处比较复杂的功能点发现了SQL Server的注入，也是首先利用AND进行判断：
 
-![2020-01-03-13-13-15](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/ff14d4d92d1d2c87226c80bf934d541f.png)
+![2020-01-03-13-13-15](../../../static/images/7fe2d620-4f5f-11ec-8635-00d861bf4abb.png)
 
 参数：ModuleType存在注入点，但是后面有一层站点全局输入的检测机制，从简单的测试来看，是不存在语法分析的一种，比较容易绕过。
 
@@ -31,13 +31,13 @@ url: /archivers/2020-01-01/3
 
 那么我猜想到了一个简单的表达式，似乎和这个过滤规则比较相向：`/*\w{0,}*/`
 
-![2020-01-03-13-13-28](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/6698199e49414f5cdf5e0cb74725decb.png)
+![2020-01-03-13-13-28](../../../static/images/802bac1a-4f5f-11ec-9e26-00d861bf4abb.png)
 
 ## 0x03 tamper 自动化实现
 
 这里我比较懒，直接改了以下space2comment.py，这个脚本在Kali Linux中的sqlmap目录下：
 
-![2020-01-03-13-13-37](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/b5b958529f18b8b570f16eca2cd1ac03.png)
+![2020-01-03-13-13-37](../../../static/images/806ce52c-4f5f-11ec-b8ca-00d861bf4abb.png)
 
 核心代码：
 
@@ -62,13 +62,13 @@ for i in xrange(len(payload)):
 
 只需要替换`/**/`即可：
 
-![2020-01-03-13-13-49](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/cb7b577625d7a6106e39687558cdc6c7.png)
+![2020-01-03-13-13-49](../../../static/images/80aa0ec0-4f5f-11ec-b7ad-00d861bf4abb.png)
 
 接着，就可以跑出注入了\~
 
 PS：我比较习惯于添加`--random-agent`参数，理由是在注入的过程中，避免被流量感知设备发现。
 
-![2020-01-03-13-14-00](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/1ea40c2f77061bc94c939aaf8a1c01a5.png)
+![2020-01-03-13-14-00](../../../static/images/80ea6114-4f5f-11ec-8c7d-00d861bf4abb.png)
 
 ## 0x04 xp_cmdshell
 
@@ -83,7 +83,7 @@ payload = payload.replace("master..","/***//***/")
 
 点击发包，还是无法执行，被360拦截了！
 
-![2020-01-03-13-14-22](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/fc6bd35eb07d11206d2bcf9ccb701553.png)
+![2020-01-03-13-14-22](../../../static/images/81373b24-4f5f-11ec-bb26-00d861bf4abb.png)
 
 这个Error Code 5 ，是Windows的错误代码，中文意思就是：“拒绝访问”。
 
@@ -119,7 +119,7 @@ declare @shell int exec sp_oacreate 'wscript.shell',@shell output exec sp_oameth
 
 还记得之前的IIS 7.5吗，**IIS在接收到一个请求后，会自动将数据进行Unicode解码，如果流量设备、WAF不支持此特性的话，就可以进行绕过**，这里我着重解决中文目录的问题。
 
-![2020-01-03-13-14-38](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/259de32b7fe3faac8fa6bff186660e07.png)
+![2020-01-03-13-14-38](../../../static/images/8185efc6-4f5f-11ec-b531-00d861bf4abb.png)
 
 到这此文就结束了，我并没有成功Getshell，只是回顾我解决问题的思维方式，希望能对大家有用！
 

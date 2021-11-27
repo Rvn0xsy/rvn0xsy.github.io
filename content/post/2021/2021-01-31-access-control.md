@@ -46,24 +46,24 @@ ntdll!_SECURITY_DESCRIPTOR
 
 一个文件的权限描述符主要表现为：
 
-![2021-01-31-21-43-05](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/3323c6ebb98e236818e517c6f12cc6ad.png)
+![2021-01-31-21-43-05](../../../static/images/a87eb66c-4f5f-11ec-adb7-00d861bf4abb.png)
 
 上图中的安全选项卡主要是表述了sethc.exe这个文件能够被哪些用户访问，并且这些用户拥有sethc.exe的哪些权限，如：读取、读取和执行、写入、完全控制等。
 
-![2021-01-31-21-44-40](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/745e9f6efd7a9f9598d3f8648355b846.png)
+![2021-01-31-21-44-40](../../../static/images/a8c5e5a0-4f5f-11ec-b9be-00d861bf4abb.png)
 
 ## 0x02 安全描述符的组成
 
 DACL通过一系列ACE定义了所有被允许或者禁止的安全对象的访问者，SACL描述了系统应该审核的内容，系统会根据审核项产生对应的系统日志。
 
-![2021-01-31-21-45-22](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/17139925a0e99f7f36e652bb5edb680d.png)
+![2021-01-31-21-45-22](../../../static/images/a90af0be-4f5f-11ec-94bd-00d861bf4abb.png)
 
 > 权限选项卡代表了 DACL，审核选项卡代表了 SACL。
 
 ### 什么是SID（Security Identifier，SID）
 
 
-![2021-01-31-21-49-18](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/3689a630b8ae676d5f75b65e4bd985f1.png)
+![2021-01-31-21-49-18](../../../static/images/a95f5988-4f5f-11ec-8610-00d861bf4abb.png)
 
 每个参与权限决策的角色都拥有一个SID，这个SID为了保证角色的唯一性。
 
@@ -102,7 +102,7 @@ S-[修订级别]-[权值]-[标识符]-[相对标识符]
 
 ## 0x03 自主访问控制列表（Discretionary access control list，DACL）
 
-![2021-01-31-21-51-33](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/8db54a1d87fe185b5d14e0146c79f426.png)
+![2021-01-31-21-51-33](../../../static/images/a99be9c0-4f5f-11ec-93a4-00d861bf4abb.png)
 
 
 解读：每一个Windows进程都拥有一个线程，当程序想要访问某个安全对象时，系统会提取当前线程的访问令牌，然后将访问令牌的权限和被访问的安全对象DACL进行比较。
@@ -120,7 +120,7 @@ S-[修订级别]-[权值]-[标识符]-[相对标识符]
 
 ## 0x04 系统访问控制列表（System access control list，SACL）
 
-![2021-01-31-22-00-15](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/c4e7d07554bcd96d6aef3489929148f0.png)
+![2021-01-31-22-00-15](../../../static/images/a9d46df4-4f5f-11ec-98aa-00d861bf4abb.png)
 
 系统访问控制列表主要是配置审核对象的ACE，当这些ACE被允许或拒绝的时候，系统将自动产生“安全”日志。
 
@@ -133,7 +133,7 @@ S-[修订级别]-[权值]-[标识符]-[相对标识符]
 - 访问的用户名等
 - ...
 
-![2021-01-31-22-03-10](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/e41d8ccd2e17b4e593b8c2afadd55b59.png)
+![2021-01-31-22-03-10](../../../static/images/aa196238-4f5f-11ec-9987-00d861bf4abb.png)
 
 
 ## 0x05 修改访问控制列表（Access control list，ACL）
@@ -218,7 +218,7 @@ Windows 的令牌类型：
 
 Windows将每一个权限都以二进制位标示，但在C语言头文件中是以16禁止标示的。
 
-![2021-01-31-22-10-47](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/53e19171b35c621ca5d52a338cd04f2a.png)
+![2021-01-31-22-10-47](../../../static/images/aa5f8a9c-4f5f-11ec-9212-00d861bf4abb.png)
 
 两个权限的组合就是两个二进制数的与运算结果，由此可以看出Windows进程权限最大可以表示0xFFFF个，也就是2个字节，当然一般情况下用不到那么多。同时，我们也可以推断，任何可以设置权限的安全对象，想要设置全部权限`ALL_ACCESS`，可以全部用0xFFFFFFFF填充。
 
@@ -234,7 +234,7 @@ Windows将每一个权限都以二进制位标示，但在C语言头文件中是
 
 场景：某些终端安全软件禁止用户转储lsass.exe进程内存，但我们可以先进程注入到lsass.exe，然后再转储内存。
 
-![2021-01-31-22-16-26](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/1295bf932f2f68f39bc801ab2685f4e2.png)
+![2021-01-31-22-16-26](../../../static/images/aa9a27d8-4f5f-11ec-b281-00d861bf4abb.png)
 
 小技巧：有些软件在失败后返回一些数字，其实是Windows错误代码，我们可以通过`net helpmsg`命令来查看详情。
 
@@ -242,7 +242,7 @@ Windows将每一个权限都以二进制位标示，但在C语言头文件中是
 net helpmsg <错误代码>
 ```
 
-![2021-01-31-22-17-03](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/d0a32acc8540964e278cadc2b4ebc1ef.png)
+![2021-01-31-22-17-03](../../../static/images/aace09a4-4f5f-11ec-a006-00d861bf4abb.png)
 
 
 ## 0x09 文件的权限修改
@@ -265,7 +265,7 @@ icacls c:\windows\* /save AclFile /T
 
 还可以查看文件的权限，例如常见的Shift后门：
 
-![2021-01-31-22-17-42](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/a51beeb1dc8a459081c277b5d73055dd.png)
+![2021-01-31-22-17-42](../../../static/images/ab070f92-4f5f-11ec-a1c5-00d861bf4abb.png)
 
 现如今普通用户，包括管理员、系统账户都不能随意更改这个文件了，能够看出Windows对这块有做加强。
 
@@ -277,7 +277,7 @@ icacls c:\windows\* /save AclFile /T
 net share everyone=C:\Windows /grant:everyone,full
 ```
 
-![2021-01-31-22-18-14](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/36fa07c6a69d5488ae07ff181e1e9a1d.png)
+![2021-01-31-22-18-14](../../../static/images/ab3ec108-4f5f-11ec-82f4-00d861bf4abb.png)
 
 
 ## 0x10 创造提权漏洞——服务后门
@@ -293,13 +293,13 @@ net share everyone=C:\Windows /grant:everyone,full
 
 服务是最容易被利用的，通常情况下，Guest用户是无法启动、创建服务的，通过修改某个服务的ACL，让Guest轻松创建以SYSTEM权限运行的进程。
 
-![2021-01-31-22-19-00](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/a133d4e2a6c445e6d8c6d0958e0896aa.png)
+![2021-01-31-22-19-00](../../../static/images/ab84c306-4f5f-11ec-ae41-00d861bf4abb.png)
 
 由于Windows没有提供修改服务的窗口操作接口，所以按常规情况来看，上机查看的管理员不容易发现这类后门。
 
 > [https://docs.microsoft.com/en-us/windows/win32/services/modifying-the-dacl-for-a-service](https://docs.microsoft.com/en-us/windows/win32/services/modifying-the-dacl-for-a-service)
 
-![2021-01-31-22-19-23](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/9c9018725dd03ebfa7c65a35af351b2b.png)
+![2021-01-31-22-19-23](../../../static/images/abc10a82-4f5f-11ec-8408-00d861bf4abb.png)
 
 ### Powershell更改服务权限
 
@@ -316,7 +316,7 @@ Set-Service -Name "BITS" -SecurityDescriptorSddl $SDDL
 
 想象一个场景，如果随时都拥有一个服务器的权限，但是不能长时间登录某个特权账户，那么可以留置一个任意用户可以修改的系统服务，方便随时提权。
 
-![2021-01-31-22-27-28](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/15e51162189ade667eab88c3dee28e33.png)
+![2021-01-31-22-27-28](../../../static/images/ac1169be-4f5f-11ec-98c9-00d861bf4abb.png)
 
 ```
 sc setsd <Service Name> <SDDL String>
@@ -327,7 +327,7 @@ sc sdset defragsvc "D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO
 
 DCSync是域控之间同步域数据的一个传递方式，一旦攻击者获取了具有域复制权限的特权帐户，攻击者就可以利用复制协议来模仿域控制器，诱使域控制器将域用户相关的数据发送出来。
 
-![2021-01-31-22-28-23](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/096326c7f2f688515dfa17874be3f91c.png)
+![2021-01-31-22-28-23](../../../static/images/ac48005a-4f5f-11ec-be47-00d861bf4abb.png)
 
 其中最核心的一步就是调用 [GetNCChanges](https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-drsr/b63730ac-614c-431c-9501-28d6aca91894?redirectedfrom=MSDN) 复制用户凭据。
 
@@ -368,7 +368,7 @@ Windows活动目录除了支持常规权限以外，还拥有自身对扩展权�
 
 从指定NC复制更改所需的扩展权限。
 
-![2021-01-31-22-29-40](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/1100dbde69da8ab05abda6112f315ec4.png)
+![2021-01-31-22-29-40](../../../static/images/acb2c0c0-4f5f-11ec-be1f-00d861bf4abb.png)
 
 为了方便未来扩展新的特性，每一个扩展权限都具有一个GUID值，如果要对域对象赋予这个权限，可以传入这个GUID值。GUID等效于权限常量。
 
@@ -389,7 +389,7 @@ DS-Replication-Get-Changes扩展权限支持的系统版本：
 
 [Powerview](https://github.com/PowerShellMafia/PowerSploit/blob/dev/Recon/PowerView.ps1#L8270)实现了Powershell版本的DCSync后门植入：
 
-![2021-01-31-22-30-43](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/80466ac445595447e9b11290cd4147d7.png)
+![2021-01-31-22-30-43](../../../static/images/acece174-4f5f-11ec-991c-00d861bf4abb.png)
 
 ```cpp
 Add-DomainObjectAcl -TargetIdentity "DC=Domain,DC=com" -PrincipalIdentity <UserName> -Rights DCSync -Verbose
@@ -397,14 +397,14 @@ Add-DomainObjectAcl -TargetIdentity "DC=Domain,DC=com" -PrincipalIdentity <UserN
 
 我这里实现了一个C++版本的：[https://github.com/Rvn0xsy/PDacl](https://github.com/Rvn0xsy/PDacl)
 
-![2021-01-31-22-33-32](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/f6516259d175c841e63575cacd95a7aa.png)
+![2021-01-31-22-33-32](../../../static/images/ad26d0be-4f5f-11ec-aa64-00d861bf4abb.png)
 
-![2021-01-31-22-33-58](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7ac3672261363352f05cff161840dab6.png)
+![2021-01-31-22-33-58](../../../static/images/ad79864c-4f5f-11ec-90cc-00d861bf4abb.png)
 
 
 在Cobalt Strike中以普通用户权限转储NTLM验证成功：
 
-![2021-01-31-22-34-59](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/f7079ec60a5abbd69c8177725823f466.png)
+![2021-01-31-22-34-59](../../../static/images/adbf79e0-4f5f-11ec-8d7f-00d861bf4abb.png)
 
 C++实现过程：
 

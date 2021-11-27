@@ -13,7 +13,7 @@ url: /archivers/2021-08-11/1
 
 这里使用Active Directory Explorer连接一个域环境进行展示：
 
-![2021-08-11-11-56-03](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/3ff7db44c9c4e2410c69c12f5028bda6.png)
+![2021-08-11-11-56-03](../../../static/images/b59ad772-4f5f-11ec-9056-00d861bf4abb.png)
 
 其中 `DC=domain.16,DC=local` 以下（包含本身），都是条目，每一个条目点开都拥有N个属性名和属性值，右侧密密麻麻的就是属性名和属性值。
 
@@ -21,7 +21,7 @@ url: /archivers/2021-08-11/1
 
 它表示条目在LDAP目录树中从根出发的绝对路径，是条目的唯一标识。其中上一节中的DC=domain16,DC=local就是域的根，这个根的DN就是DC=domain16,DC=local，根的DN通常被称为Base DN。
 
-![2021-08-11-11-56-39](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/11914e7ec7a6f6ad7fd01827f690ae8f.png)
+![2021-08-11-11-56-39](../../../static/images/b5e8c144-4f5f-11ec-8efa-00d861bf4abb.png)
 
 我们随便点开一个计算机条目观看，发现他们都拥有一个objectCatory属性，这个属性的值就是用于描述条目的路径，也就是说，如果要从LDAP中精确的寻找到某个对象，就可以通过DN来寻找，编程的思路也是如此。
 
@@ -41,13 +41,13 @@ url: /archivers/2021-08-11/1
 
 例如在Windows域内，每一个计算机都至少继承了computer类：
 
-![2021-08-11-11-56-58](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/50598e9dd51c011fd20d74474fd888b7.png)
+![2021-08-11-11-56-58](../../../static/images/b62b9456-4f5f-11ec-b8f6-00d861bf4abb.png)
 
 ### 属性类型（AttributeType）
 
 属性类型定义了属性值的设定规则（属性语法），以及同一个属性的各个数据相互比较的规则等。
 
-![2021-08-11-11-57-13](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/79d8eee422f219bb35de90a2555345aa.png)
+![2021-08-11-11-57-13](../../../static/images/b689bbda-4f5f-11ec-8d2e-00d861bf4abb.png)
 
 ## LDAP Filter 进阶
 
@@ -55,7 +55,7 @@ url: /archivers/2021-08-11/1
 
 微软的网站上有一篇关于LDAP Filter非常详细的文章：[https://social.technet.microsoft.com/wiki/contents/articles/5392.active-directory-ldap-syntax-filters.aspx](https://social.technet.microsoft.com/wiki/contents/articles/5392.active-directory-ldap-syntax-filters.aspx)
 
-![2021-08-11-12-00-24](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7e14c25dc1adc3d8abba859d71d2519a.png)
+![2021-08-11-12-00-24](../../../static/images/b6c23ce4-4f5f-11ec-a1ec-00d861bf4abb.png)
 
 ### 获取所有域内计算机对象
 
@@ -66,7 +66,7 @@ ldapsearch -h 192.168.49.132 -b dc=domain16,dc=local -D cn=zhangsan,ou=officeuse
 ```
 
 
-![2021-08-11-12-00-55](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/b2dee0041f172d8c0ebe2f48c095d4ab.png)
+![2021-08-11-12-00-55](../../../static/images/b6fdd6a0-4f5f-11ec-ba51-00d861bf4abb.png)
 
 LDAP Search Option 说明:
 
@@ -88,7 +88,7 @@ LDAP Search Option 说明:
 
 这里涉及到LDAP的条件逻辑运算，LDAP共有6个逻辑运算符，分别如下：
 
-![2021-08-11-12-02-01](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/f9ac35ef1c1bd1d2e5cab6bcf273384f.png)
+![2021-08-11-12-02-01](../../../static/images/b73bb772-4f5f-11ec-bad4-00d861bf4abb.png)
 
 逻辑运算语法：`(逻辑运算符(条件1)(条件2)....)`
 
@@ -107,7 +107,7 @@ ldapsearch的操作示例：
 ldapsearch -h 192.168.49.132 -b dc=domain16,dc=local -D cn=zhangsan,ou=officeuser,dc=domain16,dc=local -w San@123 "(&(objectCategory=person)(objectClass=user))" dn | grep dn
 ```
 
-![2021-08-11-12-02-40](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/d7e09ddfe40aa09f4b5732141dc3f39d.png)
+![2021-08-11-12-02-40](../../../static/images/b77b94a0-4f5f-11ec-9d0a-00d861bf4abb.png)
 
 ### 获取所有启用用户
 
@@ -115,24 +115,24 @@ ldapsearch -h 192.168.49.132 -b dc=domain16,dc=local -D cn=zhangsan,ou=officeuse
 ldapsearch -h 192.168.49.132 -b dc=domain16,dc=local -D cn=zhangsan,ou=officeuser,dc=domain16,dc=local -w San@123 "(&(objectCategory=person)(objectClass=user)
 (!(userAccountControl:1.2.840.113556.1.4.803:=2)))" dn | grep dn
 ```
-![2021-08-11-12-02-55](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/68a289bbcc5e248c724885d93ebcee71.png)
+![2021-08-11-12-02-55](../../../static/images/b7b74b3a-4f5f-11ec-8d64-00d861bf4abb.png)
 
 ### 特殊字符对照表
 
 其中\2A等都是特殊字符，为了和LDAP语义进行区分，因此有一个对照表：
 
-![2021-08-11-12-03-52](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/f468b788e29e49c6677019802e3fd4d1.png)
+![2021-08-11-12-03-52](../../../static/images/b7fe4b3e-4f5f-11ec-94f9-00d861bf4abb.png)
 
 ## 查看域内DNS解析数据
 
 通过ADExplorer，可以看到域内存在关于DNS的DN：
 
-![2021-08-11-12-04-10](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/aefcdd3f01b5cec4014116c88d5d8ab1.png)
+![2021-08-11-12-04-10](../../../static/images/b83695b6-4f5f-11ec-a43d-00d861bf4abb.png)
 
 
 其中DN为DC=mailserver,DC=domain16.local,CN=MicrosoftDNS,DC=DomainDnsZones,DC=domain16,DC=local的对象存在一个属性叫dnsRecord，通过参考adidnsdump 中代码，发现dnsRecord是一个文档化过的结构体。
 
-![2021-08-11-12-04-22](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/bf21ab3e66d337e9bb5e9fd46b1e22e7.png)
+![2021-08-11-12-04-22](../../../static/images/b87a3d34-4f5f-11ec-b15b-00d861bf4abb.png)
 
 利用MS-DNSP文档能够构造结构体，从LDAP读取数据，自己也可以动手写一个收集域内DNS的工具。
 
@@ -141,7 +141,7 @@ ldapsearch -h 192.168.49.132 -b dc=domain16,dc=local -D cn=zhangsan,ou=officeuse
 开源地址：https://github.com/Rvn0xsy/goDomain
 
 
-![2021-08-11-12-04-39](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/9cb3aa909bf2979c194af9053ece8fa0.png)
+![2021-08-11-12-04-39](../../../static/images/b8cb3c20-4f5f-11ec-b1bc-00d861bf4abb.png)
 
 使用go-ldap库能够连接LDAP服务，主要流程：
 
@@ -156,5 +156,5 @@ ldapsearch -h 192.168.49.132 -b dc=domain16,dc=local -D cn=zhangsan,ou=officeuse
 
 非约束委派语法：`(&(samAccountType=805306369)(userAccountControl:1.2.840.113556.1.4.803:=524288)(objectClass=computer))`
 
-![2021-08-11-12-04-54](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2a035c04516e089022fab752a752208e.png)
+![2021-08-11-12-04-54](../../../static/images/b90dd3a0-4f5f-11ec-b11c-00d861bf4abb.png)
 

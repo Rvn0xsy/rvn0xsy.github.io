@@ -11,7 +11,7 @@ description: 使用launchctl注册喝水任务
 
 launchctl 将根据这个plist文件的信息来启动任务，具体可以参考：[Creating Launch Daemons and Agents](https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/CreatingLaunchdJobs.html)
 
-![2021-11-23-13-58-52](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/8a764ab750d11bcd3dfbed0f17081f5d.png)
+![2021-11-23-13-58-52](../../../static/images/bcdcab96-4f5f-11ec-87b3-00d861bf4abb.png)
 
 以下示例创建一个每五分钟（300 秒）运行一次的作业：
 

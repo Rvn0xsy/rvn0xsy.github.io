@@ -16,7 +16,7 @@ xss Validator是一个Burp商店的一个高分插件，该插件依赖于[phant
 
 打开Burp，点击“Extender”->“BApp Store”->"XSS Validator"->“install”
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-19/0x01.png)
+![](../../../static/images/334a8eca-4f5f-11ec-b118-00d861bf4abb.png)
 
 ### 安装phantomjs
 
@@ -39,7 +39,7 @@ rvn0xsy@Rvn0xsy ~/G/p/bin> ./phantomjs xss.js # 启动监听
 这时回到Burp的xss Validator插件页面：
 
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-19/0x02.png)
+![](../../../static/images/339905be-4f5f-11ec-bdc6-00d861bf4abb.png)
 
 其中：
 
@@ -50,6 +50,6 @@ rvn0xsy@Rvn0xsy ~/G/p/bin> ./phantomjs xss.js # 启动监听
 
 ## 0x03 测试演示
 
-<video src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-19/xssValidator.mp4" controls="controls" width="500px">
+<video src="../../../static/images/33e2dd38-4f5f-11ec-a918-00d861bf4abb.mp4" controls="controls" width="500px">
 哎呀~ 换个浏览器试试吧！
 </video>

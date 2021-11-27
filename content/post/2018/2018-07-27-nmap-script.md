@@ -89,7 +89,7 @@ nmap --script=http-server-header 192.168.85.132
 
 执行结果如下：
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-2fbd85d788c1317f0b8fc558c57df1f7_r.jpg)
+![](../../../static/images/2681fd2c-4f5f-11ec-aa9c-00d861bf4abb.jpg)
 
 从扫描结果可以看出，在扫描到80端口的开放状态及服务名称下方会输出关于http-server-header脚本的结果：Apache/2.4.29 (Debian)
 
@@ -99,7 +99,7 @@ nmap --script=http-server-header 192.168.85.132
 
 **http-enum.nse用于枚举http服务下的目录或文件**
 
-![enter description here](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-c3bfa7c0f944154238fa535a725097df_r.jpg)
+![enter description here](../../../static/images/26ca16ac-4f5f-11ec-a788-00d861bf4abb.jpg)
 
 但是单单使用这个脚本，而不根据实际情况设定内置参数，结果可能并不理想。这个脚本有一些参数：
 
@@ -116,7 +116,7 @@ nmap --script=http-server-header 192.168.85.132
 nmap --script=http-enum --script-args ‘http-enum.basepath=admin’
 192.168.85.132
 
-![enter description here](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-f18f1760bbb4627386c158623394389c_hd.jpg)
+![enter description here](../../../static/images/271f1f94-4f5f-11ec-be27-00d861bf4abb.jpg)
 
 
 ### 0X03 [3] 如何查看Nmap扩展脚本的Usage（使用方法）
@@ -125,12 +125,12 @@ nmap --script=http-enum --script-args ‘http-enum.basepath=admin’
 
 nmap --script-help=http-enum
 
-![enter description here](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-65f0f795a452be63376fde0aeae33f97_r.jpg)
+![enter description here](../../../static/images/27621010-4f5f-11ec-bec8-00d861bf4abb.jpg)
 
 直接查看脚本文件
 
 cat /usr/share/nmap/scripts/http-enum.nse
 
-![enter description here](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-2/v2-d951def8293bd1da217cdf19db8de1ed_hd.jpg)
+![enter description here](../../../static/images/279ea6b0-4f5f-11ec-86b5-00d861bf4abb.jpg)
 
 

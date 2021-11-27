@@ -51,16 +51,16 @@ public static string masqBinary = @"C:\Windows\Notepad.exe";
 
 ## 0x03 Let's Try!
 
-![try](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-18/1545119485035.jpg)
+![try](../../../static/images/3ea11d48-4f5f-11ec-a1dd-00d861bf4abb.jpg)
 
 随便选择一个：13
 
 
-![try](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-18/1545119485037.jpg)
+![try](../../../static/images/3eedd76e-4f5f-11ec-8055-00d861bf4abb.jpg)
 
 会自动生成一个msf设置实例，根据提示设置一个监听器就好，最后按回车，就能获得会话。
 
-![try](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-18/1545119485038.jpg)
+![try](../../../static/images/3f317e1a-4f5f-11ec-929b-00d861bf4abb.jpg)
 
 ## 0x04 总结
 

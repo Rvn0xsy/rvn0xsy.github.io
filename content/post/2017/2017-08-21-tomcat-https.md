@@ -18,7 +18,7 @@ url: /archivers/2017-08-21/1
 * -alias tomcat：用户别名为tomcat
 * -keyalg RSA： 使用RSA算法。  MD5算法也是被支持的，但是建议使用RSA获得更好的兼容。
 
-![生成证书](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-08-21/0x00.jpg)
+![生成证书](../../../static/images/e5c1e982-4f5e-11ec-93d0-00d861bf4abb.jpg)
 
 生成证书后，此证书会被保存在当前用户主目录下。
 

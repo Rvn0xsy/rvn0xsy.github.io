@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
 当取得第16个的时候，还是没有出现用户表、管理员表等，而且网站抛出了错误，无法继续取，突然没有其他办法了。
 
-![2020-03-01-11-34-21](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/d60590ed04ec4d3da6e917429c7cc4d4.png)
+![2020-03-01-11-34-21](../../../static/images/94c559aa-4f5f-11ec-94ff-00d861bf4abb.png)
 
 
 先来分析一下语句：
@@ -71,7 +71,7 @@ cid =1 and (select top 1 name from [数据库名称].sys.all_objects where type=
 
 于是，又想到通过FUZZ的方式：
 
-![2020-03-01-11-34-39](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/835850cccf61c6d461e1fa9e4bede6bc.png)
+![2020-03-01-11-34-39](../../../static/images/9505ce86-4f5f-11ec-bb7b-00d861bf4abb.png)
 
 
 ```
@@ -118,7 +118,7 @@ SELECT STUFF((SELECT  '[' + name + '],'
 FROM(SELECT name FROM dbo.base_pay_type WHERE is_enabled = 1) a  FOR  XML PATH('')  ), 1,0, '') AS Name 
 ```
 
-![2020-03-01-11-35-00](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7fadd9802ea0134308ad9c8e3e1fa7eb.png)
+![2020-03-01-11-35-00](../../../static/images/9566319a-4f5f-11ec-9b2c-00d861bf4abb.png)
 
 直接套用到注入场景：
 
@@ -129,7 +129,7 @@ SELECT STUFF((SELECT  '[' + name + '],'  FROM(SELECT name from 数据库名称.s
 
 在sql shell中直接执行即可返回所有表名：
 
-![2020-03-01-11-35-15](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/f1db9589f0c703b6ff101490ab00b90e.png)
+![2020-03-01-11-35-15](../../../static/images/95b9b216-4f5f-11ec-9ec8-00d861bf4abb.png)
 
 所有表名以`[表名],`分割。
 

@@ -14,15 +14,15 @@ url: /archivers/2020-03-02/2
 
 - 在Windows 7下打开注册表
 
-![2020-03-01-11-29-43](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/412bdeb755c5a78985b38d5976577a58.png)
+![2020-03-01-11-29-43](../../../static/images/8c25d4c8-4f5f-11ec-b9cf-00d861bf4abb.png)
 
 - 在Windows 7上管理计算机
 
-![2020-03-01-11-29-52](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/65232e2d81de975e7791842fc1b0b63c.png)
+![2020-03-01-11-29-52](../../../static/images/8c5f7cdc-4f5f-11ec-9819-00d861bf4abb.png)
 
 - 在Windows 10上管理计算机
 
-![2020-03-01-11-30-00](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2594d1172ddc6ee4d72ca3a039419eb6.png)
+![2020-03-01-11-30-00](../../../static/images/8ca0a0b8-4f5f-11ec-910f-00d861bf4abb.png)
 
 有的需要授权、有的不需要，是因为UAC是分授权等级的：
 
@@ -30,7 +30,7 @@ url: /archivers/2020-03-02/2
 
 然后我们在左侧窗口找到“计算机配置--Windows设置--安全设置--本地策略--安全选项”，再在右侧窗口找到“用户帐户控制： 管理员批准模式中管理员的提升权限提示的行为”，双击该条目，打开设置窗口，如下图：
 
-![2020-03-01-11-30-10](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/aa4fa85115717b88283aadbd700fcbf0.png)
+![2020-03-01-11-30-10](../../../static/images/8cdd2132-4f5f-11ec-ba0d-00d861bf4abb.png)
 
 * 不提示直接提升：关闭UAC，需要权限时直接提升权限。
 * 在安全桌面上提示凭据：需要权限时在安全桌面上输入管理员密码提升权限。
@@ -63,7 +63,7 @@ url: /archivers/2020-03-02/2
 这个文件本质上是一个XML文件，用于标识当前应用程序的配置属性。
 
 
-![2020-03-01-11-30-21](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/eaf0239b9dbc5bb5b0f6a9dacb0cf985.png)
+![2020-03-01-11-30-21](../../../static/images/8d18d466-4f5f-11ec-a514-00d861bf4abb.png)
 
 * aslnvoker 默认权限
 * highestAvailable 最高权限
@@ -79,15 +79,15 @@ manifest中其实还有其他属性，如：autoElevate（自动提升）
 
 工具地址：https://github.com/g3rzi/Manifesto
 
-![2020-03-01-11-30-30](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/37c15ae3fb7d66affb7d172b32198ba5.png)
+![2020-03-01-11-30-30](../../../static/images/8da15bba-4f5f-11ec-8638-00d861bf4abb.png)
 
 通过不断遍历autoElevate属性，寻找自动权限提升的程序。
 
-![2020-03-01-11-30-37](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/99743a7f38e0aa56e45b18be256dbc0b.png)
+![2020-03-01-11-30-37](../../../static/images/8ded3224-4f5f-11ec-811d-00d861bf4abb.png)
 
 我使用Powershell启动：C:\Windows\system32\eudcedit.exe
 
-![2020-03-01-11-30-50](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/63facf6935301fc41e3b02d559a24a15.png)
+![2020-03-01-11-30-50](../../../static/images/8e2829b0-4f5f-11ec-8f21-00d861bf4abb.png)
 
 发现没有弹出UAC确认，没有继承Powershell的权限，它的权限是High。
 
@@ -95,19 +95,19 @@ manifest中其实还有其他属性，如：autoElevate（自动提升）
 
 ## 手动Bypass UAC
 
-![2020-03-01-11-31-01](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/035c74375c2d96d374215a67df8b438a.png)
+![2020-03-01-11-31-01](../../../static/images/8e643284-4f5f-11ec-b3f3-00d861bf4abb.png)
 
 C:\Windows\system32\odbcad32.exe 该程序用于配置ODBC数据源，但提供了一个输入点，那就是文件浏览器，通过文件浏览器我们可以打开一个管理员权限的Powershell。
 
-![2020-03-01-11-31-10](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/1beb7da54c1e299d3e440c9533af0b26.png)
+![2020-03-01-11-31-10](../../../static/images/8eb26f12-4f5f-11ec-ad7f-00d861bf4abb.png)
 
 
-![2020-03-01-11-31-20](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/0c51fb72ea742a28feaaf82f8faad857.png)
+![2020-03-01-11-31-20](../../../static/images/8eef7e84-4f5f-11ec-bff5-00d861bf4abb.png)
 
 
 使用Powershell启动其他程序，也都是以管理员权限运行：
 
-![2020-03-01-11-31-27](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/c7d5be0762304ea7b1dcf538e89d0340.png)
+![2020-03-01-11-31-27](../../../static/images/8f2ae96a-4f5f-11ec-b687-00d861bf4abb.png)
 
 
 下一章，将分析几个UAC的绕过例子。

@@ -28,7 +28,7 @@ url: /archivers/2021-02-18/2
 
 首先用VScode打开项目目录，在modules中新建一个`getpass.js`文件：
 
-![2021-02-18-01-05-16](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/91f74f861a47b14a69d9a40596642ffb.png)
+![2021-02-18-01-05-16](../../../static/images/b15016dc-4f5f-11ec-9920-00d861bf4abb.png)
 
 写入代码：
 
@@ -64,7 +64,7 @@ export function getPassword(u_info, p_info){
 
 最后在`static.js`中引入：
 
-![2021-02-18-01-07-02](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7a4050bb1bbc64687ea77fd0b6482a20.png)
+![2021-02-18-01-07-02](../../../static/images/b1850a18-4f5f-11ec-9e2c-00d861bf4abb.png)
 
 
 ```js
@@ -74,11 +74,11 @@ console.log(GetPassword.getPassword("请输入账号：", "请输入密码："))
 
 查看站点：
 
-![2021-02-18-01-09-04](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/424eedccafdde55ecbf8152c96b831fe.png)
+![2021-02-18-01-09-04](../../../static/images/b1c06a22-4f5f-11ec-a9c9-00d861bf4abb.png)
 
 访问页面就会自动弹出提示框，当完成输入后，控制台会打印明文账号密码。
 
-![2021-02-18-01-10-02](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/4d15d223c8c24d184c4004a20b5801e6.png)
+![2021-02-18-01-10-02](../../../static/images/b1fdd51a-4f5f-11ec-b3a8-00d861bf4abb.png)
 
 ## 0x02 窃取凭证模块的思考
 

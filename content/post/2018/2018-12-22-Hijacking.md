@@ -269,7 +269,7 @@ HKCU\Software\Classes\CLSID
 
 MSF:/opt/metasploit-framework/embedded/framework/modules/exploits/windows/local/bypassuac_comhijack.rb
 
-<video src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/com_hijacking.mp4" controls="controls" width="500px">
+<video src="../../../static/images/3fc3f9a2-4f5f-11ec-aaeb-00d861bf4abb.mp4" controls="controls" width="500px">
 哎呀~ 换个浏览器试试吧！
 </video>
 
@@ -336,7 +336,7 @@ reg add HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command /d C:\
 reg add HKEY_CURRENT_USER\Software\Classes\ms-settings\shell\open\command /v DelegateExecute /t REG_DWORD /d 00000000 /f
 ```
 
-<video src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/bypass_uac.mp4" controls="controls" width="500px">
+<video src="../../../static/images/4349f414-4f5f-11ec-8821-00d861bf4abb.mp4" controls="controls" width="500px">
 哎呀~ 换个浏览器试试吧！
 </video>
 
@@ -415,28 +415,28 @@ https://gist.githubusercontent.com/riyazwalikar/cd31948f247b96d472b97be2a36030b4
 
 扫码可免费加入：
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x24.png)
+![](../../../static/images/44952636-4f5f-11ec-8c41-00d861bf4abb.png)
 
 
-[0x00]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x00.png
-[0x01]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x01.png
-[0x02]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x02.png
-[0x03]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x03.png
-[0x04]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x04.png
-[0x05]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x05.png
-[0x06]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x06.png
-[0x07]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x07.png
-[0x08]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x08.png
-[0x09]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x09.png
-[0x10]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x10.png
-[0x11]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x11.png
-[0x12]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x12.png
-[0x13]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x13.png
-[0x14]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x14.png
-[0x15]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x15.png
-[0x16]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x16.png
-[0x17]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x17.png
-[0x18]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x18.png
-[0x19]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x19.png
-[0x20]:https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-12-22/0x20.png
+[0x00]:../../../static/images/44d01a48-4f5f-11ec-8721-00d861bf4abb.png
+[0x01]:../../../static/images/4516d88e-4f5f-11ec-971e-00d861bf4abb.png
+[0x02]:../../../static/images/456a6e72-4f5f-11ec-b36a-00d861bf4abb.png
+[0x03]:../../../static/images/45b927d8-4f5f-11ec-9b6b-00d861bf4abb.png
+[0x04]:../../../static/images/46146f58-4f5f-11ec-89a8-00d861bf4abb.png
+[0x05]:../../../static/images/4660fe7c-4f5f-11ec-8fcf-00d861bf4abb.png
+[0x06]:../../../static/images/46b0698a-4f5f-11ec-a6f3-00d861bf4abb.png
+[0x07]:../../../static/images/46eebd16-4f5f-11ec-ab2c-00d861bf4abb.png
+[0x08]:../../../static/images/473132a4-4f5f-11ec-ad42-00d861bf4abb.png
+[0x09]:../../../static/images/4776c77e-4f5f-11ec-8dcc-00d861bf4abb.png
+[0x10]:../../../static/images/47b474ca-4f5f-11ec-bf64-00d861bf4abb.png
+[0x11]:../../../static/images/480733ae-4f5f-11ec-825d-00d861bf4abb.png
+[0x12]:../../../static/images/483fee7e-4f5f-11ec-b5bb-00d861bf4abb.png
+[0x13]:../../../static/images/4881b11a-4f5f-11ec-96f0-00d861bf4abb.png
+[0x14]:../../../static/images/48c3f25a-4f5f-11ec-bcfc-00d861bf4abb.png
+[0x15]:../../../static/images/49031fb6-4f5f-11ec-afdd-00d861bf4abb.png
+[0x16]:../../../static/images/496370dc-4f5f-11ec-8fdc-00d861bf4abb.png
+[0x17]:../../../static/images/49ab6e96-4f5f-11ec-9486-00d861bf4abb.png
+[0x18]:../../../static/images/4a14bf54-4f5f-11ec-99d6-00d861bf4abb.png
+[0x19]:../../../static/images/4a57b462-4f5f-11ec-9003-00d861bf4abb.png
+[0x20]:../../../static/images/4aad6628-4f5f-11ec-bafe-00d861bf4abb.png
 

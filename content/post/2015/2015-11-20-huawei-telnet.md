@@ -61,6 +61,6 @@ Trying 192.168.1.1 …
 Connected to 192.168.1.1 …
 ```
 
-[1]: https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-3-16/0x05.png "0x05"
+[1]: ../../../static/images/d05697e6-4f5e-11ec-a083-00d861bf4abb.png "0x05"
   
   

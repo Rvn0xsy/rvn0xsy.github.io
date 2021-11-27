@@ -13,7 +13,7 @@ url: /archivers/2020-01-01/2
 
 ```echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope```
 
-![2020-01-03-13-10-44](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/28f181718173d69326f3bfc58a3c0cbb.png)
+![2020-01-03-13-10-44](../../../static/images/7d2bcefa-4f5f-11ec-812b-00d861bf4abb.png)
 
 在Github上已经有了关于进程注入的实现代码：`https://github.com/gaffe23/linux-inject`
 
@@ -21,12 +21,12 @@ url: /archivers/2020-01-01/2
 
 
 
-![2020-01-03-13-10-54](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/7b89dc61d7952191a608716bdcf951b8.png)
+![2020-01-03-13-10-54](../../../static/images/7d6a2c90-4f5f-11ec-9773-00d861bf4abb.png)
 
 
 确认编译是否正常：
 
-![2020-01-03-13-11-04](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/8251535f3c0f9b55243940b6de2cf34b.png)
+![2020-01-03-13-11-04](../../../static/images/7da8298c-4f5f-11ec-9dfb-00d861bf4abb.png)
 
 获取sample-target的PID后，调用inject程序来注入sample-library.so，注入成功会输出“I just got loaded”。
 接下来，需要更改sample-target.c文件，编译成需要的权限维持动态链接库。
@@ -62,28 +62,28 @@ clang -std=gnu99 -ggdb -D_GNU_SOURCE -shared -o u9.so -lpthread -fPIC U3.c
 
 ```
 
-![2020-01-03-13-11-16](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/ae110053d720c18b8c6bfb24a5483d4b.png)
+![2020-01-03-13-11-16](../../../static/images/7deb9a0a-4f5f-11ec-9a01-00d861bf4abb.png)
 
 
 编译成so文件成功后的测试效果：
 
-![2020-01-03-13-11-27](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/d23ecdf9310a3dce4fd8839d9d10e270.png)
+![2020-01-03-13-11-27](../../../static/images/7e2a248c-4f5f-11ec-b266-00d861bf4abb.png)
 
 在Kali Linux这边获得了bash shell：
 
-![2020-01-03-13-11-47](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/c2d15b84db450b39e55766b2097fd0c2.png)
+![2020-01-03-13-11-47](../../../static/images/7e6241aa-4f5f-11ec-af1a-00d861bf4abb.png)
 
 此时发现测试程序的主线程被bash阻塞了，于是可以采用多线程技术，将后门代码与正常逻辑分离执行。
 
-![2020-01-03-13-11-58](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/9e990f101b1f5bee215f4175926ac896.png)
+![2020-01-03-13-11-58](../../../static/images/7e9c6b50-4f5f-11ec-b656-00d861bf4abb.png)
 
 但利用这种方式在执行的过程中，查看进程参数还是会被查看到IP地址和端口：
 
-![2020-01-03-13-12-09](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/b920dfc70a90769b21214fd5d217dbbc.png)
+![2020-01-03-13-12-09](../../../static/images/7ed600f4-4f5f-11ec-969b-00d861bf4abb.png)
 
 查看到IP与端口：
 
-![2020-01-03-13-12-19](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/5f6901fde3fc0693424326f3deeede92.png)
+![2020-01-03-13-12-19](../../../static/images/7f1565dc-4f5f-11ec-bacf-00d861bf4abb.png)
 
 再继续改进代码，采用socket套接字的方式来反弹shell：
 
@@ -142,12 +142,12 @@ void loadMsg()
 
 执行效果：
 
-![2020-01-03-13-12-35](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/fa4136ff8822c555b4008bce084f88a4.png)
+![2020-01-03-13-12-35](../../../static/images/7f567f90-4f5f-11ec-bb46-00d861bf4abb.png)
 
 
 Kali Linux获得bash shell：
 
-![2020-01-03-13-12-46](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/003ee8252435ab25e2b012763fbf8d82.png)
+![2020-01-03-13-12-46](../../../static/images/7f96bea2-4f5f-11ec-8151-00d861bf4abb.png)
 
 在实战应用中，需要关闭ptrace的限制，然后注入.so到某个服务进程中，这样达到权限维持的目的。
 

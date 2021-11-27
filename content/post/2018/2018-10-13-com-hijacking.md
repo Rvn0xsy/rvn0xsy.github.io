@@ -41,7 +41,7 @@ CLSID是指Windows系统对于不同的应用程序，文件类型，OLE对象�
 
 也就是说CLSID就是对象的身份证号，而当一个应用程序想要调用某个对象时，也是通过CLSID来寻找对象的。
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-14/0x00.png)
+![](../../../static/images/2f2090f6-4f5f-11ec-a05c-00d861bf4abb.png)
 
 按下Ctrl+R打开运行窗口，键入 `::{20D04FE0-3AEA-1069-A2D8-08002B30309D}`即可打开“我的电脑”
 
@@ -91,7 +91,7 @@ HKEY_LOCAL_MACHINE\SOFTWARE\Classes\CLSID   
 > `HKCU`即`HKEY_CURRENT_USER`
 
 
-![](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-10-14/0x01.png)
+![](../../../static/images/2f71ce94-4f5f-11ec-92b0-00d861bf4abb.png)
 
 
 
@@ -201,7 +201,7 @@ ShellFolder中有Key：
 创建完毕后，会启动`cmd.exe /c eventvwr.exe`，接着会反弹回来一个管理员会话。
 
 <p>
-<video src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/video/com_hijacking.mp4" controls="controls" width="500px">
+<video src="../../../static/images/2fab14ba-4f5f-11ec-8fa4-00d861bf4abb.mp4" controls="controls" width="500px">
 哎呀~ 换个浏览器试试吧！
 </video>
 </p>

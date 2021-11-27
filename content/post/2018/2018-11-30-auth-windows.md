@@ -170,7 +170,7 @@ NTLM协议的认证过程分为三步：
 
 2.Response的表现形式是Net-NTLM Hash，它是由客户端 提供的密码Hash加密Server返回的Chanllenge产生的结果。
 
-![0x01.png](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-30/0x01.png)
+![0x01.png](../../../static/images/35efa6d8-4f5f-11ec-807d-00d861bf4abb.png)
 
 ### NTLM V2协议
 
@@ -288,7 +288,7 @@ KDC负责管理票据、认证票据、分发票据，但是KDC不是一个独�
 
 ### 域认证
 
-![0x02.png](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-30/0x02.png)
+![0x02.png](../../../static/images/3635ef80-4f5f-11ec-8279-00d861bf4abb.png)
 
 首先，客户端需要发送自己的身份信息到KDC，身份信息中起码包含用户名，KDC根据用户名在AD中寻找是否在白名单中，然后根据用户名提取到对应的NTLM Hash。
 
@@ -301,9 +301,9 @@ KDC负责管理票据、认证票据、分发票据，但是KDC不是一个独�
 
 数据结构：
 
-![0x03.png](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-30/0x03.png)
+![0x03.png](../../../static/images/3689317c-4f5f-11ec-badc-00d861bf4abb.png)
 
-![0x04.png](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-30/0x04.png)
+![0x04.png](../../../static/images/36e560aa-4f5f-11ec-a867-00d861bf4abb.png)
 
 其中，TGT的到期时间为8小时，如果超过了8小时，还需要重新申请TGT，不能之间进入下一步获取Ticket。
 
@@ -311,7 +311,7 @@ Kerberos是一个假设网络环境不安全的情况下能够正常进行认证
 
 第一步中，KDC返回的TGT客户端是无法解密的，因为它没有KDC Hash，如果有，我们就可以伪造黄金票据，这个是后话了。
 
-![0x05.png](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-30/0x05.png)
+![0x05.png](../../../static/images/372fa4a8-4f5f-11ec-b927-00d861bf4abb.png)
 
 第二步客户端需要提供TGT与第一步中使用自己NTLM Hash解密出来的Session Key加密的客户端信息跟时间戳。
 
@@ -324,11 +324,11 @@ KDC接到TGT与其他内容后，会首先解密TGT，只有KDC可以解密TGT�
 Ticket组成如下：
 
 
-![0x06.png](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-30/0x06.png)
+![0x06.png](../../../static/images/376ce0f2-4f5f-11ec-b1a8-00d861bf4abb.png)
 
 Server Hash：这个Hash是在AD中服务器计算机的NTLM Hash。
 
-![0x07.png](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-30/0x07.png)
+![0x07.png](../../../static/images/37acb8e4-4f5f-11ec-b724-00d861bf4abb.png)
 
 在第三步里，客户端向服务器请求，需要提供Ticket，Server Session Key加密的客户端信息与时间戳。
 
@@ -388,7 +388,7 @@ Other：
 
 ### 白银票据(Silver Tickets)演示
 
-<video src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-30/kerberos_stgt.mp4" controls="controls" width="500px">
+<video src="../../../static/images/37e87320-4f5f-11ec-ba8d-00d861bf4abb.mp4" controls="controls" width="500px">
 哎呀~ 换个浏览器试试吧！
 </video>
 
@@ -425,16 +425,16 @@ load kiwi
 ```
 创建票据：
 
-![0x08.png](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-30/0x08.png)
+![0x08.png](../../../static/images/39148acc-4f5f-11ec-8156-00d861bf4abb.png)
 
 注入到内存：
 
-![0x09.png](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-30/0x09.png)
+![0x09.png](../../../static/images/3963ec98-4f5f-11ec-985e-00d861bf4abb.png)
 
 
 使用wmic在目标服务器上创建一个进程：
 
-![0x010.png](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-30/0x10.png)
+![0x010.png](../../../static/images/39bd5896-4f5f-11ec-b64d-00d861bf4abb.png)
 
 ### 黄金票据(Golden Tickets) - 伪造
 
@@ -446,7 +446,7 @@ mimikatz “kerberos::golden /domain:<域名> /sid:<域SID> /rc4:<KRBTGT NTLM Ha
 
 ### 黄金票据(Golden Tickets) - 演示
 
-<video src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2018-11-30/kerberos_gtgt.mp4" controls="controls" width="500px">
+<video src="../../../static/images/3a159088-4f5f-11ec-a792-00d861bf4abb.mp4" controls="controls" width="500px">
 哎呀~ 换个浏览器试试吧！
 </video>
 

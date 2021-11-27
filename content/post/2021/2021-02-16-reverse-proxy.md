@@ -77,7 +77,7 @@ http {
 
 《OpenResty 最佳实践》中提供了一个流程图：
 
-![2021-02-16-16-48-59](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/5f574b2d15e2743767e2914af6691728.png)
+![2021-02-16-16-48-59](../../../static/images/b04661e2-4f5f-11ec-ad0b-00d861bf4abb.png)
 
 根据这个流程图，可以将Lua代码放入不同的流程中对数据进行修改、删除、添加等。
 
@@ -175,7 +175,7 @@ header_filter_by_lua_block { ngx.header.content_length = nil}
 
 其中`static.js`就是引入的Evil JS，添加了`type='module'`是为了启用[ES6+](https://www.freecodecamp.org/news/learn-modern-javascript/)标准。
 
-![2021-02-16-17-10-54](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/8e4954b7fb5035a91688a21d78633140.png)
+![2021-02-16-17-10-54](../../../static/images/b087b05c-4f5f-11ec-8b14-00d861bf4abb.png)
 
 
 为了不和源站的目录冲突，`7276df76835ed2272cc0e59f55e49902`其实是一个虚拟的目录，通过`location`映射即可。
@@ -342,11 +342,11 @@ services:
       EVIL_JS_URI: b026324c6904b2a9cb4b88d6d61c81d1
 ```
 
-![2021-02-16-17-40-24](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/90e7da8488bdf08b40b763330aaa583f.png)
+![2021-02-16-17-40-24](../../../static/images/b0c41b32-4f5f-11ec-a953-00d861bf4abb.png)
 
 日志：
 
-![2021-02-16-17-41-55](https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2bbb5c207533adc7845d579c730bdd84.png)
+![2021-02-16-17-41-55](../../../static/images/b1008158-4f5f-11ec-b052-00d861bf4abb.png)
 
 ## 参考
 
