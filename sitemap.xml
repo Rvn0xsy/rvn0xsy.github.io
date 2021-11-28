@@ -570,6 +570,13 @@
   </url>
   
   <url>
+    <loc>https://payloads.online/archivers/2018-11-04/1/</loc>
+    <lastmod>2018-11-04T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://payloads.online/categories/web%E5%AE%89%E5%85%A8/</loc>
     <lastmod>2018-11-04T00:00:00+00:00</lastmod>
     <changefreq>monthly</changefreq>

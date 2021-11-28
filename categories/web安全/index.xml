@@ -7,6 +7,15 @@
     <generator>Hugo -- gohugo.io</generator>
     <lastBuildDate>Sun, 04 Nov 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/web%E5%AE%89%E5%85%A8/index.xml" rel="self" type="application/rss+xml" />
     <item>
+      <title>ASP.NET 文件上传黑名单解决办法</title>
+      <link>https://payloads.online/archivers/2018-11-04/1/</link>
+      <pubDate>Sun, 04 Nov 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2018-11-04/1/</guid>
+      <description>tips</description>
+    </item>
+    
+    <item>
       <title>Web.config RCE</title>
       <link>https://payloads.online/archivers/2018-11-04/1/</link>
       <pubDate>Sun, 04 Nov 2018 00:00:00 +0000</pubDate>
