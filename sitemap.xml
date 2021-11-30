@@ -3,21 +3,28 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://payloads.online/archivers/2021-11-23/1/</loc>
-    <lastmod>2021-11-23T10:10:08+08:00</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
     <loc>https://payloads.online/post/</loc>
-    <lastmod>2021-11-23T10:10:08+08:00</lastmod>
+    <lastmod>2021-12-01T00:37:56+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://payloads.online/</loc>
+    <lastmod>2021-12-01T00:37:56+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://payloads.online/archivers/2021-12-01/1/</loc>
+    <lastmod>2021-12-01T00:37:56+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://payloads.online/archivers/2021-11-23/1/</loc>
     <lastmod>2021-11-23T10:10:08+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
