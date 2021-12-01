@@ -259,7 +259,7 @@ public void unZip(String srcFile,String dest,boolean deleteFile)  throws Excepti
     }  
 ```
 
-ZipCreater主要应用于跨目录的文件上传漏洞的利用，它能够快速进行压缩包生成，[evilarc.py](https://github.com/ptoomey3/evilarc/blob/master/evilarc.py)不支持修改已有的压缩包，但ZipCreater可以。
+[ZipCreater](https://github.com/Rvn0xsy/zipcreater)主要应用于跨目录的文件上传漏洞的利用，它能够快速进行压缩包生成，[evilarc.py](https://github.com/ptoomey3/evilarc/blob/master/evilarc.py)不支持修改已有的压缩包，但ZipCreater可以。
 
 假设/tmp/payload文件夹内的文件列表如下：
 
