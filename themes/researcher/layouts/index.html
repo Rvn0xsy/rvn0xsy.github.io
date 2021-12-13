@@ -12,7 +12,7 @@
 <div class="container">
     <section id="posts" class="posts">
         {{- $paginator := .Paginate (where (where .Site.RegularPages "Type" "post") ".Params.hiddenfromhomepage" "!=" true) }}
-        {{- range first 5 $paginator.Pages -}}
+        {{- range first 10 $paginator.Pages -}}
           {{ .Render "summary" }}
         {{ end -}}
       </section>
