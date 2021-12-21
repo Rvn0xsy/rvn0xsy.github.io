@@ -13,6 +13,7 @@ author: Rvn0xsy
 - [Key's blog](http://gh0st.cn/)
 - [Akkuman's blog](http://hacktech.cn/)
 - [Wolvez's blog](http://wolvez.club/)
+- [SYM01's blog](https://sym01.com/)
 
 
 > 需要添加请发送邮件至：rvn0xsy@gmail.com
