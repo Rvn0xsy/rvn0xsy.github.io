@@ -5,7 +5,16 @@
     <link>https://payloads.online/post/</link>
     <description>Recent content in Posts on 倾旋的博客</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 01 Dec 2021 00:37:56 +0800</lastBuildDate><atom:link href="https://payloads.online/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 24 Dec 2021 00:37:56 +0800</lastBuildDate><atom:link href="https://payloads.online/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>基于反向代理技术进行水坑攻击- Pricking项目使用介绍</title>
+      <link>https://payloads.online/archivers/2021-02-18/1/</link>
+      <pubDate>Fri, 24 Dec 2021 00:37:56 +0800</pubDate>
+      
+      <guid>https://payloads.online/archivers/2021-02-18/1/</guid>
+      <description>Pricking 是一个基于反向代理技术进行水坑攻击的项目，本文介绍Pricking项目的安装与使用。</description>
+    </item>
+    
     <item>
       <title>某系统 - Java Filter内部反射功能完成远程代码执行</title>
       <link>https://payloads.online/archivers/2021-12-01/1/</link>
@@ -67,15 +76,6 @@
       
       <guid>https://payloads.online/archivers/2021-07-20/1/</guid>
       <description>Kubernetes (通常称为 K8s) 是来自 Google 云平台的开源容器集群管理系统，用于自动部署、扩展和管理容器化（containerized）应用程序。本文介绍获取了其中某个节点的宿主机权限，如何横向移动到Master节点，从而获取整个集群的权限。</description>
-    </item>
-    
-    <item>
-      <title>Pricking 项目（一） ：使用介绍</title>
-      <link>https://payloads.online/archivers/2021-02-18/1/</link>
-      <pubDate>Thu, 18 Feb 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://payloads.online/archivers/2021-02-18/1/</guid>
-      <description>Pricking 是一个自动化部署水坑和网页钓鱼的开源项目，本文介绍Pricking项目的安装与使用。</description>
     </item>
     
     <item>
