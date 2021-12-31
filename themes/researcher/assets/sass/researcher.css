@@ -161,3 +161,8 @@ to{opacity:.7;right:-2rem}
 @media screen and (min-width:3000px){.uwmr{display:block;animation:uwmr 4s ease forwards;animation-delay:4s}
 }
 .all-posts-link{margin:2rem;text-decoration:none}
+
+.post-toc{
+    padding: 2%;
+    color: #f8f8f2;
+}

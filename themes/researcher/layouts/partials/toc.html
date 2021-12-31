@@ -1,0 +1,14 @@
+{{ if (.Params.toc | default true ) }}
+<div class="post-toc" id="post-toc">
+<aside>
+    <!-- <h2>~# ls -al TOC</h2> -->
+    {{ $emtLiPtrn := "(?s)<ul>\\s<li>\\s<ul>(.*)</li>\\s</ul>" }}
+    {{ $rplcEmtLi := "<ul>$1" }}
+    {{ .TableOfContents | replaceRE $emtLiPtrn $rplcEmtLi | safeHTML }}
+    <!-- https://github.com/gohugoio/hugo/issues/1778#issuecomment-483880269 -->
+    <!-- {{.TableOfContents}} -->
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+{{ end }}

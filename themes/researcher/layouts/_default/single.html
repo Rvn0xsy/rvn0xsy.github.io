@@ -1,7 +1,10 @@
 {{ define "main" }}
-
 <div class="container">
     <h1>{{ .Title }}</h1>
+    <p>{{ .Description }}</p>
+        <div class = "toc-wrapper">
+            {{ partial "toc.html" . }}
+        </div>
     {{ .Content }}
 </div>
 <div class="container">
