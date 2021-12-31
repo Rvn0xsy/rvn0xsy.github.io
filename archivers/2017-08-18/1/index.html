@@ -47,9 +47,34 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>记一次某Cms的审计</h1>
+    <p>本文简述一下对一个采用了开源框架的cms的审计过程。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-第一弹-安装程序getshell">0x01 第一弹 安装程序Getshell</a></li>
+    <li><a href="#0x02-后台sql注入">0x02 后台SQL注入</a></li>
+    <li><a href="#0x03-前台sql注入">0x03 前台SQL注入</a></li>
+    <li><a href="#0x04-总结">0x04 总结</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-前言">0x00 前言</h2>
 <p>此套cms采用了CI框架，之前在做漏洞平台的时候也是用的这个框架开发。</p>
 <p>CodeIgniter 是一个小巧但功能强大的 PHP 框架，作为一个简单而“优雅”的工具包，它可以为开发者们建立功能完善的 Web 应用程序。</p>

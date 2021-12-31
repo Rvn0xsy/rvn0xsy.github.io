@@ -47,9 +47,37 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>静态恶意代码逃逸（第九课）</h1>
+    <p>本节课，使用HeapCreate API来关闭DEP保护，获取在堆上的代码执行权限，从而绕过对VirtualAlloc的检测。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-数据执行保护dep">0x01 数据执行保护（DEP）</a>
+      <ul>
+        <li><a href="#为什么要有dep">为什么要有DEP</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-如何绕过dep">0x02 如何绕过DEP</a></li>
+    <li><a href="#0x03-举一反三">0x03 举一反三</a></li>
+    <li><a href="#0x04-shellcode执行">0x04 Shellcode执行</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <p>代码将会上传至Github，方便读者下载研究 : <a href="https://github.com/Rvn0xsy/BadCode">https://github.com/Rvn0xsy/BadCode</a></p>
 <h2 id="0x01-数据执行保护dep">0x01 数据执行保护（DEP）</h2>
 <p>DEP(Data Execution Prevention)即“ 数据执行保护”，这是Windows的一项安全机制，主要用来防止病毒和其他安全威胁对系统造成破坏。 微软从Windows XP SP2引入了该技术，并一直延续到今天。</p>

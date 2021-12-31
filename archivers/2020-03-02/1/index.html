@@ -47,9 +47,32 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>通过反射DLL注入来构建后渗透模块（第一课）</h1>
+    <p>Aggressor Script是Cobalt Strike 3.0版本以上的一个内置脚本语言....</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#aggressor-script">Aggressor Script</a></li>
+    <li><a href="#反射-dll注入">反射 DLL注入</a></li>
+    <li><a href="#开发自己的反射dll">开发自己的反射DLL</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="aggressor-script">Aggressor Script</h2>
 <p>Aggressor Script是Cobalt Strike 3.0版本以上的一个内置脚本语言，由<a href="http://sleep.dashnine.org/manual">Sleep</a>语言解析，Cobalt Strike 3.0以上版本的菜单、选项、事件都由default.cna构建。红队人员可以通过它来调用一些IRC、Webhook接口去对接机器人，实现自动化渗透与监控，Aggressor Script是Cobalt Strike这款C2平台的画龙点睛之笔。</p>
 <p>对于Python、C/C++爱好者来说，Sleep语言一开始接触的时候感觉很奇怪，会有很多想吐槽的点，但久而久之，就会发现它的便捷之处。</p>

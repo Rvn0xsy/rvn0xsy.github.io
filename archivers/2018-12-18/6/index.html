@@ -47,9 +47,34 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>Intranet Space - Dns Tunneling</h1>
+    <p>DNS Tunneling，是隐蔽信道的一种，通过将其他协议封装在DNS协议中传输建立通信。因为在我们的网络世界中DNS是一个必不可少的服务，所以大部分防火墙和入侵检测设备很少会过滤DNS流量，这就给DNS作为一种隐蔽信道提供了条件，从而可以利用它实现诸如远程控制，文件传输等操作，现在越来越多的研究证明DNS Tunneling也经常在僵尸网络和APT攻击中扮演着重要的角色。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-dns隧道简介">0x00 DNS隧道简介</a></li>
+    <li><a href="#0x01-dns隧道原理">0x01 DNS隧道原理</a></li>
+    <li><a href="#0x02-如何获得命令执行结果">0x02 如何获得命令执行结果?</a></li>
+    <li><a href="#0x03-如何判断是否能够建立隧道">0x03 如何判断是否能够建立隧道?</a></li>
+    <li><a href="#0x04-dnscat2">0x04 dnscat2</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-dns隧道简介">0x00 DNS隧道简介</h2>
 <p>DNS Tunneling，是隐蔽信道的一种，通过将其他协议的数据封装在DNS协议中传输建立通信。</p>
 <p>普通的 DNS 查询过程如下:</p>

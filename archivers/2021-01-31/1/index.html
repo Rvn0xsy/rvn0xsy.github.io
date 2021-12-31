@@ -47,9 +47,76 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>Windows权限控制相关的防御与攻击技术</h1>
+    <p>近年来终端安全检测与响应的产品发展迅速，我们不得不意识到，安全是在一个循环中发展的，从人们意识到安全开始，大部分了解到层面都是病毒、木马，然后接着是浏览器相关的Web安全领域，最后又开始回到终端。这个议题我们通过了解Windows操作系统下的访问控制技术，站在攻防的不同角度去进行对抗，提升自身的知识储备，个人觉得这些知识适用于许多使用Windows操作系统的用户。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-安全描述符security-descriptorssd">0X01 安全描述符(Security Descriptors，SD)</a>
+      <ul>
+        <li><a href="#windows具体有哪些安全对象">Windows具体有哪些安全对象？</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-安全描述符的组成">0x02 安全描述符的组成</a>
+      <ul>
+        <li><a href="#什么是sidsecurity-identifiersid">什么是SID（Security Identifier，SID）</a></li>
+        <li><a href="#相对标识符relative-identifer-rid">相对标识符(Relative Identifer, RID)</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-自主访问控制列表discretionary-access-control-listdacl">0x03 自主访问控制列表（Discretionary access control list，DACL）</a></li>
+    <li><a href="#0x04-系统访问控制列表system-access-control-listsacl">0x04 系统访问控制列表（System access control list，SACL）</a></li>
+    <li><a href="#0x05-修改访问控制列表access-control-listacl">0x05 修改访问控制列表（Access control list，ACL）</a>
+      <ul>
+        <li><a href="#null-dacl和空dacl">NULL DACL和空DACL</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x06-土豆potato提权的本质与进程访问控制">0x06 土豆（Potato）提权的本质与进程访问控制</a></li>
+    <li><a href="#0x07-访问令牌模拟access-token-impersonation">0x07 访问令牌模拟（Access Token Impersonation）</a>
+      <ul>
+        <li><a href="#正常情况下什么时候需要用到令牌模拟">正常情况下什么时候需要用到令牌模拟？</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x08-进程注入process-inject">0x08 进程注入（Process Inject）</a></li>
+    <li><a href="#0x09-文件的权限修改">0x09 文件的权限修改</a>
+      <ul>
+        <li><a href="#创建匿名共享">创建匿名共享</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x10-创造提权漏洞服务后门">0x10 创造提权漏洞——服务后门</a>
+      <ul>
+        <li><a href="#powershell更改服务权限">Powershell更改服务权限</a></li>
+        <li><a href="#cmd修改服务权限">CMD修改服务权限</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x11-windows域下的dcsync攻击及后门实现">0x11 Windows域下的DCSync攻击及后门实现</a>
+      <ul>
+        <li><a href="#哪些用户拥有域复制权限">哪些用户拥有域复制权限？</a></li>
+        <li><a href="#什么是域复制权限--域扩展权限">什么是域复制权限 — 域扩展权限</a></li>
+        <li><a href="#ds-replication-get-changes">DS-Replication-Get-Changes</a></li>
+        <li><a href="#dcsync后门实现">DcSync后门实现</a></li>
+        <li><a href="#dcsync权限检测">DCSync权限检测</a></li>
+      </ul>
+    </li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-前言">0x00 前言</h2>
 <p>近年来终端安全检测与响应的产品发展迅速，我们不得不意识到，安全是在一个循环中发展的，从人们意识到安全开始，大部分了解到层面都是病毒、木马，然后接着是浏览器相关的Web安全领域，最后又开始回到终端。这个议题我们通过了解Windows操作系统下的访问控制技术，站在攻防的不同角度去进行对抗，提升自身的知识储备，个人觉得这些知识适用于许多使用Windows操作系统的用户。</p>
 <h2 id="0x01-安全描述符security-descriptorssd">0X01 安全描述符(Security Descriptors，SD)</h2>

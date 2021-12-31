@@ -47,9 +47,34 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>SQL Server DBA WriteFile</h1>
+    <p>通常情况下，遇到SQL Server注入点，我会比较关注是否是DBA权限，如果是，那么就可能拿到执行命令的权限，进而反弹到Ｃ2上，方便后续的后渗透工作。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-前言">0x01 前言</a></li>
+    <li><a href="#0x02-bypass注入点">0x02 Bypass注入点</a></li>
+    <li><a href="#0x03-tamper-自动化实现">0x03 tamper 自动化实现</a></li>
+    <li><a href="#0x04-xp_cmdshell">0x04 xp_cmdshell</a></li>
+    <li><a href="#0x05-写入文件">0x05 写入文件</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x01-前言">0x01 前言</h2>
 <p>本文非基础类的普及文章，主要分享内网中遇到的一个有趣案例。</p>
 <h2 id="0x02-bypass注入点">0x02 Bypass注入点</h2>

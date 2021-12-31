@@ -47,9 +47,83 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>红队行动之鱼叉攻击-研究分享</h1>
+    <p>这个议题是我在公司年会上分享的，但正逢招人浪潮袭来，抱着和大家交流技术的想法的同时，想寻觅几个志同道合的同学来一起做研究！议题我将会总结成文字，为大家分享我的学习成果。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#演讲简介">演讲简介</a></li>
+    <li><a href="#演讲目标">演讲目标</a></li>
+    <li><a href="#鱼叉攻击概念">鱼叉攻击概念</a>
+      <ul>
+        <li><a href="#穷奇毒云藤">穷奇（毒云藤）</a></li>
+        <li><a href="#海莲花apt32oceanlotus">海莲花（APT32、OceanLotus）</a></li>
+      </ul>
+    </li>
+    <li><a href="#鱼叉攻击背后的攻击链路">鱼叉攻击背后的攻击链路</a></li>
+    <li><a href="#smtp协议简介">SMTP协议简介</a>
+      <ul>
+        <li><a href="#smtp相关安全协议---spf">SMTP相关安全协议 - SPF</a></li>
+        <li><a href="#smtp相关安全协议---dkim">SMTP相关安全协议 - DKIM</a></li>
+        <li><a href="#smtp相关安全协议---dmarc">SMTP相关安全协议 - DMARC</a></li>
+      </ul>
+    </li>
+    <li><a href="#smtp基础报文结构">SMTP基础报文结构</a></li>
+    <li><a href="#smtp-relay欺骗攻击">SMTP Relay欺骗攻击</a></li>
+    <li><a href="#relay技术穿透">Relay技术穿透</a>
+      <ul>
+        <li><a href="#dmarc-的运作方式">DMARC 的运作方式</a></li>
+      </ul>
+    </li>
+    <li><a href="#smtp-relay-基础设施构建">SMTP Relay 基础设施构建</a></li>
+    <li><a href="#c2构建思路">C2构建思路</a>
+      <ul>
+        <li><a href="#c2零接触概念">C2零接触概念</a></li>
+        <li><a href="#期望木马达到的效果--免杀">期望木马达到的效果 – 免杀</a></li>
+        <li><a href="#期望木马达到的效果--免杀-pe加载">期望木马达到的效果 – 免杀 PE加载</a></li>
+        <li><a href="#期望木马达到的效果--体积小">期望木马达到的效果 – 体积小</a></li>
+        <li><a href="#期望木马达到的效果--持久可控">期望木马达到的效果 – 持久可控</a></li>
+        <li><a href="#期望木马达到的效果--uac">期望木马达到的效果 – UAC</a></li>
+      </ul>
+    </li>
+    <li><a href="#cobalt-strike">Cobalt Strike</a>
+      <ul>
+        <li><a href="#external-c2">External C2</a></li>
+        <li><a href="#external-c2-执行流程">External C2 执行流程</a></li>
+      </ul>
+    </li>
+    <li><a href="#domain-fronting">Domain Fronting</a>
+      <ul>
+        <li><a href="#domain-fronting--http-请求">Domain Fronting – HTTP 请求</a></li>
+        <li><a href="#domain-fronting---cdn">Domain Fronting –  CDN</a></li>
+        <li><a href="#external-c2--控制器的设计http协议状态化">External C2 – 控制器的设计（HTTP协议状态化）</a></li>
+      </ul>
+    </li>
+    <li><a href="#鱼叉攻击">鱼叉攻击</a>
+      <ul>
+        <li><a href="#鱼叉攻击的木马表现形式">鱼叉攻击的木马表现形式</a></li>
+        <li><a href="#鱼叉攻击--信">鱼叉攻击 – 信</a></li>
+        <li><a href="#鱼叉攻击--自动化">鱼叉攻击 – 自动化</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="演讲简介">演讲简介</h2>
 <p>《红队行动之鱼叉攻击》围绕着SMTP协议展开，为大家介绍SMTP相关的安全协议，同时会讲解鱼叉攻击的整体过程，以及模拟APT报告进行自动化、武器化的设计。在讲解的过程中，核心围绕Domain-Fronting和External C2这两类红队较为关注的技术，穿插一些HTTP协议相关的基础知识和木马的编写构建。</p>
 <h2 id="演讲目标">演讲目标</h2>

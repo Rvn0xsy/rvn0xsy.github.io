@@ -47,9 +47,39 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>MASM中VirtualProtect函数的分析</h1>
+    <p>最近在巩固汇编知识，写汇编的过程中遇到一个比较奇怪的点，然后开始了一段分析...</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-调用约定">0x00 调用约定</a></li>
+    <li><a href="#0x01-栈与调用约定的关系">0x01 栈与调用约定的关系</a></li>
+    <li><a href="#0x02-使用汇编调用win32-api">0x02 使用汇编调用Win32 API</a>
+      <ul>
+        <li><a href="#安装低版本msvc工具集版本">安装低版本MSVC工具集版本</a></li>
+        <li><a href="#masm-invoke">MASM INVOKE</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-自定义函数分析调用过程">0x03 自定义函数分析调用过程</a></li>
+    <li><a href="#0x04-结论">0x04 结论</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-调用约定">0x00 调用约定</h2>
 <p><a href="https://docs.microsoft.com/en-us/cpp/cpp/stdcall?view=msvc-160">__stdcall</a>关键字用于约定调用Win32 API函数的参数入栈顺序，它的入栈顺序是由右向左，一般C/C++语言代码中没有声明调用约定的话，默认就是<code>__stdcall</code>调用约定。</p>
 <p>C++中如果要声明函数的调用约定，可以通过以下格式：</p>

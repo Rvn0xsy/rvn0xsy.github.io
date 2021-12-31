@@ -47,9 +47,59 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>socat 使用手册</h1>
+    <p></p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#socat简介">socat简介</a></li>
+    <li><a href="#socat的安装">socat的安装</a>
+      <ul>
+        <li><a href="#网络安装">网络安装：</a></li>
+        <li><a href="#下载软件包">下载软件包</a></li>
+        <li><a href="#编译安装">编译安装</a></li>
+        <li><a href="#安装错误解决">安装错误解决</a></li>
+      </ul>
+    </li>
+    <li><a href="#socat的使用">socat的使用</a>
+      <ul>
+        <li><a href="#工作机理">工作机理</a></li>
+      </ul>
+    </li>
+    <li><a href="#典型使用">典型使用</a>
+      <ul>
+        <li><a href="#连接目标">连接目标</a></li>
+        <li><a href="#反向连接">反向连接</a></li>
+        <li><a href="#向远程端口发数据">向远程端口发数据</a></li>
+        <li><a href="#本地开启端口">本地开启端口</a></li>
+        <li><a href="#执行bash的完美用法">执行bash的完美用法</a></li>
+        <li><a href="#文件传递">文件传递</a></li>
+        <li><a href="#转发">转发</a></li>
+        <li><a href="#端口映射">端口映射</a></li>
+        <li><a href="#vpn">VPN</a></li>
+        <li><a href="#重定向">重定向</a></li>
+        <li><a href="#读写分流">读写分流</a></li>
+        <li><a href="#通过openssl来加密传输过程">通过openssl来加密传输过程</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="socat简介">socat简介</h2>
 <p>socat是一个多功能的网络工具，名字来由是” Socket CAT”，可以看作是netcat的N倍加强版，socat的官方网站：http://www.dest-unreach.org/socat/ 。</p>
 <p>Socat是一个两个独立数据通道之间的双向数据传输的继电器。这些数据通道包含文件、管道、设备（终端或调制解调器等）、socket（Unix，IP4，IP6 - raw，UDP，TCP）、SSL、SOCKS4客户端或代理CONNECT。</p>

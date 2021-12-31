@@ -47,9 +47,37 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>Swaks伪造邮件</h1>
+    <p>绕过一些邮件服务器的简单检测</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-swaks">0x00 swaks</a></li>
+    <li><a href="#0x01-smtp2go">0x01 smtp2go</a></li>
+    <li><a href="#0x02-swaks发送邮件">0x02 swaks发送邮件</a></li>
+    <li><a href="#0x03-spf验证原理">0x03 SPF验证原理</a></li>
+    <li><a href="#0x04-绕过spf">0x04 绕过SPF</a></li>
+    <li><a href="#0x05-header">0x05 Header</a></li>
+    <li><a href="#0x06-附件钓鱼">0x06 附件、钓鱼</a></li>
+    <li><a href="#0x07-python也可以做">0x07 Python也可以做</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-swaks">0x00 swaks</h2>
 <p>swaks - Swiss Army Knife SMTP, the all-purpose smtp transaction tester.</p>
 <p>swaks堪称SMTP协议的瑞士军刀，使用它我们可以灵活的操作SMTP协议报文，这篇文章主要是记录一下我是如何伪造一封邮件绕过gmail的检测。</p>

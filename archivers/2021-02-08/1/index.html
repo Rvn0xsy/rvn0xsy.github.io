@@ -47,9 +47,40 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>静态恶意代码逃逸（第十课）</h1>
+    <p>本节课，使用UUID的方式存储Shellcode，再介绍一些CALL BACK函数的特性来加载Shellcode。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-uuid">0x01 UUID</a></li>
+    <li><a href="#0x02-与uuid相关的windows-api">0x02 与UUID相关的Windows API</a></li>
+    <li><a href="#0x03-uuid-测试">0x03 UUID 测试</a>
+      <ul>
+        <li><a href="#生成shellcode">生成Shellcode</a></li>
+        <li><a href="#bin2uuid">Bin2UUID</a></li>
+        <li><a href="#生成测试样本">生成测试样本</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x04-windows-call-back函数">0x04 Windows CALL BACK函数</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <p>代码将会上传至Github，方便读者下载研究 : <a href="https://github.com/Rvn0xsy/BadCode">https://github.com/Rvn0xsy/BadCode</a></p>
 <h2 id="0x01-uuid">0x01 UUID</h2>
 <p>通用唯一标识符（universally unique identifier, UUID）是一个128位的用于在计算机系统中以识别信息的数目。在Windows中也有使用GUID来标识唯一对象。 — 来源：<a href="https://en.wikipedia.org/wiki/Universally_unique_identifier">维基百科</a></p>

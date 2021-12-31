@@ -47,9 +47,47 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>Windows - 内存管理</h1>
+    <p>Windows - Heap、Virtual</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-windows-heap">0x00 Windows Heap</a></li>
+    <li><a href="#0x01-申请堆空间的步骤---heap-api">0x01 申请堆空间的步骤 - Heap API</a></li>
+    <li><a href="#0x02-heapcreate-example">0x02 HeapCreate Example</a></li>
+    <li><a href="#0x03-虚拟内存页管理">0x03 虚拟内存页管理</a>
+      <ul>
+        <li><a href="#申请虚拟内存页">申请虚拟内存页</a></li>
+        <li><a href="#return-value">Return value</a></li>
+        <li><a href="#内存的保护属性">内存的保护属性</a></li>
+        <li><a href="#virtualalloc-example">VirtualAlloc Example</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x04-各种内存分配方式的关系">0x04 各种内存分配方式的关系</a>
+      <ul>
+        <li><a href="#各自的定义和理解">各自的定义和理解</a></li>
+        <li><a href="#区别与联系">区别与联系</a></li>
+        <li><a href="#关于内存的初始化和使用">关于内存的初始化和使用</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-windows-heap">0x00 Windows Heap</h2>
 <p>每个线程都有自己的堆栈，堆用于在内存中存储未知大小的数据，由堆管理器管理，而栈用于保存函数执行状态，存储局部变量。</p>
 <h2 id="0x01-申请堆空间的步骤---heap-api">0x01 申请堆空间的步骤 - Heap API</h2>

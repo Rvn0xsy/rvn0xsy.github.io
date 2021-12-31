@@ -47,9 +47,39 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>如何实现一个Atexec</h1>
+    <p>本文主要从程序编写的角度实现atexec...</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-atexec一种横向方式">0x01 Atexec，一种横向方式</a></li>
+    <li><a href="#0x02-执行过程">0x02 执行过程</a></li>
+    <li><a href="#0x03-实现过程">0x03 实现过程</a>
+      <ul>
+        <li><a href="#如何远程创建任务计划">如何远程创建任务计划？</a></li>
+        <li><a href="#如何获得执行结果">如何获得执行结果？</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x04-atexec完整代码">0x04 Atexec完整代码</a></li>
+    <li><a href="#0x05-其他atexec">0x05 其他Atexec</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x01-atexec一种横向方式">0x01 Atexec，一种横向方式</h2>
 <p>Atexec是一个除了Psexec以外，被高频使用的横向方式，该技术手段主要通过任务计划实现，与<strong>时间</strong>有关。</p>
 <p>Atexec的主要特点是通过135端口进行任务计划任务的创建，同时通过445端口进行SMB认证，取回命令执行的结果。</p>

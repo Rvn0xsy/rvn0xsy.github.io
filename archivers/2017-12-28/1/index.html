@@ -47,9 +47,64 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>针对国内一大厂的后渗透 - 持续</h1>
+    <p>针对国内一大厂的后渗透</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-信息搜集---后渗透">0x01 信息搜集 - 后渗透</a></li>
+    <li><a href="#0x02-后渗透的开始">0x02 后渗透的开始</a>
+      <ul>
+        <li><a href="#权限维持">权限维持</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-关于权限维持的思考">0x03 关于权限维持的思考</a></li>
+    <li><a href="#0x04-端口转发之portfwd详解">0x04 端口转发之portfwd详解</a>
+      <ul>
+        <li><a href="#使用portfwd">使用portfwd</a></li>
+        <li><a href="#端口扫描">端口扫描</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x05-meterpreter">0x05 Meterpreter</a>
+      <ul>
+        <li><a href="#获取hash的几个方式">获取Hash的几个方式</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x06-powershell技巧">0x06 PowerShell技巧</a>
+      <ul>
+        <li><a href="#外部powershell脚本">外部Powershell脚本</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x07-再一次克服困难">0x07 再一次克服困难</a></li>
+    <li><a href="#0x08-开始扫描">0x08 开始扫描</a></li>
+    <li><a href="#0x09-信息搜集基本结果">0x09 信息搜集基本结果</a>
+      <ul>
+        <li><a href="#轻松获得域控服务器">轻松获得域控服务器</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x10-内网核心">0x10 内网核心</a></li>
+    <li><a href="#0x12-配置引发的隐患">0x12 配置引发的隐患</a></li>
+    <li><a href="#0x13-需要搜集的信息">0x13 需要搜集的信息</a></li>
+    <li><a href="#0x14-总结">0x14 总结</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-前言">0x00 前言</h2>
 <p>此文将全部脱敏，涉及某大厂商，中间会穿插一些小的知识点与细节。</p>
 <h2 id="0x01-信息搜集---后渗透">0x01 信息搜集 - 后渗透</h2>

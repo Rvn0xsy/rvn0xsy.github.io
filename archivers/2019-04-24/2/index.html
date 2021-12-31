@@ -47,9 +47,33 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>Nmap扩展开发（二）</h1>
+    <p>本来是想写成一本书的，但是可能断断续续没有很好的产出，我只能以文章的形式分享出来了，希望我的研究成果能够给大家带来便利。—— 作者：倾旋</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-nse引擎执行流程">0x01 NSE引擎执行流程</a></li>
+    <li><a href="#0x02-验证nse_mainlua最先执行">0x02 验证nse_main.lua最先执行</a></li>
+    <li><a href="#0x03-扩展脚本执行规则">0x03 扩展脚本执行规则</a></li>
+    <li><a href="#0x04-扩展脚本action函数">0x04 扩展脚本—action函数</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x01-nse引擎执行流程">0x01 NSE引擎执行流程</h2>
 <p>Nmap的扩展脚本语言都基于lua来开发的，执行也是调用了内部封装的lua解释器。</p>
 <p>正常情况下，调用任何一个扩展脚本会首先执行<code>nse_main.lua</code>，该脚本主要做了以下几件事：</p>

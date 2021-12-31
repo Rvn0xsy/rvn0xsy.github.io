@@ -47,9 +47,41 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>Windows - 线程同步</h1>
+    <p>使用临界区保证多个线程读写全局变量进行同步。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-线程基础">0x00 线程基础</a>
+      <ul>
+        <li><a href="#为什么不是原子">为什么不是原子？</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x01-令牌线程同步">0x01 令牌线程同步</a></li>
+    <li><a href="#0x02-令牌api">0x02 令牌API</a></li>
+    <li><a href="#0x03-互斥体">0x03 互斥体</a>
+      <ul>
+        <li><a href="#创建互斥体">创建互斥体</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-线程基础">0x00 线程基础</h2>
 <p>每个线程的堆栈空间不同，在多线程执行时，可以互不干扰的运行，但是全局变量保存在全局区，当多个线程读写全局变量时，由于读写操作不是原子的，会发生程序错乱。</p>
 <h3 id="为什么不是原子">为什么不是原子？</h3>

@@ -47,9 +47,79 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>DLL Hijacking &amp; COM Hijacking ByPass UAC - 议题解读</h1>
+    <p>将之前都学习到的知识进行汇总，顺便把分享转化成文章</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-何为劫持">0x01 何为劫持</a></li>
+    <li><a href="#0x02-dll是什么">0x02 DLL是什么</a></li>
+    <li><a href="#0x03-dll的加载过程">0X03 DLL的加载过程</a>
+      <ul>
+        <li><a href="#dll的加载过程--know-dlls注册表项">DLL的加载过程 – Know DLLs注册表项</a></li>
+        <li><a href="#dll的加载过程--process-monitor">DLL的加载过程 – Process Monitor</a></li>
+        <li><a href="#dll的加载过程--process-monitor-filter">DLL的加载过程 – Process Monitor Filter</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x04-dll劫持的原理">0x04 DLL劫持的原理</a></li>
+    <li><a href="#0x05-实现一个dll劫持--dll-main">0x05 实现一个DLL劫持 – DLL Main</a>
+      <ul>
+        <li><a href="#实现一个dll劫持--dll-main">实现一个DLL劫持 – DLL Main</a></li>
+        <li><a href="#案例">案例</a></li>
+        <li><a href="#自动化测试">自动化测试</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x06-什么是com">0x06 什么是COM</a></li>
+    <li><a href="#0x07-应用程序与com注册表的关系">0x07 应用程序与COM注册表的关系</a>
+      <ul>
+        <li><a href="#应用程序与com注册表的关系---clsid">应用程序与COM注册表的关系 - CLSID</a></li>
+        <li><a href="#应用程序与com注册表的关系---使用com组件">应用程序与COM注册表的关系 - 使用COM组件</a></li>
+        <li><a href="#应用程序与com注册表的关系--clsid-key">应用程序与COM注册表的关系 – CLSID Key</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x08-com组件的加载过程">0x08 COM组件的加载过程</a></li>
+    <li><a href="#0x09-com组件的劫持原理">0x09 COM组件的劫持原理</a></li>
+    <li><a href="#0x10-实现一个com组件劫持">0x10 实现一个COM组件劫持</a>
+      <ul>
+        <li><a href="#实现一个com组件劫持--分析">实现一个COM组件劫持 – 分析</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x11-uac简介">0x11 UAC简介</a></li>
+    <li><a href="#0x12-bypass-uac的几种方式">0x12 ByPass UAC的几种方式</a></li>
+    <li><a href="#0x13-bypass-uac的原理---自动提升autoelevate">0x13 ByPass UAC的原理 - 自动提升（autoElevate）</a></li>
+    <li><a href="#0x14-bypass-uac演示---fodhelperexe">0x14 Bypass UAC演示 - fodhelper.exe</a>
+      <ul>
+        <li><a href="#bypass-uac演示---fodhelperexe自动化分析">ByPass UAC演示 - fodhelper.exe（自动化分析）</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x15-挖掘bypass-uac的方法">0x15 挖掘ByPass UAC的方法</a>
+      <ul>
+        <li><a href="#寻找自动提升权限的应用程序--sigcheckexe">寻找自动提升权限的应用程序 – Sigcheck.exe</a></li>
+        <li><a href="#寻找自动提升权限的应用程序-stringsexe">寻找自动提升权限的应用程序 Strings.exe</a></li>
+        <li><a href="#寻找自动提升权限的应用程序-sigcheckexe">寻找自动提升权限的应用程序 Sigcheck.exe</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x16-参考">0x16 参考</a></li>
+    <li><a href="#0x17-关于我的安全成长口袋">0x17 关于“我的安全成长口袋”</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <blockquote>
 <p>在线地址：<a href="https://www.bilibili.com/video/av51718274/">https://www.bilibili.com/video/av51718274/</a></p>
 </blockquote>

@@ -47,9 +47,37 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>静态恶意代码逃逸（第六课）</h1>
+    <p>本节课，我们来代入一个新的技术，这个技术与Windows PE格式的基础知识关联性较强，目的是实现全球AV查杀0报警的效果。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-memorymodule">0x01 MemoryModule</a></li>
+    <li><a href="#0x02-反射dll加载的实验">0x02 反射DLL加载的实验</a></li>
+    <li><a href="#0x03-反射dll与msf联动">0x03 反射DLL与MSF联动</a>
+      <ul>
+        <li><a href="#生成dll">生成DLL</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x04-总结">0x04 总结</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <p>代码将会上传至Github，方便读者下载研究 : <a href="https://github.com/Rvn0xsy/BadCode">https://github.com/Rvn0xsy/BadCode</a></p>
 <h2 id="0x01-memorymodule">0x01 MemoryModule</h2>
 <p>先来介绍以下MemoryModule这个项目的来源。</p>

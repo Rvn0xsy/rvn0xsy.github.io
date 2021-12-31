@@ -47,9 +47,33 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>通过OXID解析器获取Windows远程主机上网卡地址</h1>
+    <p>本文主要参考通过OXID解析器获取Windows远程主机上网卡地址的拓展...</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-背景">0x00 背景</a></li>
+    <li><a href="#0x01-oxid-resolver---交互过程分析">0x01 OXID Resolver - 交互过程分析</a></li>
+    <li><a href="#0x03-数据解析过程">0x03 数据解析过程</a></li>
+    <li><a href="#0x04-多线程实现效果">0x04 多线程实现效果</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-背景">0x00 背景</h2>
 <p>Nicolas Delhaye在AIRBUS上分享了一篇<a href="https://airbus-cyber-security.com/the-oxid-resolver-part-1-remote-enumeration-of-network-interfaces-without-any-authentication/">The OXID Resolver [Part 1] – Remote enumeration of network interfaces without any authentication</a>，通过这篇文章我们可以掌握通过Windows的一些DCOM接口进行网卡进行信息枚举，它最大的魅力在于无需认证，只要目标的135端口开放即可获得信息。</p>
 <h2 id="0x01-oxid-resolver---交互过程分析">0x01 OXID Resolver - 交互过程分析</h2>

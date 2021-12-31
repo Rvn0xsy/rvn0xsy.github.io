@@ -47,9 +47,34 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>Struts S2-045 Nmap扫描脚本</h1>
+    <p>本文介绍一下Nmap的扩展插件编写</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-nmap脚本简介">0x00 Nmap脚本简介</a></li>
+    <li><a href="#0x01-实战编写前的思路">0x01 实战编写前的思路</a></li>
+    <li><a href="#0x02-第一个函数-前奏">0x02 第一个函数-前奏</a></li>
+    <li><a href="#0x03-第二个函数-高潮">0x03 第二个函数-高潮</a></li>
+    <li><a href="#0x04-总结">0x04 总结</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-nmap脚本简介">0x00 Nmap脚本简介</h2>
 <p>夜无眠，看了一下Nmap官方的英文API文档(全是English)，瞬间心态崩塌，不想吐槽它们的nmap官网前端太丑了=。=，但是都是大牛啊，挺敬佩开源开发者的。</p>
 <p>Nmap最灵活的就是它的<code>scripts</code>了，在渗透测试中我们经常会用它来扫描服务、漏洞，而且很多脚本也可以用于漏洞利用，总之就是很强大啦～ 具体的介绍在这里：<a href="https://zhuanlan.zhihu.com/p/26618074">Nmap脚本使用指南</a></p>

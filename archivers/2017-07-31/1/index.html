@@ -47,9 +47,52 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>端口转发工具小结</h1>
+    <p>介绍几款端口转发工具</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-ncat">0X00 ncat</a>
+      <ul>
+        <li><a href="#反弹shell">反弹shell</a></li>
+        <li><a href="#建立聊天室">建立聊天室</a></li>
+        <li><a href="#采用ssl加密">采用SSL加密</a></li>
+        <li><a href="#传输文件">传输文件</a></li>
+        <li><a href="#参数列表中文">参数列表(中文)</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x01-socat">0x01 socat</a>
+      <ul>
+        <li><a href="#安装">安装</a></li>
+        <li><a href="#建立通信聊天室">建立通信(聊天室)</a></li>
+        <li><a href="#传输文件-1">传输文件</a></li>
+        <li><a href="#反弹shell-1">反弹Shell</a></li>
+        <li><a href="#端口转发">端口转发</a></li>
+        <li><a href="#udp通信">UDP通信</a></li>
+        <li><a href="#公网转发到内网">公网转发到内网</a></li>
+        <li><a href="#内网转发到公网">内网转发到公网</a></li>
+        <li><a href="#参考文档">参考文档</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-lcxgo语言编写">0x02 lcx（go语言编写）</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-ncat">0X00 ncat</h2>
 <h3 id="反弹shell">反弹shell</h3>
 <p>服务器：<code>ncat -lnv -c bash 4489</code>  将bash转发到4489端口</p>

@@ -47,9 +47,34 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>BMP位图隐写</h1>
+    <p>快过年了，最近学不进去东西，总结一下之前的基础知识，顺便结合起来。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-bmp简介">0x01 BMP简介</a></li>
+    <li><a href="#0x02-bmp文件格式">0x02 BMP文件格式</a></li>
+    <li><a href="#0x03-偏移量-像素位置">0x03 偏移量-像素位置</a></li>
+    <li><a href="#0x04-写入内容">0x04 写入内容</a></li>
+    <li><a href="#0x05-科普">0x05 科普</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x01-bmp简介">0x01 BMP简介</h2>
 <p>BMP（全称Bitmap）是Windows操作系统中的标准图像文件格式，可以分成两类：设备有向量相关位图（DDB）和设备无向量相关位图（DIB），使用非常广。它采用位映射存储格式，除了图像深度可选以外，不采用其他任何压缩，因此，BMP文件所占用的空间很大。BMP文件的图像深度可选lbit、4bit、8bit及24bit。BMP文件存储数据时，图像的扫描方式是按从左到右、从下到上的顺序。由于BMP文件格式是Windows环境中交换与图有关的数据的一种标准，因此在Windows环境中运行的图形图像软件都支持BMP图像格式。</p>
 <p>典型的BMP图像文件由四部分组成：</p>

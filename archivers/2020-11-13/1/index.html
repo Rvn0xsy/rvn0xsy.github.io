@@ -47,9 +47,66 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>Linux透明代理在红队渗透中的应用</h1>
+    <p>本篇文章，主要是记录工作中想让外网打点和内网渗透的场景进行透明代理的体验。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-透明代理">0x01 透明代理</a>
+      <ul>
+        <li><a href="#什么是透明代理">什么是透明代理？</a></li>
+        <li><a href="#为什么要用到透明代理">为什么要用到透明代理？</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-linux下的iptables防火墙">0x02 Linux下的iptables防火墙</a>
+      <ul>
+        <li><a href="#流量导入socks代理">流量导入Socks代理</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-实现简单的透明代理">0x03 实现简单的透明代理</a>
+      <ul>
+        <li><a href="#redsocks安装">redsocks安装</a></li>
+        <li><a href="#配置redsocks代理服务器">配置redsocks代理服务器</a></li>
+        <li><a href="#配置redsocks启动身份">配置redsocks启动身份</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x04-打点模式-配置代理链">0x04 打点模式-配置代理链</a>
+      <ul>
+        <li><a href="#创建自定义规则链">创建自定义规则链</a></li>
+        <li><a href="#启动redsocks">启动redsocks</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x05-内网模式-配置代理链">0x05 内网模式-配置代理链</a></li>
+    <li><a href="#0x06-自动化实现">0x06 自动化实现</a></li>
+    <li><a href="#0x06-树莓派实现6小时切换一次出口的wifi">0x06 树莓派实现6小时切换一次出口的WiFi</a>
+      <ul>
+        <li><a href="#更改redsocks监听地址">更改redsocks监听地址</a></li>
+        <li><a href="#安装创建ap的工具">安装创建AP的工具</a></li>
+        <li><a href="#编写ap服务脚本">编写AP服务脚本</a></li>
+        <li><a href="#编写计划任务脚本">编写计划任务脚本</a></li>
+        <li><a href="#待完善的缺点">待完善的缺点</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x07-总结">0x07 总结</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-前言">0x00 前言</h2>
 <p>决定写这篇文章是我解决了所有问题以后决定记录一下这个过程所写的，因此可能会忽略很多细节上的东西。</p>
 <ul>

@@ -47,9 +47,78 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>彻底理解Windows认证 - 议题解读</h1>
+    <p>在内部分享的《彻底理解Windows认证》议题解读</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-本地认证">0x00 本地认证</a>
+      <ul>
+        <li><a href="#本地认证基础知识">本地认证基础知识</a></li>
+        <li><a href="#ntlm-hash与ntlm">NTLM Hash与NTLM</a></li>
+        <li><a href="#ntlm-hash的产生">NTLM Hash的产生</a></li>
+        <li><a href="#本地认证流程">本地认证流程</a></li>
+        <li><a href="#lm-hash">LM Hash</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x01-网络认证">0x01 网络认证</a>
+      <ul>
+        <li><a href="#ntlm-协议">NTLM 协议</a></li>
+        <li><a href="#chalengeresponse">Chalenge/Response</a></li>
+        <li><a href="#ntlm-v2协议">NTLM V2协议</a></li>
+        <li><a href="#pass-the-hash">Pass The Hash</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-kerberos域认证">0x02 Kerberos域认证</a>
+      <ul>
+        <li><a href="#active-directory活动目录概念">Active Directory(活动目录)概念</a></li>
+        <li><a href="#active-directory活动目录功能">Active Directory(活动目录)功能</a></li>
+        <li><a href="#域认证体系---kerbroes">域认证体系 - Kerbroes</a></li>
+        <li><a href="#域认证所参与的角色-三只狗头">域认证所参与的角色 (三只狗头)</a></li>
+        <li><a href="#域认证粗略流程">域认证粗略流程</a></li>
+        <li><a href="#域认证">域认证</a></li>
+        <li><a href="#白银票据silver-tickets">白银票据(Silver Tickets)</a></li>
+        <li><a href="#伪造白银票据silver-tickets">伪造白银票据(Silver Tickets)</a></li>
+        <li><a href="#白银票据silver-tickets演示">白银票据(Silver Tickets)演示</a></li>
+        <li><a href="#白银票据silver-tickets防御">白银票据(Silver Tickets)防御</a></li>
+        <li><a href="#黄金票据golden-tickets">黄金票据(Golden Tickets)</a></li>
+        <li><a href="#黄金票据golden-tickets-msf-kiwi">黄金票据(Golden Tickets)-MSF kiwi</a></li>
+        <li><a href="#黄金票据golden-tickets---伪造">黄金票据(Golden Tickets) - 伪造</a></li>
+        <li><a href="#黄金票据golden-tickets---演示">黄金票据(Golden Tickets) - 演示</a></li>
+        <li><a href="#tickets-总结">Tickets 总结</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-windows-access-token">0x03 Windows Access Token</a>
+      <ul>
+        <li><a href="#windows-access-token-简介">Windows Access Token 简介</a></li>
+        <li><a href="#windows-access-token组成">Windows Access Token组成</a></li>
+        <li><a href="#windows-access-token--sid-security-identifiers安全标识符">Windows Access Token – SID (Security Identifiers)安全标识符</a></li>
+        <li><a href="#windows-access-token产生过程">Windows Access Token产生过程</a></li>
+        <li><a href="#windows-access-token令牌假冒实战">Windows Access Token令牌假冒实战</a></li>
+        <li><a href="#windows-access-token令牌假冒实战-1">Windows Access Token令牌假冒实战</a></li>
+        <li><a href="#windows-access-token令牌假冒防御">Windows Access Token令牌假冒防御</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x04-知识点总结">0x04 知识点总结</a></li>
+    <li><a href="#0x05-议题资料分享">0x05 议题资料分享</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <p>在内部分享的《彻底理解Windows认证》议题解读，本次议题围绕着Windows认证分别讲解了：</p>
 <ul>
 <li>Pass The Hash</li>

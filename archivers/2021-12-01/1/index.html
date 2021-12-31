@@ -47,9 +47,35 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>某系统 - Java Filter内部反射功能完成远程代码执行</h1>
+    <p>在代码审计的过程中，梳理了一个某系统的漏洞，自己实现了一个大致的漏洞环境，记录一下过程。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-java-servlet-api-之-filter">0x00 Java Servlet API 之 Filter</a></li>
+    <li><a href="#0x01-filter中的filterchain">0x01 Filter中的FilterChain</a></li>
+    <li><a href="#0x02-静态资源文件的filter">0x02 静态资源文件的Filter</a></li>
+    <li><a href="#0x03-filter中的反射">0x03 Filter中的反射</a></li>
+    <li><a href="#0x04-利用静态资源filter绕过权限检测进行任意对象的反射">0x04 利用静态资源Filter绕过权限检测进行任意对象的反射</a></li>
+    <li><a href="#0x05-文件解压缩目录穿越问题">0x05 文件解压缩目录穿越问题</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-java-servlet-api-之-filter">0x00 Java Servlet API 之 Filter</h2>
 <p>Filter，字面意思有过滤的意思，其实在Servlet API中，它就是充当了一个过滤器，2000年，Sun公司在Servlet 2.3规范中添加了Filter功能，并在Servlet 2.4中对Filter进行了细节上的补充。每一个Java Servlet Web都可以设置多个Filter，开发人员可以通过<code>web.xml</code>配置Filter的过滤范围。Filter的实现主要通过Servlet API中提供的Filter接口定义的方法，其实就三个方法。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Filter</span> <span style="color:#f92672">{</span>

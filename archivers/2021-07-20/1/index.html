@@ -47,9 +47,40 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>Kubernetes(K8s)横向移动办法</h1>
+    <p>Kubernetes (通常称为 K8s) 是来自 Google 云平台的开源容器集群管理系统，用于自动部署、扩展和管理容器化（containerized）应用程序。本文介绍获取了其中某个节点的宿主机权限，如何横向移动到Master节点，从而获取整个集群的权限。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-kubernetes-简介">0x01 Kubernetes 简介</a></li>
+    <li><a href="#0x02-kubernetes-关键概念介绍">0x02 Kubernetes 关键概念介绍</a>
+      <ul>
+        <li><a href="#节点node">节点(Node)</a></li>
+        <li><a href="#pod">Pod</a></li>
+        <li><a href="#容忍度toleration与污点taint">容忍度(Toleration)与污点(Taint)</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-环境介绍">0x03 环境介绍</a></li>
+    <li><a href="#0x04-利用创建pod横向移动">0x04 利用创建Pod横向移动</a></li>
+    <li><a href="#0x05-总结">0x05 总结</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <blockquote>
 <p>博客半年没写了，来除除草&hellip;. :(</p>
 </blockquote>

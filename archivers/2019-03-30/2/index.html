@@ -47,9 +47,53 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>OWASP - 吉林沙龙《后渗透与邮件安全》 议题解读</h1>
+    <p>写一篇我在OWASP吉林沙龙分享的 后渗透与邮件安全 议题解读</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-后渗透的定义">0x01 后渗透的定义</a></li>
+    <li><a href="#0x02-c2command-and-control简介">0x02 C2(Command and Control)简介</a></li>
+    <li><a href="#0x03-c2的原理">0x03 C2的原理</a></li>
+    <li><a href="#0x04-后渗透平台--cobalt-strike">0x04 后渗透平台 – Cobalt Strike</a></li>
+    <li><a href="#0x05-后渗透平台--metasploit-framework">0x05 后渗透平台 – Metasploit Framework</a></li>
+    <li><a href="#0x06-后渗透的需求">0x06 后渗透的需求</a>
+      <ul>
+        <li><a href="#框架基本组成">框架基本组成</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x07-payload进入目标机器内存的方式">0x07 PAYLOAD进入目标机器内存的方式</a></li>
+    <li><a href="#0x08-payload的类型">0x08 PAYLOAD的类型</a></li>
+    <li><a href="#0x09-dll-injection与dll-hijacking的共性">0x09 DLL Injection与DLL Hijacking的共性</a></li>
+    <li><a href="#0x10-dll-injection与dll-hijacking的个性">0x10 DLL Injection与DLL Hijacking的个性</a></li>
+    <li><a href="#0x11-windows内存管理方式">0x11 Windows内存管理方式</a></li>
+    <li><a href="#0x12-实现一个dll-injecion">0x12 实现一个DLL Injecion</a></li>
+    <li><a href="#0x13-反射dll注入reflective-dll-injection">0x13 反射DLL注入（Reflective DLL injection）</a></li>
+    <li><a href="#0x14-cobalt-strike-external-c2">0x14 Cobalt Strike external C2</a></li>
+    <li><a href="#0x15-cooolis--bypass-avcobalt-metasploit">0x15 Cooolis – Bypass AV（Cobalt Metasploit）</a></li>
+    <li><a href="#0x15-cooolis--bypass-av---原理">0x15 Cooolis – Bypass AV - 原理</a></li>
+    <li><a href="#0x16-高度安全下的apt邮服实验">0x16 高度安全下的APT邮服实验</a></li>
+    <li><a href="#结语">结语</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <blockquote>
 <p>在线地址：<a href="https://www.bilibili.com/video/av51712186/">https://www.bilibili.com/video/av51712186/</a></p>
 </blockquote>

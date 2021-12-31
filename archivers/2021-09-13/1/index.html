@@ -47,9 +47,37 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>BeingDebugged反调试技巧</h1>
+    <p>了解Windows PEB结构，学习Shellcode编写流程，使用汇编语言进行反调试检测</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-windows-pebprocess-environment-block">0x01 Windows PEB(Process Environment Block)</a>
+      <ul>
+        <li><a href="#shellcode">Shellcode</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-使用汇编语言访问peb">0x02 使用汇编语言访问PEB</a></li>
+    <li><a href="#0x03-反调试代码优化">0x03 反调试代码优化</a></li>
+    <li><a href="#0x04-总结">0x04 总结</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x01-windows-pebprocess-environment-block">0x01 Windows PEB(Process Environment Block)</h2>
 <p>Windows <a href="https://docs.microsoft.com/en-us/windows/win32/api/winternl/ns-winternl-peb">PEB</a>，中文的含义是进程环境块，意味着其中包含了很多与进程相关的复杂信息。微软官方给出了Windows PEB的结构体标准，每一个字段都代表了特定的意义。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _PEB {

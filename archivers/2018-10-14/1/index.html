@@ -47,9 +47,47 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>COM Hijacking</h1>
+    <p>本文介绍一下COM劫持</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-com介绍">0x00 COM介绍</a></li>
+    <li><a href="#0x01-应用程序与com注册表的关系">0x01 应用程序与COM注册表的关系</a>
+      <ul>
+        <li><a href="#注册表">注册表</a></li>
+        <li><a href="#clsid">CLSID</a></li>
+        <li><a href="#clsid是如何创建的">CLSID是如何创建的</a></li>
+        <li><a href="#clsid-在注册表中的表现形式">CLSID 在注册表中的表现形式</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x01-com-组件加载过程">0x01 COM 组件加载过程</a></li>
+    <li><a href="#0x02-com-组件劫持的原理">0x02 COM 组件劫持的原理</a></li>
+    <li><a href="#0x03-com-组件劫持案例">0x03 COM 组件劫持案例</a>
+      <ul>
+        <li><a href="#手动测试">手动测试</a></li>
+        <li><a href="#过程浅析">过程浅析</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-bypass-uac的原理">0x03 Bypass UAC的原理</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-com介绍">0x00 COM介绍</h2>
 <p>COM是Component Object Model （组件对象模型）的缩写。</p>
 <p>COM是微软公司为了计算机工业的软件生产更加符合人类的行为方式开发的一种新的软件开发技术。在COM构架下，人们可以开发出各种各样的功能专一的组件，然后将它们按照需要组合起来，构成复杂的应用系统。</p>

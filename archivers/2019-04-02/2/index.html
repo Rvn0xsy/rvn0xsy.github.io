@@ -47,9 +47,26 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>BaseRequestHandler 传参问题</h1>
+    <p>解决一个Python socketserver BaseRequestHandler传参问题</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents"></nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <p>最近在写<a href="https://github.com/Rvn0xsy/Cooolis-ms">Cooolis-ms</a>的时候遇到一个坑，学艺不精靠搜索，最终解决了。</p>
 <p>问题主要是不知道如何把<code>ArgumentParser</code>处理的参数传递到继承了<code>BaseRequestHandler</code>的<code>class</code>中。</p>
 <p>通常情况下，创建一个TCP的<code>socketserver</code>代码如下：</p>

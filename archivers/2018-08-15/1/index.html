@@ -47,9 +47,43 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>Microsoft DirectX SDK June 2010 Xact3.exe DLL Hijacking复现</h1>
+    <p>本文记录DirectX SDK的DLL劫持漏洞</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-复现过程">0x01 复现过程</a>
+      <ul>
+        <li><a href="#原理">原理</a></li>
+      </ul>
+    </li>
+    <li><a href="#寻找顺序">寻找顺序：</a>
+      <ul>
+        <li><a href="#寻找过程">寻找过程</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-利用过程">0x02 利用过程</a></li>
+    <li><a href="#0x03-总结">0x03 总结</a></li>
+    <li><a href="#0x04-参考">0x04 参考</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-前言">0x00 前言</h2>
 <p>Microsoft DirectX SDK (June 2010) Xact3.exe
 <a href="https://www.microsoft.com/en-us/download/details.aspx?id=6812">https://www.microsoft.com/en-us/download/details.aspx?id=6812</a></p>

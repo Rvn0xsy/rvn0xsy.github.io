@@ -47,9 +47,36 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>Nmap扩展开发（三）</h1>
+    <p>本来是想写成一本书的，但是可能断断续续没有很好的产出，我只能以文章的形式分享出来了，希望我的研究成果能够给大家带来便利。—— 作者：倾旋</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-扩展脚本对象-主机">0X01 扩展脚本对象-主机</a></li>
+    <li><a href="#0x02-扩展脚本对象-端口">0X02 扩展脚本对象-端口</a>
+      <ul>
+        <li><a href="#0x02-完成一个需求">0X02 完成一个需求</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-优化输出格式表table">0x03 优化输出格式——表（table）</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x01-扩展脚本对象-主机">0X01 扩展脚本对象-主机</h2>
 <p>在进行主机扫描的时候会执行hostrule这个函数，从以往的nmap扩展脚本代码中我们都可以发现在hostrule这个函数中做了一些针对host操作的动作。</p>
 <p>hostrule有一个参数，变量名叫host，我们可以把它理解为一个对象，在这里称之为对象是为了方便读者理解，在lua中实际它的数据类型是一个多维的table（表），具有很多属性。由于这些rule函数都是被动调用的，我们只能在函数内部对形参进行操作了。</p>

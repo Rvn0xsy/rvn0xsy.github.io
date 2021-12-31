@@ -47,9 +47,37 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>红队分享-如何挖掘Windows Bypass UAC（第一课）</h1>
+    <p>用户帐户控制（User Account Control，简写作UAC)是微软公司在其Windows Vista及更高版本操作系统中采用的一种控制机制。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#什么是uac">什么是UAC</a></li>
+    <li><a href="#为什么有的应用程序不需要提示uac">为什么有的应用程序不需要提示UAC？</a>
+      <ul>
+        <li><a href="#manifest文件">manifest文件</a></li>
+      </ul>
+    </li>
+    <li><a href="#寻找auto-elevate">寻找auto Elevate</a></li>
+    <li><a href="#手动bypass-uac">手动Bypass UAC</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="什么是uac">什么是UAC</h2>
 <p>用户帐户控制（User Account Control，简写作UAC)是微软公司在其Windows Vista及更高版本操作系统中采用的一种控制机制。其原理是通知用户是否对应用程序使用硬盘驱动器和系统文件授权，以达到帮助阻止恶意程序（有时也称为“恶意软件”）损坏系统的效果。</p>
 <p>先观察一下：</p>

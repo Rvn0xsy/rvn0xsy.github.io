@@ -47,9 +47,30 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>Linux权限维持之进程注入</h1>
+    <p>通过进程注入技术，能够使得动态链接库被加载到一个正在运行的进程，因此较为隐蔽。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#说明">说明</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="说明">说明</h2>
 <p>通过进程注入技术，能够使得动态链接库被加载到一个正在运行的进程，因此较为隐蔽。进程注入通过调用<code>ptrace()</code>实现了与Windows平台下相同作用的API 函数<code>CreateRemoteThread()</code>。在许多Linux发行版中，内核的默认配置文件<code>/proc/sys/kernel/yama/ptrace_scope</code>限制了一个进程除了<code>fork()</code>派生外，无法通过<code>ptrace()</code>来操作另外一个进程。</p>
 <p>要注入进程前，需要关闭这个限制（Root权限）：</p>

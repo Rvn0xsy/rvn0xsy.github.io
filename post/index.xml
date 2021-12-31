@@ -5,16 +5,7 @@
     <link>https://payloads.online/post/</link>
     <description>Recent content in Posts on 倾旋的博客</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Fri, 24 Dec 2021 00:37:56 +0800</lastBuildDate><atom:link href="https://payloads.online/post/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>基于反向代理技术进行水坑攻击- Pricking项目使用介绍</title>
-      <link>https://payloads.online/archivers/2021-02-18/1/</link>
-      <pubDate>Fri, 24 Dec 2021 00:37:56 +0800</pubDate>
-      
-      <guid>https://payloads.online/archivers/2021-02-18/1/</guid>
-      <description>Pricking 是一个基于反向代理技术进行水坑攻击的项目，本文介绍Pricking项目的安装与使用。</description>
-    </item>
-    
+    <lastBuildDate>Wed, 01 Dec 2021 00:37:56 +0800</lastBuildDate><atom:link href="https://payloads.online/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>某系统 - Java Filter内部反射功能完成远程代码执行</title>
       <link>https://payloads.online/archivers/2021-12-01/1/</link>
@@ -79,21 +70,12 @@
     </item>
     
     <item>
-      <title>Pricking 项目（二） ：JS模块开发</title>
-      <link>https://payloads.online/archivers/2021-02-18/2/</link>
-      <pubDate>Thu, 18 Feb 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://payloads.online/archivers/2021-02-18/2/</guid>
-      <description>Pricking 是一个自动化部署水坑和网页钓鱼的开源项目，本文介绍Pricking项目的JS模块开发。</description>
-    </item>
-    
-    <item>
       <title>红队技巧：基于反向代理的水坑攻击</title>
       <link>https://payloads.online/archivers/2021-02-16/1/</link>
       <pubDate>Tue, 16 Feb 2021 00:00:00 +0000</pubDate>
       
       <guid>https://payloads.online/archivers/2021-02-16/1/</guid>
-      <description>在红队行动中，一般使用邮件钓鱼会携带诱饵附件，但常被邮件网关拦截，如果想要去收集更多的有效信息，可以在邮件中埋入水坑链接。而埋入的水坑的制作，对于红队来说又有些繁琐，因此本文记录一下我实现自动化这块的工作。</description>
+      <description>在红队行动中，一般使用邮件钓鱼会携带诱饵附件，但常被邮件网关拦截，如果想要去收集更多的有效信息，可以在邮件中埋入水坑链接。而埋入的水坑的制作，对于红队来说又有些繁琐，因此本文记录一下我实现自动化三种解决方案。</description>
     </item>
     
     <item>
@@ -184,6 +166,24 @@
       
       <guid>https://payloads.online/archivers/2020-07-16/1/</guid>
       <description>本文主要参考通过OXID解析器获取Windows远程主机上网卡地址的拓展...</description>
+    </item>
+    
+    <item>
+      <title>如何实现一个Atexec</title>
+      <link>https://payloads.online/archivers/2020-06-28/1/</link>
+      <pubDate>Sun, 28 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2020-06-28/1/</guid>
+      <description>本文主要从程序编写的角度实现atexec...</description>
+    </item>
+    
+    <item>
+      <title>如何实现一个Psexec</title>
+      <link>https://payloads.online/archivers/2020-04-02/1/</link>
+      <pubDate>Thu, 02 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2020-04-02/1/</guid>
+      <description>本文不涉及Pass The Hash的攻击手段，因为使用C/C++实现起来很麻烦，因此本文只围绕Psexec这款工具的实现原理、防御、其他思路展开...</description>
     </item>
     
   </channel>

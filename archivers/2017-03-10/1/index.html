@@ -47,9 +47,37 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>渗透测试中的Bypass技巧（三）自动化注入</h1>
+    <p>某些Web服务器的特性不一，导致WAF在判断时候无法完全工作。经常出现的情况大部分都是协议层与Web服务器之间WAF没有很好的处理请求，导致无法拦截很多生僻的攻击手法，那么我们先从GET、POST先说起。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-匹配资源大小限制">0x00 匹配资源大小限制</a></li>
+    <li><a href="#0x01-绕过某waf上传">0x01 绕过某WAF上传</a></li>
+    <li><a href="#0x02-绕过某waf注入">0x02 绕过某WAF注入</a>
+      <ul>
+        <li><a href="#注释">注释</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-自动化bypass注入">0x03 自动化bypass注入</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-匹配资源大小限制">0x00 匹配资源大小限制</h2>
 <p>某些Web服务器的特性不一，导致WAF在判断时候无法完全工作。经常出现的情况大部分都是协议层与Web服务器之间WAF没有很好的处理请求，导致无法拦截很多生僻的攻击手法，那么我们先从GET、POST先说起。</p>
 <p>Get方法提交的数据大小长度并没有限制，HTTP协议规范没有对URL长度进行限制。这个限制是特定的浏览器及服务器对它的限制。可见WAF可能在处理GET请求的时候，根据客户端（浏览器）规定的长度去匹配了，这就造成了一个缺陷。我们可以把有效数据放在这个限制的零界点，攻击语句放在零界点后方，让WAF以为这是一个正常请求，就随之放行，达到了攻击效果。</p>

@@ -47,9 +47,39 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>CVE-2017-11882漏洞复现</h1>
+    <p>本文记录一下针对CVE-2017-11882的漏洞复现</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-环境清单">0x01 环境清单</a></li>
+    <li><a href="#0x02-复现过程">0X02 复现过程</a>
+      <ul>
+        <li><a href="#使用cobalt-strike生成hta反弹shell">使用Cobalt Strike生成hta反弹shell</a></li>
+        <li><a href="#生成一个rtfdoc文档">生成一个rtf/doc文档</a></li>
+        <li><a href="#结果">结果</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-修复建议">0x03 修复建议</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-前言">0x00 前言</h2>
 <p>参考backlion师傅的PDF，记录一下这个过程。</p>
 <p>2017年11月14日，微软发布了11月份的安全补丁更新，其中比较引人关注的莫过于悄然修复了潜伏17年之久的Office远程代码执行漏洞（CVE-2017-11882）。该漏洞为Office内存破坏漏洞，影响目前流行的所有Office版本。攻击者可以利用漏洞以当前登录的用户的身份执行任意命令。

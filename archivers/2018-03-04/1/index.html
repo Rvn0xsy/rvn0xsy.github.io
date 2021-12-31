@@ -47,9 +47,39 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>使用C语言发送伪造源IP的UDP请求及DRDOS拒绝服务攻击原理剖析</h1>
+    <p>本文概述一下使用C语言发送伪造源IP的UDP请求及DRDoS拒绝服务攻击原理剖析</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-什么是drdos">0x01 什么是DRDOS</a></li>
+    <li><a href="#0x02-drdos的攻击流程">0x02 DRDOS的攻击流程</a></li>
+    <li><a href="#0x03-drdos的特性">0x03 DRDOS的特性</a>
+      <ul>
+        <li><a href="#jerry与tom一次正常的udp请求">Jerry与Tom一次正常的UDP请求</a></li>
+        <li><a href="#allen进行一次rdos攻击">Allen进行一次RDOS攻击</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x04-编写一个伪造ip头的c语言程序">0x04 编写一个伪造IP头的C语言程序</a></li>
+    <li><a href="#0x05-其他方式">0x05 其他方式</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x01-什么是drdos">0x01 什么是DRDOS</h2>
 <p>DRDoS是英文“Distributed Reflection Denial of Service ”的缩写，中文意思是“分布式反射拒绝服务”。与DoS、DDoS不同，该方式靠的是发送大量带有被害者IP地址的数据包给攻击主机，然后攻击主机对IP地址源做出大量回应，形成拒绝服务攻击。</p>
 <h2 id="0x02-drdos的攻击流程">0x02 DRDOS的攻击流程</h2>

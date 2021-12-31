@@ -47,9 +47,42 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>SSRF漏洞配合Flask的巧妙利用 - 内网漫游</h1>
+    <p>SSRF(Server-side Request Forge, 服务端请求伪造)。由攻击者构造的攻击链接传给服务端执行造成的漏洞，一般用来在外网探测或攻击内网服务...</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#ssrf-服务器请求伪造">SSRF 服务器请求伪造</a>
+      <ul>
+        <li><a href="#常见的功能点">常见的功能点</a></li>
+        <li><a href="#网页代理---http-proxy">网页代理 - HTTP Proxy</a></li>
+      </ul>
+    </li>
+    <li><a href="#flask-框架">Flask 框架</a>
+      <ul>
+        <li><a href="#flask-框架的请求流程">Flask 框架的请求流程</a></li>
+        <li><a href="#解决文件类型问题">解决文件类型问题</a></li>
+        <li><a href="#content-encoding问题">Content-Encoding问题</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="ssrf-服务器请求伪造">SSRF 服务器请求伪造</h2>
 <p>SSRF(Server-side Request Forge, 服务端请求伪造)。由攻击者构造的攻击链接传给服务端执行造成的漏洞，一般用来在外网探测或攻击内网服务。</p>
 <h3 id="常见的功能点">常见的功能点</h3>

@@ -47,9 +47,46 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>使用CrackMapExec 进行 NTLM Hash传递攻击</h1>
+    <p>本文介绍一个工具 - CrackMapExec 进行 NTLM Hash传递攻击</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-前言">0x01 前言</a></li>
+    <li><a href="#0x02-ntlm对渗透的作用">0x02 NTLM对渗透的作用</a></li>
+    <li><a href="#0x03-crackmapexec-介绍">0x03 CrackMapExec 介绍</a></li>
+    <li><a href="#0x03-安装crackmapexec">0x03 安装CrackMapExec</a>
+      <ul>
+        <li><a href="#kali-linux">Kali Linux</a></li>
+        <li><a href="#debianubuntu">Debian/Ubuntu</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x04-传递ntlm-hash执行命令">0x04 传递NTLM Hash执行命令</a>
+      <ul>
+        <li><a href="#使用mimikatz获取ntlm-hash">使用<code>Mimikatz</code>获取<code>NTLM Hash</code></a></li>
+        <li><a href="#使用crackmapexec执行命令">使用<code>CrackMapExec</code>执行命令</a></li>
+        <li><a href="#使用crackmapexec获取本地密码local-security-authoritylsa">使用<code>CrackMapExec</code>获取本地密码(Local Security Authority)LSA</a></li>
+        <li><a href="#more-">More &hellip;</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x01-前言">0x01 前言</h2>
 <p>早期<code>SMB</code>协议在网络上传输明文口令。后来出现 <code>LAN Manager Challenge/Response </code>验证机制，简称<code>LM</code>，它是如此简单以至很容易就被破解。微软提出了WindowsNT挑战/响应验证机制，称之为NTLM。</p>
 <p>从<code>Win2000</code>开始默认协议为<code>Kerboros</code>，下列情况会调用<code>NTLM</code>：</p>

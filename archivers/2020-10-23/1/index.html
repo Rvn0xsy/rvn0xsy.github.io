@@ -47,9 +47,32 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>静态恶意代码逃逸（第七课）</h1>
+    <p>本节课，我们需要引入导入表的概念，并且通过代码的小技巧来隐藏导入表，减少文件特征</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-导入地址表iat">0x01 导入地址表（IAT）</a></li>
+    <li><a href="#0x02-getprocaddress获取函数地址">0x02 GetProcAddress获取函数地址</a></li>
+    <li><a href="#0x03-自己动手获取函数地址">0x03 自己动手获取函数地址</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <p>代码将会上传至Github，方便读者下载研究 : <a href="https://github.com/Rvn0xsy/BadCode">https://github.com/Rvn0xsy/BadCode</a></p>
 <h2 id="0x01-导入地址表iat">0x01 导入地址表（IAT）</h2>
 <blockquote>

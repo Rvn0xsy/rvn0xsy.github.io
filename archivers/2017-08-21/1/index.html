@@ -47,9 +47,31 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>Tomcat 开启 https支持</h1>
+    <p>本文介绍一下tomcat 开启 https支持</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-配置keystore">0x00 配置keystore</a></li>
+    <li><a href="#0x01-修改配置文件">0x01 修改配置文件</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-配置keystore">0x00 配置keystore</h2>
 <p>要使用ssl connector，必须先创建一个keystore。他包含了服务器中被客户端用于验证服务器的数字证书。一旦客户端接受了这个证书，客户端就可以使用public key去加密他们要发送的数据。而服务器，拥有一个private key，作为唯一解密数据的密钥。</p>
 <p>进入JDK环境的bin目录，调用keytool来完成我们的证书生成：</p>

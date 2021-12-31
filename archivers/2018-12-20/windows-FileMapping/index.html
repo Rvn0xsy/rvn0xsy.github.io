@@ -47,9 +47,34 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>Windows 文件映射</h1>
+    <p>通过使用文件映射来增强修改文件的效率</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-文件映射的原理">0x00 文件映射的原理</a></li>
+    <li><a href="#0x01-文件映射的步骤">0x01 文件映射的步骤</a></li>
+    <li><a href="#0x02-文件映射简单代码">0x02 文件映射简单代码</a></li>
+    <li><a href="#0x03-api-list">0x03 API List</a></li>
+    <li><a href="#0x04-创建一个超大文件">0x04 创建一个超大文件</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-文件映射的原理">0x00 文件映射的原理</h2>
 <p>文件映射(Mapping)是一种能够将文件内容映射到进程的虚拟地址空间的技术。视图(view)是一个由映射句柄开辟的一块虚拟地址空间，用于存放文件内容，当文件被映射完成后，改写视图虚拟地址空间的内容就相当于更改文件内容。</p>
 <p>一般情况下，当代码运行完毕后，视图将会被自动写入文件中。</p>

@@ -47,9 +47,65 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>浅谈使用C语言开发服务端漏洞扫描设计</h1>
+    <p>本文记录一下自己学习这么久以来，目前设计的漏洞扫描最好的方式</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-前言">0x00 前言</a></li>
+    <li><a href="#0x01-网络套接字socket">0x01 网络套接字(SOCKET)</a>
+      <ul>
+        <li><a href="#什么是套接字">什么是套接字</a></li>
+        <li><a href="#套接字的地址结构">套接字的地址结构</a></li>
+        <li><a href="#套接字的类型3种">套接字的类型（3种）</a></li>
+        <li><a href="#套接字描述符">套接字描述符</a></li>
+        <li><a href="#网络字节序">网络字节序</a></li>
+        <li><a href="#创建套接字的过程">创建套接字的过程</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x02-协议选择">0x02 协议选择</a>
+      <ul>
+        <li><a href="#tcp与udp区别总结">TCP与UDP区别总结：</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-服务端模型">0x03 服务端模型</a>
+      <ul>
+        <li><a href="#模型解读">模型解读</a></li>
+        <li><a href="#模型代码">模型代码</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x04-信号处理">0x04 信号处理</a>
+      <ul>
+        <li><a href="#信号列表">信号列表</a></li>
+        <li><a href="#处理僵尸进程">处理僵尸进程</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x05-多进程多线程">0x05 多进程、多线程</a>
+      <ul>
+        <li><a href="#进程的创建fork">进程的创建fork()</a></li>
+        <li><a href="#多线程">多线程</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x06-任务派发过程">0x06 任务派发过程</a></li>
+    <li><a href="#参考">参考</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-前言">0x00 前言</h2>
 <p>都是自己闷头搞出来的经验，对于自己是经验，对大家就不知道合不合口味了。</p>
 <p>本文可能过多的穿插以下知识点：</p>

@@ -47,9 +47,37 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>Web正向代理的思考</h1>
+    <p>本篇文章，主要是记录工作中遇到一个在不出网的机器上，构建正向代理尝试出的一个其他办法。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-背景假设">0x01 背景假设</a></li>
+    <li><a href="#0x02-尝试理解目标网络架构">0x02 尝试理解目标网络架构</a></li>
+    <li><a href="#0x03-利用nat规则实现内网漫游">0x03 利用NAT规则实现内网漫游</a>
+      <ul>
+        <li><a href="#如何利用">如何利用？</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x04-总结">0x04 总结</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x01-背景假设">0x01 背景假设</h2>
 <p>获取Webshell后，但是机器不出网（DNS、TCP、UDP）等常规端口都进行了尝试。</p>
 <p>不出网的解释：内部的Webshell服务器无法连接互联网。</p>

@@ -47,9 +47,54 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>Windows活动目录中的LDAP</h1>
+    <p>如今互联网上关于LDAP介绍的文章已经很多了，并且LDAP的发展历史相对来说也是较长的，它被应用于Windows的活动目录中，这让我们不得不去学习LDAP的一些基本概念。本文不是一个科普文章，主旨在于从渗透测试的角度出发，看看从LDAP中能收集哪些信息。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#ldap基础概念">LDAP基础概念</a>
+      <ul>
+        <li><a href="#条目entry">条目（Entry）</a></li>
+        <li><a href="#识别名distinguished-name-dn">识别名（Distinguished Name, DN）</a></li>
+        <li><a href="#相对识别名relative-distinguished-name-rdn">相对识别名（Relative Distinguished Name, RDN）</a></li>
+        <li><a href="#模式schema">模式（Schema）</a></li>
+        <li><a href="#对象类objectclass">对象类（ObjectClass）</a></li>
+        <li><a href="#属性类型attributetype">属性类型（AttributeType）</a></li>
+      </ul>
+    </li>
+    <li><a href="#ldap-filter-进阶">LDAP Filter 进阶</a>
+      <ul>
+        <li><a href="#ldap-objectcategory与objectclass">LDAP objectCategory与objectClass</a></li>
+        <li><a href="#获取所有域内计算机对象">获取所有域内计算机对象</a></li>
+        <li><a href="#获取所有域内用户对象">获取所有域内用户对象</a></li>
+        <li><a href="#获取所有启用用户">获取所有启用用户</a></li>
+        <li><a href="#特殊字符对照表">特殊字符对照表</a></li>
+      </ul>
+    </li>
+    <li><a href="#查看域内dns解析数据">查看域内DNS解析数据</a></li>
+    <li><a href="#go语言操作ldap">Go语言操作LDAP</a>
+      <ul>
+        <li><a href="#获取非约束委派与约束委派机器">获取非约束委派与约束委派机器</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="ldap基础概念">LDAP基础概念</h2>
 <h3 id="条目entry">条目（Entry）</h3>
 <p>一个条目有若干个属性，每一个属性应对一个或多个值，有些条目可以包含若干个子条目。</p>

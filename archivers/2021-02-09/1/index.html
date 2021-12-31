@@ -47,9 +47,33 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>CVE-2021-3156 - Exploit修改</h1>
+    <p>Qualys研究团队在sudo中发现了一个堆溢出漏洞，该漏洞在类似Unix的主要操作系统上都可以使用。通过利用此漏洞，任何没有特权的用户都可以使用默认的sudo配置在易受攻击的主机上获得root特权。</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-为什么要修改">0x01 为什么要修改？</a></li>
+    <li><a href="#0x02-linux-管道符">0x02 Linux 管道符</a></li>
+    <li><a href="#0x03-exploit分析">0x03 Exploit分析</a></li>
+    <li><a href="#0x03-演示效果">0x03 演示效果</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <p>New-Exploit :  <a href="https://github.com/Rvn0xsy/CVE-2021-3156-plus">https://github.com/Rvn0xsy/CVE-2021-3156-plus</a></p>
 <h2 id="0x01-为什么要修改">0x01 为什么要修改？</h2>
 <p>本人不擅长二进制，但是看了一下网上公开的Exploit，都需要输入一次密码才能够利用这个漏洞，还是不满足于一些实战场景，如果获得不到交互式Shell，那么用原有的Exploit就不能利用了。</p>

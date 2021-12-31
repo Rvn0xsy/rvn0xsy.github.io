@@ -47,9 +47,50 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>如何实现一个Psexec</h1>
+    <p>本文不涉及Pass The Hash的攻击手段，因为使用C/C&#43;&#43;实现起来很麻烦，因此本文只围绕Psexec这款工具的实现原理、防御、其他思路展开...</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-psexec">0x01 Psexec</a></li>
+    <li><a href="#0x02-psexec的执行原理">0x02 Psexec的执行原理</a>
+      <ul>
+        <li><a href="#查看安全日志">查看安全日志</a></li>
+        <li><a href="#查看系统日志">查看系统日志</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-从网络分析psexec利用过程">0x03 从网络分析Psexec利用过程</a></li>
+    <li><a href="#0x04-连接smb共享">0x04 连接SMB共享</a>
+      <ul>
+        <li><a href="#关于smb上传文件">关于SMB上传文件</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x05-编写服务程序">0x05 编写服务程序</a>
+      <ul>
+        <li><a href="#servicemain-函数">ServiceMain 函数</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x06-使用windows-api远程管理服务">0x06 使用Windows API远程管理服务</a></li>
+    <li><a href="#0x07-psexec完整代码">0x07 PsExec完整代码</a></li>
+    <li><a href="#0x08-总结psexec防御">0x08 总结PsExec防御</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x01-psexec">0x01 Psexec</h2>
 <p>Psexec被编写的初衷是为了方便服务器管理员管理大量的机器而开发的，但由于它的便捷，同时也被黑客使用。</p>
 <p>相信很多人都用过Psexec这款工具了，它由Sysinternals网站提供，Sysinternals这个网站由Mark Russinovich于1996年创建，用于托管他的高级系统实用程序和技术信息。</p>

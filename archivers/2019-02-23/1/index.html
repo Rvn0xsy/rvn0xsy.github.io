@@ -47,9 +47,41 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>驱动人生供应链木马攻击2019.1.30变种木马分析</h1>
+    <p>360安全大脑监测到通过”驱动人生”供应链攻击传播的挖矿木马在1月30日下午4时左右再次更新……</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-事件背景">0x00 事件背景</a></li>
+    <li><a href="#0x01-分析研讨">0x01 分析研讨</a></li>
+    <li><a href="#0x02-分析过程">0x02 分析过程</a>
+      <ul>
+        <li><a href="#解密第一层">解密第一层</a></li>
+        <li><a href="#解密第二层">解密第二层</a></li>
+        <li><a href="#解密第三层">解密第三层</a></li>
+        <li><a href="#解密第四层">解密第四层</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x03-行为分析">0x03 行为分析</a></li>
+    <li><a href="#0x04-预警与排查方案">0x04 预警与排查方案</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-事件背景">0x00 事件背景</h2>
 <p>360安全大脑监测到通过&quot;驱动人生&quot;供应链攻击传播的挖矿木马在1月30日下午4时左右再次更新。此次更新中，木马在此前抓取系统帐户密码的基础上增加了抓取密码hash值的功能，并试图通过pass the hash攻击进行横向渗透，使得该木马的传播能力进一步加强，即使是有高强度口令的机器也有可能被攻陷。</p>
 <p>pass the hash也称作哈希传递攻击，攻击者可以直接通过密码的哈希值访问远程主机或服务，而不用提供明文密码。攻击者使用pass the hash技术尝试在系统登录密码非弱口令并且无法抓取登录密码的情况下进行横向攻击，增加攻击成功率。</p>

@@ -47,9 +47,31 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>静态恶意代码逃逸（第八课）</h1>
+    <p>本节课，需要使用C&#43;&#43;的特性来解决特殊字符串被标记的情况</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x01-字符串">0x01 字符串</a></li>
+    <li><a href="#0x02-c-重载运算符">0x02 C++ 重载运算符</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <p>代码将会上传至Github，方便读者下载研究 : <a href="https://github.com/Rvn0xsy/BadCode">https://github.com/Rvn0xsy/BadCode</a></p>
 <h2 id="0x01-字符串">0x01 字符串</h2>
 <p>一般情况下，C/C++程序中的字符串常量会被硬编码到程序中（.data段，也就是数据段），尤其是全局变量最容易被定位到。</p>

@@ -47,9 +47,39 @@
    
 </nav>
 <nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-
 <div class="container">
     <h1>DllMain与rundll32详解</h1>
+    <p>深入了解一下DllMain</p>
+        <div class = "toc-wrapper">
+            
+<div class="post-toc" id="post-toc">
+<aside>
+    
+    
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#0x00-dllmain">0x00 DllMain</a>
+      <ul>
+        <li><a href="#程序调用dll中的导出函数的流程">程序调用DLL中的导出函数的流程</a></li>
+        <li><a href="#dllmain的原型">DllMain的原型</a></li>
+      </ul>
+    </li>
+    <li><a href="#0x01-dllmain调用原因">0x01 DllMain调用原因</a></li>
+    <li><a href="#0x02-那些用于测试dll劫持的dllmain-poc">0x02 那些用于测试DLL劫持的DllMain POC</a></li>
+    <li><a href="#0x03-__declspec">0x03 __declspec</a></li>
+    <li><a href="#0x04-关于rundll32">0x04 关于rundll32</a></li>
+  </ul>
+</nav>
+    
+    
+</aside>
+<a href="#" id="toc-toggle"></a>
+</div>
+
+
+
+        </div>
     <h2 id="0x00-dllmain">0x00 DllMain</h2>
 <p>对于动态链接库，DllMain是一个<strong>可选的</strong>入口函数。</p>
 <h3 id="程序调用dll中的导出函数的流程">程序调用DLL中的导出函数的流程</h3>
