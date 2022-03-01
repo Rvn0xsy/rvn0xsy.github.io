@@ -5,7 +5,16 @@
     <link>https://payloads.online/</link>
     <description>Recent content on 倾旋的博客</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 16 Feb 2022 17:23:32 +0800</lastBuildDate><atom:link href="https://payloads.online/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 01 Mar 2022 17:23:32 +0800</lastBuildDate><atom:link href="https://payloads.online/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>利用NPM仓库充当文件托管服务</title>
+      <link>https://payloads.online/archivers/2022-03-01/1/</link>
+      <pubDate>Tue, 01 Mar 2022 17:23:32 +0800</pubDate>
+      
+      <guid>https://payloads.online/archivers/2022-03-01/1/</guid>
+      <description>NPM是随同NodeJS一起安装的包管理工具，NPM可以通过NPM的源下载安装源上发布的JS代码，本文将使用NPM进行托管文件到NPM源，方便文件进行传输、下载。</description>
+    </item>
+    
     <item>
       <title>静态恶意代码逃逸（第十一课）- 汇编语言编写Shellcode加载器</title>
       <link>https://payloads.online/archivers/2022-02-16/1/</link>
@@ -175,15 +184,6 @@
       
       <guid>https://payloads.online/archivers/2020-07-16/1/</guid>
       <description>本文主要参考通过OXID解析器获取Windows远程主机上网卡地址的拓展...</description>
-    </item>
-    
-    <item>
-      <title>如何实现一个Atexec</title>
-      <link>https://payloads.online/archivers/2020-06-28/1/</link>
-      <pubDate>Sun, 28 Jun 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://payloads.online/archivers/2020-06-28/1/</guid>
-      <description>本文主要从程序编写的角度实现atexec...</description>
     </item>
     
   </channel>

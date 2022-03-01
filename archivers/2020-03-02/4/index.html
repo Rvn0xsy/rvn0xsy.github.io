@@ -102,38 +102,38 @@
 <p>Array数据类型支持多种数据存放在一起，也就是说Array是一个复合数据类型；</p>
 <p>例如：</p>
 <pre tabindex="0"><code># create a  List
-@foo = @('foo',123.0,'bar');
+@foo = @(&#39;foo&#39;,123.0,&#39;bar&#39;);
 println(@foo[0])
 </code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/914ebd7a-4f5f-11ec-929e-00d861bf4abb.png" alt="2020-03-01-11-37-53"></p>
 <p>遍历：</p>
-<pre tabindex="0"><code>@foo = @('foo',123.0,'bar');
+<pre tabindex="0"><code>@foo = @(&#39;foo&#39;,123.0,&#39;bar&#39;);
 foreach $var (@foo)
 {
    println($var);
 }
 </code></pre><p>Stacks 栈 - “后进先出”</p>
 <pre tabindex="0"><code># create a Stacks
-push(@stack, &quot;apple&quot;);
-push(@stack, &quot;banana&quot;);
-push(@stack, &quot;cucumber&quot;);
+push(@stack, &#34;apple&#34;);
+push(@stack, &#34;banana&#34;);
+push(@stack, &#34;cucumber&#34;);
 
-println(&quot;Stack is: &quot; . @stack);
+println(&#34;Stack is: &#34; . @stack);
 $value = pop(@stack);
-println(&quot;Top item is: &quot; . $value);
-println(&quot;Stack is: &quot; . @stack[0]);
+println(&#34;Top item is: &#34; . $value);
+println(&#34;Stack is: &#34; . @stack[0]);
 </code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/918fbf78-4f5f-11ec-a2a2-00d861bf4abb.png" alt="2020-03-01-11-38-02"></p>
 <p>Hashes 更像是Python中的字典 Key-Value</p>
 <pre tabindex="0"><code>$x = 3;
-%foo[&quot;name&quot;] = &quot;Raphael&quot;;
-%foo[&quot;job&quot;]  = &quot;wasting time&quot;;
-%foo[$x]     = &quot;Michelangelo&quot;;
+%foo[&#34;name&#34;] = &#34;Raphael&#34;;
+%foo[&#34;job&#34;]  = &#34;wasting time&#34;;
+%foo[$x]     = &#34;Michelangelo&#34;;
 
-println(&quot;%foo is: &quot; . %foo);
+println(&#34;%foo is: &#34; . %foo);
 </code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/91c85450-4f5f-11ec-bb58-00d861bf4abb.png" alt="2020-03-01-11-38-12"></p>
 <h2 id="创建一个与用户交互的函数">创建一个与用户交互的函数</h2>
 <p>一般，我们通常会在beacon中输入命令给Cobalt Strike，这些命令背后的代码其实都被事件关联起来了，下面来一个示例，做一次我们自己的命令绑定。</p>
 <pre tabindex="0"><code>sub print_hello{
-    println(&quot;Hello $1&quot;);
+    println(&#34;Hello $1&#34;);
 }
 
 command say {

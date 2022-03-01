@@ -107,52 +107,52 @@
 <h2 id="0x04-写入内容">0x04 写入内容</h2>
 <p>这个过程中，我们可以写入shellcode、PE文件、字符串等。</p>
 <p>这里我只是写入了一个“Hello world !!!”：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
-<span style="color:#75715e">// ConsoleApplication1.cpp : This file contains the &#39;main&#39; function. Program execution begins and ends there.
-</span><span style="color:#75715e">//
-</span><span style="color:#75715e"></span>
-<span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;winsock.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span><span style="color:#75715e">// int WinMain(HINSTANCE hinstance,HINSTANCE hprevinstance,LPSTR lpcmdline,int ncmdshow)
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
-{
-	CHAR text[] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Hello world !!!&#34;</span>;
-	LPCWCHAR pFilename <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;C:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Users</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Rvn0xsy</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">source</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">repos</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">ConsoleApplication1</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Debug</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">splash.bmp&#34;</span>);
-	LPCWCHAR pSaveFilename <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;C:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Users</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Rvn0xsy</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">source</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">repos</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">ConsoleApplication1</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Debug</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">save.bmp&#34;</span>);
-	<span style="color:#75715e">// 创建文件句柄，打开图片
-</span><span style="color:#75715e"></span>	HANDLE hFile <span style="color:#f92672">=</span> CreateFile(pFilename, GENERIC_ALL, <span style="color:#ae81ff">0</span>, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-	<span style="color:#66d9ef">if</span> (hFile <span style="color:#f92672">==</span> INVALID_HANDLE_VALUE) {
-		std<span style="color:#f92672">::</span>wcout <span style="color:#f92672">&lt;&lt;</span> GetLastError();
-		MessageBox(<span style="color:#ae81ff">0</span>, TEXT(<span style="color:#e6db74">&#34;CreateFile&#34;</span>), TEXT(<span style="color:#e6db74">&#34;Error&#34;</span>), MB_OK);
-		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-	}
-	<span style="color:#75715e">// 获取文件大小
-</span><span style="color:#75715e"></span>	DWORD dwFileSize;
-	dwFileSize<span style="color:#f92672">=</span>GetFileSize(hFile, NULL);
-	<span style="color:#75715e">// 申请一个与文件大小对应的内存空间
-</span><span style="color:#75715e"></span>	CHAR <span style="color:#f92672">*</span> lpBuffer <span style="color:#f92672">=</span>(CHAR <span style="color:#f92672">*</span>) HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, dwFileSize);
-	<span style="color:#75715e">// 将文件内容读入内存
-</span><span style="color:#75715e"></span>	ReadFile(hFile, lpBuffer, dwFileSize, <span style="color:#f92672">&amp;</span>dwFileSize, NULL);
-	<span style="color:#75715e">// 获取第一个像素点对应的首字节
-</span><span style="color:#75715e"></span>	DWORD <span style="color:#f92672">*</span> point <span style="color:#f92672">=</span> (DWORD<span style="color:#f92672">*</span>)(lpBuffer <span style="color:#f92672">+</span> <span style="color:#ae81ff">10</span>);
-
-	<span style="color:#75715e">// 获取首个像素地址
-</span><span style="color:#75715e"></span>	CHAR<span style="color:#f92672">*</span> lpData <span style="color:#f92672">=</span> (lpBuffer <span style="color:#f92672">+</span> (<span style="color:#f92672">*</span>point));
-	<span style="color:#75715e">// 写入内容
-</span><span style="color:#75715e"></span>	CopyMemory(lpData, text, <span style="color:#66d9ef">sizeof</span>(text));
-	<span style="color:#75715e">//创建保存副本
-</span><span style="color:#75715e"></span>	HANDLE hSave <span style="color:#f92672">=</span> CreateFile(pSaveFilename, GENERIC_ALL, <span style="color:#ae81ff">0</span>, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-	WriteFile(hSave, lpBuffer, dwFileSize, <span style="color:#f92672">&amp;</span>dwFileSize, NULL); <span style="color:#75715e">// 写入文件
-</span><span style="color:#75715e"></span>	CloseHandle(hSave); <span style="color:#75715e">// 保存
-</span><span style="color:#75715e"></span>
-	<span style="color:#75715e">// 释放堆
-</span><span style="color:#75715e"></span>	HeapFree(GetProcessHeap(), <span style="color:#ae81ff">0</span>, lpBuffer);
-
-	<span style="color:#75715e">// 关闭文件
-</span><span style="color:#75715e"></span>	CloseHandle(hFile);
-}
-</code></pre></div><p>效果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// ConsoleApplication1.cpp : This file contains the &#39;main&#39; function. Program execution begins and ends there.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;winsock.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">// int WinMain(HINSTANCE hinstance,HINSTANCE hprevinstance,LPSTR lpcmdline,int ncmdshow)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	CHAR text[] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Hello world !!!&#34;</span>;
+</span></span><span style="display:flex;"><span>	LPCWCHAR pFilename <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;C:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Users</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Rvn0xsy</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">source</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">repos</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">ConsoleApplication1</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Debug</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">splash.bmp&#34;</span>);
+</span></span><span style="display:flex;"><span>	LPCWCHAR pSaveFilename <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;C:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Users</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Rvn0xsy</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">source</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">repos</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">ConsoleApplication1</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Debug</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">save.bmp&#34;</span>);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 创建文件句柄，打开图片
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	HANDLE hFile <span style="color:#f92672">=</span> CreateFile(pFilename, GENERIC_ALL, <span style="color:#ae81ff">0</span>, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (hFile <span style="color:#f92672">==</span> INVALID_HANDLE_VALUE) {
+</span></span><span style="display:flex;"><span>		std<span style="color:#f92672">::</span>wcout <span style="color:#f92672">&lt;&lt;</span> GetLastError();
+</span></span><span style="display:flex;"><span>		MessageBox(<span style="color:#ae81ff">0</span>, TEXT(<span style="color:#e6db74">&#34;CreateFile&#34;</span>), TEXT(<span style="color:#e6db74">&#34;Error&#34;</span>), MB_OK);
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 获取文件大小
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	DWORD dwFileSize;
+</span></span><span style="display:flex;"><span>	dwFileSize<span style="color:#f92672">=</span>GetFileSize(hFile, NULL);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 申请一个与文件大小对应的内存空间
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	CHAR <span style="color:#f92672">*</span> lpBuffer <span style="color:#f92672">=</span>(CHAR <span style="color:#f92672">*</span>) HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, dwFileSize);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 将文件内容读入内存
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	ReadFile(hFile, lpBuffer, dwFileSize, <span style="color:#f92672">&amp;</span>dwFileSize, NULL);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 获取第一个像素点对应的首字节
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	DWORD <span style="color:#f92672">*</span> point <span style="color:#f92672">=</span> (DWORD<span style="color:#f92672">*</span>)(lpBuffer <span style="color:#f92672">+</span> <span style="color:#ae81ff">10</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 获取首个像素地址
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	CHAR<span style="color:#f92672">*</span> lpData <span style="color:#f92672">=</span> (lpBuffer <span style="color:#f92672">+</span> (<span style="color:#f92672">*</span>point));
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 写入内容
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	CopyMemory(lpData, text, <span style="color:#66d9ef">sizeof</span>(text));
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">//创建保存副本
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	HANDLE hSave <span style="color:#f92672">=</span> CreateFile(pSaveFilename, GENERIC_ALL, <span style="color:#ae81ff">0</span>, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+</span></span><span style="display:flex;"><span>	WriteFile(hSave, lpBuffer, dwFileSize, <span style="color:#f92672">&amp;</span>dwFileSize, NULL); <span style="color:#75715e">// 写入文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	CloseHandle(hSave); <span style="color:#75715e">// 保存
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 释放堆
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	HeapFree(GetProcessHeap(), <span style="color:#ae81ff">0</span>, lpBuffer);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 关闭文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	CloseHandle(hFile);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>效果如下：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4ccb0744-4f5f-11ec-8fae-00d861bf4abb.png" alt="2019-01-31-16-24-59"></p>
 <p>对图片的影响只是像素级别的，不会出现缺损问题。</p>
 <h2 id="0x05-科普">0x05 科普</h2>

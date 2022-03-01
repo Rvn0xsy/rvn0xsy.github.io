@@ -109,21 +109,21 @@ Accept-Encoding: gzip, deflate
 Accept-Language: zh-CN,zh;q=0.9
 
 {
-    &quot;url&quot;:&quot;http://domain.com/sso?login&quot;,
-    &quot;method&quot;:&quot;post&quot;,
-    &quot;jsonBody&quot;:&quot;{\&quot;username\&quot;:\&quot;123456\&quot;}&quot;
+    &#34;url&#34;:&#34;http://domain.com/sso?login&#34;,
+    &#34;method&#34;:&#34;post&#34;,
+    &#34;jsonBody&#34;:&#34;{\&#34;username\&#34;:\&#34;123456\&#34;}&#34;
 }
 </code></pre><h2 id="flask-框架">Flask 框架</h2>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9685f1a0-4f5f-11ec-b8a6-00d861bf4abb.png" alt="2020-03-21-17-02-11"></p>
 <p>Flask是一个用Python编写的Web应用程序框架，它基于Werkzeug WSGI工具包和Jinja2模板引擎。</p>
 <p>Flask也被称为“microframework” ，因为它使用简单的核心，用extension增加其他功能，它没有默认使用的数据库、窗体验证工具。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> flask <span style="color:#f92672">import</span> Flask
-app <span style="color:#f92672">=</span> Flask(__name__)
-
-<span style="color:#a6e22e">@app</span><span style="color:#f92672">.</span>route(<span style="color:#e6db74">&#39;/&#39;</span>)
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">hello_world</span>():
-    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;Hello, World!&#39;</span>
-</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/96ce8dca-4f5f-11ec-826f-00d861bf4abb.png" alt="2020-03-21-17-02-36"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> flask <span style="color:#f92672">import</span> Flask
+</span></span><span style="display:flex;"><span>app <span style="color:#f92672">=</span> Flask(__name__)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@app</span><span style="color:#f92672">.</span>route(<span style="color:#e6db74">&#39;/&#39;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">hello_world</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;Hello, World!&#39;</span>
+</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/96ce8dca-4f5f-11ec-826f-00d861bf4abb.png" alt="2020-03-21-17-02-36"></p>
 <pre tabindex="0"><code>$ export FLASK_APP=hello.py
 $ python -m flask run
  * Running on http://127.0.0.1:5000/
@@ -136,29 +136,29 @@ $ python -m flask run
 <li>after_this_request</li>
 </ol>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/97b9303c-4f5f-11ec-a5f5-00d861bf4abb.png" alt="2020-03-21-17-03-02"></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> flask <span style="color:#f92672">import</span> Flask, request, Response
-<span style="color:#f92672">import</span> requests
-app <span style="color:#f92672">=</span> Flask(__name__)
-
-<span style="color:#a6e22e">@app</span><span style="color:#f92672">.</span>before_request
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_proxy</span>(<span style="color:#f92672">*</span>args, <span style="color:#f92672">**</span>kwargs):
-    resp <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>request(
-        method<span style="color:#f92672">=</span>request<span style="color:#f92672">.</span>method,
-        url<span style="color:#f92672">=</span>request<span style="color:#f92672">.</span>url,
-        headers<span style="color:#f92672">=</span>{key: value <span style="color:#66d9ef">for</span> (key, value) <span style="color:#f92672">in</span> request<span style="color:#f92672">.</span>headers},
-        data<span style="color:#f92672">=</span>request<span style="color:#f92672">.</span>get_data(),
-        cookies<span style="color:#f92672">=</span>request<span style="color:#f92672">.</span>cookies,
-        allow_redirects<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
-
-    excluded_headers <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;content-encoding&#39;</span>, <span style="color:#e6db74">&#39;content-length&#39;</span>, <span style="color:#e6db74">&#39;transfer-encoding&#39;</span>, <span style="color:#e6db74">&#39;connection&#39;</span>]
-    headers <span style="color:#f92672">=</span> [(name, value) <span style="color:#66d9ef">for</span> (name, value) <span style="color:#f92672">in</span> resp<span style="color:#f92672">.</span>raw<span style="color:#f92672">.</span>headers<span style="color:#f92672">.</span>items()
-               <span style="color:#66d9ef">if</span> name<span style="color:#f92672">.</span>lower() <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> excluded_headers]
-
-    response <span style="color:#f92672">=</span> Response(resp<span style="color:#f92672">.</span>content, resp<span style="color:#f92672">.</span>status_code, headers)
-    <span style="color:#66d9ef">return</span> response
-<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
-    app<span style="color:#f92672">.</span>run(debug<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
-</code></pre></div><p>Flask的默认端口是：5000</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> flask <span style="color:#f92672">import</span> Flask, request, Response
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> requests
+</span></span><span style="display:flex;"><span>app <span style="color:#f92672">=</span> Flask(__name__)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">@app</span><span style="color:#f92672">.</span>before_request
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">_proxy</span>(<span style="color:#f92672">*</span>args, <span style="color:#f92672">**</span>kwargs):
+</span></span><span style="display:flex;"><span>    resp <span style="color:#f92672">=</span> requests<span style="color:#f92672">.</span>request(
+</span></span><span style="display:flex;"><span>        method<span style="color:#f92672">=</span>request<span style="color:#f92672">.</span>method,
+</span></span><span style="display:flex;"><span>        url<span style="color:#f92672">=</span>request<span style="color:#f92672">.</span>url,
+</span></span><span style="display:flex;"><span>        headers<span style="color:#f92672">=</span>{key: value <span style="color:#66d9ef">for</span> (key, value) <span style="color:#f92672">in</span> request<span style="color:#f92672">.</span>headers},
+</span></span><span style="display:flex;"><span>        data<span style="color:#f92672">=</span>request<span style="color:#f92672">.</span>get_data(),
+</span></span><span style="display:flex;"><span>        cookies<span style="color:#f92672">=</span>request<span style="color:#f92672">.</span>cookies,
+</span></span><span style="display:flex;"><span>        allow_redirects<span style="color:#f92672">=</span><span style="color:#66d9ef">False</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    excluded_headers <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;content-encoding&#39;</span>, <span style="color:#e6db74">&#39;content-length&#39;</span>, <span style="color:#e6db74">&#39;transfer-encoding&#39;</span>, <span style="color:#e6db74">&#39;connection&#39;</span>]
+</span></span><span style="display:flex;"><span>    headers <span style="color:#f92672">=</span> [(name, value) <span style="color:#66d9ef">for</span> (name, value) <span style="color:#f92672">in</span> resp<span style="color:#f92672">.</span>raw<span style="color:#f92672">.</span>headers<span style="color:#f92672">.</span>items()
+</span></span><span style="display:flex;"><span>               <span style="color:#66d9ef">if</span> name<span style="color:#f92672">.</span>lower() <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> excluded_headers]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    response <span style="color:#f92672">=</span> Response(resp<span style="color:#f92672">.</span>content, resp<span style="color:#f92672">.</span>status_code, headers)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> response
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
+</span></span><span style="display:flex;"><span>    app<span style="color:#f92672">.</span>run(debug<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
+</span></span></code></pre></div><p>Flask的默认端口是：5000</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/97f79534-4f5f-11ec-ac7e-00d861bf4abb.png" alt="2020-03-21-17-03-33"></p>
 <p>插件名称：SwitchyOmega</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/982fb572-4f5f-11ec-b357-00d861bf4abb.png" alt="2020-03-21-17-03-48"></p>
@@ -169,30 +169,30 @@ app <span style="color:#f92672">=</span> Flask(__name__)
 <li>SSRF漏洞接口返回的Content-Type是Json，那么我们还需要将Json转化为一个字典，把DATA取出。</li>
 <li>根据SSRF漏洞请求的URI来定义MIME Type，Response返回对应的MIME Type即可解决</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_filetype</span>(url):
-    content_type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;text/html&#39;</span>
-    response_mimetype <span style="color:#f92672">=</span> {
-        <span style="color:#e6db74">&#39;.png&#39;</span>:<span style="color:#e6db74">&#39;image/png&#39;</span>,
-        <span style="color:#e6db74">&#39;.js&#39;</span>:<span style="color:#e6db74">&#39;application/javascript&#39;</span>,
-        <span style="color:#e6db74">&#39;.jpg&#39;</span>:<span style="color:#e6db74">&#39;image/jpeg&#39;</span>,
-        <span style="color:#e6db74">&#39;.gif&#39;</span>: <span style="color:#e6db74">&#39;image/gif&#39;</span>,
-        <span style="color:#e6db74">&#39;.jpeg&#39;</span>:<span style="color:#e6db74">&#39;image/jpeg&#39;</span>,
-        <span style="color:#e6db74">&#39;.ico&#39;</span>:<span style="color:#e6db74">&#39;image/x-icon&#39;</span>,
-        <span style="color:#e6db74">&#39;.css&#39;</span>:<span style="color:#e6db74">&#39;text/css&#39;</span>,
-        <span style="color:#e6db74">&#39;.svg&#39;</span>:<span style="color:#e6db74">&#39;image/svg+xml&#39;</span>,
-    }
-    disassembled <span style="color:#f92672">=</span> urlparse(url)
-    filename, file_ext <span style="color:#f92672">=</span> splitext(basename(disassembled<span style="color:#f92672">.</span>path))
-    content_type <span style="color:#f92672">=</span> response_mimetype<span style="color:#f92672">.</span>get(file_ext, <span style="color:#e6db74">&#39;text/html&#39;</span>)
-    <span style="color:#66d9ef">return</span> content_type
-</code></pre></div><p>这里定义了一些常见的MIME类型，通过截取URI的文件扩展名来找到对应的MIME类型，默认找不到就以HTML返回，不知道还有没有更赞的办法，如果有欢迎分享。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">get_filetype</span>(url):
+</span></span><span style="display:flex;"><span>    content_type <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;text/html&#39;</span>
+</span></span><span style="display:flex;"><span>    response_mimetype <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;.png&#39;</span>:<span style="color:#e6db74">&#39;image/png&#39;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;.js&#39;</span>:<span style="color:#e6db74">&#39;application/javascript&#39;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;.jpg&#39;</span>:<span style="color:#e6db74">&#39;image/jpeg&#39;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;.gif&#39;</span>: <span style="color:#e6db74">&#39;image/gif&#39;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;.jpeg&#39;</span>:<span style="color:#e6db74">&#39;image/jpeg&#39;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;.ico&#39;</span>:<span style="color:#e6db74">&#39;image/x-icon&#39;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;.css&#39;</span>:<span style="color:#e6db74">&#39;text/css&#39;</span>,
+</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#39;.svg&#39;</span>:<span style="color:#e6db74">&#39;image/svg+xml&#39;</span>,
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    disassembled <span style="color:#f92672">=</span> urlparse(url)
+</span></span><span style="display:flex;"><span>    filename, file_ext <span style="color:#f92672">=</span> splitext(basename(disassembled<span style="color:#f92672">.</span>path))
+</span></span><span style="display:flex;"><span>    content_type <span style="color:#f92672">=</span> response_mimetype<span style="color:#f92672">.</span>get(file_ext, <span style="color:#e6db74">&#39;text/html&#39;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> content_type
+</span></span></code></pre></div><p>这里定义了一些常见的MIME类型，通过截取URI的文件扩展名来找到对应的MIME类型，默认找不到就以HTML返回，不知道还有没有更赞的办法，如果有欢迎分享。</p>
 <h3 id="content-encoding问题">Content-Encoding问题</h3>
 <p>Accept-Encoding 和Content-Encoding是HTTP中用来对采用哪种编码格式传输正文进行协定的一对头部字段。</p>
 <p>通过SSRF漏洞接口返回的通常可能是附带Content-Encoding头的响应，但与SSRF目标返回的不匹配，会造成网页展示不完全的情况。（本质上是接口取回的内容已经是解码后的，但接口本身可能又有编码头）</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">excluded_headers <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;content-encoding&#39;</span>, <span style="color:#e6db74">&#39;content-length&#39;</span>, <span style="color:#e6db74">&#39;transfer-encoding&#39;</span>, <span style="color:#e6db74">&#39;connection&#39;</span>]
-        headers <span style="color:#f92672">=</span> [(name, value) <span style="color:#66d9ef">for</span> (name, value) <span style="color:#f92672">in</span> resp<span style="color:#f92672">.</span>raw<span style="color:#f92672">.</span>headers<span style="color:#f92672">.</span>items()
-                   <span style="color:#66d9ef">if</span> name<span style="color:#f92672">.</span>lower() <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> excluded_headers]
-</code></pre></div><p>这里的解决方式是剔除编码头 Content-Encoding。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span>excluded_headers <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;content-encoding&#39;</span>, <span style="color:#e6db74">&#39;content-length&#39;</span>, <span style="color:#e6db74">&#39;transfer-encoding&#39;</span>, <span style="color:#e6db74">&#39;connection&#39;</span>]
+</span></span><span style="display:flex;"><span>        headers <span style="color:#f92672">=</span> [(name, value) <span style="color:#66d9ef">for</span> (name, value) <span style="color:#f92672">in</span> resp<span style="color:#f92672">.</span>raw<span style="color:#f92672">.</span>headers<span style="color:#f92672">.</span>items()
+</span></span><span style="display:flex;"><span>                   <span style="color:#66d9ef">if</span> name<span style="color:#f92672">.</span>lower() <span style="color:#f92672">not</span> <span style="color:#f92672">in</span> excluded_headers]
+</span></span></code></pre></div><p>这里的解决方式是剔除编码头 Content-Encoding。</p>
 
 </div>
 <div class="container">

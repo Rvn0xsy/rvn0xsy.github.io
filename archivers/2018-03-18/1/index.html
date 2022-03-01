@@ -120,9 +120,7 @@ deb http://security.ubuntu.com/ubuntu artful-security multiverse
 <pre tabindex="0"><code>
 /usr/bin/gnome-terminal
 
--x bash -c &quot;/usr/bin/nmap -iL %f -oN %d/NmapScan10000Result.txt -A;bash&quot;
-
-
+-x bash -c &#34;/usr/bin/nmap -iL %f -oN %d/NmapScan10000Result.txt -A;bash&#34;
 </code></pre><p>这个参数是用于创建一个新的终端，并且执行Nmap。最后的<code>;bash</code>很重要，是用于保留终端不被关闭而写的</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/216ad7dc-4f5f-11ec-affe-00d861bf4abb.png" alt="enter description here" title="0x07"></p>
 <p>有了这个方式，我们可以自定义很多工具的参数传递，是不是很方便呢？</p>

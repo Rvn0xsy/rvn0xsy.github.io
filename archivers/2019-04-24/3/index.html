@@ -89,20 +89,20 @@
 </blockquote>
 <p>由于Nmap没提供这个需求的解决方案，就需要我们自己来写一个扩展脚本了~</p>
 <p>还是拿之前的test.nse来改一下：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
-prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
-	mac <span style="color:#f92672">=</span> host.mac_addr
-        print(stdnse.format_mac(mac))
-<span style="color:#66d9ef">end</span>
-portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
-<span style="color:#66d9ef">end</span>
-action<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-</code></pre></div><p>通过host.mac_addr获取的mac地址是二进制编码的，我们要转换成字符串，需要引入stdnse这个扩展包，stdnse包中有一个format_mac函数，能够将host.mac_addr转换成字符串。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
+</span></span><span style="display:flex;"><span>prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
+</span></span><span style="display:flex;"><span>	mac <span style="color:#f92672">=</span> host.mac_addr
+</span></span><span style="display:flex;"><span>        print(stdnse.format_mac(mac))
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>action<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>通过host.mac_addr获取的mac地址是二进制编码的，我们要转换成字符串，需要引入stdnse这个扩展包，stdnse包中有一个format_mac函数，能够将host.mac_addr转换成字符串。</p>
 <p>执行效果如下：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6ebb6fce-4f5f-11ec-8628-00d861bf4abb.png" alt="2019-04-24-10-02-57"></p>
 <pre tabindex="0"><code>00:50:56:ec:95:48
@@ -126,21 +126,21 @@ postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function
 需要引入stdnse包，调用format_mac函数</p>
 </blockquote>
 <p>如此一来思路清晰了许多，还是从test.nse改起：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
-prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
-<span style="color:#66d9ef">end</span>
-portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">if</span>(port.number <span style="color:#f92672">==</span> <span style="color:#ae81ff">80</span> <span style="color:#f92672">or</span> port.number <span style="color:#f92672">==</span> <span style="color:#ae81ff">443</span>)<span style="color:#66d9ef">then</span>
-		print(<span style="color:#e6db74">&#34;[*]Host MAC -&gt; &#34;</span> <span style="color:#f92672">..</span> stdnse.format_mac(host.mac_addr))
-	<span style="color:#66d9ef">end</span>
-<span style="color:#66d9ef">end</span>
-action<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-</code></pre></div><p>既然是针对服务/端口的需求，我们可以在portrule中进行编写，肯定有读者会产生疑问，nmap的-p参数就能指定端口，为何还要再portrule中判断。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
+</span></span><span style="display:flex;"><span>prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(port.number <span style="color:#f92672">==</span> <span style="color:#ae81ff">80</span> <span style="color:#f92672">or</span> port.number <span style="color:#f92672">==</span> <span style="color:#ae81ff">443</span>)<span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>		print(<span style="color:#e6db74">&#34;[*]Host MAC -&gt; &#34;</span> <span style="color:#f92672">..</span> stdnse.format_mac(host.mac_addr))
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>action<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>既然是针对服务/端口的需求，我们可以在portrule中进行编写，肯定有读者会产生疑问，nmap的-p参数就能指定端口，为何还要再portrule中判断。</p>
 <p>是因为我们最终写的脚本可能不只是做这一件事，而是做多件事情，以不同的条件限定它去执行哪些代码。</p>
 <p>扫描结果：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6f412b14-4f5f-11ec-a638-00d861bf4abb.png" alt="2019-04-24-10-05-42"></p>
@@ -148,24 +148,24 @@ postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function
 <h2 id="0x03-优化输出格式表table">0x03 优化输出格式——表（table）</h2>
 <p>在stdnse包中有一个函数叫output_table()，它能够返回一个table数据类型，通过操作这个table，将Key-&gt;Value的对应关系数据或列表数据放入，再return，就可以输出漂亮的格式~</p>
 <p>就拿0x01中的test.nse来演示：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
-http_table <span style="color:#f92672">=</span> stdnse.output_table()
-prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
-<span style="color:#66d9ef">end</span>
-portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">if</span>(port.number <span style="color:#f92672">==</span> <span style="color:#ae81ff">80</span> <span style="color:#f92672">or</span> port.number <span style="color:#f92672">==</span> <span style="color:#ae81ff">443</span>)<span style="color:#66d9ef">then</span>
-		http_table.http_host_mac <span style="color:#f92672">=</span> stdnse.format_mac(host.mac_addr)
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
-	<span style="color:#66d9ef">end</span>
-<span style="color:#66d9ef">end</span>
-action<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-	<span style="color:#66d9ef">return</span> http_table
-<span style="color:#66d9ef">end</span>
-postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-</code></pre></div><p>执行效果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
+</span></span><span style="display:flex;"><span>http_table <span style="color:#f92672">=</span> stdnse.output_table()
+</span></span><span style="display:flex;"><span>prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(port.number <span style="color:#f92672">==</span> <span style="color:#ae81ff">80</span> <span style="color:#f92672">or</span> port.number <span style="color:#f92672">==</span> <span style="color:#ae81ff">443</span>)<span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>		http_table.http_host_mac <span style="color:#f92672">=</span> stdnse.format_mac(host.mac_addr)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>action<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> http_table
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>执行效果如下：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6f815d4c-4f5f-11ec-a1fb-00d861bf4abb.png" alt="2019-04-24-10-06-19"></p>
 <p>可见在portrule返回true的时候才会执行action函数，在脚本刚开始执行前，声明了一个http_table全局变量，当遇到端口80/443时，会把当前主机的MAC地址装入http_table，在action中返回。</p>
 <p>对象结构图：</p>

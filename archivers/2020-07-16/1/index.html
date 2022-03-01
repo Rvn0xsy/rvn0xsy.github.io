@@ -92,30 +92,30 @@
 <pre tabindex="0"><code>\x05\x00\x0b\x03\x10\x00\x00\x00\x48\x00\x00\x00\x01\x00\x00\x00\xb8\x10\xb8\x10\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00\x01\x00\xc4\xfe\xfc\x99\x60\x52\x1b\x10\xbb\xcb\x00\xaa\x00\x21\x34\x7a\x00\x00\x00\x00\x04\x5d\x88\x8a\xeb\x1c\xc9\x11\x9f\xe8\x08\x00\x2b\x10\x48\x60\x02\x00\x00\x00
 </code></pre><p>第二个数据包：</p>
 <p>这个包无需关注，因为我们最终要获得的是第四个数据包。</p>
-<pre tabindex="0"><code>&quot;\x05\x00\x0c\x03\x10\x00\x00\x00\x3c\x00\x00\x00\x01\x00\x00\x00&quot; \
-&quot;\xb8\x10\xb8\x10\x0a\x13\x00\x00\x04\x00\x31\x33\x35\x00\x00\x00&quot; \
-&quot;\x01\x00\x00\x00\x00\x00\x00\x00\x04\x5d\x88\x8a\xeb\x1c\xc9\x11&quot; \
-&quot;\x9f\xe8\x08\x00\x2b\x10\x48\x60\x02\x00\x00\x00&quot;
+<pre tabindex="0"><code>&#34;\x05\x00\x0c\x03\x10\x00\x00\x00\x3c\x00\x00\x00\x01\x00\x00\x00&#34; \
+&#34;\xb8\x10\xb8\x10\x0a\x13\x00\x00\x04\x00\x31\x33\x35\x00\x00\x00&#34; \
+&#34;\x01\x00\x00\x00\x00\x00\x00\x00\x04\x5d\x88\x8a\xeb\x1c\xc9\x11&#34; \
+&#34;\x9f\xe8\x08\x00\x2b\x10\x48\x60\x02\x00\x00\x00&#34;
 </code></pre><p>可以选中对应的节点，直接复制<code>... as Escaped String</code>，这样就能够拿到十六进制Code。</p>
 <p>第三个数据包：</p>
-<pre tabindex="0"><code>&quot;\x05\x00\x00\x03\x10\x00\x00\x00\x18\x00\x00\x00\x01\x00\x00\x00&quot; \
-&quot;\x00\x00\x00\x00\x00\x00\x05\x00&quot;
+<pre tabindex="0"><code>&#34;\x05\x00\x00\x03\x10\x00\x00\x00\x18\x00\x00\x00\x01\x00\x00\x00&#34; \
+&#34;\x00\x00\x00\x00\x00\x00\x05\x00&#34;
 </code></pre><p>第四个数据包：</p>
-<pre tabindex="0"><code>&quot;\x05\x00\x02\x03\x10\x00\x00\x00\xec\x00\x00\x00\x01\x00\x00\x00&quot; \
-&quot;\xd4\x00\x00\x00\x00\x00\x00\x00\x05\x00\x07\x00\x00\x00\x02\x00&quot; \
-&quot;\x5d\x00\x00\x00\x5d\x00\x47\x00\x07\x00\x44\x00\x45\x00\x53\x00&quot; \
-&quot;\x4b\x00\x54\x00\x4f\x00\x50\x00\x2d\x00\x41\x00\x44\x00\x47\x00&quot; \
-&quot;\x33\x00\x33\x00\x31\x00\x32\x00\x00\x00\x07\x00\x31\x00\x39\x00&quot; \
-&quot;\x32\x00\x2e\x00\x31\x00\x36\x00\x38\x00\x2e\x00\x38\x00\x30\x00&quot; \
-&quot;\x2e\x00\x31\x00\x00\x00\x07\x00\x31\x00\x39\x00\x32\x00\x2e\x00&quot; \
-&quot;\x31\x00\x36\x00\x38\x00\x2e\x00\x32\x00\x30\x00\x31\x00\x2e\x00&quot; \
-&quot;\x31\x00\x00\x00\x07\x00\x31\x00\x30\x00\x2e\x00\x32\x00\x30\x00&quot; \
-&quot;\x2e\x00\x35\x00\x36\x00\x2e\x00\x38\x00\x33\x00\x00\x00\x07\x00&quot; \
-&quot;\x31\x00\x3a\x00\x3a\x00\x32\x00\x35\x00\x36\x00\x3a\x00\x66\x00&quot; \
-&quot;\x64\x00\x00\x00\x00\x00\x09\x00\xff\xff\x00\x00\x1e\x00\xff\xff&quot; \
-&quot;\x00\x00\x10\x00\xff\xff\x00\x00\x0a\x00\xff\xff\x00\x00\x16\x00&quot; \
-&quot;\xff\xff\x00\x00\x1f\x00\xff\xff\x00\x00\x0e\x00\xff\xff\x00\x00&quot; \
-&quot;\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00&quot;
+<pre tabindex="0"><code>&#34;\x05\x00\x02\x03\x10\x00\x00\x00\xec\x00\x00\x00\x01\x00\x00\x00&#34; \
+&#34;\xd4\x00\x00\x00\x00\x00\x00\x00\x05\x00\x07\x00\x00\x00\x02\x00&#34; \
+&#34;\x5d\x00\x00\x00\x5d\x00\x47\x00\x07\x00\x44\x00\x45\x00\x53\x00&#34; \
+&#34;\x4b\x00\x54\x00\x4f\x00\x50\x00\x2d\x00\x41\x00\x44\x00\x47\x00&#34; \
+&#34;\x33\x00\x33\x00\x31\x00\x32\x00\x00\x00\x07\x00\x31\x00\x39\x00&#34; \
+&#34;\x32\x00\x2e\x00\x31\x00\x36\x00\x38\x00\x2e\x00\x38\x00\x30\x00&#34; \
+&#34;\x2e\x00\x31\x00\x00\x00\x07\x00\x31\x00\x39\x00\x32\x00\x2e\x00&#34; \
+&#34;\x31\x00\x36\x00\x38\x00\x2e\x00\x32\x00\x30\x00\x31\x00\x2e\x00&#34; \
+&#34;\x31\x00\x00\x00\x07\x00\x31\x00\x30\x00\x2e\x00\x32\x00\x30\x00&#34; \
+&#34;\x2e\x00\x35\x00\x36\x00\x2e\x00\x38\x00\x33\x00\x00\x00\x07\x00&#34; \
+&#34;\x31\x00\x3a\x00\x3a\x00\x32\x00\x35\x00\x36\x00\x3a\x00\x66\x00&#34; \
+&#34;\x64\x00\x00\x00\x00\x00\x09\x00\xff\xff\x00\x00\x1e\x00\xff\xff&#34; \
+&#34;\x00\x00\x10\x00\xff\xff\x00\x00\x0a\x00\xff\xff\x00\x00\x16\x00&#34; \
+&#34;\xff\xff\x00\x00\x1f\x00\xff\xff\x00\x00\x0e\x00\xff\xff\x00\x00&#34; \
+&#34;\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00&#34;
 </code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a12a1550-4f5f-11ec-bd3c-00d861bf4abb.png" alt="2020-07-16-10-49-31"></p>
 <p>第四个数据包返回的永远是不定长的数据，所以需要参考文档进行解析，我下载了一份包含了OXID的文档，看起来非常的吃力，虽然有结构体，但是并没有给出一个通用的解决方案。</p>
 <h2 id="0x03-数据解析过程">0x03 数据解析过程</h2>
@@ -126,21 +126,21 @@
 </ul>
 <p>因此，当recv的数据直到<code>\x09\x00</code>结束，开头就比较好办了，第四个数据包起始位置往后偏移42个字节就可以到达第一个String Binding。</p>
 <p>代码如下：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-py" data-lang="py">packet_v2 <span style="color:#f92672">=</span> packet[<span style="color:#ae81ff">42</span>:]
-packet_v2_end <span style="color:#f92672">=</span> packet_v2<span style="color:#f92672">.</span>find(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x09\x00\xff\xff\x00\x00</span><span style="color:#e6db74">&#34;</span>)
-packet_v2 <span style="color:#f92672">=</span> packet_v2[:packet_v2_end]
-hostname_list <span style="color:#f92672">=</span> packet_v2<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00\x00</span><span style="color:#e6db74">&#34;</span>)
-result <span style="color:#f92672">=</span> {ip:[]}
-print(<span style="color:#e6db74">&#34;[*] &#34;</span> <span style="color:#f92672">+</span> ip)
-<span style="color:#66d9ef">for</span> h <span style="color:#f92672">in</span> hostname_list:
-    h <span style="color:#f92672">=</span> h<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\x07\x00</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74">&#39;&#39;</span>)
-    h <span style="color:#f92672">=</span> h<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74">&#39;&#39;</span>)
-    <span style="color:#66d9ef">if</span> h <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;&#39;</span>:
-        <span style="color:#66d9ef">continue</span>
-    print(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">[-&gt;]&#34;</span> <span style="color:#f92672">+</span> h)
-    result[ip]<span style="color:#f92672">.</span>append(h)
-print result
-</code></pre></div><h2 id="0x04-多线程实现效果">0x04 多线程实现效果</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-py" data-lang="py"><span style="display:flex;"><span>packet_v2 <span style="color:#f92672">=</span> packet[<span style="color:#ae81ff">42</span>:]
+</span></span><span style="display:flex;"><span>packet_v2_end <span style="color:#f92672">=</span> packet_v2<span style="color:#f92672">.</span>find(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x09\x00\xff\xff\x00\x00</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>packet_v2 <span style="color:#f92672">=</span> packet_v2[:packet_v2_end]
+</span></span><span style="display:flex;"><span>hostname_list <span style="color:#f92672">=</span> packet_v2<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\x00\x00</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>result <span style="color:#f92672">=</span> {ip:[]}
+</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">&#34;[*] &#34;</span> <span style="color:#f92672">+</span> ip)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">for</span> h <span style="color:#f92672">in</span> hostname_list:
+</span></span><span style="display:flex;"><span>    h <span style="color:#f92672">=</span> h<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\x07\x00</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74">&#39;&#39;</span>)
+</span></span><span style="display:flex;"><span>    h <span style="color:#f92672">=</span> h<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#39;</span>,<span style="color:#e6db74">&#39;&#39;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> h <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;&#39;</span>:
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">continue</span>
+</span></span><span style="display:flex;"><span>    print(<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\t</span><span style="color:#e6db74">[-&gt;]&#34;</span> <span style="color:#f92672">+</span> h)
+</span></span><span style="display:flex;"><span>    result[ip]<span style="color:#f92672">.</span>append(h)
+</span></span><span style="display:flex;"><span>print result
+</span></span></code></pre></div><h2 id="0x04-多线程实现效果">0x04 多线程实现效果</h2>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a16d0220-4f5f-11ec-a9ff-00d861bf4abb.png" alt="2020-07-16-10-57-59"></p>
 <p>优点：</p>
 <ul>

@@ -181,7 +181,7 @@ make
 </ol>
 <h3 id="配置redsocks代理服务器">配置redsocks代理服务器</h3>
 <p>在<code>/etc/redsocks.conf</code>第61行-62行是设置Socks5服务器IP和端口的：</p>
-<pre tabindex="0"><code>// `ip' and `port' are IP and tcp-port of proxy-server
+<pre tabindex="0"><code>// `ip&#39; and `port&#39; are IP and tcp-port of proxy-server
 // You can also use hostname instead of IP, only one (random)
 // address of multihomed host will be used.
 ip=***;
@@ -197,14 +197,14 @@ PREROUTING -&gt; Redsocks
 ...
 </code></pre><p>为了避免启用端口流量重定向后数据发生回环问题，需要用iptables根据UID进行过滤<code>redsocks</code>的出口流量。</p>
 <p>添加<code>redsocks</code>组与<code>redsocks</code>用户：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">groupadd redsocks
-useradd -g redsocks redsocks
-</code></pre></div><p>将<code>/etc/redsocks.conf</code>的启动用户名和用户组进行更改：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>groupadd redsocks
+</span></span><span style="display:flex;"><span>useradd -g redsocks redsocks
+</span></span></code></pre></div><p>将<code>/etc/redsocks.conf</code>的启动用户名和用户组进行更改：</p>
 <pre tabindex="0"><code>user = redsocks;
 group = redsocks;
 </code></pre><p>对应的防火墙规则：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">iptables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner redsocks  -j REDSOCKS
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>iptables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner redsocks  -j REDSOCKS
+</span></span></code></pre></div><blockquote>
 <p>这么做是为了把除了redsocks用户产生的流量全部经过REDSOCKS链。</p>
 </blockquote>
 <h2 id="0x04-打点模式-配置代理链">0x04 打点模式-配置代理链</h2>
@@ -259,156 +259,156 @@ iptables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner $redsocks_user  -j REDSO
 <pre tabindex="0"><code>iptables -t nat -A REDSOCKS -p tcp -d XXX.XXX.XX.XX/XX -j REDIRECT --to-port 31338
 </code></pre><p>启用以上防火墙规则后，我可以不需要使用proxychains，直接可以用nmap探测端口，自定义的工具也能够像在内网一样工作，本机开的虚拟机切换到NAT模式也能够“身处”内网。</p>
 <h2 id="0x06-自动化实现">0x06 自动化实现</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
-</span><span style="color:#75715e"></span>redsocks_bin_path<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/usr/bin/redsocks&#34;</span>
-redsocks_config_file_path<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/etc/redsocks.conf&#34;</span>
-socks_api_url<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;*****&#39;</span>
-shell_log_path<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/tmp/socks-switch.log&#34;</span>
-<span style="color:#75715e"># ssh port</span>
-ssh_port<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;22&#34;</span>
-redsocks_user<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;redsocks&#34;</span>
-
-socks_loging<span style="color:#f92672">(){</span>
-    current_time<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>date +<span style="color:#e6db74">&#34;%Y-%m-%d %H:%M:%S&#34;</span><span style="color:#66d9ef">)</span>;
-    echo <span style="color:#e6db74">&#34;[*] &#34;</span>$current_time <span style="color:#e6db74">&#34;: &#34;</span> $1 &gt;&gt; $shell_log_path
-    echo <span style="color:#e6db74">&#34;[*] &#34;</span>$current_time <span style="color:#e6db74">&#34;: &#34;</span> $1
-<span style="color:#f92672">}</span>
-
-
-change_socks<span style="color:#f92672">(){</span>
-    local socks_ip<span style="color:#f92672">=</span>$1;
-    local socks_port<span style="color:#f92672">=</span>$2;
-    socks_loging <span style="color:#e6db74">&#34;Change Socks: </span>$1<span style="color:#e6db74">, Port: </span>$2<span style="color:#e6db74">&#34;</span>;
-    <span style="color:#75715e"># 61行是Socks IP</span>
-    sed -i <span style="color:#e6db74">&#39;61d&#39;</span> $redsocks_config_file_path
-    sed -i <span style="color:#e6db74">&#34;61i\        ip=</span>$socks_ip<span style="color:#e6db74">;&#34;</span>  $redsocks_config_file_path
-
-    <span style="color:#75715e"># 62行是Socks Port</span>
-    sed -i <span style="color:#e6db74">&#39;62d&#39;</span> $redsocks_config_file_path
-    sed -i <span style="color:#e6db74">&#34;62i\        port=</span>$socks_port<span style="color:#e6db74">;&#34;</span>  $redsocks_config_file_path
-    pkill redsocks
-    socks_loging <span style="color:#e6db74">&#34;Run redsocks....&#34;</span>
-    $redsocks_bin_path -c $redsocks_config_file_path
-<span style="color:#f92672">}</span>
-
-start_pentest<span style="color:#f92672">(){</span>
-    uninstall_iptables
-    iptables -t nat -N REDSOCKS
-    iptables -t nat -F REDSOCKS <span style="color:#75715e"># 清空</span>
-    
-    iptables -t nat -A PREROUTING -p tcp -j REDSOCKS
-    iptables -t nat -A REDSOCKS -p tcp -d 10.0.0.0/8 -j REDIRECT --to-port <span style="color:#ae81ff">31338</span>
-    iptables -t nat -A REDSOCKS -p tcp -d 172.0.0.0/8 -j REDIRECT --to-port <span style="color:#ae81ff">31338</span>
-    iptables -t nat -A REDSOCKS -p tcp -d 192.168.0.0/16 -j REDIRECT --to-port <span style="color:#ae81ff">31338</span>
-    
-    unset_iptables
-    set_iptables
-    local socks_ip<span style="color:#f92672">=</span>$1;
-    local socks_port<span style="color:#f92672">=</span>$2;
-    change_socks $socks_ip $socks_port
-    socks_loging <span style="color:#e6db74">&#34;Change Socks: </span>$1<span style="color:#e6db74">, Port: </span>$2<span style="color:#e6db74">&#34;</span>;
-
-<span style="color:#f92672">}</span>
-
-install_iptables<span style="color:#f92672">(){</span>
-    iptables -t nat -F OUTPUT
-    iptables -t nat -F PREROUTING
-    <span style="color:#75715e"># 如果没有就新建一个</span>
-    local is_redsocks<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>iptables -t nat -nL --line-number |grep REDSOCKS<span style="color:#e6db74">`</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span>$is_redsocks<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
-            iptables -t nat -N REDSOCKS
-    <span style="color:#66d9ef">fi</span>
-    iptables -t nat -F REDSOCKS <span style="color:#75715e"># 清空</span>
-    iptables -t nat -A PREROUTING -p tcp -j REDSOCKS
-    iptables -t nat -A REDSOCKS -p tcp --dport $ssh_port -j RETURN
-    iptables -t nat -A REDSOCKS -d &lt;SOCKS API Server&gt; -j RETURN
-    iptables -t nat -A REDSOCKS -d 10.0.0.0/8 -j RETURN
-    iptables -t nat -A REDSOCKS -d 127.0.0.0/8 -j RETURN
-    iptables -t nat -A REDSOCKS -d 169.254.0.0/16 -j RETURN
-    iptables -t nat -A REDSOCKS -d 172.16.0.0/12 -j RETURN
-    iptables -t nat -A REDSOCKS -d 192.168.0.0/16 -j RETURN
-    iptables -t nat -A REDSOCKS -p tcp -j REDIRECT --to-port <span style="color:#ae81ff">31338</span>
-    socks_loging <span style="color:#e6db74">&#34;Install Success!&#34;</span>
-<span style="color:#f92672">}</span>
-
-
-uninstall_iptables<span style="color:#f92672">(){</span>
-    iptables -t nat -F OUTPUT
-    iptables -t nat -F PREROUTING
-    socks_loging <span style="color:#e6db74">&#34;Uninstall iptables  ...&#34;</span>
-    is_redsocks<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>iptables -t nat -nvL REDSOCKS |wc -l<span style="color:#e6db74">`</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$is_redsocks<span style="color:#e6db74">&#34;</span>!<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
-            iptables -t nat -F REDSOCKS
-            iptables -t nat -X REDSOCKS
-    <span style="color:#66d9ef">fi</span>
-<span style="color:#f92672">}</span>
-
-
-set_iptables<span style="color:#f92672">(){</span>
-    iptables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner $redsocks_user  -j REDSOCKS
-<span style="color:#f92672">}</span>
-
-unset_iptables<span style="color:#f92672">(){</span>
-    ids<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>iptables -t nat -nL OUTPUT --line-number | grep REDSOCKS | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span><span style="color:#e6db74">`</span>
-    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span>$ids<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
-        socks_loging <span style="color:#e6db74">&#34;No Set Iptables ...&#34;</span>
-        <span style="color:#66d9ef">return</span>
-    <span style="color:#66d9ef">fi</span>
-    id_array<span style="color:#f92672">=(</span><span style="color:#e6db74">${</span>ids//<span style="color:#ae81ff">\\</span>n/ <span style="color:#e6db74">}</span><span style="color:#f92672">)</span>
-    socks_loging <span style="color:#e6db74">&#34;REDSOCKS OUTPUT Chian ID : </span>$id_array<span style="color:#e6db74">&#34;</span>
-    <span style="color:#66d9ef">for</span> id in <span style="color:#e6db74">${</span>id_array[@]<span style="color:#e6db74">}</span>
-    <span style="color:#66d9ef">do</span>
-        id<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>echo $id|egrep -o <span style="color:#e6db74">&#34;[0-9]{1,4}&#34;</span><span style="color:#e6db74">`</span>
-        <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> $id!<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
-            iptables -t nat -D OUTPUT $id
-        <span style="color:#66d9ef">fi</span>
-    <span style="color:#66d9ef">done</span>
-<span style="color:#f92672">}</span>
-
-
-
-
-<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
-    echo <span style="color:#e6db74">&#34;[*] Usage : </span>$0<span style="color:#e6db74"> &lt;start | stop | clean | install | uninstall | change IP PORT | pentest IP PORT&gt;
-</span><span style="color:#e6db74">        </span>$0<span style="color:#e6db74"> start : 启动redsocks，自动设置iptables
-</span><span style="color:#e6db74">        </span>$0<span style="color:#e6db74"> stop : 停止redsocks，自动清空iptables
-</span><span style="color:#e6db74">        </span>$0<span style="color:#e6db74"> clean : 清空iptables所有规则
-</span><span style="color:#e6db74">        </span>$0<span style="color:#e6db74"> install : 安装iptables规则
-</span><span style="color:#e6db74">        </span>$0<span style="color:#e6db74"> uninstall : 卸载iptables规则
-</span><span style="color:#e6db74">        </span>$0<span style="color:#e6db74"> change : 改变Socks的IP和端口
-</span><span style="color:#e6db74">        </span>$0<span style="color:#e6db74"> pentest : 开始内网渗透，传入Socks的IP和端口
-</span><span style="color:#e6db74">    &#34;</span>
-    exit <span style="color:#ae81ff">0</span>
-<span style="color:#66d9ef">fi</span>
-
-
-
-<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;install&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
-    install_iptables
-    exit <span style="color:#ae81ff">0</span>
-<span style="color:#66d9ef">fi</span>
-
-<span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;pentest&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
-    start_pentest $2 $3
-    exit <span style="color:#ae81ff">0</span>
-</code></pre></div><p>使用方式：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>redsocks_bin_path<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/usr/bin/redsocks&#34;</span>
+</span></span><span style="display:flex;"><span>redsocks_config_file_path<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/etc/redsocks.conf&#34;</span>
+</span></span><span style="display:flex;"><span>socks_api_url<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;*****&#39;</span>
+</span></span><span style="display:flex;"><span>shell_log_path<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/tmp/socks-switch.log&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># ssh port</span>
+</span></span><span style="display:flex;"><span>ssh_port<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;22&#34;</span>
+</span></span><span style="display:flex;"><span>redsocks_user<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;redsocks&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>socks_loging<span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>    current_time<span style="color:#f92672">=</span><span style="color:#66d9ef">$(</span>date +<span style="color:#e6db74">&#34;%Y-%m-%d %H:%M:%S&#34;</span><span style="color:#66d9ef">)</span>;
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;[*] &#34;</span>$current_time <span style="color:#e6db74">&#34;: &#34;</span> $1 &gt;&gt; $shell_log_path
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;[*] &#34;</span>$current_time <span style="color:#e6db74">&#34;: &#34;</span> $1
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>change_socks<span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>    local socks_ip<span style="color:#f92672">=</span>$1;
+</span></span><span style="display:flex;"><span>    local socks_port<span style="color:#f92672">=</span>$2;
+</span></span><span style="display:flex;"><span>    socks_loging <span style="color:#e6db74">&#34;Change Socks: </span>$1<span style="color:#e6db74">, Port: </span>$2<span style="color:#e6db74">&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 61行是Socks IP</span>
+</span></span><span style="display:flex;"><span>    sed -i <span style="color:#e6db74">&#39;61d&#39;</span> $redsocks_config_file_path
+</span></span><span style="display:flex;"><span>    sed -i <span style="color:#e6db74">&#34;61i\        ip=</span>$socks_ip<span style="color:#e6db74">;&#34;</span>  $redsocks_config_file_path
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 62行是Socks Port</span>
+</span></span><span style="display:flex;"><span>    sed -i <span style="color:#e6db74">&#39;62d&#39;</span> $redsocks_config_file_path
+</span></span><span style="display:flex;"><span>    sed -i <span style="color:#e6db74">&#34;62i\        port=</span>$socks_port<span style="color:#e6db74">;&#34;</span>  $redsocks_config_file_path
+</span></span><span style="display:flex;"><span>    pkill redsocks
+</span></span><span style="display:flex;"><span>    socks_loging <span style="color:#e6db74">&#34;Run redsocks....&#34;</span>
+</span></span><span style="display:flex;"><span>    $redsocks_bin_path -c $redsocks_config_file_path
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>start_pentest<span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>    uninstall_iptables
+</span></span><span style="display:flex;"><span>    iptables -t nat -N REDSOCKS
+</span></span><span style="display:flex;"><span>    iptables -t nat -F REDSOCKS <span style="color:#75715e"># 清空</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    iptables -t nat -A PREROUTING -p tcp -j REDSOCKS
+</span></span><span style="display:flex;"><span>    iptables -t nat -A REDSOCKS -p tcp -d 10.0.0.0/8 -j REDIRECT --to-port <span style="color:#ae81ff">31338</span>
+</span></span><span style="display:flex;"><span>    iptables -t nat -A REDSOCKS -p tcp -d 172.0.0.0/8 -j REDIRECT --to-port <span style="color:#ae81ff">31338</span>
+</span></span><span style="display:flex;"><span>    iptables -t nat -A REDSOCKS -p tcp -d 192.168.0.0/16 -j REDIRECT --to-port <span style="color:#ae81ff">31338</span>
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    unset_iptables
+</span></span><span style="display:flex;"><span>    set_iptables
+</span></span><span style="display:flex;"><span>    local socks_ip<span style="color:#f92672">=</span>$1;
+</span></span><span style="display:flex;"><span>    local socks_port<span style="color:#f92672">=</span>$2;
+</span></span><span style="display:flex;"><span>    change_socks $socks_ip $socks_port
+</span></span><span style="display:flex;"><span>    socks_loging <span style="color:#e6db74">&#34;Change Socks: </span>$1<span style="color:#e6db74">, Port: </span>$2<span style="color:#e6db74">&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>install_iptables<span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>    iptables -t nat -F OUTPUT
+</span></span><span style="display:flex;"><span>    iptables -t nat -F PREROUTING
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e"># 如果没有就新建一个</span>
+</span></span><span style="display:flex;"><span>    local is_redsocks<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>iptables -t nat -nL --line-number |grep REDSOCKS<span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span>$is_redsocks<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>            iptables -t nat -N REDSOCKS
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>    iptables -t nat -F REDSOCKS <span style="color:#75715e"># 清空</span>
+</span></span><span style="display:flex;"><span>    iptables -t nat -A PREROUTING -p tcp -j REDSOCKS
+</span></span><span style="display:flex;"><span>    iptables -t nat -A REDSOCKS -p tcp --dport $ssh_port -j RETURN
+</span></span><span style="display:flex;"><span>    iptables -t nat -A REDSOCKS -d &lt;SOCKS API Server&gt; -j RETURN
+</span></span><span style="display:flex;"><span>    iptables -t nat -A REDSOCKS -d 10.0.0.0/8 -j RETURN
+</span></span><span style="display:flex;"><span>    iptables -t nat -A REDSOCKS -d 127.0.0.0/8 -j RETURN
+</span></span><span style="display:flex;"><span>    iptables -t nat -A REDSOCKS -d 169.254.0.0/16 -j RETURN
+</span></span><span style="display:flex;"><span>    iptables -t nat -A REDSOCKS -d 172.16.0.0/12 -j RETURN
+</span></span><span style="display:flex;"><span>    iptables -t nat -A REDSOCKS -d 192.168.0.0/16 -j RETURN
+</span></span><span style="display:flex;"><span>    iptables -t nat -A REDSOCKS -p tcp -j REDIRECT --to-port <span style="color:#ae81ff">31338</span>
+</span></span><span style="display:flex;"><span>    socks_loging <span style="color:#e6db74">&#34;Install Success!&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>uninstall_iptables<span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>    iptables -t nat -F OUTPUT
+</span></span><span style="display:flex;"><span>    iptables -t nat -F PREROUTING
+</span></span><span style="display:flex;"><span>    socks_loging <span style="color:#e6db74">&#34;Uninstall iptables  ...&#34;</span>
+</span></span><span style="display:flex;"><span>    is_redsocks<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>iptables -t nat -nvL REDSOCKS |wc -l<span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$is_redsocks<span style="color:#e6db74">&#34;</span>!<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;0&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>            iptables -t nat -F REDSOCKS
+</span></span><span style="display:flex;"><span>            iptables -t nat -X REDSOCKS
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>set_iptables<span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>    iptables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner $redsocks_user  -j REDSOCKS
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>unset_iptables<span style="color:#f92672">(){</span>
+</span></span><span style="display:flex;"><span>    ids<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>iptables -t nat -nL OUTPUT --line-number | grep REDSOCKS | awk <span style="color:#e6db74">&#39;{print $1}&#39;</span><span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span>$ids<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        socks_loging <span style="color:#e6db74">&#34;No Set Iptables ...&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>    id_array<span style="color:#f92672">=(</span><span style="color:#e6db74">${</span>ids//<span style="color:#ae81ff">\\</span>n/ <span style="color:#e6db74">}</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>    socks_loging <span style="color:#e6db74">&#34;REDSOCKS OUTPUT Chian ID : </span>$id_array<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> id in <span style="color:#e6db74">${</span>id_array[@]<span style="color:#e6db74">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>        id<span style="color:#f92672">=</span><span style="color:#e6db74">`</span>echo $id|egrep -o <span style="color:#e6db74">&#34;[0-9]{1,4}&#34;</span><span style="color:#e6db74">`</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> $id!<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>            iptables -t nat -D OUTPUT $id
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">done</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> -z <span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;[*] Usage : </span>$0<span style="color:#e6db74"> &lt;start | stop | clean | install | uninstall | change IP PORT | pentest IP PORT&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        </span>$0<span style="color:#e6db74"> start : 启动redsocks，自动设置iptables
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        </span>$0<span style="color:#e6db74"> stop : 停止redsocks，自动清空iptables
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        </span>$0<span style="color:#e6db74"> clean : 清空iptables所有规则
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        </span>$0<span style="color:#e6db74"> install : 安装iptables规则
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        </span>$0<span style="color:#e6db74"> uninstall : 卸载iptables规则
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        </span>$0<span style="color:#e6db74"> change : 改变Socks的IP和端口
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">        </span>$0<span style="color:#e6db74"> pentest : 开始内网渗透，传入Socks的IP和端口
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">    &#34;</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;install&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    install_iptables
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">0</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> <span style="color:#f92672">[</span> <span style="color:#e6db74">&#34;</span>$1<span style="color:#e6db74">&#34;</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;pentest&#34;</span> <span style="color:#f92672">]</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    start_pentest $2 $3
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">0</span>
+</span></span></code></pre></div><p>使用方式：</p>
 <ul>
 <li>打点模式简单使用（每执行一次，向API拉取新的代理）：</li>
 </ul>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a5fc0642-4f5f-11ec-a814-00d861bf4abb.png" alt="2020-11-13-22-04-21"></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo ./socks-switch.sh install
-sudo ./socks-switch.sh start
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo ./socks-switch.sh install
+</span></span><span style="display:flex;"><span>sudo ./socks-switch.sh start
+</span></span></code></pre></div><ul>
 <li>切换至内网模式使用：</li>
 </ul>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a65575e2-4f5f-11ec-81ed-00d861bf4abb.png" alt="2020-11-13-22-00-56"></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo ./socks-switch.sh uninstall
-sudo ./socks-switch.sh pentest &lt;Socks IP&gt; &lt;Socks Port&gt;
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo ./socks-switch.sh uninstall
+</span></span><span style="display:flex;"><span>sudo ./socks-switch.sh pentest &lt;Socks IP&gt; &lt;Socks Port&gt;
+</span></span></code></pre></div><ul>
 <li>手动指定Socks的IP和端口（打点模式与内网模式兼容）：</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sudo ./socks-switch.sh change &lt;Socks IP&gt; &lt;Socks Port&gt;
-</code></pre></div><h2 id="0x06-树莓派实现6小时切换一次出口的wifi">0x06 树莓派实现6小时切换一次出口的WiFi</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo ./socks-switch.sh change &lt;Socks IP&gt; &lt;Socks Port&gt;
+</span></span></code></pre></div><h2 id="0x06-树莓派实现6小时切换一次出口的wifi">0x06 树莓派实现6小时切换一次出口的WiFi</h2>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a6b460f2-4f5f-11ec-bc9f-00d861bf4abb.png" alt="2020-11-13-21-36-29"></p>
 <p>这个是我在熟悉透明代理后产生的想法，适合“团队作战”，尤其是Web渗透这块最消耗IP了，实验室的小伙伴大多也都是笔记本，因此想出了用树莓派实现6小时切换一次出口的WiFi，当然了，也能把穿透内网的Socks变成一个WiFi :)</p>
 <h3 id="更改redsocks监听地址">更改redsocks监听地址</h3>
@@ -441,14 +441,14 @@ RestartSec=5
 WantedBy=multi-user.target
 </code></pre><h3 id="编写计划任务脚本">编写计划任务脚本</h3>
 <p>random-wifi.sh:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/bash
-</span><span style="color:#75715e"></span>cd /home/pi/socks-switch
-systemctl stop wifi <span style="color:#75715e"># 先停止WiFi</span>
-./socks-switch.sh clean <span style="color:#75715e"># 清空规则</span>
-./socks-switch.sh install <span style="color:#75715e"># 安装规则</span>
-./socks-switch.sh start <span style="color:#75715e"># 启用规则</span>
-systemctl start wifi <span style="color:#75715e"># 创建WiFi</span>
-</code></pre></div><p><code>sudo crontab -e</code>进入root用户的计划任务编写：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/bash
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>cd /home/pi/socks-switch
+</span></span><span style="display:flex;"><span>systemctl stop wifi <span style="color:#75715e"># 先停止WiFi</span>
+</span></span><span style="display:flex;"><span>./socks-switch.sh clean <span style="color:#75715e"># 清空规则</span>
+</span></span><span style="display:flex;"><span>./socks-switch.sh install <span style="color:#75715e"># 安装规则</span>
+</span></span><span style="display:flex;"><span>./socks-switch.sh start <span style="color:#75715e"># 启用规则</span>
+</span></span><span style="display:flex;"><span>systemctl start wifi <span style="color:#75715e"># 创建WiFi</span>
+</span></span></code></pre></div><p><code>sudo crontab -e</code>进入root用户的计划任务编写：</p>
 <pre tabindex="0"><code>* */6 * * * /home/pi/socks-switch/random-wifi.sh # 每隔六小时重置一次，并获取新的出口代理
 </code></pre><h3 id="待完善的缺点">待完善的缺点</h3>
 <p>比如在切换新的出口时，WiFi是关闭的，现在的客户端一般都是会自动寻找下一个WiFi自动连接的，如果工具正在扫描会导致真实出口IP被发现。</p>

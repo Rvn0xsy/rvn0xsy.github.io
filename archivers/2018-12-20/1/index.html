@@ -117,13 +117,13 @@
 <li>UTF16BE：FE FF</li>
 </ul>
 <h3 id="windows字符数据类型">Windows字符数据类型</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">CHAR <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">char</span>
-PSTR <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>
-WCHAR <span style="color:#f92672">-&gt;</span> wchar_t
-PWSTR <span style="color:#f92672">-&gt;</span> wchar_t <span style="color:#f92672">*</span>
-TCHAR <span style="color:#f92672">-&gt;</span> <span style="color:#960050;background-color:#1e0010">一个宏，当前是什么字符集，编译出来就是什么字符集</span>
-PTSTR <span style="color:#f92672">-&gt;</span> TCHAR <span style="color:#f92672">*</span> (<span style="color:#960050;background-color:#1e0010">有利于跨平台</span>)
-</code></pre></div><p>开发中推荐使用“TEXT”宏与PTSTR类型的字符串指针。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>CHAR <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">char</span>
+</span></span><span style="display:flex;"><span>PSTR <span style="color:#f92672">-&gt;</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span>WCHAR <span style="color:#f92672">-&gt;</span> wchar_t
+</span></span><span style="display:flex;"><span>PWSTR <span style="color:#f92672">-&gt;</span> wchar_t <span style="color:#f92672">*</span>
+</span></span><span style="display:flex;"><span>TCHAR <span style="color:#f92672">-&gt;</span> <span style="color:#960050;background-color:#1e0010">一个宏，当前是什么字符集，编译出来就是什么字符集</span>
+</span></span><span style="display:flex;"><span>PTSTR <span style="color:#f92672">-&gt;</span> TCHAR <span style="color:#f92672">*</span> (<span style="color:#960050;background-color:#1e0010">有利于跨平台</span>)
+</span></span></code></pre></div><p>开发中推荐使用“TEXT”宏与PTSTR类型的字符串指针。</p>
 <h2 id="0x01-windows进程创建">0x01 Windows进程创建</h2>
 <p>进程是一个程序正在运行的一个实例，它由一个内核对象和一个地址空间组成。</p>
 <p>内核对象与地址空间都在4GB的虚拟内存中，内核占2GB高地址，低地址的2GB给程序的堆栈使用。</p>
@@ -138,20 +138,20 @@ PTSTR <span style="color:#f92672">-&gt;</span> TCHAR <span style="color:#f92672"
 <li>5.系统启动线程、映射DLL（ntdll.LdrInitalizeThunk）、线程开始执行</li>
 </ul>
 <h3 id="创建进程">创建进程</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">BOOL <span style="color:#a6e22e">CreateProcess</span>
-(
-LPCTSTR lpApplicationName,
-LPTSTR lpCommandLine,
-LPSECURITY_ATTRIBUTES lpProcessAttributes,
-LPSECURITY_ATTRIBUTES lpThreadAttributes,
-BOOL bInheritHandles,
-DWORD dwCreationFlags,
-LPVOID lpEnvironment,
-LPCTSTR lpCurrentDirectory,
-LPSTARTUPINFO lpStartupInfo,
-LPPROCESS_INFORMATIONlpProcessInformation
-);
-</code></pre></div><h3 id="线程与进程的关系">线程与进程的关系</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>BOOL <span style="color:#a6e22e">CreateProcess</span>
+</span></span><span style="display:flex;"><span>(
+</span></span><span style="display:flex;"><span>LPCTSTR lpApplicationName,
+</span></span><span style="display:flex;"><span>LPTSTR lpCommandLine,
+</span></span><span style="display:flex;"><span>LPSECURITY_ATTRIBUTES lpProcessAttributes,
+</span></span><span style="display:flex;"><span>LPSECURITY_ATTRIBUTES lpThreadAttributes,
+</span></span><span style="display:flex;"><span>BOOL bInheritHandles,
+</span></span><span style="display:flex;"><span>DWORD dwCreationFlags,
+</span></span><span style="display:flex;"><span>LPVOID lpEnvironment,
+</span></span><span style="display:flex;"><span>LPCTSTR lpCurrentDirectory,
+</span></span><span style="display:flex;"><span>LPSTARTUPINFO lpStartupInfo,
+</span></span><span style="display:flex;"><span>LPPROCESS_INFORMATIONlpProcessInformation
+</span></span><span style="display:flex;"><span>);
+</span></span></code></pre></div><h3 id="线程与进程的关系">线程与进程的关系</h3>
 <p>进程是一个程序正在运行的一个实例，它提供了一块存储代码的空间，在进程被创建时，系统也会给进程创建一个主线程（primary thread），主线程负责执行代码，一个进程没有线程是无法运行的。</p>
 <p>一个进程可以拥有多个线程，但是永远是先拥有主线程，通过主线程创建其他线程。</p>
 <p>每个进程都至少有一个线程负责运行代码，否则进程将进入睡眠状态，或被系统销毁。</p>
@@ -182,44 +182,44 @@ LPPROCESS_INFORMATIONlpProcessInformation
 <li>FindNextVolumeA(hVolume,buffer,length)</li>
 <li>FindVolumeClose(hVolume)</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">// ConsoleApplication1.cpp : 定义控制台应用程序的入口点。
-</span><span style="color:#75715e">//
-</span><span style="color:#75715e"></span>
-<span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;stdafx.h&#34;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
-{
-	CHAR drives[<span style="color:#ae81ff">255</span>] <span style="color:#f92672">=</span> {<span style="color:#ae81ff">0</span>};
-	ZeroMemory(drives, <span style="color:#ae81ff">255</span>);
-	DWORD devLen <span style="color:#f92672">=</span> GetLogicalDriveStringsA(<span style="color:#ae81ff">254</span>, drives);
-	<span style="color:#66d9ef">for</span> (size_t i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#66d9ef">sizeof</span>(drives); i<span style="color:#f92672">++</span>)
-	{
-		TCHAR s <span style="color:#f92672">=</span> drives[i];
-		<span style="color:#66d9ef">if</span> (s <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;\0&#39;</span>) {
-			<span style="color:#66d9ef">continue</span>;
-		}
-		printf(<span style="color:#e6db74">&#34;%c</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, drives[i]);
-	}
-	ZeroMemory(drives, <span style="color:#ae81ff">255</span>);
-	HANDLE hVolume <span style="color:#f92672">=</span> FindFirstVolumeA(drives, <span style="color:#ae81ff">255</span>);
-	<span style="color:#66d9ef">if</span> (INVALID_HANDLE_VALUE <span style="color:#f92672">==</span> hVolume) {
-		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-	}
-	<span style="color:#66d9ef">while</span> (FindNextVolumeA(hVolume, drives, <span style="color:#ae81ff">255</span>)) {
-		printf(<span style="color:#e6db74">&#34;Volume : %s </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,drives);
-	}
-
-	FindVolumeClose(hVolume);
-	system(<span style="color:#e6db74">&#34;pause&#34;</span>);
-    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-	<span style="color:#75715e">// ss
-</span><span style="color:#75715e"></span>
-}
-</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">UINT <span style="color:#a6e22e">GetDriveTypeA</span>(
-  LPCSTR lpRootPathName
-);
-</code></pre></div><p>lpRootPathName : 驱动器的根目录。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// ConsoleApplication1.cpp : 定义控制台应用程序的入口点。
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;stdafx.h&#34;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	CHAR drives[<span style="color:#ae81ff">255</span>] <span style="color:#f92672">=</span> {<span style="color:#ae81ff">0</span>};
+</span></span><span style="display:flex;"><span>	ZeroMemory(drives, <span style="color:#ae81ff">255</span>);
+</span></span><span style="display:flex;"><span>	DWORD devLen <span style="color:#f92672">=</span> GetLogicalDriveStringsA(<span style="color:#ae81ff">254</span>, drives);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> (size_t i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#66d9ef">sizeof</span>(drives); i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		TCHAR s <span style="color:#f92672">=</span> drives[i];
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> (s <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;\0&#39;</span>) {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		printf(<span style="color:#e6db74">&#34;%c</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, drives[i]);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	ZeroMemory(drives, <span style="color:#ae81ff">255</span>);
+</span></span><span style="display:flex;"><span>	HANDLE hVolume <span style="color:#f92672">=</span> FindFirstVolumeA(drives, <span style="color:#ae81ff">255</span>);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (INVALID_HANDLE_VALUE <span style="color:#f92672">==</span> hVolume) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">while</span> (FindNextVolumeA(hVolume, drives, <span style="color:#ae81ff">255</span>)) {
+</span></span><span style="display:flex;"><span>		printf(<span style="color:#e6db74">&#34;Volume : %s </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,drives);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	FindVolumeClose(hVolume);
+</span></span><span style="display:flex;"><span>	system(<span style="color:#e6db74">&#34;pause&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// ss
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>UINT <span style="color:#a6e22e">GetDriveTypeA</span>(
+</span></span><span style="display:flex;"><span>  LPCSTR lpRootPathName
+</span></span><span style="display:flex;"><span>);
+</span></span></code></pre></div><p>lpRootPathName : 驱动器的根目录。</p>
 <p>需要一个尾随反斜杠。如果此参数为NULL，则该函数使用当前目录的根。
 Return Value :</p>
 <pre tabindex="0"><code>DRIVE_UNKNOWN -&gt; 0 无法确定驱动器类型。
@@ -229,147 +229,145 @@ DRIVE_FIXED -&gt; 3 驱动器有固定的媒体; 例如，硬盘驱动器或闪�
 DRIVE_REMOTE -&gt; 4 该驱动器是远程（网络）驱动器。
 DRIVE_CDROM -&gt; 5 该驱动器是CD-ROM驱动器。
 DRIVE_RAMDISK -&gt; 6 驱动器是RAM磁盘。
-</code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">GetVolumeInformation(
-  lpRootPathName: PChar;               {<span style="color:#960050;background-color:#1e0010">磁盘驱动器代码字符串</span>}
-  lpVolumeNameBuffer: PChar;           {<span style="color:#960050;background-color:#1e0010">磁盘驱动器卷标名称</span>}
-  nVolumeNameSize: DWORD;              {<span style="color:#960050;background-color:#1e0010">磁盘驱动器卷标名称长度</span>}
-  lpVolumeSerialNumber: PDWORD;        {<span style="color:#960050;background-color:#1e0010">磁盘驱动器卷标序列号</span>}
-  var lpMaximumComponentLength: DWORD; {<span style="color:#960050;background-color:#1e0010">系统允许的最大文件名长度</span>}
-  var lpFileSystemFlags: DWORD;        {<span style="color:#960050;background-color:#1e0010">文件系统标识</span>}
-  lpFileSystemNameBuffer: PChar;       {<span style="color:#960050;background-color:#1e0010">文件操作系统名称</span>}
-  nFileSystemNameSize: DWORD           {<span style="color:#960050;background-color:#1e0010">文件操作系统名称长度</span>}
-)<span style="color:#f92672">:</span> BOOL;
-
-<span style="color:#75715e">// ConsoleApplication1.cpp : 定义控制台应用程序的入口点。
-</span><span style="color:#75715e">//
-</span><span style="color:#75715e"></span>
-<span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;stdafx.h&#34;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
-{
-	CHAR drives[<span style="color:#ae81ff">255</span>] <span style="color:#f92672">=</span> {<span style="color:#ae81ff">0</span>};
-	ZeroMemory(drives, <span style="color:#ae81ff">255</span>);
-	DWORD devLen <span style="color:#f92672">=</span> GetLogicalDriveStringsA(<span style="color:#ae81ff">254</span>, drives);
-	<span style="color:#66d9ef">for</span> (size_t i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#66d9ef">sizeof</span>(drives); i<span style="color:#f92672">++</span>)
-	{
-		TCHAR s <span style="color:#f92672">=</span> drives[i];
-		<span style="color:#66d9ef">if</span> (s <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;\0&#39;</span>) {
-			<span style="color:#66d9ef">continue</span>;
-		}
-		printf(<span style="color:#e6db74">&#34;%c</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, drives[i]);
-	}
-	ZeroMemory(drives, <span style="color:#ae81ff">255</span>);
-	HANDLE hVolume <span style="color:#f92672">=</span> FindFirstVolumeA(drives, <span style="color:#ae81ff">255</span>);
-	<span style="color:#66d9ef">if</span> (INVALID_HANDLE_VALUE <span style="color:#f92672">==</span> hVolume) {
-		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-	}
-	<span style="color:#66d9ef">while</span> (FindNextVolumeA(hVolume, drives, <span style="color:#ae81ff">255</span>)) {
-		printf(<span style="color:#e6db74">&#34;Volume : %s </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,drives);
-		DWORD dwVolumeSerNumber;
-		CHAR lpRootPathName[MAX_PATH];
-		CHAR lpVolumName[MAX_PATH];
-		CHAR szFileSystemNameBuffer[MAX_PATH];
-		DWORD dwMaxLength;
-		DWORD dwFileSystemFlags;
-		<span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>GetVolumeInformationA(
-			drives,
-			lpVolumName,
-			MAX_PATH,
-			<span style="color:#f92672">&amp;</span>dwVolumeSerNumber,
-			<span style="color:#f92672">&amp;</span>dwMaxLength,
-			<span style="color:#f92672">&amp;</span>dwFileSystemFlags,
-			szFileSystemNameBuffer,
-			MAX_PATH)) {
-			<span style="color:#66d9ef">return</span> FALSE;
-		}
-		printf(<span style="color:#e6db74">&#34;%s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, lpVolumName);
-	}
-	FindVolumeClose(hVolume);
-	system(<span style="color:#e6db74">&#34;pause&#34;</span>);
-    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-}
-
-
-</code></pre></div><h3 id="读写文件">读写文件</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">HANDLE WINAPI <span style="color:#a6e22e">CreateFile</span>(
-_In_ LPCTSTR lpFileName,
-_In_ DWORD dwDesiredAccess,
-_In_ DWORD dwShareMode,
-_In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-_In_ DWORD dwCreationDisposition,
-_In_ DWORD dwFlagsAndAttributes,
-_In_opt_ HANDLE hTemplateFile
-);
-</code></pre></div><h3 id="函数声明">函数声明</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">HANDLE <span style="color:#a6e22e">CreateFile</span>(LPCTSTR lpFileName, <span style="color:#75715e">//普通文件名或者设备文件名
-</span><span style="color:#75715e"></span>DWORD dwDesiredAccess, <span style="color:#75715e">//访问模式（写/读）
-</span><span style="color:#75715e"></span>DWORD dwShareMode, <span style="color:#75715e">//共享模式
-</span><span style="color:#75715e"></span>LPSECURITY_ATTRIBUTES lpSecurityAttributes, <span style="color:#75715e">//指向安全属性的指针
-</span><span style="color:#75715e"></span>DWORD dwCreationDisposition, <span style="color:#75715e">//如何创建
-</span><span style="color:#75715e"></span>DWORD dwFlagsAndAttributes, <span style="color:#75715e">//文件属性
-</span><span style="color:#75715e"></span>HANDLE hTemplateFile <span style="color:#75715e">//用于复制文件句柄
-</span><span style="color:#75715e"></span>);
-</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">// ConsoleApplication1.cpp : 定义控制台应用程序的入口点。
-</span><span style="color:#75715e">//
-</span><span style="color:#75715e"></span>
-<span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;stdafx.h&#34;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
-{
-	LPTSTR FileName <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;c:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Temp</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">1.txt&#34;</span>);
-	<span style="color:#75715e">/*
-</span><span style="color:#75715e">	
-</span><span style="color:#75715e">	if (DeleteFile(FileName)) {
-</span><span style="color:#75715e">		MessageBox(0, L&#34;删除成功！&#34;, L&#34;INFO&#34;, MB_OK);
-</span><span style="color:#75715e">	}
-</span><span style="color:#75715e">	else {
-</span><span style="color:#75715e">		DWORD err = GetLastError();
-</span><span style="color:#75715e">		MessageBox(0, L&#34;Error&#34;, L&#34;INFO&#34;, MB_HELP);
-</span><span style="color:#75715e">	}
-</span><span style="color:#75715e">	*/</span>
-	<span style="color:#75715e">/*
-</span><span style="color:#75715e">	if (CopyFile(FileName, TEXT(&#34;C:\\Temp\\2.txt&#34;),TRUE)) {
-</span><span style="color:#75715e">		MessageBox(0, L&#34;COPY成功！&#34;, L&#34;INFO&#34;, MB_OK);
-</span><span style="color:#75715e">	}
-</span><span style="color:#75715e">	if (MoveFile(FileName, TEXT(&#34;C:\\Temp\\3.txt&#34;))) {
-</span><span style="color:#75715e">		MessageBox(0, L&#34;MOVE成功！&#34;, L&#34;INFO&#34;, MB_OK);
-</span><span style="color:#75715e">	}
-</span><span style="color:#75715e">	*/</span>
-	HANDLE hFile <span style="color:#f92672">=</span> CreateFile(TEXT(<span style="color:#e6db74">&#34;C:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Temp</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">1.txt&#34;</span>),GENERIC_READ<span style="color:#f92672">|</span>GENERIC_WRITE,<span style="color:#ae81ff">0</span>,NULL,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
-	<span style="color:#66d9ef">if</span> (hFile <span style="color:#f92672">==</span> INVALID_HANDLE_VALUE) {
-		MessageBox(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">L</span><span style="color:#e6db74">&#34;Error&#34;</span>, <span style="color:#e6db74">L</span><span style="color:#e6db74">&#34;INFO&#34;</span>, MB_HELP);
-	}
-	<span style="color:#66d9ef">else</span> {
-		CHAR Text[MAX_PATH];
-		ZeroMemory(Text, MAX_PATH);
-		DWORD ReadLen;
-		ReadFile(hFile, Text, MAX_PATH <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>, <span style="color:#f92672">&amp;</span>ReadLen, NULL);
-		std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Length : &#34;</span> <span style="color:#f92672">&lt;&lt;</span> ReadLen <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34; Content :&#34;</span> <span style="color:#f92672">&lt;&lt;</span> Text <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
-
-		DWORD WriteLen;
-		CHAR content[] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Hello world !!!&#34;</span>;
-		WriteFile(hFile, content, <span style="color:#66d9ef">sizeof</span>(content), <span style="color:#f92672">&amp;</span>WriteLen, FALSE);
-	}
-
-
-	CloseHandle(hFile);
-	
-	system(<span style="color:#e6db74">&#34;pause&#34;</span>);
-    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-}
-</code></pre></div><h2 id="0x03-windows-线程">0x03 Windows 线程</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">HANDLE WINAPI <span style="color:#a6e22e">CreateThread</span>(
-      _In_opt_  LPSECURITY_ATTRIBUTES  lpThreadAttributes,   
-      _In_      SIZE_T                 dwStackSize,
-      _In_      LPTHREAD_START_ROUTINE lpStartAddress,
-      _In_opt_  LPVOID                 lpParameter,
-      _In_      DWORD                  dwCreationFlags,
-      _Out_opt_ LPDWORD                lpThreadId
-    );
-</code></pre></div><p>第一个参数 lpThreadAttributes 表示线程内核对象的安全属性，一般传入NULL表示使用默认设置。</p>
+</code></pre><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>GetVolumeInformation(
+</span></span><span style="display:flex;"><span>  lpRootPathName: PChar;               {<span style="color:#960050;background-color:#1e0010">磁盘驱动器代码字符串</span>}
+</span></span><span style="display:flex;"><span>  lpVolumeNameBuffer: PChar;           {<span style="color:#960050;background-color:#1e0010">磁盘驱动器卷标名称</span>}
+</span></span><span style="display:flex;"><span>  nVolumeNameSize: DWORD;              {<span style="color:#960050;background-color:#1e0010">磁盘驱动器卷标名称长度</span>}
+</span></span><span style="display:flex;"><span>  lpVolumeSerialNumber: PDWORD;        {<span style="color:#960050;background-color:#1e0010">磁盘驱动器卷标序列号</span>}
+</span></span><span style="display:flex;"><span>  var lpMaximumComponentLength: DWORD; {<span style="color:#960050;background-color:#1e0010">系统允许的最大文件名长度</span>}
+</span></span><span style="display:flex;"><span>  var lpFileSystemFlags: DWORD;        {<span style="color:#960050;background-color:#1e0010">文件系统标识</span>}
+</span></span><span style="display:flex;"><span>  lpFileSystemNameBuffer: PChar;       {<span style="color:#960050;background-color:#1e0010">文件操作系统名称</span>}
+</span></span><span style="display:flex;"><span>  nFileSystemNameSize: DWORD           {<span style="color:#960050;background-color:#1e0010">文件操作系统名称长度</span>}
+</span></span><span style="display:flex;"><span>)<span style="color:#f92672">:</span> BOOL;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// ConsoleApplication1.cpp : 定义控制台应用程序的入口点。
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;stdafx.h&#34;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	CHAR drives[<span style="color:#ae81ff">255</span>] <span style="color:#f92672">=</span> {<span style="color:#ae81ff">0</span>};
+</span></span><span style="display:flex;"><span>	ZeroMemory(drives, <span style="color:#ae81ff">255</span>);
+</span></span><span style="display:flex;"><span>	DWORD devLen <span style="color:#f92672">=</span> GetLogicalDriveStringsA(<span style="color:#ae81ff">254</span>, drives);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> (size_t i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> <span style="color:#66d9ef">sizeof</span>(drives); i<span style="color:#f92672">++</span>)
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		TCHAR s <span style="color:#f92672">=</span> drives[i];
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> (s <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;\0&#39;</span>) {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">continue</span>;
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		printf(<span style="color:#e6db74">&#34;%c</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, drives[i]);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	ZeroMemory(drives, <span style="color:#ae81ff">255</span>);
+</span></span><span style="display:flex;"><span>	HANDLE hVolume <span style="color:#f92672">=</span> FindFirstVolumeA(drives, <span style="color:#ae81ff">255</span>);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (INVALID_HANDLE_VALUE <span style="color:#f92672">==</span> hVolume) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">while</span> (FindNextVolumeA(hVolume, drives, <span style="color:#ae81ff">255</span>)) {
+</span></span><span style="display:flex;"><span>		printf(<span style="color:#e6db74">&#34;Volume : %s </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,drives);
+</span></span><span style="display:flex;"><span>		DWORD dwVolumeSerNumber;
+</span></span><span style="display:flex;"><span>		CHAR lpRootPathName[MAX_PATH];
+</span></span><span style="display:flex;"><span>		CHAR lpVolumName[MAX_PATH];
+</span></span><span style="display:flex;"><span>		CHAR szFileSystemNameBuffer[MAX_PATH];
+</span></span><span style="display:flex;"><span>		DWORD dwMaxLength;
+</span></span><span style="display:flex;"><span>		DWORD dwFileSystemFlags;
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>GetVolumeInformationA(
+</span></span><span style="display:flex;"><span>			drives,
+</span></span><span style="display:flex;"><span>			lpVolumName,
+</span></span><span style="display:flex;"><span>			MAX_PATH,
+</span></span><span style="display:flex;"><span>			<span style="color:#f92672">&amp;</span>dwVolumeSerNumber,
+</span></span><span style="display:flex;"><span>			<span style="color:#f92672">&amp;</span>dwMaxLength,
+</span></span><span style="display:flex;"><span>			<span style="color:#f92672">&amp;</span>dwFileSystemFlags,
+</span></span><span style="display:flex;"><span>			szFileSystemNameBuffer,
+</span></span><span style="display:flex;"><span>			MAX_PATH)) {
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> FALSE;
+</span></span><span style="display:flex;"><span>		}
+</span></span><span style="display:flex;"><span>		printf(<span style="color:#e6db74">&#34;%s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, lpVolumName);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	FindVolumeClose(hVolume);
+</span></span><span style="display:flex;"><span>	system(<span style="color:#e6db74">&#34;pause&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="读写文件">读写文件</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>HANDLE WINAPI <span style="color:#a6e22e">CreateFile</span>(
+</span></span><span style="display:flex;"><span>_In_ LPCTSTR lpFileName,
+</span></span><span style="display:flex;"><span>_In_ DWORD dwDesiredAccess,
+</span></span><span style="display:flex;"><span>_In_ DWORD dwShareMode,
+</span></span><span style="display:flex;"><span>_In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+</span></span><span style="display:flex;"><span>_In_ DWORD dwCreationDisposition,
+</span></span><span style="display:flex;"><span>_In_ DWORD dwFlagsAndAttributes,
+</span></span><span style="display:flex;"><span>_In_opt_ HANDLE hTemplateFile
+</span></span><span style="display:flex;"><span>);
+</span></span></code></pre></div><h3 id="函数声明">函数声明</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>HANDLE <span style="color:#a6e22e">CreateFile</span>(LPCTSTR lpFileName, <span style="color:#75715e">//普通文件名或者设备文件名
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>DWORD dwDesiredAccess, <span style="color:#75715e">//访问模式（写/读）
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>DWORD dwShareMode, <span style="color:#75715e">//共享模式
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>LPSECURITY_ATTRIBUTES lpSecurityAttributes, <span style="color:#75715e">//指向安全属性的指针
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>DWORD dwCreationDisposition, <span style="color:#75715e">//如何创建
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>DWORD dwFlagsAndAttributes, <span style="color:#75715e">//文件属性
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>HANDLE hTemplateFile <span style="color:#75715e">//用于复制文件句柄
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>);
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">// ConsoleApplication1.cpp : 定义控制台应用程序的入口点。
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">//
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;stdafx.h&#34;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;iostream&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	LPTSTR FileName <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;c:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Temp</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">1.txt&#34;</span>);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	if (DeleteFile(FileName)) {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		MessageBox(0, L&#34;删除成功！&#34;, L&#34;INFO&#34;, MB_OK);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	else {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		DWORD err = GetLastError();
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		MessageBox(0, L&#34;Error&#34;, L&#34;INFO&#34;, MB_HELP);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	*/</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	if (CopyFile(FileName, TEXT(&#34;C:\\Temp\\2.txt&#34;),TRUE)) {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		MessageBox(0, L&#34;COPY成功！&#34;, L&#34;INFO&#34;, MB_OK);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	if (MoveFile(FileName, TEXT(&#34;C:\\Temp\\3.txt&#34;))) {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">		MessageBox(0, L&#34;MOVE成功！&#34;, L&#34;INFO&#34;, MB_OK);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	}
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">	*/</span>
+</span></span><span style="display:flex;"><span>	HANDLE hFile <span style="color:#f92672">=</span> CreateFile(TEXT(<span style="color:#e6db74">&#34;C:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Temp</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">1.txt&#34;</span>),GENERIC_READ<span style="color:#f92672">|</span>GENERIC_WRITE,<span style="color:#ae81ff">0</span>,NULL,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (hFile <span style="color:#f92672">==</span> INVALID_HANDLE_VALUE) {
+</span></span><span style="display:flex;"><span>		MessageBox(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">L</span><span style="color:#e6db74">&#34;Error&#34;</span>, <span style="color:#e6db74">L</span><span style="color:#e6db74">&#34;INFO&#34;</span>, MB_HELP);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>		CHAR Text[MAX_PATH];
+</span></span><span style="display:flex;"><span>		ZeroMemory(Text, MAX_PATH);
+</span></span><span style="display:flex;"><span>		DWORD ReadLen;
+</span></span><span style="display:flex;"><span>		ReadFile(hFile, Text, MAX_PATH <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>, <span style="color:#f92672">&amp;</span>ReadLen, NULL);
+</span></span><span style="display:flex;"><span>		std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;Length : &#34;</span> <span style="color:#f92672">&lt;&lt;</span> ReadLen <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34; Content :&#34;</span> <span style="color:#f92672">&lt;&lt;</span> Text <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>		DWORD WriteLen;
+</span></span><span style="display:flex;"><span>		CHAR content[] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Hello world !!!&#34;</span>;
+</span></span><span style="display:flex;"><span>		WriteFile(hFile, content, <span style="color:#66d9ef">sizeof</span>(content), <span style="color:#f92672">&amp;</span>WriteLen, FALSE);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	CloseHandle(hFile);
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	system(<span style="color:#e6db74">&#34;pause&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="0x03-windows-线程">0x03 Windows 线程</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>HANDLE WINAPI <span style="color:#a6e22e">CreateThread</span>(
+</span></span><span style="display:flex;"><span>      _In_opt_  LPSECURITY_ATTRIBUTES  lpThreadAttributes,   
+</span></span><span style="display:flex;"><span>      _In_      SIZE_T                 dwStackSize,
+</span></span><span style="display:flex;"><span>      _In_      LPTHREAD_START_ROUTINE lpStartAddress,
+</span></span><span style="display:flex;"><span>      _In_opt_  LPVOID                 lpParameter,
+</span></span><span style="display:flex;"><span>      _In_      DWORD                  dwCreationFlags,
+</span></span><span style="display:flex;"><span>      _Out_opt_ LPDWORD                lpThreadId
+</span></span><span style="display:flex;"><span>    );
+</span></span></code></pre></div><p>第一个参数 lpThreadAttributes 表示线程内核对象的安全属性，一般传入NULL表示使用默认设置。</p>
 <p>第二个参数 dwStackSize 表示线程栈空间大小。传入0表示使用默认大小（1MB）。</p>
 <p>第三个参数 lpStartAddress 表示新线程所执行的线程函数地址，多个线程可以使用同一个函数地址。</p>
 <p>第四个参数 lpParameter 是传给线程函数的参数。</p>
@@ -381,24 +379,24 @@ _In_opt_ HANDLE hTemplateFile
 </ul>
 <p>线程可多次阻塞</p>
 <h3 id="等待线程执行完毕">等待线程执行完毕</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">WaitForSingleObject(
-    _In_ HANDLE hHandle,
-    _In_ DWORD dwMilliseconds <span style="color:#75715e">//等待时间 如果为INFINITE 则一直等待
-</span><span style="color:#75715e"></span>    );
-</code></pre></div><h3 id="等待多个线程执行完毕">等待多个线程执行完毕</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">WaitForMultipleObjects(
-    _In_ DWORD nCount,
-    _In_reads_(nCount) CONST HANDLE <span style="color:#f92672">*</span>lpHandles,
-    _In_ BOOL bWaitAll,
-    _In_ DWORD dwMilliseconds
-    );
-WaitForMultipleObjects(<span style="color:#ae81ff">2</span>, hThread, TRUE, INFINITE);
-GetExitCodeThread(
-    _In_ HANDLE hThread,
-    _Out_ LPDWORD lpExitCode
-    );
-GetExitCodeThread(hThread[<span style="color:#ae81ff">0</span>], <span style="color:#f92672">&amp;</span>ExitThreadCode);
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>WaitForSingleObject(
+</span></span><span style="display:flex;"><span>    _In_ HANDLE hHandle,
+</span></span><span style="display:flex;"><span>    _In_ DWORD dwMilliseconds <span style="color:#75715e">//等待时间 如果为INFINITE 则一直等待
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    );
+</span></span></code></pre></div><h3 id="等待多个线程执行完毕">等待多个线程执行完毕</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>WaitForMultipleObjects(
+</span></span><span style="display:flex;"><span>    _In_ DWORD nCount,
+</span></span><span style="display:flex;"><span>    _In_reads_(nCount) CONST HANDLE <span style="color:#f92672">*</span>lpHandles,
+</span></span><span style="display:flex;"><span>    _In_ BOOL bWaitAll,
+</span></span><span style="display:flex;"><span>    _In_ DWORD dwMilliseconds
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>WaitForMultipleObjects(<span style="color:#ae81ff">2</span>, hThread, TRUE, INFINITE);
+</span></span><span style="display:flex;"><span>GetExitCodeThread(
+</span></span><span style="display:flex;"><span>    _In_ HANDLE hThread,
+</span></span><span style="display:flex;"><span>    _Out_ LPDWORD lpExitCode
+</span></span><span style="display:flex;"><span>    );
+</span></span><span style="display:flex;"><span>GetExitCodeThread(hThread[<span style="color:#ae81ff">0</span>], <span style="color:#f92672">&amp;</span>ExitThreadCode);
+</span></span></code></pre></div>
 </div>
 <div class="container">
     <section class="bio" itemprop="author" itemscope="" itemtype="http://schema.org/Person">

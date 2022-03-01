@@ -227,65 +227,65 @@
 <p>socket:connect(host_ip,port_number) &ndash; 连接目标</p>
 <p>socket:close() &ndash; 关闭套接字连接</p>
 <p>我自己根据API封装了一个执行MySQL Query的扩展：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#66d9ef">local</span> mysql <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;mysql&#34;</span>
-<span style="color:#66d9ef">local</span> nmap <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;nmap&#34;</span>
-<span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
-
-description <span style="color:#f92672">=</span><span style="color:#e6db74">[[
-</span><span style="color:#e6db74">This is a Lua script that performs the MySQL statement.
-</span><span style="color:#e6db74">]]</span>
-author <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;China CoraLab payloads&#34;</span>
-license <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Same as Nmap--See https://nmap.org/book/man-legal.html&#34;</span>
-categories <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;external&#34;</span>}
-
-socket <span style="color:#f92672">=</span> nmap.new_socket()
-socket:set_timeout(<span style="color:#ae81ff">1000</span>)
-try <span style="color:#f92672">=</span> nmap.new_try(<span style="color:#66d9ef">function</span>() socket:close() <span style="color:#66d9ef">end</span>)
-optionsConfig <span style="color:#f92672">=</span> {
-    username <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;root&#34;</span>,
-    password <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;root&#34;</span>,
-    database <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;test&#34;</span>,
-    sqlQuery <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;SELECT MD5(&#39;admin&#39;),&#34;</span>,
-    host     <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;127.0.0.1&#34;</span>,
-    port     <span style="color:#f92672">=</span>  <span style="color:#ae81ff">3306</span>
-}
-
-
-optionsConfig.username <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.username&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.username
-optionsConfig.password <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.password&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.password
-optionsConfig.database <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.database&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.database
-optionsConfig.host <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.host&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.host
-optionsConfig.port <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.port&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.port
-optionsConfig.sqlQuery <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.sql&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.sqlQuery
-
-<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">mysqlLogin</span>(socket, username, password)
-    <span style="color:#66d9ef">local</span> status, response <span style="color:#f92672">=</span> mysql.receiveGreeting( socket )
-    <span style="color:#66d9ef">if</span> ( <span style="color:#f92672">not</span>(status) ) <span style="color:#66d9ef">then</span>
-        <span style="color:#66d9ef">return</span> response
-    <span style="color:#66d9ef">end</span>
-    <span style="color:#66d9ef">return</span> mysql.loginRequest( socket, { authversion <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;post41&#34;</span>, charset <span style="color:#f92672">=</span> response.charset }, username, password, response.salt )
-<span style="color:#66d9ef">end</span>
-portrule <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span> (host,port)
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
-<span style="color:#66d9ef">end</span>
-action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
-    <span style="color:#66d9ef">if</span>(socket:connect(optionsConfig.host,optionsConfig.port))
-    <span style="color:#66d9ef">then</span>
-        <span style="color:#66d9ef">local</span> status,response <span style="color:#f92672">=</span> mysqlLogin(socket,optionsConfig.username,optionsConfig.password)
-        <span style="color:#66d9ef">if</span>(status)
-        <span style="color:#66d9ef">then</span>
-            <span style="color:#66d9ef">local</span> status, rs <span style="color:#f92672">=</span> mysql.sqlQuery( socket, optionsConfig.sqlQuery )
-            socket:close()
-            <span style="color:#66d9ef">local</span> result <span style="color:#f92672">=</span> mysql.formatResultset(rs, { noheaders <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span> })
-            stdnse.debug(string.format(<span style="color:#e6db74">&#34;[*]Query is %s | Result is  %s&#34;</span>,optionsConfig.sqlQuery,result))
-            <span style="color:#66d9ef">return</span> stdnse.format_output(<span style="color:#66d9ef">true</span>,result)
-        <span style="color:#66d9ef">end</span>
-    <span style="color:#66d9ef">else</span>
-        print(<span style="color:#e6db74">&#34;Connect to mysql Failed !!!&#34;</span>)
-        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-    <span style="color:#66d9ef">end</span>
-<span style="color:#66d9ef">end</span>
-</code></pre></div><p><code>stdnse.get_script_args</code>是用于获取参数的函数，对应Nmap的&ndash;script-args参数。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#66d9ef">local</span> mysql <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;mysql&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">local</span> nmap <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;nmap&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>description <span style="color:#f92672">=</span><span style="color:#e6db74">[[
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">This is a Lua script that performs the MySQL statement.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">]]</span>
+</span></span><span style="display:flex;"><span>author <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;China CoraLab payloads&#34;</span>
+</span></span><span style="display:flex;"><span>license <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Same as Nmap--See https://nmap.org/book/man-legal.html&#34;</span>
+</span></span><span style="display:flex;"><span>categories <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;external&#34;</span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>socket <span style="color:#f92672">=</span> nmap.new_socket()
+</span></span><span style="display:flex;"><span>socket:set_timeout(<span style="color:#ae81ff">1000</span>)
+</span></span><span style="display:flex;"><span>try <span style="color:#f92672">=</span> nmap.new_try(<span style="color:#66d9ef">function</span>() socket:close() <span style="color:#66d9ef">end</span>)
+</span></span><span style="display:flex;"><span>optionsConfig <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    username <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;root&#34;</span>,
+</span></span><span style="display:flex;"><span>    password <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;root&#34;</span>,
+</span></span><span style="display:flex;"><span>    database <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;test&#34;</span>,
+</span></span><span style="display:flex;"><span>    sqlQuery <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;SELECT MD5(&#39;admin&#39;),&#34;</span>,
+</span></span><span style="display:flex;"><span>    host     <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;127.0.0.1&#34;</span>,
+</span></span><span style="display:flex;"><span>    port     <span style="color:#f92672">=</span>  <span style="color:#ae81ff">3306</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>optionsConfig.username <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.username&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.username
+</span></span><span style="display:flex;"><span>optionsConfig.password <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.password&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.password
+</span></span><span style="display:flex;"><span>optionsConfig.database <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.database&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.database
+</span></span><span style="display:flex;"><span>optionsConfig.host <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.host&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.host
+</span></span><span style="display:flex;"><span>optionsConfig.port <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.port&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.port
+</span></span><span style="display:flex;"><span>optionsConfig.sqlQuery <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.sql&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.sqlQuery
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">mysqlLogin</span>(socket, username, password)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">local</span> status, response <span style="color:#f92672">=</span> mysql.receiveGreeting( socket )
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> ( <span style="color:#f92672">not</span>(status) ) <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> response
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> mysql.loginRequest( socket, { authversion <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;post41&#34;</span>, charset <span style="color:#f92672">=</span> response.charset }, username, password, response.salt )
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>portrule <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span> (host,port)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(socket:connect(optionsConfig.host,optionsConfig.port))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">local</span> status,response <span style="color:#f92672">=</span> mysqlLogin(socket,optionsConfig.username,optionsConfig.password)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(status)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">local</span> status, rs <span style="color:#f92672">=</span> mysql.sqlQuery( socket, optionsConfig.sqlQuery )
+</span></span><span style="display:flex;"><span>            socket:close()
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">local</span> result <span style="color:#f92672">=</span> mysql.formatResultset(rs, { noheaders <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span> })
+</span></span><span style="display:flex;"><span>            stdnse.debug(string.format(<span style="color:#e6db74">&#34;[*]Query is %s | Result is  %s&#34;</span>,optionsConfig.sqlQuery,result))
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> stdnse.format_output(<span style="color:#66d9ef">true</span>,result)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#34;Connect to mysql Failed !!!&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p><code>stdnse.get_script_args</code>是用于获取参数的函数，对应Nmap的&ndash;script-args参数。</p>
 <h3 id="遇到的问题">遇到的问题</h3>
 <p>在Nse扩展库中，无法与外部地址(除去扫描范围以外的目标)进行Socket连接。</p>
 <p>因为大部分函数都接收绑定函数中的Host与Port参数，他们是一个table数据类型。</p>
@@ -315,76 +315,76 @@ socket:connect(HOST_ADDRESS,PORT_NUMBER)
 </ul>
 <p>主要是在扩展脚本中的portrule or hostrule 过滤我们的想要的数据，最后再action中对数据库进行读写。</p>
 <p>下面演示一下获取开启80端口的所有主机：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#66d9ef">local</span> mysql <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;mysql&#34;</span>
-<span style="color:#66d9ef">local</span> nmap <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;nmap&#34;</span>
-<span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
-<span style="color:#66d9ef">local</span> shortport <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;shortport&#34;</span>
-description <span style="color:#f92672">=</span><span style="color:#e6db74">[[
-</span><span style="color:#e6db74">This is a Lua script that performs the MySQL statement.
-</span><span style="color:#e6db74">]]</span>
-author <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;China CoraLab payloads&#34;</span>
-license <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Same as Nmap--See https://nmap.org/book/man-legal.html&#34;</span>
-categories <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;external&#34;</span>}
-
-socket <span style="color:#f92672">=</span> nmap.new_socket()
-socket:set_timeout(<span style="color:#ae81ff">1000</span>)
-try <span style="color:#f92672">=</span> nmap.new_try(<span style="color:#66d9ef">function</span>() socket:close() <span style="color:#66d9ef">end</span>)
-optionsConfig <span style="color:#f92672">=</span> {
-    username <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;root&#34;</span>,
-    password <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;root&#34;</span>,
-    database <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;test&#34;</span>,
-    sqlQuery <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;INSERT INTO scan_table VALUES (NULL,&#39;%s&#39;,&#39;%s&#39;,&#39;%s&#39;)&#34;</span>,
-    host     <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;127.0.0.1&#34;</span>,
-    port     <span style="color:#f92672">=</span>  <span style="color:#ae81ff">3306</span>
-}
-
-
-optionsConfig.username <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.username&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.username
-optionsConfig.password <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.password&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.password
-optionsConfig.database <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.database&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.database
-optionsConfig.host <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.host&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.host
-optionsConfig.port <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.port&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.port
-optionsConfig.sqlQuery <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.sql&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.sqlQuery
-
-<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">mysqlLogin</span>(socket, username, password)
-    <span style="color:#66d9ef">local</span> status, response <span style="color:#f92672">=</span> mysql.receiveGreeting( socket )
-    <span style="color:#66d9ef">if</span> ( <span style="color:#f92672">not</span>(status) ) <span style="color:#66d9ef">then</span>
-        <span style="color:#66d9ef">return</span> response
-    <span style="color:#66d9ef">end</span>
-    <span style="color:#66d9ef">return</span> mysql.loginRequest( socket, { authversion <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;post41&#34;</span>, charset <span style="color:#f92672">=</span> response.charset }, username, password, response.salt )
-<span style="color:#66d9ef">end</span>
-portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">if</span>(port.number<span style="color:#f92672">==</span><span style="color:#ae81ff">80</span>) <span style="color:#66d9ef">then</span>
-		print(<span style="color:#e6db74">&#34;[*] Scan this host open 80 port -- &#34;</span> <span style="color:#f92672">..</span> host.ip)
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
-	<span style="color:#66d9ef">end</span>
-<span style="color:#66d9ef">end</span>
-<span style="color:#75715e">-- </span>
-<span style="color:#75715e">-- portrule = shortport.portnumber({80,443,8080},&#34;tcp&#34;,{&#34;open&#34;,&#34;open|filtered&#34;})</span>
-<span style="color:#75715e">-- portrule = shortport.port_or_service({80,443,8080},&#34;http&#34;,&#34;tcp&#34;,{&#34;open&#34;,&#34;open|filtered&#34;})</span>
-<span style="color:#75715e">-- portrule = service(&#34;http&#34;,&#34;tcp&#34;,{&#34;open&#34;})</span>
-<span style="color:#75715e">-- </span>
-action<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#75715e">-- load mysql lib</span>
-	<span style="color:#75715e">-- get scan info</span>
-	optionsConfig.sqlQuery <span style="color:#f92672">=</span> string.format(<span style="color:#e6db74">&#34;INSERT INTO scan_table VALUES (NULL,&#39;%s&#39;,&#39;%s&#39;,&#39;%s&#39;)&#34;</span>,host.ip,port.number,port.service)
-	<span style="color:#66d9ef">if</span>(socket:connect(optionsConfig.host,optionsConfig.port))
-    <span style="color:#66d9ef">then</span>
-        <span style="color:#66d9ef">local</span> status,response <span style="color:#f92672">=</span> mysqlLogin(socket,optionsConfig.username,optionsConfig.password)
-        <span style="color:#66d9ef">if</span>(status)
-        <span style="color:#66d9ef">then</span>
-            <span style="color:#66d9ef">local</span> status, rs <span style="color:#f92672">=</span> mysql.sqlQuery( socket, optionsConfig.sqlQuery )
-            socket:close()
-            <span style="color:#66d9ef">local</span> result <span style="color:#f92672">=</span> mysql.formatResultset(rs, { noheaders <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span> })
-            stdnse.debug(string.format(<span style="color:#e6db74">&#34;Query is %s | Result is  %s&#34;</span>,optionsConfig.sqlQuery,result))
-            <span style="color:#66d9ef">return</span> stdnse.format_output(<span style="color:#66d9ef">true</span>,host.ip)
-        <span style="color:#66d9ef">end</span>
-    <span style="color:#66d9ef">else</span>
-        print(<span style="color:#e6db74">&#34;Connect to mysql Failed !!!&#34;</span>)
-        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-    <span style="color:#66d9ef">end</span>
-<span style="color:#66d9ef">end</span>
-</code></pre></div><p>执行扫描：<code>nmap --script=scan_db --script-args username=root 192.168.3.183 -d -p 80</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#66d9ef">local</span> mysql <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;mysql&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">local</span> nmap <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;nmap&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">local</span> shortport <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;shortport&#34;</span>
+</span></span><span style="display:flex;"><span>description <span style="color:#f92672">=</span><span style="color:#e6db74">[[
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">This is a Lua script that performs the MySQL statement.
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">]]</span>
+</span></span><span style="display:flex;"><span>author <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;China CoraLab payloads&#34;</span>
+</span></span><span style="display:flex;"><span>license <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Same as Nmap--See https://nmap.org/book/man-legal.html&#34;</span>
+</span></span><span style="display:flex;"><span>categories <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;external&#34;</span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>socket <span style="color:#f92672">=</span> nmap.new_socket()
+</span></span><span style="display:flex;"><span>socket:set_timeout(<span style="color:#ae81ff">1000</span>)
+</span></span><span style="display:flex;"><span>try <span style="color:#f92672">=</span> nmap.new_try(<span style="color:#66d9ef">function</span>() socket:close() <span style="color:#66d9ef">end</span>)
+</span></span><span style="display:flex;"><span>optionsConfig <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>    username <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;root&#34;</span>,
+</span></span><span style="display:flex;"><span>    password <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;root&#34;</span>,
+</span></span><span style="display:flex;"><span>    database <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;test&#34;</span>,
+</span></span><span style="display:flex;"><span>    sqlQuery <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;INSERT INTO scan_table VALUES (NULL,&#39;%s&#39;,&#39;%s&#39;,&#39;%s&#39;)&#34;</span>,
+</span></span><span style="display:flex;"><span>    host     <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;127.0.0.1&#34;</span>,
+</span></span><span style="display:flex;"><span>    port     <span style="color:#f92672">=</span>  <span style="color:#ae81ff">3306</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>optionsConfig.username <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.username&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.username
+</span></span><span style="display:flex;"><span>optionsConfig.password <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.password&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.password
+</span></span><span style="display:flex;"><span>optionsConfig.database <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.database&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.database
+</span></span><span style="display:flex;"><span>optionsConfig.host <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.host&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.host
+</span></span><span style="display:flex;"><span>optionsConfig.port <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.port&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.port
+</span></span><span style="display:flex;"><span>optionsConfig.sqlQuery <span style="color:#f92672">=</span> stdnse.get_script_args(SCRIPT_NAME <span style="color:#f92672">..</span> <span style="color:#e6db74">&#34;.sql&#34;</span>) <span style="color:#f92672">or</span> optionsConfig.sqlQuery
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">mysqlLogin</span>(socket, username, password)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">local</span> status, response <span style="color:#f92672">=</span> mysql.receiveGreeting( socket )
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> ( <span style="color:#f92672">not</span>(status) ) <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> response
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> mysql.loginRequest( socket, { authversion <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;post41&#34;</span>, charset <span style="color:#f92672">=</span> response.charset }, username, password, response.salt )
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(port.number<span style="color:#f92672">==</span><span style="color:#ae81ff">80</span>) <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>		print(<span style="color:#e6db74">&#34;[*] Scan this host open 80 port -- &#34;</span> <span style="color:#f92672">..</span> host.ip)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- </span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- portrule = shortport.portnumber({80,443,8080},&#34;tcp&#34;,{&#34;open&#34;,&#34;open|filtered&#34;})</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- portrule = shortport.port_or_service({80,443,8080},&#34;http&#34;,&#34;tcp&#34;,{&#34;open&#34;,&#34;open|filtered&#34;})</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- portrule = service(&#34;http&#34;,&#34;tcp&#34;,{&#34;open&#34;})</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- </span>
+</span></span><span style="display:flex;"><span>action<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">-- load mysql lib</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">-- get scan info</span>
+</span></span><span style="display:flex;"><span>	optionsConfig.sqlQuery <span style="color:#f92672">=</span> string.format(<span style="color:#e6db74">&#34;INSERT INTO scan_table VALUES (NULL,&#39;%s&#39;,&#39;%s&#39;,&#39;%s&#39;)&#34;</span>,host.ip,port.number,port.service)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(socket:connect(optionsConfig.host,optionsConfig.port))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">local</span> status,response <span style="color:#f92672">=</span> mysqlLogin(socket,optionsConfig.username,optionsConfig.password)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(status)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">local</span> status, rs <span style="color:#f92672">=</span> mysql.sqlQuery( socket, optionsConfig.sqlQuery )
+</span></span><span style="display:flex;"><span>            socket:close()
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">local</span> result <span style="color:#f92672">=</span> mysql.formatResultset(rs, { noheaders <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span> })
+</span></span><span style="display:flex;"><span>            stdnse.debug(string.format(<span style="color:#e6db74">&#34;Query is %s | Result is  %s&#34;</span>,optionsConfig.sqlQuery,result))
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> stdnse.format_output(<span style="color:#66d9ef">true</span>,host.ip)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#34;Connect to mysql Failed !!!&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>执行扫描：<code>nmap --script=scan_db --script-args username=root 192.168.3.183 -d -p 80</code></p>
 <p>执行过程：</p>
 <p><img src="https://rvn0xsy.oss-cn-shanghai.aliyuncs.com/2017-08-07/0x10.png" alt="过程"></p>
 <p>不开启debug&hellip;</p>

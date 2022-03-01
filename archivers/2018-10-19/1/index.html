@@ -90,12 +90,12 @@
 <p>可根据自己的操作系统类型，选择对应的版本，我这里是Mac OSX</p>
 <p>然后下载<a href="https://github.com/PortSwigger/xss-validator/raw/master/xss-detector/xss.js">xss.js</a>，将它放入phantomjs的执行目录。</p>
 <h2 id="0x02-测试之前的步骤">0x02 测试之前的步骤</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">rvn0xsy@Rvn0xsy ~/G/p/bin&gt; pwd
-/Users/rvn0xsy/GitProject/phantomjs-2.1.1-macosx/bin
-rvn0xsy@Rvn0xsy ~/G/p/bin&gt; ls
-phantomjs xss.js
-rvn0xsy@Rvn0xsy ~/G/p/bin&gt; ./phantomjs xss.js <span style="color:#75715e"># 启动监听</span>
-</code></pre></div><p>这时回到Burp的xss Validator插件页面：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>rvn0xsy@Rvn0xsy ~/G/p/bin&gt; pwd
+</span></span><span style="display:flex;"><span>/Users/rvn0xsy/GitProject/phantomjs-2.1.1-macosx/bin
+</span></span><span style="display:flex;"><span>rvn0xsy@Rvn0xsy ~/G/p/bin&gt; ls
+</span></span><span style="display:flex;"><span>phantomjs xss.js
+</span></span><span style="display:flex;"><span>rvn0xsy@Rvn0xsy ~/G/p/bin&gt; ./phantomjs xss.js <span style="color:#75715e"># 启动监听</span>
+</span></span></code></pre></div><p>这时回到Burp的xss Validator插件页面：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/339905be-4f5f-11ec-bdc6-00d861bf4abb.png" alt=""></p>
 <p>其中：</p>
 <ul>

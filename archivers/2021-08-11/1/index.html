@@ -123,8 +123,8 @@
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b6c23ce4-4f5f-11ec-a1ec-00d861bf4abb.png" alt="2021-08-11-12-00-24"></p>
 <h3 id="获取所有域内计算机对象">获取所有域内计算机对象</h3>
 <p>通过ldapsearch可以跟进不同的条件去检索域内的数据，上面的表格中明确了objectCategory属性与objectClass属性组合可以获取指定对象，通过这个表格，我们尝试获取域内的所有机器:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ldapsearch -h 192.168.49.132 -b dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -D cn<span style="color:#f92672">=</span>zhangsan,ou<span style="color:#f92672">=</span>officeuser,dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -w San@123 objectClass<span style="color:#f92672">=</span>computer dn
-</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b6fdd6a0-4f5f-11ec-ba51-00d861bf4abb.png" alt="2021-08-11-12-00-55"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ldapsearch -h 192.168.49.132 -b dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -D cn<span style="color:#f92672">=</span>zhangsan,ou<span style="color:#f92672">=</span>officeuser,dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -w San@123 objectClass<span style="color:#f92672">=</span>computer dn
+</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b6fdd6a0-4f5f-11ec-ba51-00d861bf4abb.png" alt="2021-08-11-12-00-55"></p>
 <p>LDAP Search Option 说明:</p>
 <ul>
 <li><code>-H</code>	ldapuri，格式为ldap://机器名或者IP:端口号，不能与-h和-p同时使用</li>
@@ -146,17 +146,17 @@
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b73bb772-4f5f-11ec-bad4-00d861bf4abb.png" alt="2021-08-11-12-02-01"></p>
 <p>逻辑运算语法：<code>(逻辑运算符(条件1)(条件2)....)</code></p>
 <p>例如获取所有用户对象的条件语句：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#f92672">(</span>&amp;
-<span style="color:#f92672">(</span>objectCategory<span style="color:#f92672">=</span>person<span style="color:#f92672">)</span>
-<span style="color:#f92672">(</span>objectClass<span style="color:#f92672">=</span>user<span style="color:#f92672">)</span>
-<span style="color:#f92672">)</span>
-</code></pre></div><p>ldapsearch的操作示例：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ldapsearch -h 192.168.49.132 -b dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -D cn<span style="color:#f92672">=</span>zhangsan,ou<span style="color:#f92672">=</span>officeuser,dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -w San@123 <span style="color:#e6db74">&#34;(&amp;(objectCategory=person)(objectClass=user))&#34;</span> dn | grep dn
-</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b77b94a0-4f5f-11ec-9d0a-00d861bf4abb.png" alt="2021-08-11-12-02-40"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#f92672">(</span>&amp;
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>objectCategory<span style="color:#f92672">=</span>person<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>objectClass<span style="color:#f92672">=</span>user<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">)</span>
+</span></span></code></pre></div><p>ldapsearch的操作示例：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ldapsearch -h 192.168.49.132 -b dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -D cn<span style="color:#f92672">=</span>zhangsan,ou<span style="color:#f92672">=</span>officeuser,dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -w San@123 <span style="color:#e6db74">&#34;(&amp;(objectCategory=person)(objectClass=user))&#34;</span> dn | grep dn
+</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b77b94a0-4f5f-11ec-9d0a-00d861bf4abb.png" alt="2021-08-11-12-02-40"></p>
 <h3 id="获取所有启用用户">获取所有启用用户</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">ldapsearch -h 192.168.49.132 -b dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -D cn<span style="color:#f92672">=</span>zhangsan,ou<span style="color:#f92672">=</span>officeuser,dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -w San@123 <span style="color:#e6db74">&#34;(&amp;(objectCategory=person)(objectClass=user)
-</span><span style="color:#e6db74">(!(userAccountControl:1.2.840.113556.1.4.803:=2)))&#34;</span> dn | grep dn
-</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b7b74b3a-4f5f-11ec-8d64-00d861bf4abb.png" alt="2021-08-11-12-02-55"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>ldapsearch -h 192.168.49.132 -b dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -D cn<span style="color:#f92672">=</span>zhangsan,ou<span style="color:#f92672">=</span>officeuser,dc<span style="color:#f92672">=</span>domain16,dc<span style="color:#f92672">=</span>local -w San@123 <span style="color:#e6db74">&#34;(&amp;(objectCategory=person)(objectClass=user)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">(!(userAccountControl:1.2.840.113556.1.4.803:=2)))&#34;</span> dn | grep dn
+</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b7b74b3a-4f5f-11ec-8d64-00d861bf4abb.png" alt="2021-08-11-12-02-55"></p>
 <h3 id="特殊字符对照表">特殊字符对照表</h3>
 <p>其中\2A等都是特殊字符，为了和LDAP语义进行区分，因此有一个对照表：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b7fe4b3e-4f5f-11ec-94f9-00d861bf4abb.png" alt="2021-08-11-12-03-52"></p>

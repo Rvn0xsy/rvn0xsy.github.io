@@ -82,284 +82,283 @@
 <h2 id="0x01-第一弹-安装程序getshell">0x01 第一弹 安装程序Getshell</h2>
 <p>首先我们一般都是在安装的时候，看看有没有重装的可能性，粗略的看了一下代码并没有，但是存在一个有趣的安装getshell问题。</p>
 <p>CI框架的数据库配置在：<code>config\database.php</code>,其常见内容如下：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
-
-<span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">defined</span>(<span style="color:#e6db74">&#39;BASEPATH&#39;</span>)) <span style="color:#66d9ef">exit</span>(<span style="color:#e6db74">&#39;No direct script access allowed&#39;</span>);
-
-$active_group <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;default&#39;</span>;
-$query_builder  <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>;
-
-$db[<span style="color:#e6db74">&#39;default&#39;</span>]  <span style="color:#f92672">=</span> <span style="color:#66d9ef">array</span>(
-  <span style="color:#e6db74">&#39;dsn&#39;</span>   <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;&#39;</span>,
-  <span style="color:#e6db74">&#39;hostname&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;localhost&#39;</span>,
-  <span style="color:#e6db74">&#39;username&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;root&#39;</span>,
-  <span style="color:#e6db74">&#39;password&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;root&#39;</span>,
-  <span style="color:#e6db74">&#39;port&#39;</span>    <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;3306&#39;</span>,
-  <span style="color:#e6db74">&#39;database&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;xxxxx&#39;</span>,
-  <span style="color:#e6db74">&#39;dbdriver&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;mysqli&#39;</span>,
-  <span style="color:#e6db74">&#39;dbprefix&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;dr_&#39;</span>,
-  <span style="color:#e6db74">&#39;pconnect&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">FALSE</span>,
-  <span style="color:#e6db74">&#39;db_debug&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">true</span>,
-  <span style="color:#e6db74">&#39;cache_on&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">FALSE</span>,
-  <span style="color:#e6db74">&#39;cachedir&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;cache/sql/&#39;</span>,
-  <span style="color:#e6db74">&#39;char_set&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;utf8&#39;</span>,
-  <span style="color:#e6db74">&#39;dbcollat&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>,
-  <span style="color:#e6db74">&#39;swap_pre&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;&#39;</span>,
-  <span style="color:#e6db74">&#39;autoinit&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">FALSE</span>,
-  <span style="color:#e6db74">&#39;encrypt&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">FALSE</span>,
-  <span style="color:#e6db74">&#39;compress&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">FALSE</span>,
-  <span style="color:#e6db74">&#39;stricton&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">FALSE</span>,
-  <span style="color:#e6db74">&#39;failover&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">array</span>(),
-);
-</code></pre></div><p>安装界面：
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">defined</span>(<span style="color:#e6db74">&#39;BASEPATH&#39;</span>)) <span style="color:#66d9ef">exit</span>(<span style="color:#e6db74">&#39;No direct script access allowed&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$active_group <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;default&#39;</span>;
+</span></span><span style="display:flex;"><span>$query_builder  <span style="color:#f92672">=</span> <span style="color:#66d9ef">TRUE</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$db[<span style="color:#e6db74">&#39;default&#39;</span>]  <span style="color:#f92672">=</span> <span style="color:#66d9ef">array</span>(
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;dsn&#39;</span>   <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;hostname&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;localhost&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;username&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;root&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;password&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;root&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;port&#39;</span>    <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;3306&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;database&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;xxxxx&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;dbdriver&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;mysqli&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;dbprefix&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;dr_&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;pconnect&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">FALSE</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;db_debug&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">true</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;cache_on&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">FALSE</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;cachedir&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;cache/sql/&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;char_set&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;utf8&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;dbcollat&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;swap_pre&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;&#39;</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;autoinit&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">FALSE</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;encrypt&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">FALSE</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;compress&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">FALSE</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;stricton&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">FALSE</span>,
+</span></span><span style="display:flex;"><span>  <span style="color:#e6db74">&#39;failover&#39;</span>  <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">array</span>(),
+</span></span><span style="display:flex;"><span>);
+</span></span></code></pre></div><p>安装界面：
 <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e3529386-4f5e-11ec-a703-00d861bf4abb.jpg" alt="Install"></p>
 <p>然后找到这个界面对应的代码 <code>diy\dayrui\controllers\Install.php</code>：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
-<span style="color:#e6db74">/**
-</span><span style="color:#e6db74">     * 安装程序
-</span><span style="color:#e6db74">     */</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">index</span>() {
-
-        $step <span style="color:#f92672">=</span> <span style="color:#a6e22e">max</span>(<span style="color:#ae81ff">1</span>, (<span style="color:#a6e22e">int</span>)$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;step&#39;</span>));
-        <span style="color:#66d9ef">switch</span> ($step) {
-
-            <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span>
-                <span style="color:#66d9ef">break</span>;
-
-            <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">:</span>
-
-                $check_pass <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
-
-                $writeAble <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_checkFileRight</span>();
-                $lowestEnvironment <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_getLowestEnvironment</span>();
-                $currentEnvironment <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_getCurrentEnvironment</span>();
-                $recommendEnvironment <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_getRecommendEnvironment</span>();
-
-                <span style="color:#66d9ef">foreach</span> ($currentEnvironment <span style="color:#66d9ef">as</span> $key <span style="color:#f92672">=&gt;</span> $value) {
-                    <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">false</span> <span style="color:#f92672">!==</span> <span style="color:#a6e22e">strpos</span>($key, <span style="color:#e6db74">&#39;_ischeck&#39;</span>) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#66d9ef">false</span> <span style="color:#f92672">===</span> $value) {
-                        $check_pass <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
-                    }
-                }
-                <span style="color:#66d9ef">foreach</span> ($writeAble <span style="color:#66d9ef">as</span> $value) {
-                    <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">false</span> <span style="color:#f92672">===</span> $value) {
-                        $check_pass <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
-                    }
-                }
-
-                $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">template</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">assign</span>(<span style="color:#66d9ef">array</span>(
-                    <span style="color:#e6db74">&#39;writeAble&#39;</span> <span style="color:#f92672">=&gt;</span> $writeAble,
-                    <span style="color:#e6db74">&#39;check_pass&#39;</span> <span style="color:#f92672">=&gt;</span> $check_pass,
-                    <span style="color:#e6db74">&#39;lowestEnvironment&#39;</span> <span style="color:#f92672">=&gt;</span> $lowestEnvironment,
-                    <span style="color:#e6db74">&#39;currentEnvironment&#39;</span> <span style="color:#f92672">=&gt;</span> $currentEnvironment,
-                    <span style="color:#e6db74">&#39;recommendEnvironment&#39;</span> <span style="color:#f92672">=&gt;</span> $recommendEnvironment,
-                ));
-                <span style="color:#66d9ef">break</span>;
-            <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">3</span><span style="color:#f92672">:</span>
-
-                <span style="color:#66d9ef">if</span> ($_POST) {
-                    $data <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">post</span>(<span style="color:#e6db74">&#39;data&#39;</span>);
-                    <span style="color:#75715e">// 数据库支持判断
-</span><span style="color:#75715e"></span>                    $mysqli <span style="color:#f92672">=</span> <span style="color:#a6e22e">function_exists</span>(<span style="color:#e6db74">&#39;mysqli_init&#39;</span>) <span style="color:#f92672">?</span> <span style="color:#a6e22e">mysqli_init</span>() <span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span>;
-                    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">version_compare</span>(<span style="color:#66d9ef">PHP_VERSION</span>, <span style="color:#e6db74">&#39;5.5.0&#39;</span>) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!</span>$mysqli) {
-                        <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;您的PHP环境必须启用Mysqli扩展&#39;</span>));
-                    }
-                    <span style="color:#75715e">// 参数判断
-</span><span style="color:#75715e"></span>                    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">preg_match</span>(<span style="color:#e6db74">&#39;/^[\x7f-\xff\dA-Za-z\.\_]+$/&#39;</span>, $data[<span style="color:#e6db74">&#39;admin&#39;</span>])) {
-                        <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;管理员账号格式不正确&#39;</span>));
-                    }
-                    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>$data[<span style="color:#e6db74">&#39;password&#39;</span>]) {
-                        <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;管理员密码不能为空&#39;</span>));
-                    }
-                    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>$data[<span style="color:#e6db74">&#39;dbname&#39;</span>]) {
-                        <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;数据库名称不能为空&#39;</span>));
-                    }
-                    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">is_numeric</span>($data[<span style="color:#e6db74">&#39;dbname&#39;</span>])) {
-                        <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;数据库名称不能是数字&#39;</span>));
-                    }
-                    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">strpos</span>($data[<span style="color:#e6db74">&#39;dbname&#39;</span>], <span style="color:#e6db74">&#39;.&#39;</span>) <span style="color:#f92672">!==</span> <span style="color:#66d9ef">false</span>) {
-                        <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;数据库名称不能存在.号&#39;</span>));
-                    }
-                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">load</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">helper</span>(<span style="color:#e6db74">&#39;email&#39;</span>);
-                    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>$data[<span style="color:#e6db74">&#39;email&#39;</span>] <span style="color:#f92672">||</span> <span style="color:#f92672">!</span><span style="color:#a6e22e">valid_email</span>($data[<span style="color:#e6db74">&#39;email&#39;</span>])) {
-                        <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;Email格式不正确&#39;</span>));
-                    }
-                    <span style="color:#66d9ef">if</span> ($mysqli) {
-                        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!@</span><span style="color:#a6e22e">mysqli_real_connect</span>($mysqli, $data[<span style="color:#e6db74">&#39;dbhost&#39;</span>], $data[<span style="color:#e6db74">&#39;dbuser&#39;</span>], $data[<span style="color:#e6db74">&#39;dbpw&#39;</span>])) {
-                            <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;[mysqli_real_connect] 无法连接到数据库服务器（&#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbhost&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;），请检查用户名（&#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbuser&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;）和密码（&#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbpw&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;）是否正确&#39;</span>));
-                        }
-                        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!@</span><span style="color:#a6e22e">mysqli_select_db</span>($mysqli, $data[<span style="color:#e6db74">&#39;dbname&#39;</span>])) {
-                            <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!@</span><span style="color:#a6e22e">mysqli_query</span>($mysqli, <span style="color:#e6db74">&#39;CREATE DATABASE &#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbname&#39;</span>])) {
-                                <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;指定的数据库（&#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbname&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;）不存在，系统尝试创建失败，请通过其他方式建立数据库&#39;</span>));
-                            }
-                        }
-                        <span style="color:#75715e">// utf8方式打开数据库
-</span><span style="color:#75715e"></span>                        <span style="color:#a6e22e">mysqli_query</span>($mysqli, <span style="color:#e6db74">&#39;SET NAMES utf8&#39;</span>);
-                    } <span style="color:#66d9ef">else</span> {
-                        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!@</span><span style="color:#a6e22e">mysql_connect</span>($data[<span style="color:#e6db74">&#39;dbhost&#39;</span>], $data[<span style="color:#e6db74">&#39;dbuser&#39;</span>], $data[<span style="color:#e6db74">&#39;dbpw&#39;</span>])) {
-                            <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">mysql_error</span>()<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;&lt;br&gt;无法连接到数据库服务器（&#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbhost&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;），请检查用户名（&#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbuser&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;）和密码（&#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbpw&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;）是否正确&#39;</span>));
-                        }
-                        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!@</span><span style="color:#a6e22e">mysql_select_db</span>($data[<span style="color:#e6db74">&#39;dbname&#39;</span>])) {
-                            <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!@</span><span style="color:#a6e22e">mysql_query</span>(<span style="color:#e6db74">&#39;CREATE DATABASE &#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbname&#39;</span>])) {
-                                <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">mysql_error</span>()<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;&lt;br&gt;指定的数据库（&#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbname&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;）不存在，系统尝试创建失败，请通过其他方式建立数据库&#39;</span>));
-                            }
-                        }
-                        <span style="color:#75715e">// utf8方式打开数据库
-</span><span style="color:#75715e"></span>                        <span style="color:#a6e22e">mysql_query</span>(<span style="color:#e6db74">&#39;SET NAMES utf8&#39;</span>);
-                    }
-                    <span style="color:#75715e">// 格式化端口
-</span><span style="color:#75715e"></span>                    <span style="color:#66d9ef">list</span>($data[<span style="color:#e6db74">&#39;dbhost&#39;</span>], $data[<span style="color:#e6db74">&#39;dbport&#39;</span>]) <span style="color:#f92672">=</span> <span style="color:#a6e22e">explode</span>(<span style="color:#e6db74">&#39;:&#39;</span>, $data[<span style="color:#e6db74">&#39;dbhost&#39;</span>]);
-                    $data[<span style="color:#e6db74">&#39;dbport&#39;</span>] <span style="color:#f92672">=</span> $data[<span style="color:#e6db74">&#39;dbport&#39;</span>] <span style="color:#f92672">?</span> (<span style="color:#a6e22e">int</span>)$data[<span style="color:#e6db74">&#39;dbport&#39;</span>] <span style="color:#f92672">:</span> <span style="color:#ae81ff">3306</span>;
-                    $data[<span style="color:#e6db74">&#39;dbprefix&#39;</span>] <span style="color:#f92672">=</span> $data[<span style="color:#e6db74">&#39;dbprefix&#39;</span>] <span style="color:#f92672">?</span> $data[<span style="color:#e6db74">&#39;dbprefix&#39;</span>] <span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;dr_&#39;</span>; <span style="color:#75715e">// 这个变量可控
-</span><span style="color:#75715e"></span>                    <span style="color:#75715e">// 配置文件
-</span><span style="color:#75715e"></span>                    $config <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&lt;?php&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34;if (!defined(&#39;BASEPATH&#39;)) exit(&#39;No direct script access allowed&#39;);&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\$</span><span style="color:#e6db74">active_group = &#39;default&#39;;&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\$</span><span style="color:#e6db74">query_builder  = TRUE;&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\$</span><span style="color:#e6db74">db[&#39;default&#39;]  = array(&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;dsn&#39;   =&gt; &#39;&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;hostname&#39;  =&gt; &#39;</span><span style="color:#e6db74">{</span>$data[<span style="color:#e6db74">&#39;dbhost&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;username&#39;  =&gt; &#39;</span><span style="color:#e6db74">{</span>$data[<span style="color:#e6db74">&#39;dbuser&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;password&#39;  =&gt; &#39;</span><span style="color:#e6db74">{</span>$data[<span style="color:#e6db74">&#39;dbpw&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;port&#39;    =&gt; &#39;</span><span style="color:#e6db74">{</span>$data[<span style="color:#e6db74">&#39;dbport&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;database&#39;  =&gt; &#39;</span><span style="color:#e6db74">{</span>$data[<span style="color:#e6db74">&#39;dbname&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;dbdriver&#39;  =&gt; &#39;&#34;</span><span style="color:#f92672">.</span>($mysqli <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;mysqli&#39;</span> <span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;mysql&#39;</span>)<span style="color:#f92672">.</span><span style="color:#e6db74">&#34;&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;dbprefix&#39;  =&gt; &#39;</span><span style="color:#e6db74">{</span>$data[<span style="color:#e6db74">&#39;dbprefix&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;pconnect&#39;  =&gt; FALSE,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;db_debug&#39;  =&gt; true,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;cache_on&#39;  =&gt; FALSE,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;cachedir&#39;  =&gt; &#39;cache/sql/&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;char_set&#39;  =&gt; &#39;utf8&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;dbcollat&#39;  =&gt; &#39;utf8_general_ci&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;swap_pre&#39;  =&gt; &#39;&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;autoinit&#39;  =&gt; FALSE,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;encrypt&#39; =&gt; FALSE,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;compress&#39;  =&gt; FALSE,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;stricton&#39;  =&gt; FALSE,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;failover&#39;  =&gt; array(),&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34;);&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
-                    <span style="color:#75715e">// 保存配置文件
-</span><span style="color:#75715e"></span>                    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">file_put_contents</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;config/database.php&#39;</span>, $config)) {
-                        <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;数据库配置文件保存失败，请检查文件config/database.php权限！&#39;</span>));
-                    }
-                    <span style="color:#75715e">// 加载数据库
-</span><span style="color:#75715e"></span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">load</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">database</span>();
-                    $salt <span style="color:#f92672">=</span> <span style="color:#a6e22e">substr</span>(<span style="color:#a6e22e">md5</span>(<span style="color:#a6e22e">rand</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">999</span>)), <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">10</span>);
-                    $password <span style="color:#f92672">=</span> <span style="color:#a6e22e">md5</span>(<span style="color:#a6e22e">md5</span>($data[<span style="color:#e6db74">&#39;password&#39;</span>])<span style="color:#f92672">.</span>$salt<span style="color:#f92672">.</span><span style="color:#a6e22e">md5</span>($data[<span style="color:#e6db74">&#39;password&#39;</span>]));
-
-                    <span style="color:#75715e">// 导入表结构
-</span><span style="color:#75715e"></span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_query</span>(<span style="color:#a6e22e">str_replace</span>(
-                        <span style="color:#66d9ef">array</span>(<span style="color:#e6db74">&#39;{dbprefix}&#39;</span>, <span style="color:#e6db74">&#39;{username}&#39;</span>, <span style="color:#e6db74">&#39;{password}&#39;</span>, <span style="color:#e6db74">&#39;{salt}&#39;</span>, <span style="color:#e6db74">&#39;{email}&#39;</span>),
-                        <span style="color:#66d9ef">array</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">db</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">dbprefix</span>, $data[<span style="color:#e6db74">&#39;admin&#39;</span>], $password, $salt, $data[<span style="color:#e6db74">&#39;email&#39;</span>]),
-                        <span style="color:#a6e22e">file_get_contents</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;cache/install/install.sql&#39;</span>)
-                    ));
-
-                    <span style="color:#75715e">// 导入会员菜单数据
-</span><span style="color:#75715e"></span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_query</span>(<span style="color:#a6e22e">str_replace</span>(
-                        <span style="color:#e6db74">&#39;{dbprefix}&#39;</span>,
-                        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">db</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">dbprefix</span>,
-                        <span style="color:#a6e22e">file_get_contents</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;cache/install/member_menu.sql&#39;</span>)
-                    ));
-
-                    <span style="color:#75715e">// 系统配置文件
-</span><span style="color:#75715e"></span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">load</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">model</span>(<span style="color:#e6db74">&#39;system_model&#39;</span>);
-                    $config <span style="color:#f92672">=</span> <span style="color:#66d9ef">array</span>(
-                        <span style="color:#e6db74">&#39;SYS_LOG&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;FALSE&#39;</span>,
-                        <span style="color:#e6db74">&#39;SYS_KEY&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;poscms&#39;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">md5</span>(<span style="color:#a6e22e">time</span>()),
-                        <span style="color:#e6db74">&#39;SYS_DEBUG&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;FALSE&#39;</span>,
-                        <span style="color:#e6db74">&#39;SYS_HELP_URL&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;&#39;</span>,
-                        <span style="color:#e6db74">&#39;SYS_EMAIL&#39;</span> <span style="color:#f92672">=&gt;</span> $data[<span style="color:#e6db74">&#39;email&#39;</span>],
-                        <span style="color:#e6db74">&#39;SYS_MEMCACHE&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;FALSE&#39;</span>,
-                        <span style="color:#e6db74">&#39;SYS_UPLOAD_DIR&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#a6e22e">SYS_UPLOAD_DIR</span>,
-                        <span style="color:#e6db74">&#39;SYS_CRON_QUEUE&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">0</span>,
-                        <span style="color:#e6db74">&#39;SYS_CRON_NUMS&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">20</span>,
-                        <span style="color:#e6db74">&#39;SYS_CRON_TIME&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
-
-
-                        <span style="color:#e6db74">&#39;SYS_ONLINE_NUM&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">1000</span>,
-                        <span style="color:#e6db74">&#39;SYS_ONLINE_TIME&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">7200</span>,
-
-                        <span style="color:#e6db74">&#39;SYS_NAME&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;POSCMS&#39;</span>,
-                        <span style="color:#e6db74">&#39;SYS_NEWS&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;TRUE&#39;</span>,
-                        <span style="color:#e6db74">&#39;SYS_CMS&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;POSCMS&#39;</span>,
-                        <span style="color:#e6db74">&#39;SYS_UPDATE&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">1</span>,
-
-                        <span style="color:#e6db74">&#39;SITE_EXPERIENCE&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;经验值&#39;</span>,
-                        <span style="color:#e6db74">&#39;SITE_SCORE&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;虚拟币&#39;</span>,
-                        <span style="color:#e6db74">&#39;SITE_MONEY&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;金钱&#39;</span>,
-                        <span style="color:#e6db74">&#39;SITE_CONVERT&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">10</span>,
-                        <span style="color:#e6db74">&#39;SITE_ADMIN_CODE&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;FALSE&#39;</span>,
-                        <span style="color:#e6db74">&#39;SITE_ADMIN_PAGESIZE&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">8</span>,
-
-                        <span style="color:#e6db74">&#39;SYS_CACHE_INDEX&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
-                        <span style="color:#e6db74">&#39;SYS_CACHE_MINDEX&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
-                        <span style="color:#e6db74">&#39;SYS_CACHE_MSHOW&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
-                        <span style="color:#e6db74">&#39;SYS_CACHE_MSEARCH&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
-                        <span style="color:#e6db74">&#39;SYS_CACHE_SITEMAP&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
-                        <span style="color:#e6db74">&#39;SYS_CACHE_LIST&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
-                        <span style="color:#e6db74">&#39;SYS_CACHE_MEMBER&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
-                        <span style="color:#e6db74">&#39;SYS_CACHE_ATTACH&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
-                        <span style="color:#e6db74">&#39;SYS_CACHE_FORM&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
-                        <span style="color:#e6db74">&#39;SYS_CACHE_POSTER&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
-                        <span style="color:#e6db74">&#39;SYS_CACHE_SPACE&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
-                        <span style="color:#e6db74">&#39;SYS_CACHE_TAG&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
-
-                    );
-                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">system_model</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">save_config</span>($config, $config);
-                    <span style="color:#75715e">// 站点配置文件
-</span><span style="color:#75715e"></span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">load</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">model</span>(<span style="color:#e6db74">&#39;site_model&#39;</span>);
-                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">load</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">library</span>(<span style="color:#e6db74">&#39;dconfig&#39;</span>);
-                    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">is_file</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;config/site/1.php&#39;</span>)) {
-                        $config <span style="color:#f92672">=</span> <span style="color:#66d9ef">require</span> <span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;config/site/1.php&#39;</span>;
-                    }
-                    $config[<span style="color:#e6db74">&#39;SITE_THEME&#39;</span>] <span style="color:#f92672">=</span> $config[<span style="color:#e6db74">&#39;SITE_TEMPLATE&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;default&#39;</span>;
-                    $config[<span style="color:#e6db74">&#39;SITE_DOMAIN&#39;</span>] <span style="color:#f92672">=</span> $config[<span style="color:#e6db74">&#39;SITE_ATTACH_HOST&#39;</span>] <span style="color:#f92672">=</span> $config[<span style="color:#e6db74">&#39;SITE_ATTACH_URL&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">strtolower</span>($_SERVER[<span style="color:#e6db74">&#39;HTTP_HOST&#39;</span>]);
-                    $site <span style="color:#f92672">=</span> <span style="color:#66d9ef">array</span>(
-                        <span style="color:#e6db74">&#39;name&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;POSCMS&#39;</span>,
-                        <span style="color:#e6db74">&#39;domain&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#a6e22e">strtolower</span>($_SERVER[<span style="color:#e6db74">&#39;HTTP_HOST&#39;</span>]),
-                        <span style="color:#e6db74">&#39;setting&#39;</span> <span style="color:#f92672">=&gt;</span> $config,
-                    );
-                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">site_model</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">add_site</span>($site);
-                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">dconfig</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">file</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;config/site/1.php&#39;</span>)<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">note</span>(<span style="color:#e6db74">&#39;站点配置文件&#39;</span>)<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">space</span>(<span style="color:#ae81ff">32</span>)<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">to_require_one</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">site_model</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">config</span>, $config);
-
-                    <span style="color:#75715e">// 初始化菜单
-</span><span style="color:#75715e"></span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">load</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">model</span>(<span style="color:#e6db74">&#39;menu_model&#39;</span>);
-                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">menu_model</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">init</span>();
-
-                    <span style="color:#75715e">// 导入默认数据
-</span><span style="color:#75715e"></span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_query</span>(<span style="color:#a6e22e">str_replace</span>(
-                        <span style="color:#66d9ef">array</span>(<span style="color:#e6db74">&#39;{dbprefix}&#39;</span>, <span style="color:#e6db74">&#39;{site_url}&#39;</span>),
-                        <span style="color:#66d9ef">array</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">db</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">dbprefix</span>, <span style="color:#e6db74">&#39;http://&#39;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">strtolower</span>($_SERVER[<span style="color:#e6db74">&#39;HTTP_HOST&#39;</span>])),
-                        <span style="color:#a6e22e">file_get_contents</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;cache/install/default.sql&#39;</span>)
-                    ));
-                    <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">dr_url</span>(<span style="color:#e6db74">&#39;install/index&#39;</span>, <span style="color:#66d9ef">array</span>(<span style="color:#e6db74">&#39;step&#39;</span> <span style="color:#f92672">=&gt;</span> $step <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>))));
-                }
-                <span style="color:#66d9ef">break</span>;
-
-            <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">4</span><span style="color:#f92672">:</span>
-                $log <span style="color:#f92672">=</span> <span style="color:#66d9ef">array</span>();
-                $sql <span style="color:#f92672">=</span> <span style="color:#a6e22e">file_get_contents</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;cache/install/install.sql&#39;</span>);
-                <span style="color:#a6e22e">preg_match_all</span>(<span style="color:#e6db74">&#39;/`\{dbprefix\}(.+)`/U&#39;</span>, $sql, $match);
-                <span style="color:#66d9ef">if</span> ($match) {
-                    $log <span style="color:#f92672">=</span> <span style="color:#a6e22e">array_unique</span>($match[<span style="color:#ae81ff">1</span>]);
-                }
-                $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">template</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">assign</span>(<span style="color:#66d9ef">array</span>(
-                    <span style="color:#e6db74">&#39;log&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#a6e22e">implode</span>(<span style="color:#e6db74">&#39;&lt;finecms&gt;&#39;</span>, $log),
-                ));
-                <span style="color:#66d9ef">break</span>;
-
-            <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">5</span><span style="color:#f92672">:</span>
-                <span style="color:#a6e22e">file_put_contents</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;cache/install.lock&#39;</span>, <span style="color:#a6e22e">time</span>());
-                <span style="color:#a6e22e">file_put_contents</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;cache/install.new&#39;</span>, <span style="color:#a6e22e">time</span>());
-                <span style="color:#66d9ef">break</span>;
-        }
-
-        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">template</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">assign</span>(<span style="color:#66d9ef">array</span>(
-            <span style="color:#e6db74">&#39;step&#39;</span> <span style="color:#f92672">=&gt;</span> $step,
-        ));
-        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">template</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">display</span>(<span style="color:#e6db74">&#39;install_&#39;</span><span style="color:#f92672">.</span>$step<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;.html&#39;</span>, <span style="color:#e6db74">&#39;admin&#39;</span>);
-    }
-
-</code></pre></div><p>然后定位到<code>$data['dbprefix']</code>是可控的，也就是数据库的表前缀，前面的数据库配置文件内容以及交代清楚，接下来构造一个POC：
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     * 安装程序
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">index</span>() {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $step <span style="color:#f92672">=</span> <span style="color:#a6e22e">max</span>(<span style="color:#ae81ff">1</span>, (<span style="color:#a6e22e">int</span>)$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;step&#39;</span>));
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">switch</span> ($step) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">2</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                $check_pass <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                $writeAble <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_checkFileRight</span>();
+</span></span><span style="display:flex;"><span>                $lowestEnvironment <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_getLowestEnvironment</span>();
+</span></span><span style="display:flex;"><span>                $currentEnvironment <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_getCurrentEnvironment</span>();
+</span></span><span style="display:flex;"><span>                $recommendEnvironment <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_getRecommendEnvironment</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">foreach</span> ($currentEnvironment <span style="color:#66d9ef">as</span> $key <span style="color:#f92672">=&gt;</span> $value) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">false</span> <span style="color:#f92672">!==</span> <span style="color:#a6e22e">strpos</span>($key, <span style="color:#e6db74">&#39;_ischeck&#39;</span>) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#66d9ef">false</span> <span style="color:#f92672">===</span> $value) {
+</span></span><span style="display:flex;"><span>                        $check_pass <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">foreach</span> ($writeAble <span style="color:#66d9ef">as</span> $value) {
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (<span style="color:#66d9ef">false</span> <span style="color:#f92672">===</span> $value) {
+</span></span><span style="display:flex;"><span>                        $check_pass <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">template</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">assign</span>(<span style="color:#66d9ef">array</span>(
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;writeAble&#39;</span> <span style="color:#f92672">=&gt;</span> $writeAble,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;check_pass&#39;</span> <span style="color:#f92672">=&gt;</span> $check_pass,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;lowestEnvironment&#39;</span> <span style="color:#f92672">=&gt;</span> $lowestEnvironment,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;currentEnvironment&#39;</span> <span style="color:#f92672">=&gt;</span> $currentEnvironment,
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;recommendEnvironment&#39;</span> <span style="color:#f92672">=&gt;</span> $recommendEnvironment,
+</span></span><span style="display:flex;"><span>                ));
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">3</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> ($_POST) {
+</span></span><span style="display:flex;"><span>                    $data <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">post</span>(<span style="color:#e6db74">&#39;data&#39;</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// 数据库支持判断
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    $mysqli <span style="color:#f92672">=</span> <span style="color:#a6e22e">function_exists</span>(<span style="color:#e6db74">&#39;mysqli_init&#39;</span>) <span style="color:#f92672">?</span> <span style="color:#a6e22e">mysqli_init</span>() <span style="color:#f92672">:</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">version_compare</span>(<span style="color:#66d9ef">PHP_VERSION</span>, <span style="color:#e6db74">&#39;5.5.0&#39;</span>) <span style="color:#f92672">&gt;=</span> <span style="color:#ae81ff">0</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">!</span>$mysqli) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;您的PHP环境必须启用Mysqli扩展&#39;</span>));
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// 参数判断
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">preg_match</span>(<span style="color:#e6db74">&#39;/^[\x7f-\xff\dA-Za-z\.\_]+$/&#39;</span>, $data[<span style="color:#e6db74">&#39;admin&#39;</span>])) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;管理员账号格式不正确&#39;</span>));
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>$data[<span style="color:#e6db74">&#39;password&#39;</span>]) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;管理员密码不能为空&#39;</span>));
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>$data[<span style="color:#e6db74">&#39;dbname&#39;</span>]) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;数据库名称不能为空&#39;</span>));
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">is_numeric</span>($data[<span style="color:#e6db74">&#39;dbname&#39;</span>])) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;数据库名称不能是数字&#39;</span>));
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">strpos</span>($data[<span style="color:#e6db74">&#39;dbname&#39;</span>], <span style="color:#e6db74">&#39;.&#39;</span>) <span style="color:#f92672">!==</span> <span style="color:#66d9ef">false</span>) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;数据库名称不能存在.号&#39;</span>));
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">load</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">helper</span>(<span style="color:#e6db74">&#39;email&#39;</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span>$data[<span style="color:#e6db74">&#39;email&#39;</span>] <span style="color:#f92672">||</span> <span style="color:#f92672">!</span><span style="color:#a6e22e">valid_email</span>($data[<span style="color:#e6db74">&#39;email&#39;</span>])) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;Email格式不正确&#39;</span>));
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> ($mysqli) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!@</span><span style="color:#a6e22e">mysqli_real_connect</span>($mysqli, $data[<span style="color:#e6db74">&#39;dbhost&#39;</span>], $data[<span style="color:#e6db74">&#39;dbuser&#39;</span>], $data[<span style="color:#e6db74">&#39;dbpw&#39;</span>])) {
+</span></span><span style="display:flex;"><span>                            <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;[mysqli_real_connect] 无法连接到数据库服务器（&#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbhost&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;），请检查用户名（&#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbuser&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;）和密码（&#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbpw&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;）是否正确&#39;</span>));
+</span></span><span style="display:flex;"><span>                        }
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!@</span><span style="color:#a6e22e">mysqli_select_db</span>($mysqli, $data[<span style="color:#e6db74">&#39;dbname&#39;</span>])) {
+</span></span><span style="display:flex;"><span>                            <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!@</span><span style="color:#a6e22e">mysqli_query</span>($mysqli, <span style="color:#e6db74">&#39;CREATE DATABASE &#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbname&#39;</span>])) {
+</span></span><span style="display:flex;"><span>                                <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;指定的数据库（&#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbname&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;）不存在，系统尝试创建失败，请通过其他方式建立数据库&#39;</span>));
+</span></span><span style="display:flex;"><span>                            }
+</span></span><span style="display:flex;"><span>                        }
+</span></span><span style="display:flex;"><span>                        <span style="color:#75715e">// utf8方式打开数据库
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                        <span style="color:#a6e22e">mysqli_query</span>($mysqli, <span style="color:#e6db74">&#39;SET NAMES utf8&#39;</span>);
+</span></span><span style="display:flex;"><span>                    } <span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!@</span><span style="color:#a6e22e">mysql_connect</span>($data[<span style="color:#e6db74">&#39;dbhost&#39;</span>], $data[<span style="color:#e6db74">&#39;dbuser&#39;</span>], $data[<span style="color:#e6db74">&#39;dbpw&#39;</span>])) {
+</span></span><span style="display:flex;"><span>                            <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">mysql_error</span>()<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;&lt;br&gt;无法连接到数据库服务器（&#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbhost&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;），请检查用户名（&#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbuser&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;）和密码（&#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbpw&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;）是否正确&#39;</span>));
+</span></span><span style="display:flex;"><span>                        }
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!@</span><span style="color:#a6e22e">mysql_select_db</span>($data[<span style="color:#e6db74">&#39;dbname&#39;</span>])) {
+</span></span><span style="display:flex;"><span>                            <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!@</span><span style="color:#a6e22e">mysql_query</span>(<span style="color:#e6db74">&#39;CREATE DATABASE &#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbname&#39;</span>])) {
+</span></span><span style="display:flex;"><span>                                <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#a6e22e">mysql_error</span>()<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;&lt;br&gt;指定的数据库（&#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;dbname&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;）不存在，系统尝试创建失败，请通过其他方式建立数据库&#39;</span>));
+</span></span><span style="display:flex;"><span>                            }
+</span></span><span style="display:flex;"><span>                        }
+</span></span><span style="display:flex;"><span>                        <span style="color:#75715e">// utf8方式打开数据库
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                        <span style="color:#a6e22e">mysql_query</span>(<span style="color:#e6db74">&#39;SET NAMES utf8&#39;</span>);
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// 格式化端口
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    <span style="color:#66d9ef">list</span>($data[<span style="color:#e6db74">&#39;dbhost&#39;</span>], $data[<span style="color:#e6db74">&#39;dbport&#39;</span>]) <span style="color:#f92672">=</span> <span style="color:#a6e22e">explode</span>(<span style="color:#e6db74">&#39;:&#39;</span>, $data[<span style="color:#e6db74">&#39;dbhost&#39;</span>]);
+</span></span><span style="display:flex;"><span>                    $data[<span style="color:#e6db74">&#39;dbport&#39;</span>] <span style="color:#f92672">=</span> $data[<span style="color:#e6db74">&#39;dbport&#39;</span>] <span style="color:#f92672">?</span> (<span style="color:#a6e22e">int</span>)$data[<span style="color:#e6db74">&#39;dbport&#39;</span>] <span style="color:#f92672">:</span> <span style="color:#ae81ff">3306</span>;
+</span></span><span style="display:flex;"><span>                    $data[<span style="color:#e6db74">&#39;dbprefix&#39;</span>] <span style="color:#f92672">=</span> $data[<span style="color:#e6db74">&#39;dbprefix&#39;</span>] <span style="color:#f92672">?</span> $data[<span style="color:#e6db74">&#39;dbprefix&#39;</span>] <span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;dr_&#39;</span>; <span style="color:#75715e">// 这个变量可控
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    <span style="color:#75715e">// 配置文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    $config <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&lt;?php&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34;if (!defined(&#39;BASEPATH&#39;)) exit(&#39;No direct script access allowed&#39;);&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\$</span><span style="color:#e6db74">active_group = &#39;default&#39;;&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\$</span><span style="color:#e6db74">query_builder  = TRUE;&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\$</span><span style="color:#e6db74">db[&#39;default&#39;]  = array(&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;dsn&#39;   =&gt; &#39;&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;hostname&#39;  =&gt; &#39;</span><span style="color:#e6db74">{</span>$data[<span style="color:#e6db74">&#39;dbhost&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;username&#39;  =&gt; &#39;</span><span style="color:#e6db74">{</span>$data[<span style="color:#e6db74">&#39;dbuser&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;password&#39;  =&gt; &#39;</span><span style="color:#e6db74">{</span>$data[<span style="color:#e6db74">&#39;dbpw&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;port&#39;    =&gt; &#39;</span><span style="color:#e6db74">{</span>$data[<span style="color:#e6db74">&#39;dbport&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;database&#39;  =&gt; &#39;</span><span style="color:#e6db74">{</span>$data[<span style="color:#e6db74">&#39;dbname&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;dbdriver&#39;  =&gt; &#39;&#34;</span><span style="color:#f92672">.</span>($mysqli <span style="color:#f92672">?</span> <span style="color:#e6db74">&#39;mysqli&#39;</span> <span style="color:#f92672">:</span> <span style="color:#e6db74">&#39;mysql&#39;</span>)<span style="color:#f92672">.</span><span style="color:#e6db74">&#34;&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;dbprefix&#39;  =&gt; &#39;</span><span style="color:#e6db74">{</span>$data[<span style="color:#e6db74">&#39;dbprefix&#39;</span>]<span style="color:#e6db74">}</span><span style="color:#e6db74">&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;pconnect&#39;  =&gt; FALSE,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;db_debug&#39;  =&gt; true,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;cache_on&#39;  =&gt; FALSE,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;cachedir&#39;  =&gt; &#39;cache/sql/&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;char_set&#39;  =&gt; &#39;utf8&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;dbcollat&#39;  =&gt; &#39;utf8_general_ci&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;swap_pre&#39;  =&gt; &#39;&#39;,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;autoinit&#39;  =&gt; FALSE,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;encrypt&#39; =&gt; FALSE,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;compress&#39;  =&gt; FALSE,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;stricton&#39;  =&gt; FALSE,&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34; &#39;failover&#39;  =&gt; array(),&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    $config<span style="color:#f92672">.=</span> <span style="color:#e6db74">&#34;);&#34;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">PHP_EOL</span>;
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// 保存配置文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!</span><span style="color:#a6e22e">file_put_contents</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;config/database.php&#39;</span>, $config)) {
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#39;数据库配置文件保存失败，请检查文件config/database.php权限！&#39;</span>));
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// 加载数据库
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">load</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">database</span>();
+</span></span><span style="display:flex;"><span>                    $salt <span style="color:#f92672">=</span> <span style="color:#a6e22e">substr</span>(<span style="color:#a6e22e">md5</span>(<span style="color:#a6e22e">rand</span>(<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">999</span>)), <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">10</span>);
+</span></span><span style="display:flex;"><span>                    $password <span style="color:#f92672">=</span> <span style="color:#a6e22e">md5</span>(<span style="color:#a6e22e">md5</span>($data[<span style="color:#e6db74">&#39;password&#39;</span>])<span style="color:#f92672">.</span>$salt<span style="color:#f92672">.</span><span style="color:#a6e22e">md5</span>($data[<span style="color:#e6db74">&#39;password&#39;</span>]));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// 导入表结构
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_query</span>(<span style="color:#a6e22e">str_replace</span>(
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">array</span>(<span style="color:#e6db74">&#39;{dbprefix}&#39;</span>, <span style="color:#e6db74">&#39;{username}&#39;</span>, <span style="color:#e6db74">&#39;{password}&#39;</span>, <span style="color:#e6db74">&#39;{salt}&#39;</span>, <span style="color:#e6db74">&#39;{email}&#39;</span>),
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">array</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">db</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">dbprefix</span>, $data[<span style="color:#e6db74">&#39;admin&#39;</span>], $password, $salt, $data[<span style="color:#e6db74">&#39;email&#39;</span>]),
+</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">file_get_contents</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;cache/install/install.sql&#39;</span>)
+</span></span><span style="display:flex;"><span>                    ));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// 导入会员菜单数据
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_query</span>(<span style="color:#a6e22e">str_replace</span>(
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;{dbprefix}&#39;</span>,
+</span></span><span style="display:flex;"><span>                        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">db</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">dbprefix</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">file_get_contents</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;cache/install/member_menu.sql&#39;</span>)
+</span></span><span style="display:flex;"><span>                    ));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// 系统配置文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">load</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">model</span>(<span style="color:#e6db74">&#39;system_model&#39;</span>);
+</span></span><span style="display:flex;"><span>                    $config <span style="color:#f92672">=</span> <span style="color:#66d9ef">array</span>(
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_LOG&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;FALSE&#39;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_KEY&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;poscms&#39;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">md5</span>(<span style="color:#a6e22e">time</span>()),
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_DEBUG&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;FALSE&#39;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_HELP_URL&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;&#39;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_EMAIL&#39;</span> <span style="color:#f92672">=&gt;</span> $data[<span style="color:#e6db74">&#39;email&#39;</span>],
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_MEMCACHE&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;FALSE&#39;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_UPLOAD_DIR&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#a6e22e">SYS_UPLOAD_DIR</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_CRON_QUEUE&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">0</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_CRON_NUMS&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">20</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_CRON_TIME&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_ONLINE_NUM&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">1000</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_ONLINE_TIME&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">7200</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_NAME&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;POSCMS&#39;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_NEWS&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;TRUE&#39;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_CMS&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;POSCMS&#39;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_UPDATE&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">1</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SITE_EXPERIENCE&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;经验值&#39;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SITE_SCORE&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;虚拟币&#39;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SITE_MONEY&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;金钱&#39;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SITE_CONVERT&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">10</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SITE_ADMIN_CODE&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;FALSE&#39;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SITE_ADMIN_PAGESIZE&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">8</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_CACHE_INDEX&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_CACHE_MINDEX&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_CACHE_MSHOW&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_CACHE_MSEARCH&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_CACHE_SITEMAP&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_CACHE_LIST&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_CACHE_MEMBER&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_CACHE_ATTACH&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_CACHE_FORM&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_CACHE_POSTER&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_CACHE_SPACE&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;SYS_CACHE_TAG&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">300</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                    );
+</span></span><span style="display:flex;"><span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">system_model</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">save_config</span>($config, $config);
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// 站点配置文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">load</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">model</span>(<span style="color:#e6db74">&#39;site_model&#39;</span>);
+</span></span><span style="display:flex;"><span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">load</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">library</span>(<span style="color:#e6db74">&#39;dconfig&#39;</span>);
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">is_file</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;config/site/1.php&#39;</span>)) {
+</span></span><span style="display:flex;"><span>                        $config <span style="color:#f92672">=</span> <span style="color:#66d9ef">require</span> <span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;config/site/1.php&#39;</span>;
+</span></span><span style="display:flex;"><span>                    }
+</span></span><span style="display:flex;"><span>                    $config[<span style="color:#e6db74">&#39;SITE_THEME&#39;</span>] <span style="color:#f92672">=</span> $config[<span style="color:#e6db74">&#39;SITE_TEMPLATE&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;default&#39;</span>;
+</span></span><span style="display:flex;"><span>                    $config[<span style="color:#e6db74">&#39;SITE_DOMAIN&#39;</span>] <span style="color:#f92672">=</span> $config[<span style="color:#e6db74">&#39;SITE_ATTACH_HOST&#39;</span>] <span style="color:#f92672">=</span> $config[<span style="color:#e6db74">&#39;SITE_ATTACH_URL&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#a6e22e">strtolower</span>($_SERVER[<span style="color:#e6db74">&#39;HTTP_HOST&#39;</span>]);
+</span></span><span style="display:flex;"><span>                    $site <span style="color:#f92672">=</span> <span style="color:#66d9ef">array</span>(
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;name&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;POSCMS&#39;</span>,
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;domain&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#a6e22e">strtolower</span>($_SERVER[<span style="color:#e6db74">&#39;HTTP_HOST&#39;</span>]),
+</span></span><span style="display:flex;"><span>                        <span style="color:#e6db74">&#39;setting&#39;</span> <span style="color:#f92672">=&gt;</span> $config,
+</span></span><span style="display:flex;"><span>                    );
+</span></span><span style="display:flex;"><span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">site_model</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">add_site</span>($site);
+</span></span><span style="display:flex;"><span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">dconfig</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">file</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;config/site/1.php&#39;</span>)<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">note</span>(<span style="color:#e6db74">&#39;站点配置文件&#39;</span>)<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">space</span>(<span style="color:#ae81ff">32</span>)<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">to_require_one</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">site_model</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">config</span>, $config);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// 初始化菜单
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">load</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">model</span>(<span style="color:#e6db74">&#39;menu_model&#39;</span>);
+</span></span><span style="display:flex;"><span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">menu_model</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">init</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>                    <span style="color:#75715e">// 导入默认数据
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_query</span>(<span style="color:#a6e22e">str_replace</span>(
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">array</span>(<span style="color:#e6db74">&#39;{dbprefix}&#39;</span>, <span style="color:#e6db74">&#39;{site_url}&#39;</span>),
+</span></span><span style="display:flex;"><span>                        <span style="color:#66d9ef">array</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">db</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">dbprefix</span>, <span style="color:#e6db74">&#39;http://&#39;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">strtolower</span>($_SERVER[<span style="color:#e6db74">&#39;HTTP_HOST&#39;</span>])),
+</span></span><span style="display:flex;"><span>                        <span style="color:#a6e22e">file_get_contents</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;cache/install/default.sql&#39;</span>)
+</span></span><span style="display:flex;"><span>                    ));
+</span></span><span style="display:flex;"><span>                    <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">dr_json</span>(<span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">dr_url</span>(<span style="color:#e6db74">&#39;install/index&#39;</span>, <span style="color:#66d9ef">array</span>(<span style="color:#e6db74">&#39;step&#39;</span> <span style="color:#f92672">=&gt;</span> $step <span style="color:#f92672">+</span> <span style="color:#ae81ff">1</span>))));
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">4</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>                $log <span style="color:#f92672">=</span> <span style="color:#66d9ef">array</span>();
+</span></span><span style="display:flex;"><span>                $sql <span style="color:#f92672">=</span> <span style="color:#a6e22e">file_get_contents</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;cache/install/install.sql&#39;</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">preg_match_all</span>(<span style="color:#e6db74">&#39;/`\{dbprefix\}(.+)`/U&#39;</span>, $sql, $match);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span> ($match) {
+</span></span><span style="display:flex;"><span>                    $log <span style="color:#f92672">=</span> <span style="color:#a6e22e">array_unique</span>($match[<span style="color:#ae81ff">1</span>]);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>                $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">template</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">assign</span>(<span style="color:#66d9ef">array</span>(
+</span></span><span style="display:flex;"><span>                    <span style="color:#e6db74">&#39;log&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#a6e22e">implode</span>(<span style="color:#e6db74">&#39;&lt;finecms&gt;&#39;</span>, $log),
+</span></span><span style="display:flex;"><span>                ));
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">case</span> <span style="color:#ae81ff">5</span><span style="color:#f92672">:</span>
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">file_put_contents</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;cache/install.lock&#39;</span>, <span style="color:#a6e22e">time</span>());
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">file_put_contents</span>(<span style="color:#a6e22e">WEBPATH</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;cache/install.new&#39;</span>, <span style="color:#a6e22e">time</span>());
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">template</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">assign</span>(<span style="color:#66d9ef">array</span>(
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;step&#39;</span> <span style="color:#f92672">=&gt;</span> $step,
+</span></span><span style="display:flex;"><span>        ));
+</span></span><span style="display:flex;"><span>        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">template</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">display</span>(<span style="color:#e6db74">&#39;install_&#39;</span><span style="color:#f92672">.</span>$step<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;.html&#39;</span>, <span style="color:#e6db74">&#39;admin&#39;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>然后定位到<code>$data['dbprefix']</code>是可控的，也就是数据库的表前缀，前面的数据库配置文件内容以及交代清楚，接下来构造一个POC：
 <code>','x'=&gt;file_put_contents('s.txt','ss'),'b'=&gt;'b</code></p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e3a04450-4f5e-11ec-acd7-00d861bf4abb.jpg" alt="POC"></p>
 <p>这个POC是在数组中的，会在网站根目录新建一个<code>s.txt</code>内容为<code>ss</code>，在PHP的数组里，你可以放eval等字符，但是这个<code>database.php</code>是不能直接访问的，因为<code>if (!defined('BASEPATH')) exit('No direct script access allowed');</code>这一句是判断是否是框架初始化后加载此文件，否则就不再继续向下运行，好像这种思路都是框架常用的办法。</p>
@@ -370,142 +369,142 @@ $db[<span style="color:#e6db74">&#39;default&#39;</span>]  <span style="color:#f
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e442cfea-4f5e-11ec-ac86-00d861bf4abb.jpg" alt="Request"></p>
 <p>控制器文件位于：<code>diy\module\member\controllers\admin\Home.php</code></p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e48b9928-4f5e-11ec-8954-00d861bf4abb.jpg" alt="Controller"></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
-<span style="color:#e6db74">/**
-</span><span style="color:#e6db74">     * 经验值
-</span><span style="color:#e6db74">     */</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">experience</span>() {
-
-        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_experience</span>();
-
-        $uid <span style="color:#f92672">=</span> (<span style="color:#a6e22e">int</span>)$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;uid&#39;</span>);
-        <span style="color:#a6e22e">print_r</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span>);
-        <span style="color:#75715e">// 根据参数筛选结果
-</span><span style="color:#75715e"></span>        $param <span style="color:#f92672">=</span> <span style="color:#66d9ef">array</span>(<span style="color:#e6db74">&#39;uid&#39;</span> <span style="color:#f92672">=&gt;</span> $uid, <span style="color:#e6db74">&#39;type&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">0</span>);
-        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;search&#39;</span>) <span style="color:#f92672">&amp;&amp;</span> $param[<span style="color:#e6db74">&#39;search&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
-
-        <span style="color:#75715e">// 数据库中分页查询
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">list</span>($data, $param) <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">score_model</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">limit_page</span>($param, <span style="color:#a6e22e">max</span>((<span style="color:#a6e22e">int</span>)$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;page&#39;</span>), <span style="color:#ae81ff">1</span>), (<span style="color:#a6e22e">int</span>)$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;total&#39;</span>));
-        $param[<span style="color:#e6db74">&#39;uid&#39;</span>] <span style="color:#f92672">=</span> $uid;
-
-        $_param <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;search&#39;</span>) <span style="color:#f92672">?</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">cache</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">file</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">score_model</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">cache_file</span>) <span style="color:#f92672">:</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">post</span>(<span style="color:#e6db74">&#39;data&#39;</span>);
-        $_param <span style="color:#f92672">=</span> $_param <span style="color:#f92672">?</span> $param <span style="color:#f92672">+</span> $_param <span style="color:#f92672">:</span> $param;
-
-        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">template</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">assign</span>(<span style="color:#66d9ef">array</span>(
-            <span style="color:#e6db74">&#39;list&#39;</span> <span style="color:#f92672">=&gt;</span> $data,
-            <span style="color:#e6db74">&#39;name&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#a6e22e">SITE_EXPERIENCE</span>,
-            <span style="color:#e6db74">&#39;param&#39;</span> <span style="color:#f92672">=&gt;</span> $_param,
-            <span style="color:#e6db74">&#39;pages&#39;</span> <span style="color:#f92672">=&gt;</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get_pagination</span>(<span style="color:#a6e22e">dr_url</span>(<span style="color:#e6db74">&#39;member/home/experience&#39;</span>, $param), $param[<span style="color:#e6db74">&#39;total&#39;</span>])
-        ));
-        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">template</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">display</span>(<span style="color:#e6db74">&#39;score_index.html&#39;</span>);
-    }
-</code></pre></div><p>Model文件：<code>diy\module\member\models\Score_model.php</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
-<span style="color:#75715e">/*
-</span><span style="color:#75715e">   * 条件查询
-</span><span style="color:#75715e">   *
-</span><span style="color:#75715e">   * @param object  $select 查询对象
-</span><span style="color:#75715e">   * @param array $param  条件参数
-</span><span style="color:#75715e">   * @return  array 
-</span><span style="color:#75715e">   */</span>
-  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">_where</span>(<span style="color:#f92672">&amp;</span>$select, $param) {
-  
-    $_param <span style="color:#f92672">=</span> <span style="color:#66d9ef">array</span>();
-    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">cache_file</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">md5</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">duri</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">uri</span>(<span style="color:#ae81ff">1</span>)<span style="color:#f92672">.</span>$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">uid</span><span style="color:#f92672">.</span><span style="color:#a6e22e">SITE_ID</span><span style="color:#f92672">.</span>$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">ip_address</span>()<span style="color:#f92672">.</span>$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">user_agent</span>()); <span style="color:#75715e">// 缓存文件名称
-</span><span style="color:#75715e"></span>    
-    <span style="color:#75715e">// 存在POST提交时，重新生成缓存文件
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">IS_POST</span>) {
-      $data <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">post</span>(<span style="color:#e6db74">&#39;data&#39;</span>); <span style="color:#75715e">//这里就没有过滤
-</span><span style="color:#75715e"></span>      $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">cache</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">file</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">save</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">cache_file</span>, $data, <span style="color:#ae81ff">3600</span>);
-      $param[<span style="color:#e6db74">&#39;search&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
-    }
-    
-    <span style="color:#75715e">// 存在search参数时，读取缓存文件
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> ($param[<span style="color:#e6db74">&#39;search&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) {
-      $data <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">cache</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">file</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">cache_file</span>);
-      $_param[<span style="color:#e6db74">&#39;search&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
-      <span style="color:#a6e22e">isset</span>($data[<span style="color:#e6db74">&#39;start&#39;</span>]) <span style="color:#f92672">&amp;&amp;</span> $data[<span style="color:#e6db74">&#39;start&#39;</span>] <span style="color:#f92672">&amp;&amp;</span> $data[<span style="color:#e6db74">&#39;start&#39;</span>] <span style="color:#f92672">!=</span> $data[<span style="color:#e6db74">&#39;end&#39;</span>] <span style="color:#f92672">&amp;&amp;</span> $select<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">where</span>(<span style="color:#e6db74">&#39;inputtime BETWEEN &#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;start&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39; AND &#39;</span><span style="color:#f92672">.</span> $data[<span style="color:#e6db74">&#39;end&#39;</span>]);
-    }
-    
-    $select<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">where</span>(<span style="color:#e6db74">&#39;type&#39;</span>, $param[<span style="color:#e6db74">&#39;type&#39;</span>]);
-    $select<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">where</span>(<span style="color:#e6db74">&#39;uid&#39;</span>, $param[<span style="color:#e6db74">&#39;uid&#39;</span>]);
-    $_param[<span style="color:#e6db74">&#39;uid&#39;</span>] <span style="color:#f92672">=</span> $data[<span style="color:#e6db74">&#39;uid&#39;</span>];
-    
-    <span style="color:#66d9ef">return</span> $_param;
-  }
-</code></pre></div><p>故此出现了一个注入点：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     * 经验值
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">experience</span>() {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_experience</span>();
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $uid <span style="color:#f92672">=</span> (<span style="color:#a6e22e">int</span>)$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;uid&#39;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">print_r</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 根据参数筛选结果
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        $param <span style="color:#f92672">=</span> <span style="color:#66d9ef">array</span>(<span style="color:#e6db74">&#39;uid&#39;</span> <span style="color:#f92672">=&gt;</span> $uid, <span style="color:#e6db74">&#39;type&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;search&#39;</span>) <span style="color:#f92672">&amp;&amp;</span> $param[<span style="color:#e6db74">&#39;search&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 数据库中分页查询
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">list</span>($data, $param) <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">score_model</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">limit_page</span>($param, <span style="color:#a6e22e">max</span>((<span style="color:#a6e22e">int</span>)$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;page&#39;</span>), <span style="color:#ae81ff">1</span>), (<span style="color:#a6e22e">int</span>)$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;total&#39;</span>));
+</span></span><span style="display:flex;"><span>        $param[<span style="color:#e6db74">&#39;uid&#39;</span>] <span style="color:#f92672">=</span> $uid;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $_param <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;search&#39;</span>) <span style="color:#f92672">?</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">cache</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">file</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">score_model</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">cache_file</span>) <span style="color:#f92672">:</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">post</span>(<span style="color:#e6db74">&#39;data&#39;</span>);
+</span></span><span style="display:flex;"><span>        $_param <span style="color:#f92672">=</span> $_param <span style="color:#f92672">?</span> $param <span style="color:#f92672">+</span> $_param <span style="color:#f92672">:</span> $param;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">template</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">assign</span>(<span style="color:#66d9ef">array</span>(
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;list&#39;</span> <span style="color:#f92672">=&gt;</span> $data,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;name&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#a6e22e">SITE_EXPERIENCE</span>,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;param&#39;</span> <span style="color:#f92672">=&gt;</span> $_param,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;pages&#39;</span> <span style="color:#f92672">=&gt;</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get_pagination</span>(<span style="color:#a6e22e">dr_url</span>(<span style="color:#e6db74">&#39;member/home/experience&#39;</span>, $param), $param[<span style="color:#e6db74">&#39;total&#39;</span>])
+</span></span><span style="display:flex;"><span>        ));
+</span></span><span style="display:flex;"><span>        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">template</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">display</span>(<span style="color:#e6db74">&#39;score_index.html&#39;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>Model文件：<code>diy\module\member\models\Score_model.php</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">   * 条件查询
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">   *
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">   * @param object  $select 查询对象
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">   * @param array $param  条件参数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">   * @return  array 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">   */</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">_where</span>(<span style="color:#f92672">&amp;</span>$select, $param) {
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>    $_param <span style="color:#f92672">=</span> <span style="color:#66d9ef">array</span>();
+</span></span><span style="display:flex;"><span>    $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">cache_file</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">md5</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">duri</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">uri</span>(<span style="color:#ae81ff">1</span>)<span style="color:#f92672">.</span>$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">uid</span><span style="color:#f92672">.</span><span style="color:#a6e22e">SITE_ID</span><span style="color:#f92672">.</span>$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">ip_address</span>()<span style="color:#f92672">.</span>$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">user_agent</span>()); <span style="color:#75715e">// 缓存文件名称
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 存在POST提交时，重新生成缓存文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">IS_POST</span>) {
+</span></span><span style="display:flex;"><span>      $data <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">post</span>(<span style="color:#e6db74">&#39;data&#39;</span>); <span style="color:#75715e">//这里就没有过滤
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">cache</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">file</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">save</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">cache_file</span>, $data, <span style="color:#ae81ff">3600</span>);
+</span></span><span style="display:flex;"><span>      $param[<span style="color:#e6db74">&#39;search&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// 存在search参数时，读取缓存文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> ($param[<span style="color:#e6db74">&#39;search&#39;</span>] <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>      $data <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">cache</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">file</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">cache_file</span>);
+</span></span><span style="display:flex;"><span>      $_param[<span style="color:#e6db74">&#39;search&#39;</span>] <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>      <span style="color:#a6e22e">isset</span>($data[<span style="color:#e6db74">&#39;start&#39;</span>]) <span style="color:#f92672">&amp;&amp;</span> $data[<span style="color:#e6db74">&#39;start&#39;</span>] <span style="color:#f92672">&amp;&amp;</span> $data[<span style="color:#e6db74">&#39;start&#39;</span>] <span style="color:#f92672">!=</span> $data[<span style="color:#e6db74">&#39;end&#39;</span>] <span style="color:#f92672">&amp;&amp;</span> $select<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">where</span>(<span style="color:#e6db74">&#39;inputtime BETWEEN &#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;start&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39; AND &#39;</span><span style="color:#f92672">.</span> $data[<span style="color:#e6db74">&#39;end&#39;</span>]);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    $select<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">where</span>(<span style="color:#e6db74">&#39;type&#39;</span>, $param[<span style="color:#e6db74">&#39;type&#39;</span>]);
+</span></span><span style="display:flex;"><span>    $select<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">where</span>(<span style="color:#e6db74">&#39;uid&#39;</span>, $param[<span style="color:#e6db74">&#39;uid&#39;</span>]);
+</span></span><span style="display:flex;"><span>    $_param[<span style="color:#e6db74">&#39;uid&#39;</span>] <span style="color:#f92672">=</span> $data[<span style="color:#e6db74">&#39;uid&#39;</span>];
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> $_param;
+</span></span><span style="display:flex;"><span>  }
+</span></span></code></pre></div><p>故此出现了一个注入点：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e4d0fd1a-4f5e-11ec-89c6-00d861bf4abb.jpg" alt="SQL Injection"></p>
 <h2 id="0x03-前台sql注入">0x03 前台SQL注入</h2>
 <p>文件位置：<code>diy\module\member\controllers\Account.php</code>，约：757行左右，出现一处变量未过滤的情况。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
-<span style="color:#e6db74">/**
-</span><span style="color:#e6db74">     * 附件管理
-</span><span style="color:#e6db74">     */</span>
-    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">attachment</span>() {
-
-        $ext <span style="color:#f92672">=</span> <span style="color:#a6e22e">dr_safe_replace</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;ext&#39;</span>));
-        $table <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;module&#39;</span>); <span style="color:#75715e">// 这个变量没有过滤
-</span><span style="color:#75715e"></span>        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">load</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">model</span>(<span style="color:#e6db74">&#39;attachment_model&#39;</span>);
-
-        $page <span style="color:#f92672">=</span> <span style="color:#a6e22e">max</span>((<span style="color:#a6e22e">int</span>)$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;page&#39;</span>), <span style="color:#ae81ff">1</span>);
-        
-        <span style="color:#75715e">// 检测可管理的模块
-</span><span style="color:#75715e"></span>        $module <span style="color:#f92672">=</span> <span style="color:#66d9ef">array</span>();
-        $modules <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get_cache</span>(<span style="color:#e6db74">&#39;module&#39;</span>, <span style="color:#a6e22e">SITE_ID</span>);
-        <span style="color:#66d9ef">if</span> ($modules) {
-            <span style="color:#66d9ef">foreach</span> ($modules <span style="color:#66d9ef">as</span> $dir) {
-                $mod <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get_cache</span>(<span style="color:#e6db74">&#39;module-&#39;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">SITE_ID</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;-&#39;</span><span style="color:#f92672">.</span>$dir);
-                $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_module_post_catid</span>($mod, $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">markrule</span>) <span style="color:#f92672">&amp;&amp;</span> $module[$dir] <span style="color:#f92672">=</span> $mod[<span style="color:#e6db74">&#39;name&#39;</span>];
-            }
-        }
-        
-        <span style="color:#75715e">// 查询结果
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">list</span>($total, $data) <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">attachment_model</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">limit</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">uid</span>, $page, $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">pagesize</span>, $ext, $table);
-        
-        $acount <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get_cache</span>(<span style="color:#e6db74">&#39;member&#39;</span>, <span style="color:#e6db74">&#39;setting&#39;</span>, <span style="color:#e6db74">&#39;permission&#39;</span>, $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">markrule</span>, <span style="color:#e6db74">&#39;attachsize&#39;</span>);
-        $acount <span style="color:#f92672">=</span> $acount <span style="color:#f92672">?</span> $acount <span style="color:#f92672">:</span> <span style="color:#ae81ff">1024000</span>;
-        $ucount <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">db</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">select</span>(<span style="color:#e6db74">&#39;sum(`filesize`) as total&#39;</span>)<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">where</span>(<span style="color:#e6db74">&#39;uid&#39;</span>, (<span style="color:#a6e22e">int</span>)$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">uid</span>)<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">limit</span>(<span style="color:#ae81ff">1</span>)<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;attachment&#39;</span>)<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">row_array</span>();
-        $ucount <span style="color:#f92672">=</span> (<span style="color:#a6e22e">int</span>)$ucount[<span style="color:#e6db74">&#39;total&#39;</span>];
-        $acount <span style="color:#f92672">=</span> $acount <span style="color:#f92672">*</span> <span style="color:#ae81ff">1024</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">1024</span>;
-        $scount <span style="color:#f92672">=</span> <span style="color:#a6e22e">max</span>($acount <span style="color:#f92672">-</span> $ucount, <span style="color:#ae81ff">0</span>);
-        
-        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">template</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">assign</span>(<span style="color:#66d9ef">array</span>(
-            <span style="color:#e6db74">&#39;ext&#39;</span> <span style="color:#f92672">=&gt;</span> $ext,
-            <span style="color:#e6db74">&#39;list&#39;</span> <span style="color:#f92672">=&gt;</span> $data,
-            <span style="color:#e6db74">&#39;table&#39;</span> <span style="color:#f92672">=&gt;</span> $table,
-            <span style="color:#e6db74">&#39;module&#39;</span> <span style="color:#f92672">=&gt;</span> $module,
-            <span style="color:#e6db74">&#39;acount&#39;</span> <span style="color:#f92672">=&gt;</span> $acount,
-            <span style="color:#e6db74">&#39;ucount&#39;</span> <span style="color:#f92672">=&gt;</span> $ucount,
-            <span style="color:#e6db74">&#39;scount&#39;</span> <span style="color:#f92672">=&gt;</span> $scount,
-            <span style="color:#e6db74">&#39;pages&#39;</span> <span style="color:#f92672">=&gt;</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get_member_pagination</span>(<span style="color:#a6e22e">dr_member_url</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">router</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">class</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;/&#39;</span><span style="color:#f92672">.</span>$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">router</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">method</span>, <span style="color:#66d9ef">array</span>(<span style="color:#e6db74">&#39;ext&#39;</span> <span style="color:#f92672">=&gt;</span> $ext)), $total),
-            <span style="color:#e6db74">&#39;page_total&#39;</span> <span style="color:#f92672">=&gt;</span> $total,
-        ));
-        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">template</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">display</span>(<span style="color:#e6db74">&#39;account_attachment_list.html&#39;</span>);
-    }
-</code></pre></div><p><code>dr_safe_replace</code>函数：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
-<span style="color:#e6db74">/**
-</span><span style="color:#e6db74"> * 安全过滤函数
-</span><span style="color:#e6db74"> *
-</span><span style="color:#e6db74"> * @param $string
-</span><span style="color:#e6db74"> * @return string
-</span><span style="color:#e6db74"> */</span>
-<span style="color:#66d9ef">function</span> <span style="color:#a6e22e">dr_safe_replace</span>($string) {
-    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;%20&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
-    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;%27&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
-    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;%2527&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
-    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;*&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
-    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;&#34;&#39;</span>, <span style="color:#e6db74">&#39;&amp;quot;&#39;</span>, $string);
-    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#34;&#39;&#34;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
-    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;&#34;&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
-    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;;&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
-    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;&lt;&#39;</span>, <span style="color:#e6db74">&#39;&amp;lt;&#39;</span>, $string);
-    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;&gt;&#39;</span>, <span style="color:#e6db74">&#39;&amp;gt;&#39;</span>, $string);
-    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#34;{&#34;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
-    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;}&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
-    <span style="color:#66d9ef">return</span> $string;
-}
-</code></pre></div><p>可见调用这个方法还是有用的，但是在官方代码中，<code>module</code>并没有过滤。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     * 附件管理
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">     */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">attachment</span>() {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $ext <span style="color:#f92672">=</span> <span style="color:#a6e22e">dr_safe_replace</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;ext&#39;</span>));
+</span></span><span style="display:flex;"><span>        $table <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;module&#39;</span>); <span style="color:#75715e">// 这个变量没有过滤
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">load</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">model</span>(<span style="color:#e6db74">&#39;attachment_model&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        $page <span style="color:#f92672">=</span> <span style="color:#a6e22e">max</span>((<span style="color:#a6e22e">int</span>)$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">input</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;page&#39;</span>), <span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 检测可管理的模块
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        $module <span style="color:#f92672">=</span> <span style="color:#66d9ef">array</span>();
+</span></span><span style="display:flex;"><span>        $modules <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get_cache</span>(<span style="color:#e6db74">&#39;module&#39;</span>, <span style="color:#a6e22e">SITE_ID</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> ($modules) {
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">foreach</span> ($modules <span style="color:#66d9ef">as</span> $dir) {
+</span></span><span style="display:flex;"><span>                $mod <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get_cache</span>(<span style="color:#e6db74">&#39;module-&#39;</span><span style="color:#f92672">.</span><span style="color:#a6e22e">SITE_ID</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;-&#39;</span><span style="color:#f92672">.</span>$dir);
+</span></span><span style="display:flex;"><span>                $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">_module_post_catid</span>($mod, $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">markrule</span>) <span style="color:#f92672">&amp;&amp;</span> $module[$dir] <span style="color:#f92672">=</span> $mod[<span style="color:#e6db74">&#39;name&#39;</span>];
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 查询结果
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">list</span>($total, $data) <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">attachment_model</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">limit</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">uid</span>, $page, $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">pagesize</span>, $ext, $table);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        $acount <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get_cache</span>(<span style="color:#e6db74">&#39;member&#39;</span>, <span style="color:#e6db74">&#39;setting&#39;</span>, <span style="color:#e6db74">&#39;permission&#39;</span>, $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">markrule</span>, <span style="color:#e6db74">&#39;attachsize&#39;</span>);
+</span></span><span style="display:flex;"><span>        $acount <span style="color:#f92672">=</span> $acount <span style="color:#f92672">?</span> $acount <span style="color:#f92672">:</span> <span style="color:#ae81ff">1024000</span>;
+</span></span><span style="display:flex;"><span>        $ucount <span style="color:#f92672">=</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">db</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">select</span>(<span style="color:#e6db74">&#39;sum(`filesize`) as total&#39;</span>)<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">where</span>(<span style="color:#e6db74">&#39;uid&#39;</span>, (<span style="color:#a6e22e">int</span>)$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">uid</span>)<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">limit</span>(<span style="color:#ae81ff">1</span>)<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;attachment&#39;</span>)<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">row_array</span>();
+</span></span><span style="display:flex;"><span>        $ucount <span style="color:#f92672">=</span> (<span style="color:#a6e22e">int</span>)$ucount[<span style="color:#e6db74">&#39;total&#39;</span>];
+</span></span><span style="display:flex;"><span>        $acount <span style="color:#f92672">=</span> $acount <span style="color:#f92672">*</span> <span style="color:#ae81ff">1024</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">1024</span>;
+</span></span><span style="display:flex;"><span>        $scount <span style="color:#f92672">=</span> <span style="color:#a6e22e">max</span>($acount <span style="color:#f92672">-</span> $ucount, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">template</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">assign</span>(<span style="color:#66d9ef">array</span>(
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;ext&#39;</span> <span style="color:#f92672">=&gt;</span> $ext,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;list&#39;</span> <span style="color:#f92672">=&gt;</span> $data,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;table&#39;</span> <span style="color:#f92672">=&gt;</span> $table,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;module&#39;</span> <span style="color:#f92672">=&gt;</span> $module,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;acount&#39;</span> <span style="color:#f92672">=&gt;</span> $acount,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;ucount&#39;</span> <span style="color:#f92672">=&gt;</span> $ucount,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;scount&#39;</span> <span style="color:#f92672">=&gt;</span> $scount,
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;pages&#39;</span> <span style="color:#f92672">=&gt;</span> $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get_member_pagination</span>(<span style="color:#a6e22e">dr_member_url</span>($this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">router</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">class</span><span style="color:#f92672">.</span><span style="color:#e6db74">&#39;/&#39;</span><span style="color:#f92672">.</span>$this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">router</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">method</span>, <span style="color:#66d9ef">array</span>(<span style="color:#e6db74">&#39;ext&#39;</span> <span style="color:#f92672">=&gt;</span> $ext)), $total),
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#39;page_total&#39;</span> <span style="color:#f92672">=&gt;</span> $total,
+</span></span><span style="display:flex;"><span>        ));
+</span></span><span style="display:flex;"><span>        $this<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">template</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">display</span>(<span style="color:#e6db74">&#39;account_attachment_list.html&#39;</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p><code>dr_safe_replace</code>函数：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> * 安全过滤函数
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> *
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> * @param $string
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> * @return string
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> */</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">function</span> <span style="color:#a6e22e">dr_safe_replace</span>($string) {
+</span></span><span style="display:flex;"><span>    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;%20&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
+</span></span><span style="display:flex;"><span>    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;%27&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
+</span></span><span style="display:flex;"><span>    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;%2527&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
+</span></span><span style="display:flex;"><span>    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;*&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
+</span></span><span style="display:flex;"><span>    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;&#34;&#39;</span>, <span style="color:#e6db74">&#39;&amp;quot;&#39;</span>, $string);
+</span></span><span style="display:flex;"><span>    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#34;&#39;&#34;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
+</span></span><span style="display:flex;"><span>    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;&#34;&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
+</span></span><span style="display:flex;"><span>    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;;&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
+</span></span><span style="display:flex;"><span>    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;&lt;&#39;</span>, <span style="color:#e6db74">&#39;&amp;lt;&#39;</span>, $string);
+</span></span><span style="display:flex;"><span>    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;&gt;&#39;</span>, <span style="color:#e6db74">&#39;&amp;gt;&#39;</span>, $string);
+</span></span><span style="display:flex;"><span>    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#34;{&#34;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
+</span></span><span style="display:flex;"><span>    $string <span style="color:#f92672">=</span> <span style="color:#a6e22e">str_replace</span>(<span style="color:#e6db74">&#39;}&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, $string);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> $string;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>可见调用这个方法还是有用的，但是在官方代码中，<code>module</code>并没有过滤。</p>
 <p>于是根据数据库结构构造EXP……</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e51ca6e8-4f5e-11ec-8327-00d861bf4abb.jpg" alt="POC"></p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e56c850a-4f5e-11ec-9e88-00d861bf4abb.jpg" alt="POC"></p>

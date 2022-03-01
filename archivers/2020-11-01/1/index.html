@@ -147,14 +147,14 @@ note left: 假设172.17.0.1是攻击者出口
 攻击者IP -&gt; 防火墙规则2
 防火墙规则2 -&gt; DMZ网站业务2: NAT
 </code></pre><p>对应的NAT 端口转发情况：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8080</span> -j DNAT --to-destination 192.168.1.128:8080
-iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style="color:#ae81ff">8080</span> -j SNAT --to-source 192.168.1.129
-iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8080</span> -j DNAT --to-destination 192.168.1.125:8080
-iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.125 --dport <span style="color:#ae81ff">8080</span> -j SNAT --to-source 192.168.1.129
-iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8081</span> -j DNAT --to-destination 192.168.1.128:8081
-iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style="color:#ae81ff">8081</span> -j SNAT --to-source 192.168.1.129
-iptables-save
-</code></pre></div><p>如果攻击者访问172.17.0.2的8080端口，流量将会被转发到192.168.1.128上，那么设想一下，NAT规则在生产的场景中会不会产生规则滥用的情况？</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8080</span> -j DNAT --to-destination 192.168.1.128:8080
+</span></span><span style="display:flex;"><span>iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style="color:#ae81ff">8080</span> -j SNAT --to-source 192.168.1.129
+</span></span><span style="display:flex;"><span>iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8080</span> -j DNAT --to-destination 192.168.1.125:8080
+</span></span><span style="display:flex;"><span>iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.125 --dport <span style="color:#ae81ff">8080</span> -j SNAT --to-source 192.168.1.129
+</span></span><span style="display:flex;"><span>iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8081</span> -j DNAT --to-destination 192.168.1.128:8081
+</span></span><span style="display:flex;"><span>iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style="color:#ae81ff">8081</span> -j SNAT --to-source 192.168.1.129
+</span></span><span style="display:flex;"><span>iptables-save
+</span></span></code></pre></div><p>如果攻击者访问172.17.0.2的8080端口，流量将会被转发到192.168.1.128上，那么设想一下，NAT规则在生产的场景中会不会产生规则滥用的情况？</p>
 <p>我猜想有以下几种情况：</p>
 <ol>
 <li>业务下线了，NAT规则没有来得及删除</li>
@@ -197,17 +197,17 @@ note left: 假设172.17.0.1是攻击者出口
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a3dda3b6-4f5f-11ec-8c80-00d861bf4abb.png" alt="2020-11-01-22-38-21"></p>
 <p>真实场景下，如果是非映射端口，将会是filtered，这种的情况是数据包到达防火墙后就被DROP掉了。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a416ea5e-4f5f-11ec-b2b4-00d861bf4abb.png" alt="2020-11-01-22-42-16"></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8080</span> -j DNAT --to-destination 192.168.1.128:8080
-iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style="color:#ae81ff">8080</span> -j SNAT --to-source 192.168.1.129
-
-iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8080</span> -j DNAT --to-destination 192.168.1.125:8080
-iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.125 --dport <span style="color:#ae81ff">8080</span> -j SNAT --to-source 192.168.1.129
-
-iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8081</span> -j DNAT --to-destination 192.168.1.128:8081
-iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style="color:#ae81ff">8081</span> -j SNAT --to-source 192.168.1.129
-iptables -P INPUT DROP
-iptables-save
-</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a4529b9e-4f5f-11ec-b01a-00d861bf4abb.png" alt="2020-11-01-23-10-02"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8080</span> -j DNAT --to-destination 192.168.1.128:8080
+</span></span><span style="display:flex;"><span>iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style="color:#ae81ff">8080</span> -j SNAT --to-source 192.168.1.129
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8080</span> -j DNAT --to-destination 192.168.1.125:8080
+</span></span><span style="display:flex;"><span>iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.125 --dport <span style="color:#ae81ff">8080</span> -j SNAT --to-source 192.168.1.129
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style="color:#ae81ff">8081</span> -j DNAT --to-destination 192.168.1.128:8081
+</span></span><span style="display:flex;"><span>iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style="color:#ae81ff">8081</span> -j SNAT --to-source 192.168.1.129
+</span></span><span style="display:flex;"><span>iptables -P INPUT DROP
+</span></span><span style="display:flex;"><span>iptables-save
+</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a4529b9e-4f5f-11ec-b01a-00d861bf4abb.png" alt="2020-11-01-23-10-02"></p>
 <p>倘若在8081 closed情况下，我们可以直接nc监听起来进行测试：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a48c4d12-4f5f-11ec-91c1-00d861bf4abb.png" alt="2020-11-01-23-12-54"></p>
 <p>这个时候，内网的服务器监听了8081端口，成功的利用NAT规则使得我们可以直接正向连接到NC。</p>

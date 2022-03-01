@@ -90,77 +90,77 @@
 <p>virtualenv 用来建立一个虚拟的python环境，为了解决Python各种库的冲突问题。</p>
 <h2 id="0x01-virtualenv-安装">0x01 virtualenv 安装</h2>
 <h3 id="通用安装方法">通用安装方法</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">pip install virtualenv
-</code></pre></div><h3 id="ubuntukalidebian">Ubuntu/Kali/Debian</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">apt-get upgrade <span style="color:#f92672">&amp;&amp;</span> apt-get update
-apt-get install virtualenv
-</code></pre></div><h2 id="0x02-virtualenv-使用">0x02 virtualenv 使用</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>pip install virtualenv
+</span></span></code></pre></div><h3 id="ubuntukalidebian">Ubuntu/Kali/Debian</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>apt-get upgrade <span style="color:#f92672">&amp;&amp;</span> apt-get update
+</span></span><span style="display:flex;"><span>apt-get install virtualenv
+</span></span></code></pre></div><h2 id="0x02-virtualenv-使用">0x02 virtualenv 使用</h2>
 <h3 id="帮助信息">帮助信息</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">~$ virtualenv -h
-Usage: virtualenv <span style="color:#f92672">[</span>OPTIONS<span style="color:#f92672">]</span> DEST_DIR
-
-Options:
-  --version             显示程序的版本号并退出
-  -h, --help            显示程序的帮助信息并退出
-  -v, --verbose         增强输出
-  -q, --quiet           减少输出
-  -p PYTHON_EXE, --python<span style="color:#f92672">=</span>PYTHON_EXE   Python的可执行路径<span style="color:#f92672">(</span>/usr/bin/python<span style="color:#f92672">)</span>
-  --clear               清除安装的库
-  --no-site-packages    给出一个干净的环境，不包含系统已安装的库
-  --system-site-packages 包含系统库
-  --always-copy         始终复制文件而不是符号链接。
-  --relocatable         使一个现有的virtualenv环境这会修复脚本并生成所有.pth文件
-  --no-setuptools       不要在新的virtualenv中安装setuptools
-  --no-pip              不要在新的virtualenv中安装pip
-  --no-wheel            不要在新的virtualenv中安装wheel
-  --extra-search-dir<span style="color:#f92672">=</span>DIR 在DIR中寻找setuptools/pip
-  --download            从PyPI下载预安装的软件包
-  --no-download, --never-download 不要从PyPI下载预安装的软件包
-  --prompt<span style="color:#f92672">=</span>PROMPT       为此环境提供备用提示前缀
-  --setuptools          已废弃
-  --distribute          已废弃
-  --unzip-setuptools    已废弃
-</code></pre></div><h3 id="查看当前版本">查看当前版本</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">~$ virtualenv --version
-16.0.0
-</code></pre></div><h3 id="配置一个新的环境">配置一个新的环境</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">~$ which python <span style="color:#75715e"># 查看Python路径</span>
-/usr/bin/python
-~$ virtualenv --no-site-packages -p /usr/bin/python MyNewEnv <span style="color:#75715e"># 创建环境目录</span>
-Running virtualenv with interpreter /usr/bin/python
-New python executable in /home/liyingzhe/MyNewEnv/bin/python
-Installing setuptools, pip, wheel...done.
-~$ ls MyNewEnv/ <span style="color:#75715e"># 查看环境目录</span>
-bin  include  lib  local  pip-selfcheck.json
-~$ source MyNewEnv/bin/activate <span style="color:#75715e"># 将环境生效</span>
-<span style="color:#f92672">(</span>MyNewEnv<span style="color:#f92672">)</span>
-<span style="color:#f92672">(</span>MyNewEnv<span style="color:#f92672">)</span> ~$ pip list <span style="color:#75715e"># 查看已安装的库</span>
-Package    Version
----------- -------
-pip        18.0
-setuptools 40.0.0
-wheel      0.31.1
-</code></pre></div><p>此时我们可以安装一些新的库</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#f92672">(</span>MyNewEnv<span style="color:#f92672">)</span> ~$ pip install requests
-Collecting requests
-  Using cached https://files.pythonhosted.org/packages/65/47/7e02164a2a3db50ed6d8a6ab1d6d60b69c4c3fdf57a284257925dfc12bda/requests-2.19.1-py2.py3-none-any.whl
-Collecting idna&lt;2.8,&gt;<span style="color:#f92672">=</span>2.5 <span style="color:#f92672">(</span>from requests<span style="color:#f92672">)</span>
-  Using cached https://files.pythonhosted.org/packages/4b/2a/0276479a4b3caeb8a8c1af2f8e4355746a97fab05a372e4a2c6a6b876165/idna-2.7-py2.py3-none-any.whl
-Collecting certifi&gt;<span style="color:#f92672">=</span>2017.4.17 <span style="color:#f92672">(</span>from requests<span style="color:#f92672">)</span>
-  Using cached https://files.pythonhosted.org/packages/16/1f/50d729c104b21c1042aa51560da6141d1cab476ba7015d92b2111c8db841/certifi-2018.8.13-py2.py3-none-any.whl
-Collecting chardet&lt;3.1.0,&gt;<span style="color:#f92672">=</span>3.0.2 <span style="color:#f92672">(</span>from requests<span style="color:#f92672">)</span>
-  Using cached https://files.pythonhosted.org/packages/bc/a9/01ffebfb562e4274b6487b4bb1ddec7ca55ec7510b22e4c51f14098443b8/chardet-3.0.4-py2.py3-none-any.whl
-Collecting urllib3&lt;1.24,&gt;<span style="color:#f92672">=</span>1.21.1 <span style="color:#f92672">(</span>from requests<span style="color:#f92672">)</span>
-  Using cached https://files.pythonhosted.org/packages/bd/c9/6fdd990019071a4a32a5e7cb78a1d92c53851ef4f56f62a3486e6a7d8ffb/urllib3-1.23-py2.py3-none-any.whl
-Installing collected packages: idna, certifi, chardet, urllib3, requests
-Successfully installed certifi-2018.8.13 chardet-3.0.4 idna-2.7 requests-2.19.1 urllib3-1.23
-<span style="color:#f92672">(</span>MyNewEnv<span style="color:#f92672">)</span> ~$
-</code></pre></div><h3 id="退出环境">退出环境</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#f92672">(</span>MyNewEnv<span style="color:#f92672">)</span> ~$ deactivate
-</code></pre></div><h3 id="使用已有的环境">使用已有的环境</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh"><span style="color:#75715e"># 假设 MyNewEnv已经被创建</span>
-~$ source MyNewEnv/bin/activate <span style="color:#75715e"># 将环境生效</span>
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>~$ virtualenv -h
+</span></span><span style="display:flex;"><span>Usage: virtualenv <span style="color:#f92672">[</span>OPTIONS<span style="color:#f92672">]</span> DEST_DIR
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Options:
+</span></span><span style="display:flex;"><span>  --version             显示程序的版本号并退出
+</span></span><span style="display:flex;"><span>  -h, --help            显示程序的帮助信息并退出
+</span></span><span style="display:flex;"><span>  -v, --verbose         增强输出
+</span></span><span style="display:flex;"><span>  -q, --quiet           减少输出
+</span></span><span style="display:flex;"><span>  -p PYTHON_EXE, --python<span style="color:#f92672">=</span>PYTHON_EXE   Python的可执行路径<span style="color:#f92672">(</span>/usr/bin/python<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>  --clear               清除安装的库
+</span></span><span style="display:flex;"><span>  --no-site-packages    给出一个干净的环境，不包含系统已安装的库
+</span></span><span style="display:flex;"><span>  --system-site-packages 包含系统库
+</span></span><span style="display:flex;"><span>  --always-copy         始终复制文件而不是符号链接。
+</span></span><span style="display:flex;"><span>  --relocatable         使一个现有的virtualenv环境这会修复脚本并生成所有.pth文件
+</span></span><span style="display:flex;"><span>  --no-setuptools       不要在新的virtualenv中安装setuptools
+</span></span><span style="display:flex;"><span>  --no-pip              不要在新的virtualenv中安装pip
+</span></span><span style="display:flex;"><span>  --no-wheel            不要在新的virtualenv中安装wheel
+</span></span><span style="display:flex;"><span>  --extra-search-dir<span style="color:#f92672">=</span>DIR 在DIR中寻找setuptools/pip
+</span></span><span style="display:flex;"><span>  --download            从PyPI下载预安装的软件包
+</span></span><span style="display:flex;"><span>  --no-download, --never-download 不要从PyPI下载预安装的软件包
+</span></span><span style="display:flex;"><span>  --prompt<span style="color:#f92672">=</span>PROMPT       为此环境提供备用提示前缀
+</span></span><span style="display:flex;"><span>  --setuptools          已废弃
+</span></span><span style="display:flex;"><span>  --distribute          已废弃
+</span></span><span style="display:flex;"><span>  --unzip-setuptools    已废弃
+</span></span></code></pre></div><h3 id="查看当前版本">查看当前版本</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>~$ virtualenv --version
+</span></span><span style="display:flex;"><span>16.0.0
+</span></span></code></pre></div><h3 id="配置一个新的环境">配置一个新的环境</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>~$ which python <span style="color:#75715e"># 查看Python路径</span>
+</span></span><span style="display:flex;"><span>/usr/bin/python
+</span></span><span style="display:flex;"><span>~$ virtualenv --no-site-packages -p /usr/bin/python MyNewEnv <span style="color:#75715e"># 创建环境目录</span>
+</span></span><span style="display:flex;"><span>Running virtualenv with interpreter /usr/bin/python
+</span></span><span style="display:flex;"><span>New python executable in /home/liyingzhe/MyNewEnv/bin/python
+</span></span><span style="display:flex;"><span>Installing setuptools, pip, wheel...done.
+</span></span><span style="display:flex;"><span>~$ ls MyNewEnv/ <span style="color:#75715e"># 查看环境目录</span>
+</span></span><span style="display:flex;"><span>bin  include  lib  local  pip-selfcheck.json
+</span></span><span style="display:flex;"><span>~$ source MyNewEnv/bin/activate <span style="color:#75715e"># 将环境生效</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>MyNewEnv<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>MyNewEnv<span style="color:#f92672">)</span> ~$ pip list <span style="color:#75715e"># 查看已安装的库</span>
+</span></span><span style="display:flex;"><span>Package    Version
+</span></span><span style="display:flex;"><span>---------- -------
+</span></span><span style="display:flex;"><span>pip        18.0
+</span></span><span style="display:flex;"><span>setuptools 40.0.0
+</span></span><span style="display:flex;"><span>wheel      0.31.1
+</span></span></code></pre></div><p>此时我们可以安装一些新的库</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">(</span>MyNewEnv<span style="color:#f92672">)</span> ~$ pip install requests
+</span></span><span style="display:flex;"><span>Collecting requests
+</span></span><span style="display:flex;"><span>  Using cached https://files.pythonhosted.org/packages/65/47/7e02164a2a3db50ed6d8a6ab1d6d60b69c4c3fdf57a284257925dfc12bda/requests-2.19.1-py2.py3-none-any.whl
+</span></span><span style="display:flex;"><span>Collecting idna&lt;2.8,&gt;<span style="color:#f92672">=</span>2.5 <span style="color:#f92672">(</span>from requests<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>  Using cached https://files.pythonhosted.org/packages/4b/2a/0276479a4b3caeb8a8c1af2f8e4355746a97fab05a372e4a2c6a6b876165/idna-2.7-py2.py3-none-any.whl
+</span></span><span style="display:flex;"><span>Collecting certifi&gt;<span style="color:#f92672">=</span>2017.4.17 <span style="color:#f92672">(</span>from requests<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>  Using cached https://files.pythonhosted.org/packages/16/1f/50d729c104b21c1042aa51560da6141d1cab476ba7015d92b2111c8db841/certifi-2018.8.13-py2.py3-none-any.whl
+</span></span><span style="display:flex;"><span>Collecting chardet&lt;3.1.0,&gt;<span style="color:#f92672">=</span>3.0.2 <span style="color:#f92672">(</span>from requests<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>  Using cached https://files.pythonhosted.org/packages/bc/a9/01ffebfb562e4274b6487b4bb1ddec7ca55ec7510b22e4c51f14098443b8/chardet-3.0.4-py2.py3-none-any.whl
+</span></span><span style="display:flex;"><span>Collecting urllib3&lt;1.24,&gt;<span style="color:#f92672">=</span>1.21.1 <span style="color:#f92672">(</span>from requests<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>  Using cached https://files.pythonhosted.org/packages/bd/c9/6fdd990019071a4a32a5e7cb78a1d92c53851ef4f56f62a3486e6a7d8ffb/urllib3-1.23-py2.py3-none-any.whl
+</span></span><span style="display:flex;"><span>Installing collected packages: idna, certifi, chardet, urllib3, requests
+</span></span><span style="display:flex;"><span>Successfully installed certifi-2018.8.13 chardet-3.0.4 idna-2.7 requests-2.19.1 urllib3-1.23
+</span></span><span style="display:flex;"><span><span style="color:#f92672">(</span>MyNewEnv<span style="color:#f92672">)</span> ~$
+</span></span></code></pre></div><h3 id="退出环境">退出环境</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#f92672">(</span>MyNewEnv<span style="color:#f92672">)</span> ~$ deactivate
+</span></span></code></pre></div><h3 id="使用已有的环境">使用已有的环境</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span><span style="color:#75715e"># 假设 MyNewEnv已经被创建</span>
+</span></span><span style="display:flex;"><span>~$ source MyNewEnv/bin/activate <span style="color:#75715e"># 将环境生效</span>
+</span></span></code></pre></div>
 </div>
 <div class="container">
     <section class="bio" itemprop="author" itemscope="" itemtype="http://schema.org/Person">

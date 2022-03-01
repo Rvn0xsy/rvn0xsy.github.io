@@ -118,9 +118,9 @@
 <p>Options表主要用于设置HTTP请求时的超时时间、Cookie、请求头、HTTP认证、页面缓存、地址类型（IPV4/IPV6）、是否验证重定向</p>
 <pre tabindex="0"><code>{
 timeout:
-header:{&quot;Content-Type&quot;:&quot;&quot;,...},
-cookies:{\{&quot;name&quot;,&quot;value&quot;,&quot;path&quot;\},...},
-auth:{username:&quot;&quot;,password:&quot;&quot;},
+header:{&#34;Content-Type&#34;:&#34;&#34;,...},
+cookies:{\{&#34;name&#34;,&#34;value&#34;,&#34;path&#34;\},...},
+auth:{username:&#34;&#34;,password:&#34;&#34;},
 bypass_cache:true,
 no_cache:true,
 no_cache_body:true,
@@ -149,54 +149,53 @@ redirect_ok:true
 <blockquote>
 <p>需求：确认目标主机是否支持HEAD，如果支持则输出响应头</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
-<span style="color:#66d9ef">local</span> http <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;http&#34;</span>
-prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
-<span style="color:#66d9ef">end</span>
-portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">if</span>(port.number <span style="color:#f92672">==</span> <span style="color:#ae81ff">80</span>) <span style="color:#66d9ef">then</span>
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
-	<span style="color:#66d9ef">end</span>
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
-<span style="color:#66d9ef">end</span>
-action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">local</span> result
-	<span style="color:#66d9ef">local</span> status <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>
-	status,result <span style="color:#f92672">=</span> http.can_use_head(host,port,<span style="color:#ae81ff">404</span>,<span style="color:#e6db74">&#34;/&#34;</span>)
-	<span style="color:#66d9ef">if</span>(status) <span style="color:#66d9ef">then</span>
-		http_info <span style="color:#f92672">=</span> stdnse.output_table()
-		http_info.header <span style="color:#f92672">=</span> result.header
-		http_info.version <span style="color:#f92672">=</span> result.version
-		<span style="color:#66d9ef">return</span> http_info
-	<span style="color:#66d9ef">end</span>
-<span style="color:#66d9ef">end</span>
-postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-
-</code></pre></div><p>代码解读：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">local</span> http <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;http&#34;</span>
+</span></span><span style="display:flex;"><span>prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(port.number <span style="color:#f92672">==</span> <span style="color:#ae81ff">80</span>) <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> result
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> status <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>	status,result <span style="color:#f92672">=</span> http.can_use_head(host,port,<span style="color:#ae81ff">404</span>,<span style="color:#e6db74">&#34;/&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(status) <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>		http_info <span style="color:#f92672">=</span> stdnse.output_table()
+</span></span><span style="display:flex;"><span>		http_info.header <span style="color:#f92672">=</span> result.header
+</span></span><span style="display:flex;"><span>		http_info.version <span style="color:#f92672">=</span> result.version
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> http_info
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>代码解读：</p>
 <p>看完代码读者可能会有疑问，hostrule函数为什么返回false？</p>
 <p>在hostrule中返回false是因为如果是true会自动调用action，此时port的值是nil，所以会抛出一些错误。</p>
 <p>紧接着就是将端口号为80的host和port交给action函数执行，调用can_use_head函数，判断status是否为true，是true则支持HEAD方法请求。最后生成一个output_table，用来将响应内容填入这个表，以便于格式化显示。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/70176fbc-4f5f-11ec-af96-00d861bf4abb.png" alt="2019-04-24-10-11-39"></p>
 <p>如果只想取得目标主机响应的server，我们可以这样写：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#960050;background-color:#1e0010">……</span>
-action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">local</span> result
-	<span style="color:#66d9ef">local</span> status <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>
-	status,result <span style="color:#f92672">=</span> http.can_use_head(host,port,<span style="color:#ae81ff">302</span>,<span style="color:#e6db74">&#34;/&#34;</span>)
-	<span style="color:#66d9ef">if</span>(status) <span style="color:#66d9ef">then</span>
-		http_info <span style="color:#f92672">=</span> stdnse.output_table()
-		http_info.header <span style="color:#f92672">=</span> result.header
-		http_info.version <span style="color:#f92672">=</span> result.version
-		http_info.server <span style="color:#f92672">=</span> result.header[<span style="color:#e6db74">&#34;server&#34;</span>]
-		<span style="color:#66d9ef">return</span> http_info
-	<span style="color:#66d9ef">end</span>
-<span style="color:#66d9ef">end</span>
-<span style="color:#960050;background-color:#1e0010">……</span>
-</code></pre></div><p>执行结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">……</span>
+</span></span><span style="display:flex;"><span>action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> result
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> status <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>	status,result <span style="color:#f92672">=</span> http.can_use_head(host,port,<span style="color:#ae81ff">302</span>,<span style="color:#e6db74">&#34;/&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(status) <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>		http_info <span style="color:#f92672">=</span> stdnse.output_table()
+</span></span><span style="display:flex;"><span>		http_info.header <span style="color:#f92672">=</span> result.header
+</span></span><span style="display:flex;"><span>		http_info.version <span style="color:#f92672">=</span> result.version
+</span></span><span style="display:flex;"><span>		http_info.server <span style="color:#f92672">=</span> result.header[<span style="color:#e6db74">&#34;server&#34;</span>]
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> http_info
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">……</span>
+</span></span></code></pre></div><p>执行结果如下：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7062b9cc-4f5f-11ec-b1dd-00d861bf4abb.png" alt="2019-04-24-10-12-06"></p>
 <h2 id="0x04-发送一个http请求">0x04 发送一个HTTP请求</h2>
 <p><a href="https://nmap.org/nsedoc/lib/http.html#generic_request">generic_request</a>是一个最基本的发送HTTP请求的函数，参数有以下几个：</p>
@@ -211,30 +210,30 @@ action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function
 <blockquote>
 <p>发送一个OPTIONS请求，来获取目标服务支持哪些HTTP方法</p>
 </blockquote>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
-<span style="color:#66d9ef">local</span> http <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;http&#34;</span>
-prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
-<span style="color:#66d9ef">end</span>
-portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">if</span>(port.number <span style="color:#f92672">==</span> <span style="color:#ae81ff">80</span>) <span style="color:#66d9ef">then</span>
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
-	<span style="color:#66d9ef">end</span>
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
-<span style="color:#66d9ef">end</span>
-action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">local</span> result <span style="color:#f92672">=</span> http.generic_request(host,port,<span style="color:#e6db74">&#34;OPTIONS&#34;</span>,<span style="color:#e6db74">&#34;/&#34;</span>,<span style="color:#66d9ef">nil</span>)
-	<span style="color:#66d9ef">if</span>(result.status <span style="color:#f92672">==</span> <span style="color:#ae81ff">200</span>)<span style="color:#66d9ef">then</span>
-		<span style="color:#66d9ef">local</span> allow_method <span style="color:#f92672">=</span> stdnse.output_table()
-		allow_method.allowMethods <span style="color:#f92672">=</span> result.header[<span style="color:#e6db74">&#34;allow&#34;</span>]
-		<span style="color:#66d9ef">return</span> allow_method
-	<span style="color:#66d9ef">end</span>
-<span style="color:#66d9ef">end</span>
-postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-</code></pre></div><p>执行结果如下：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">local</span> http <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;http&#34;</span>
+</span></span><span style="display:flex;"><span>prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(port.number <span style="color:#f92672">==</span> <span style="color:#ae81ff">80</span>) <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> result <span style="color:#f92672">=</span> http.generic_request(host,port,<span style="color:#e6db74">&#34;OPTIONS&#34;</span>,<span style="color:#e6db74">&#34;/&#34;</span>,<span style="color:#66d9ef">nil</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(result.status <span style="color:#f92672">==</span> <span style="color:#ae81ff">200</span>)<span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">local</span> allow_method <span style="color:#f92672">=</span> stdnse.output_table()
+</span></span><span style="display:flex;"><span>		allow_method.allowMethods <span style="color:#f92672">=</span> result.header[<span style="color:#e6db74">&#34;allow&#34;</span>]
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> allow_method
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>执行结果如下：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/70aae206-4f5f-11ec-a9b4-00d861bf4abb.png" alt="2019-04-24-10-13-46"></p>
 <ul>
 <li>返回值：</li>
@@ -249,30 +248,30 @@ postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function
 <li>options : 用于设置请求相关的Cookie、超时时间、header</li>
 </ul>
 <p>除了比generic_request函数中少了一个method参数，其他相同。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
-<span style="color:#66d9ef">local</span> http <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;http&#34;</span>
-prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
-<span style="color:#66d9ef">end</span>
-portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">if</span>(port.number <span style="color:#f92672">==</span> <span style="color:#ae81ff">80</span>) <span style="color:#66d9ef">then</span>
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
-	<span style="color:#66d9ef">end</span>
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
-<span style="color:#66d9ef">end</span>
-action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">local</span> result <span style="color:#f92672">=</span> http.get(host,port,<span style="color:#e6db74">&#34;/nmap&#34;</span>)
-	<span style="color:#66d9ef">if</span>(result.status <span style="color:#f92672">==</span> <span style="color:#ae81ff">404</span>)<span style="color:#66d9ef">then</span>
-		<span style="color:#66d9ef">local</span> status <span style="color:#f92672">=</span> stdnse.output_table()
-		status.response_line <span style="color:#f92672">=</span> result[<span style="color:#e6db74">&#34;status-line&#34;</span>]
-		<span style="color:#66d9ef">return</span> status
-	<span style="color:#66d9ef">end</span>
-<span style="color:#66d9ef">end</span>
-postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-</code></pre></div><p>执行结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">local</span> http <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;http&#34;</span>
+</span></span><span style="display:flex;"><span>prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(port.number <span style="color:#f92672">==</span> <span style="color:#ae81ff">80</span>) <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> result <span style="color:#f92672">=</span> http.get(host,port,<span style="color:#e6db74">&#34;/nmap&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(result.status <span style="color:#f92672">==</span> <span style="color:#ae81ff">404</span>)<span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">local</span> status <span style="color:#f92672">=</span> stdnse.output_table()
+</span></span><span style="display:flex;"><span>		status.response_line <span style="color:#f92672">=</span> result[<span style="color:#e6db74">&#34;status-line&#34;</span>]
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> status
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>执行结果：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/70ed47ea-4f5f-11ec-a9d1-00d861bf4abb.png" alt="2019-04-24-10-14-43"></p>
 <ul>
 <li>返回值：</li>
@@ -288,44 +287,44 @@ postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function
 <li>ignored : 是否忽略向后兼容性</li>
 <li>postdata : post提交数据，可以是一个表，也可以是一个字符串，具体形式如下：</li>
 </ul>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua">username<span style="color:#f92672">=</span>admin<span style="color:#f92672">&amp;</span>password<span style="color:#f92672">=</span>admin
-<span style="color:#75715e">-- 或者：</span>
-<span style="color:#66d9ef">local</span> data <span style="color:#f92672">=</span> {}
-data.username <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;admin&#34;</span>
-data.password <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;admin&#34;</span>
-</code></pre></div><blockquote>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span>username<span style="color:#f92672">=</span>admin<span style="color:#f92672">&amp;</span>password<span style="color:#f92672">=</span>admin
+</span></span><span style="display:flex;"><span><span style="color:#75715e">-- 或者：</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">local</span> data <span style="color:#f92672">=</span> {}
+</span></span><span style="display:flex;"><span>data.username <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;admin&#34;</span>
+</span></span><span style="display:flex;"><span>data.password <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;admin&#34;</span>
+</span></span></code></pre></div><blockquote>
 <p>尝试使用账号密码登录某个系统</p>
 </blockquote>
 <p>用php脚本语言写一个简单登录判断的页面：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
-<span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">isset</span>($_POST[<span style="color:#e6db74">&#34;username&#34;</span>]) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">isset</span>($_POST[<span style="color:#e6db74">&#34;password&#34;</span>]))
-{
-	$username <span style="color:#f92672">=</span> $_POST[<span style="color:#e6db74">&#34;username&#34;</span>];
-	$password <span style="color:#f92672">=</span> $_POST[<span style="color:#e6db74">&#34;password&#34;</span>];
-	<span style="color:#66d9ef">if</span>($username <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;admin&#34;</span> <span style="color:#f92672">&amp;&amp;</span> $password <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;admin&#34;</span>){
-		<span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;login success !&#34;</span>;
-	}<span style="color:#66d9ef">else</span>{
-		<span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;login failed !&#34;</span>;
-	}
-}<span style="color:#66d9ef">else</span>{
-	<span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;please login !&#34;</span>;
-}
-<span style="color:#75715e">?&gt;</span><span style="color:#960050;background-color:#1e0010">
-</span></code></pre></div><p>通过post函数提交username与password，然后获取body判断是否登录成功</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#960050;background-color:#1e0010">……</span>
-action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">local</span> cert <span style="color:#f92672">=</span> {}
-	cert.username<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;admin&#34;</span>
-	cert.password<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;admin&#34;</span>
-	<span style="color:#66d9ef">local</span> result <span style="color:#f92672">=</span> http.post(host,port,<span style="color:#e6db74">&#34;/index.php&#34;</span>,<span style="color:#66d9ef">nil</span>,<span style="color:#66d9ef">true</span>,cert)
-	<span style="color:#66d9ef">if</span>(result.status <span style="color:#f92672">==</span> <span style="color:#ae81ff">200</span>)<span style="color:#66d9ef">then</span>
-		<span style="color:#66d9ef">local</span> status <span style="color:#f92672">=</span> stdnse.output_table()
-		status.response_line <span style="color:#f92672">=</span> result[<span style="color:#e6db74">&#34;body&#34;</span>]
-		<span style="color:#66d9ef">return</span> status
-	<span style="color:#66d9ef">end</span>
-<span style="color:#66d9ef">end</span>
-<span style="color:#960050;background-color:#1e0010">……</span>
-</code></pre></div><p>执行结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">isset</span>($_POST[<span style="color:#e6db74">&#34;username&#34;</span>]) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">isset</span>($_POST[<span style="color:#e6db74">&#34;password&#34;</span>]))
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	$username <span style="color:#f92672">=</span> $_POST[<span style="color:#e6db74">&#34;username&#34;</span>];
+</span></span><span style="display:flex;"><span>	$password <span style="color:#f92672">=</span> $_POST[<span style="color:#e6db74">&#34;password&#34;</span>];
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>($username <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;admin&#34;</span> <span style="color:#f92672">&amp;&amp;</span> $password <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;admin&#34;</span>){
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;login success !&#34;</span>;
+</span></span><span style="display:flex;"><span>	}<span style="color:#66d9ef">else</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;login failed !&#34;</span>;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>}<span style="color:#66d9ef">else</span>{
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;please login !&#34;</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span><span style="color:#75715e">?&gt;</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span></code></pre></div><p>通过post函数提交username与password，然后获取body判断是否登录成功</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">……</span>
+</span></span><span style="display:flex;"><span>action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> cert <span style="color:#f92672">=</span> {}
+</span></span><span style="display:flex;"><span>	cert.username<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;admin&#34;</span>
+</span></span><span style="display:flex;"><span>	cert.password<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;admin&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> result <span style="color:#f92672">=</span> http.post(host,port,<span style="color:#e6db74">&#34;/index.php&#34;</span>,<span style="color:#66d9ef">nil</span>,<span style="color:#66d9ef">true</span>,cert)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(result.status <span style="color:#f92672">==</span> <span style="color:#ae81ff">200</span>)<span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">local</span> status <span style="color:#f92672">=</span> stdnse.output_table()
+</span></span><span style="display:flex;"><span>		status.response_line <span style="color:#f92672">=</span> result[<span style="color:#e6db74">&#34;body&#34;</span>]
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> status
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">……</span>
+</span></span></code></pre></div><p>执行结果：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/712f5dce-4f5f-11ec-b79d-00d861bf4abb.png" alt="2019-04-24-10-16-22"></p>
 <ul>
 <li>返回值：</li>
@@ -348,37 +347,37 @@ action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function
 <p>这里我使用Docker已经搭建好了一个Tomcat环境：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/716bc3cc-4f5f-11ec-ae7c-00d861bf4abb.png" alt="2019-04-24-10-17-24"></p>
 <p>编写的脚本如下：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
-<span style="color:#66d9ef">local</span> http <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;http&#34;</span>
-prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
-<span style="color:#66d9ef">end</span>
-
-portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">local</span> ports <span style="color:#f92672">=</span> {<span style="color:#ae81ff">80</span>,<span style="color:#ae81ff">8080</span>,<span style="color:#ae81ff">8090</span>,<span style="color:#ae81ff">8899</span>}
-	<span style="color:#66d9ef">for</span> i <span style="color:#66d9ef">in</span> pairs(ports)<span style="color:#66d9ef">do</span>
-		<span style="color:#66d9ef">if</span>(port.number <span style="color:#f92672">==</span> ports[i])<span style="color:#66d9ef">then</span>
-			<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
-		<span style="color:#66d9ef">end</span>
-	<span style="color:#66d9ef">end</span>
-<span style="color:#66d9ef">end</span>
-
-
-action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">local</span> shell_name <span style="color:#f92672">=</span> string.format(<span style="color:#e6db74">&#34;/%d.jsp&#34;</span>,<span style="color:#e6db74">&#34;/&#34;</span>,math.random(<span style="color:#ae81ff">9999</span>))
-	<span style="color:#66d9ef">local</span> status <span style="color:#f92672">=</span> stdnse.output_table()
-	<span style="color:#66d9ef">local</span> put_rsp <span style="color:#f92672">=</span> http.put(host,port,shell_name<span style="color:#f92672">..</span><span style="color:#e6db74">&#34;/&#34;</span>,<span style="color:#66d9ef">nil</span>,<span style="color:#e6db74">&#34;CVE-2017-12615&#34;</span>)
-	<span style="color:#66d9ef">if</span>(put_rsp.status <span style="color:#f92672">==</span> <span style="color:#ae81ff">201</span>)<span style="color:#66d9ef">then</span>
-		status.shell_name <span style="color:#f92672">=</span> shell_name
-		<span style="color:#66d9ef">return</span> status
-	<span style="color:#66d9ef">end</span>
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
-<span style="color:#66d9ef">end</span>
-postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-</code></pre></div><p>在action函数中，首先生成一个随机的文件名，然后发送PUT请求，判断响应码是否是201。注意，发送PUT请求的时候，文件扩展名后门必须带”/”，是为了绕过tomcat的检测。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">local</span> http <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;http&#34;</span>
+</span></span><span style="display:flex;"><span>prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> ports <span style="color:#f92672">=</span> {<span style="color:#ae81ff">80</span>,<span style="color:#ae81ff">8080</span>,<span style="color:#ae81ff">8090</span>,<span style="color:#ae81ff">8899</span>}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> i <span style="color:#66d9ef">in</span> pairs(ports)<span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span>(port.number <span style="color:#f92672">==</span> ports[i])<span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> shell_name <span style="color:#f92672">=</span> string.format(<span style="color:#e6db74">&#34;/%d.jsp&#34;</span>,<span style="color:#e6db74">&#34;/&#34;</span>,math.random(<span style="color:#ae81ff">9999</span>))
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> status <span style="color:#f92672">=</span> stdnse.output_table()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> put_rsp <span style="color:#f92672">=</span> http.put(host,port,shell_name<span style="color:#f92672">..</span><span style="color:#e6db74">&#34;/&#34;</span>,<span style="color:#66d9ef">nil</span>,<span style="color:#e6db74">&#34;CVE-2017-12615&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(put_rsp.status <span style="color:#f92672">==</span> <span style="color:#ae81ff">201</span>)<span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>		status.shell_name <span style="color:#f92672">=</span> shell_name
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> status
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>在action函数中，首先生成一个随机的文件名，然后发送PUT请求，判断响应码是否是201。注意，发送PUT请求的时候，文件扩展名后门必须带”/”，是为了绕过tomcat的检测。</p>
 <p>执行结果：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/71a7cff2-4f5f-11ec-8fc2-00d861bf4abb.png" alt="2019-04-24-10-18-23"></p>
 <p>使用浏览器访问：</p>
@@ -398,23 +397,23 @@ postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function
 <li>matchs : 返回一个匹配结果表，前提是match_state为true</li>
 </ul>
 <p>了解了这个函数后，我们可以继续将CVE-2017-12615漏洞检测脚本进一步的优化，让脚本判断写入了jsp文件后，判断是否是我们写入的字符串。这样能够使检测脚本的准确度大大提高，下面请看我在action函数中写入的新代码：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#960050;background-color:#1e0010">……</span>
-action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">local</span> shell_name <span style="color:#f92672">=</span> string.format(<span style="color:#e6db74">&#34;%sCVE-2017-12615-CHECK-%d.jsp&#34;</span>,<span style="color:#e6db74">&#34;/&#34;</span>,math.random(<span style="color:#ae81ff">9999</span>))
-	<span style="color:#66d9ef">local</span> status <span style="color:#f92672">=</span> stdnse.output_table()
-	<span style="color:#66d9ef">local</span> put_rsp <span style="color:#f92672">=</span> http.put(host,port,shell_name<span style="color:#f92672">..</span><span style="color:#e6db74">&#34;/&#34;</span>,<span style="color:#66d9ef">nil</span>,<span style="color:#e6db74">&#34;CVE-2017-12615&#34;</span>)
-	<span style="color:#66d9ef">if</span>(put_rsp.status <span style="color:#f92672">==</span> <span style="color:#ae81ff">201</span>)<span style="color:#66d9ef">then</span>
-		status.shell_name <span style="color:#f92672">=</span> shell_name
-		<span style="color:#66d9ef">local</span> response <span style="color:#f92672">=</span> http.get(host,port,shell_name)
-		<span style="color:#66d9ef">if</span>(response <span style="color:#f92672">and</span> http.response_contains(response,<span style="color:#e6db74">&#34;CVE%-2017%-12615&#34;</span>) )<span style="color:#66d9ef">then</span>
-			<span style="color:#66d9ef">return</span> status
-		<span style="color:#66d9ef">end</span>
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
-	<span style="color:#66d9ef">end</span>
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
-<span style="color:#66d9ef">end</span>
-<span style="color:#960050;background-color:#1e0010">……</span>
-</code></pre></div><p>脚本执行结果与上一节中的内容相同，只是多了一次GET请求，为了让读者真正理解这个脚本的执行过程，下面对比一下wireshark流量：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">……</span>
+</span></span><span style="display:flex;"><span>action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> shell_name <span style="color:#f92672">=</span> string.format(<span style="color:#e6db74">&#34;%sCVE-2017-12615-CHECK-%d.jsp&#34;</span>,<span style="color:#e6db74">&#34;/&#34;</span>,math.random(<span style="color:#ae81ff">9999</span>))
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> status <span style="color:#f92672">=</span> stdnse.output_table()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> put_rsp <span style="color:#f92672">=</span> http.put(host,port,shell_name<span style="color:#f92672">..</span><span style="color:#e6db74">&#34;/&#34;</span>,<span style="color:#66d9ef">nil</span>,<span style="color:#e6db74">&#34;CVE-2017-12615&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(put_rsp.status <span style="color:#f92672">==</span> <span style="color:#ae81ff">201</span>)<span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>		status.shell_name <span style="color:#f92672">=</span> shell_name
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">local</span> response <span style="color:#f92672">=</span> http.get(host,port,shell_name)
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span>(response <span style="color:#f92672">and</span> http.response_contains(response,<span style="color:#e6db74">&#34;CVE%-2017%-12615&#34;</span>) )<span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> status
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">……</span>
+</span></span></code></pre></div><p>脚本执行结果与上一节中的内容相同，只是多了一次GET请求，为了让读者真正理解这个脚本的执行过程，下面对比一下wireshark流量：</p>
 <ul>
 <li>优化前：</li>
 </ul>
@@ -448,14 +447,14 @@ action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function
 |         Connection: keep-alive
 |_    method: GET
 </code></pre><p>可以有多个，下标从1开始，如果需要查看这个请求列表的结构，可以直接在action函数中return出http.pipeline_add的返回值，代码演示如下：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#960050;background-color:#1e0010">……</span>
-action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">local</span> all_requests <span style="color:#f92672">=</span> http.pipeline_add(<span style="color:#e6db74">&#34;/index.jsp&#34;</span>,<span style="color:#66d9ef">nil</span>,<span style="color:#66d9ef">nil</span>,<span style="color:#e6db74">&#34;GET&#34;</span>)
-	all_requests <span style="color:#f92672">=</span> http.pipeline_add(<span style="color:#e6db74">&#34;/docs/changelog.html&#34;</span>,<span style="color:#66d9ef">nil</span>,all_requests,<span style="color:#e6db74">&#34;GET&#34;</span>)
-	<span style="color:#66d9ef">return</span> all_requests
-<span style="color:#66d9ef">end</span>
-<span style="color:#960050;background-color:#1e0010">……</span>
-</code></pre></div><p>执行结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">……</span>
+</span></span><span style="display:flex;"><span>action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> all_requests <span style="color:#f92672">=</span> http.pipeline_add(<span style="color:#e6db74">&#34;/index.jsp&#34;</span>,<span style="color:#66d9ef">nil</span>,<span style="color:#66d9ef">nil</span>,<span style="color:#e6db74">&#34;GET&#34;</span>)
+</span></span><span style="display:flex;"><span>	all_requests <span style="color:#f92672">=</span> http.pipeline_add(<span style="color:#e6db74">&#34;/docs/changelog.html&#34;</span>,<span style="color:#66d9ef">nil</span>,all_requests,<span style="color:#e6db74">&#34;GET&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> all_requests
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">……</span>
+</span></span></code></pre></div><p>执行结果：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/72e1190a-4f5f-11ec-8f3e-00d861bf4abb.png" alt="2019-04-24-10-21-19"></p>
 <p>因为调用了两次http.pipeline_add，所以会产生两个请求列表队列元素，如果只想获取第一个请求队列元素，可以return all_requests[1]。</p>
 <p>下面我们要开始将队列交给http.pipeline_go函数，由它来完成所有请求，函数参数如下：</p>
@@ -469,20 +468,20 @@ action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function
 <li>response_list : 响应列表</li>
 </ul>
 <p>示例代码：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua">
-<span style="color:#960050;background-color:#1e0010">……</span>
-action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">local</span> status_lines <span style="color:#f92672">=</span> stdnse.output_table()
-	<span style="color:#66d9ef">local</span> all_requests <span style="color:#f92672">=</span> http.pipeline_add(<span style="color:#e6db74">&#34;/index.jsp&#34;</span>,<span style="color:#66d9ef">nil</span>,<span style="color:#66d9ef">nil</span>,<span style="color:#e6db74">&#34;GET&#34;</span>)
-	all_requests <span style="color:#f92672">=</span> http.pipeline_add(<span style="color:#e6db74">&#34;/docs/changelog.html&#34;</span>,<span style="color:#66d9ef">nil</span>,all_requests,<span style="color:#e6db74">&#34;GET&#34;</span>)
-	<span style="color:#66d9ef">local</span> all_response <span style="color:#f92672">=</span> http.pipeline_go(host,port,all_requests)
-	<span style="color:#66d9ef">for</span> i,resp <span style="color:#66d9ef">in</span> ipairs(all_response)<span style="color:#66d9ef">do</span>
-		status_lines[i] <span style="color:#f92672">=</span> resp[<span style="color:#e6db74">&#34;status-line&#34;</span>]
-	<span style="color:#66d9ef">end</span>
-	<span style="color:#66d9ef">return</span> status_lines
-<span style="color:#66d9ef">end</span>
-<span style="color:#960050;background-color:#1e0010">……</span>
-</code></pre></div><p>这段代码中添加了两个请求队列元素，分别是：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">……</span>
+</span></span><span style="display:flex;"><span>action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> status_lines <span style="color:#f92672">=</span> stdnse.output_table()
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> all_requests <span style="color:#f92672">=</span> http.pipeline_add(<span style="color:#e6db74">&#34;/index.jsp&#34;</span>,<span style="color:#66d9ef">nil</span>,<span style="color:#66d9ef">nil</span>,<span style="color:#e6db74">&#34;GET&#34;</span>)
+</span></span><span style="display:flex;"><span>	all_requests <span style="color:#f92672">=</span> http.pipeline_add(<span style="color:#e6db74">&#34;/docs/changelog.html&#34;</span>,<span style="color:#66d9ef">nil</span>,all_requests,<span style="color:#e6db74">&#34;GET&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> all_response <span style="color:#f92672">=</span> http.pipeline_go(host,port,all_requests)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> i,resp <span style="color:#66d9ef">in</span> ipairs(all_response)<span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>		status_lines[i] <span style="color:#f92672">=</span> resp[<span style="color:#e6db74">&#34;status-line&#34;</span>]
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> status_lines
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">……</span>
+</span></span></code></pre></div><p>这段代码中添加了两个请求队列元素，分别是：</p>
 <ul>
 <li>/index.jsp</li>
 <li>/docs/changelog.html</li>
@@ -509,26 +508,25 @@ action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/73a59f64-4f5f-11ec-848c-00d861bf4abb.png" alt="2019-04-24-10-23-36"></p>
 <p>可以发现页面中这个表单是提交到index.php的，并且提供了两个输入值，分别是username和password，这种情况下我们完全可以采用lua的字符串匹配模式获得input的name，但是如果页面上有很多表单，这就会增加我们处理数据的压力。</p>
 <p>我们来试试http.grab_forms函数：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#66d9ef">local</span> http <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;http&#34;</span>
-prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
-<span style="color:#66d9ef">end</span>
-portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">if</span>(port.number <span style="color:#f92672">==</span> <span style="color:#ae81ff">80</span>)<span style="color:#66d9ef">then</span>
-		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
-	<span style="color:#66d9ef">end</span>
-<span style="color:#66d9ef">end</span>
-action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">local</span> response <span style="color:#f92672">=</span> http.get(host,port,<span style="color:#e6db74">&#34;/index.php&#34;</span>)
-	<span style="color:#66d9ef">local</span> login_forms <span style="color:#f92672">=</span> http.grab_forms(response.body)
-	<span style="color:#66d9ef">return</span> login_forms
-<span style="color:#66d9ef">end</span>
-postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-
-</code></pre></div><p>因为http.grab_forms函数接收的是响应表的body，所以需要调用http.get函数将响应表取到，再把响应表的body传递进去。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#66d9ef">local</span> http <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;http&#34;</span>
+</span></span><span style="display:flex;"><span>prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(port.number <span style="color:#f92672">==</span> <span style="color:#ae81ff">80</span>)<span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> response <span style="color:#f92672">=</span> http.get(host,port,<span style="color:#e6db74">&#34;/index.php&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> login_forms <span style="color:#f92672">=</span> http.grab_forms(response.body)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> login_forms
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>因为http.grab_forms函数接收的是响应表的body，所以需要调用http.get函数将响应表取到，再把响应表的body传递进去。</p>
 <p>执行结果：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/73debc86-4f5f-11ec-95bc-00d861bf4abb.png" alt="2019-04-24-10-24-01"></p>
 <p>目前是获得了一个登录表单，注意：返回的是一个表单列表，而不是只能获得一个表单，在登录页面中新添加一个表单后：</p>
@@ -569,60 +567,60 @@ postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function
 <li>登录</li>
 <li>判断是否登录成功</li>
 </ol>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua">action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">local</span> login_table <span style="color:#f92672">=</span> {}
-	<span style="color:#66d9ef">local</span> response <span style="color:#f92672">=</span> http.get(host,port,<span style="color:#e6db74">&#34;/index.php&#34;</span>)
-	<span style="color:#66d9ef">local</span> login_forms <span style="color:#f92672">=</span> http.grab_forms(response.body)
-	<span style="color:#66d9ef">local</span> form <span style="color:#f92672">=</span> http.parse_form(login_forms[<span style="color:#ae81ff">1</span>])
-	<span style="color:#66d9ef">for</span> i,name <span style="color:#66d9ef">in</span> ipairs(form.fields)<span style="color:#66d9ef">do</span>
-		login_table[form.fields[i].name]<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;admin&#34;</span>
-	<span style="color:#66d9ef">end</span>
-	<span style="color:#66d9ef">local</span> login_response <span style="color:#f92672">=</span> http.post(host,port,<span style="color:#e6db74">&#34;/index.php&#34;</span>,<span style="color:#66d9ef">nil</span>,<span style="color:#66d9ef">nil</span>,login_table)
-	<span style="color:#66d9ef">if</span>(http.response_contains(login_response,<span style="color:#e6db74">&#34;success&#34;</span>))<span style="color:#66d9ef">then</span>
-		login_table.login_status <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>
-		<span style="color:#66d9ef">return</span> login_table
-	<span style="color:#66d9ef">end</span>
-	login_tabke.login_status <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>
-	<span style="color:#66d9ef">return</span> login_table
-<span style="color:#66d9ef">end</span>
-</code></pre></div><p>本段代码首先获取index.php的响应表，通过http.grab_forms函数获得登录，将返回值（第一个表单）交给http.parse_from，取得表单fields（字段），然后遍历每一个字段的name，把它填入一个table，最后执行http.post函数，刚好http.post的data可以是一个table也可以是一个字符串。请求完毕后得到登录的响应结果，再由http.response_contains判断是否登录成功，登录成功会出现success字样提示。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span>action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> login_table <span style="color:#f92672">=</span> {}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> response <span style="color:#f92672">=</span> http.get(host,port,<span style="color:#e6db74">&#34;/index.php&#34;</span>)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> login_forms <span style="color:#f92672">=</span> http.grab_forms(response.body)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> form <span style="color:#f92672">=</span> http.parse_form(login_forms[<span style="color:#ae81ff">1</span>])
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> i,name <span style="color:#66d9ef">in</span> ipairs(form.fields)<span style="color:#66d9ef">do</span>
+</span></span><span style="display:flex;"><span>		login_table[form.fields[i].name]<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;admin&#34;</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">local</span> login_response <span style="color:#f92672">=</span> http.post(host,port,<span style="color:#e6db74">&#34;/index.php&#34;</span>,<span style="color:#66d9ef">nil</span>,<span style="color:#66d9ef">nil</span>,login_table)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(http.response_contains(login_response,<span style="color:#e6db74">&#34;success&#34;</span>))<span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>		login_table.login_status <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> login_table
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>	login_tabke.login_status <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> login_table
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>本段代码首先获取index.php的响应表，通过http.grab_forms函数获得登录，将返回值（第一个表单）交给http.parse_from，取得表单fields（字段），然后遍历每一个字段的name，把它填入一个table，最后执行http.post函数，刚好http.post的data可以是一个table也可以是一个字符串。请求完毕后得到登录的响应结果，再由http.response_contains判断是否登录成功，登录成功会出现success字样提示。</p>
 <p>为了解决疑惑，我贴出index.php的源代码：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;!</span><span style="color:#a6e22e">DOCTYPE</span> <span style="color:#a6e22e">html</span><span style="color:#f92672">&gt;</span>
-<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">html</span><span style="color:#f92672">&gt;</span>
-<span style="color:#f92672">&lt;</span><span style="color:#a6e22e">body</span><span style="color:#f92672">&gt;</span>
-<span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
-<span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">isset</span>($_POST[<span style="color:#e6db74">&#34;username&#34;</span>]) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">isset</span>($_POST[<span style="color:#e6db74">&#34;password&#34;</span>]))
-{
-	$username <span style="color:#f92672">=</span> $_POST[<span style="color:#e6db74">&#34;username&#34;</span>];
-	$password <span style="color:#f92672">=</span> $_POST[<span style="color:#e6db74">&#34;password&#34;</span>];
-	<span style="color:#66d9ef">if</span>($username <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;admin&#34;</span> <span style="color:#f92672">&amp;&amp;</span> $password <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;admin&#34;</span>){
-		<span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;login success !&#34;</span>;
-	
-	}<span style="color:#66d9ef">else</span>{
-		<span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;login failed !&#34;</span>;
-	
-	}
-
-}<span style="color:#66d9ef">else</span>{
-	<span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;please login !&#34;</span>;
-
-}
-
-<span style="color:#75715e">?&gt;</span><span style="color:#960050;background-color:#1e0010">
-</span><span style="color:#960050;background-color:#1e0010">&lt;hr/&gt;
-</span><span style="color:#960050;background-color:#1e0010">&lt;form action=&#34;/index.php&#34; method=&#34;post&#34;&gt;
-</span><span style="color:#960050;background-color:#1e0010">username:&lt;br&gt;
-</span><span style="color:#960050;background-color:#1e0010">&lt;input type=&#34;text&#34; name=&#34;username&#34; value=&#34;test&#34;&gt;
-</span><span style="color:#960050;background-color:#1e0010">&lt;br&gt;
-</span><span style="color:#960050;background-color:#1e0010">password:&lt;br&gt;
-</span><span style="color:#960050;background-color:#1e0010">&lt;input type=&#34;text&#34; name=&#34;password&#34; value=&#34;test&#34;&gt;
-</span><span style="color:#960050;background-color:#1e0010">&lt;br&gt;&lt;br&gt;
-</span><span style="color:#960050;background-color:#1e0010">&lt;input type=&#34;submit&#34; value=&#34;Submit&#34;&gt;
-</span><span style="color:#960050;background-color:#1e0010">&lt;/form&gt;
-</span><span style="color:#960050;background-color:#1e0010">……
-</span><span style="color:#960050;background-color:#1e0010">&lt;/body&gt;
-</span><span style="color:#960050;background-color:#1e0010">&lt;/html&gt;
-</span></code></pre></div><p>下一章：DNS包的使用</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#f92672">&lt;!</span><span style="color:#a6e22e">DOCTYPE</span> <span style="color:#a6e22e">html</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">html</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">body</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">isset</span>($_POST[<span style="color:#e6db74">&#34;username&#34;</span>]) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">isset</span>($_POST[<span style="color:#e6db74">&#34;password&#34;</span>]))
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	$username <span style="color:#f92672">=</span> $_POST[<span style="color:#e6db74">&#34;username&#34;</span>];
+</span></span><span style="display:flex;"><span>	$password <span style="color:#f92672">=</span> $_POST[<span style="color:#e6db74">&#34;password&#34;</span>];
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>($username <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;admin&#34;</span> <span style="color:#f92672">&amp;&amp;</span> $password <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;admin&#34;</span>){
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;login success !&#34;</span>;
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	}<span style="color:#66d9ef">else</span>{
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;login failed !&#34;</span>;
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}<span style="color:#66d9ef">else</span>{
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#34;please login !&#34;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">?&gt;</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">&lt;hr/&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">&lt;form action=&#34;/index.php&#34; method=&#34;post&#34;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">username:&lt;br&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">&lt;input type=&#34;text&#34; name=&#34;username&#34; value=&#34;test&#34;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">&lt;br&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">password:&lt;br&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">&lt;input type=&#34;text&#34; name=&#34;password&#34; value=&#34;test&#34;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">&lt;br&gt;&lt;br&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">&lt;input type=&#34;submit&#34; value=&#34;Submit&#34;&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">&lt;/form&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">……
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">&lt;/body&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">&lt;/html&gt;
+</span></span></span></code></pre></div><p>下一章：DNS包的使用</p>
 <p>正向解析、反向解析、发送DNS请求等</p>
 
 </div>

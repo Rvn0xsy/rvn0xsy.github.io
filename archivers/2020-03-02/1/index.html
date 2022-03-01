@@ -79,38 +79,38 @@
 <h2 id="反射-dll注入">反射 DLL注入</h2>
 <p>Aggressor Script脚本提供了一些关于反射DLL的接口：https://cobaltstrike.com/aggressor-script/functions.html#bdllspawn</p>
 <p>话不多说，先上代码：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">BOOL WINAPI <span style="color:#a6e22e">DllMain</span>( HINSTANCE hinstDLL, DWORD dwReason, LPVOID lpReserved ) {
-	BOOL bReturnValue <span style="color:#f92672">=</span> TRUE;
-	<span style="color:#66d9ef">switch</span>( dwReason ) {
-		<span style="color:#66d9ef">case</span> DLL_QUERY_HMODULE:
-			<span style="color:#66d9ef">if</span>( lpReserved <span style="color:#f92672">!=</span> NULL )
-				<span style="color:#f92672">*</span>(HMODULE <span style="color:#f92672">*</span>)lpReserved <span style="color:#f92672">=</span> hAppInstance;
-			<span style="color:#66d9ef">break</span>;
-		<span style="color:#66d9ef">case</span> DLL_PROCESS_ATTACH:
-			hAppInstance <span style="color:#f92672">=</span> hinstDLL;
-	
-			<span style="color:#75715e">/* print some output to the operator */</span>
-			<span style="color:#66d9ef">if</span> (lpReserved <span style="color:#f92672">!=</span> NULL) {
-				printf(<span style="color:#e6db74">&#34;Hello from test.dll. Parameter is &#39;%s&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, (<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)lpReserved);
-			}
-			<span style="color:#66d9ef">else</span> {
-				printf(<span style="color:#e6db74">&#34;Hello from test.dll. There is no parameter</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-			}
-
-			<span style="color:#75715e">/* flush STDOUT */</span>
-			fflush(stdout);
-
-			<span style="color:#75715e">/* we&#39;re done, so let&#39;s exit */</span>
-			ExitProcess(<span style="color:#ae81ff">0</span>);
-			<span style="color:#66d9ef">break</span>;
-		<span style="color:#66d9ef">case</span> DLL_PROCESS_DETACH:
-		<span style="color:#66d9ef">case</span> DLL_THREAD_ATTACH:
-		<span style="color:#66d9ef">case</span> DLL_THREAD_DETACH:
-			<span style="color:#66d9ef">break</span>;
-	}
-	<span style="color:#66d9ef">return</span> bReturnValue;
-}
-</code></pre></div><p>很明显，这是一个DLL的主函数，在经过DLL_PROCESS_ATTACH的时候，开始执行代码。程序通过DLLMain函数的lpReserved来当做参数传递。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>BOOL WINAPI <span style="color:#a6e22e">DllMain</span>( HINSTANCE hinstDLL, DWORD dwReason, LPVOID lpReserved ) {
+</span></span><span style="display:flex;"><span>	BOOL bReturnValue <span style="color:#f92672">=</span> TRUE;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">switch</span>( dwReason ) {
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">case</span> DLL_QUERY_HMODULE:
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span>( lpReserved <span style="color:#f92672">!=</span> NULL )
+</span></span><span style="display:flex;"><span>				<span style="color:#f92672">*</span>(HMODULE <span style="color:#f92672">*</span>)lpReserved <span style="color:#f92672">=</span> hAppInstance;
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">case</span> DLL_PROCESS_ATTACH:
+</span></span><span style="display:flex;"><span>			hAppInstance <span style="color:#f92672">=</span> hinstDLL;
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">/* print some output to the operator */</span>
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">if</span> (lpReserved <span style="color:#f92672">!=</span> NULL) {
+</span></span><span style="display:flex;"><span>				printf(<span style="color:#e6db74">&#34;Hello from test.dll. Parameter is &#39;%s&#39;</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, (<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>)lpReserved);
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">else</span> {
+</span></span><span style="display:flex;"><span>				printf(<span style="color:#e6db74">&#34;Hello from test.dll. There is no parameter</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>			}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">/* flush STDOUT */</span>
+</span></span><span style="display:flex;"><span>			fflush(stdout);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>			<span style="color:#75715e">/* we&#39;re done, so let&#39;s exit */</span>
+</span></span><span style="display:flex;"><span>			ExitProcess(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">case</span> DLL_PROCESS_DETACH:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">case</span> DLL_THREAD_ATTACH:
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">case</span> DLL_THREAD_DETACH:
+</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">break</span>;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> bReturnValue;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>很明显，这是一个DLL的主函数，在经过DLL_PROCESS_ATTACH的时候，开始执行代码。程序通过DLLMain函数的lpReserved来当做参数传递。</p>
 <p>但光看一个DLLMain是看不出后面的奇妙的，我们把目光转向反射DLL注入技术的作者：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/8f753ce0-4f5f-11ec-8dde-00d861bf4abb.png" alt="2020-03-01-11-25-55"></p>
 <p>这里有一个完整示例。</p>

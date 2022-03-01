@@ -91,89 +91,88 @@
 <p>注册需要提供：</p>
 <p>| username | password | phone |</p>
 <p>这时，爆破未果，既然是一个高危漏洞，概率不会依附在“弱口令”上 （安慰一下自己）。</p>
-<p>注册的两个账号，第一个是用于正常查看，第二个放入一些让SQL语句报错的关键字，例如：“ ' 、* 、) ”</p>
+<p>注册的两个账号，第一个是用于正常查看，第二个放入一些让SQL语句报错的关键字，例如：“ &rsquo; 、* 、) ”</p>
 <p>但是第一个注册成功了，第二个提示phone必须是数字，这个提示信息是由客户端脚本提示的</p>
 <p>于是我猜想会不会服务器端没有验证呢？</p>
 <p>使用Burp提交后还是失败 :(</p>
 <p>先不管这个，第一步就要把所有的信息搜集完毕再说。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">
-<span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#register&#34;</span>).<span style="color:#a6e22e">bind</span>(<span style="color:#e6db74">&#39;click&#39;</span>,<span style="color:#66d9ef">function</span>(){
-        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">usernameObj</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#username&#34;</span>);
-        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">passwordObj</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#password&#34;</span>);
-        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">phoneObj</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#phone&#34;</span>);
-        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">usernameVal</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">usernameObj</span>.<span style="color:#a6e22e">val</span>();
-        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">passwordVal</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">passwordObj</span>.<span style="color:#a6e22e">val</span>();
-        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">phoneVal</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">phoneObj</span>.<span style="color:#a6e22e">val</span>();
-        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">usernameVal</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">usernameVal</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">4</span>){
-            <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;Username is empty or short!&#34;</span>);
-            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
-        }
-        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">passwordVal</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">passwordVal</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">4</span>){
-            <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;Password is empty or short!&#34;</span>);
-            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
-        }
-        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">phoneVal</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">phoneVal</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">11</span>){
-            <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;Phone is empty or short!&#34;</span>);
-            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
-        }
-        <span style="color:#a6e22e">$</span>.<span style="color:#a6e22e">post</span>(<span style="color:#e6db74">&#34;/ctf/api.php?method=register&#34;</span>,{
-            <span style="color:#e6db74">&#34;username&#34;</span><span style="color:#f92672">:</span><span style="color:#a6e22e">usernameVal</span>,<span style="color:#e6db74">&#34;password&#34;</span><span style="color:#f92672">:</span><span style="color:#a6e22e">passwordVal</span>,<span style="color:#e6db74">&#34;phone&#34;</span><span style="color:#f92672">:</span><span style="color:#a6e22e">phoneVal</span>
-        },<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">data</span>,<span style="color:#a6e22e">status</span>){
-            <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">obj</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">jQuery</span>.<span style="color:#a6e22e">parseJSON</span>(<span style="color:#a6e22e">data</span>);
-            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">status</span>);
-            <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">status</span>){
-                <span style="color:#a6e22e">alert</span>(<span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">data</span>);
-                window.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;/ctf/index.php&#39;</span>;
-                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>;
-            }<span style="color:#66d9ef">else</span>{
-                <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;Error :&#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">data</span>);
-                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
-            }
-        })
-    });
-</code></pre></div><p>上面是绑定的点击事件，提交到<code>/ctf/api.php?method=register</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#register&#34;</span>).<span style="color:#a6e22e">bind</span>(<span style="color:#e6db74">&#39;click&#39;</span>,<span style="color:#66d9ef">function</span>(){
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">usernameObj</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#username&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">passwordObj</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#password&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">phoneObj</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#phone&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">usernameVal</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">usernameObj</span>.<span style="color:#a6e22e">val</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">passwordVal</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">passwordObj</span>.<span style="color:#a6e22e">val</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">phoneVal</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">phoneObj</span>.<span style="color:#a6e22e">val</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">usernameVal</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">usernameVal</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">4</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;Username is empty or short!&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">passwordVal</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">passwordVal</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">4</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;Password is empty or short!&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">phoneVal</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">phoneVal</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">11</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;Phone is empty or short!&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">$</span>.<span style="color:#a6e22e">post</span>(<span style="color:#e6db74">&#34;/ctf/api.php?method=register&#34;</span>,{
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;username&#34;</span><span style="color:#f92672">:</span><span style="color:#a6e22e">usernameVal</span>,<span style="color:#e6db74">&#34;password&#34;</span><span style="color:#f92672">:</span><span style="color:#a6e22e">passwordVal</span>,<span style="color:#e6db74">&#34;phone&#34;</span><span style="color:#f92672">:</span><span style="color:#a6e22e">phoneVal</span>
+</span></span><span style="display:flex;"><span>        },<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">data</span>,<span style="color:#a6e22e">status</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">obj</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">jQuery</span>.<span style="color:#a6e22e">parseJSON</span>(<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">status</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">status</span>){
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">alert</span>(<span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>                window.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;/ctf/index.php&#39;</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>            }<span style="color:#66d9ef">else</span>{
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;Error :&#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        })
+</span></span><span style="display:flex;"><span>    });
+</span></span></code></pre></div><p>上面是绑定的点击事件，提交到<code>/ctf/api.php?method=register</code></p>
 <p>登录页面也有类似的<code>AJAX</code>请求事件：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript"><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span><span style="color:#f92672">&gt;</span>
-    <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#login&#34;</span>).<span style="color:#a6e22e">bind</span>(<span style="color:#e6db74">&#39;click&#39;</span>,<span style="color:#66d9ef">function</span>(){
-        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">usernameObj</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#username&#34;</span>);
-        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">passwordObj</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#password&#34;</span>);
-        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">usernameVal</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">usernameObj</span>.<span style="color:#a6e22e">val</span>();
-        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">passwordVal</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">passwordObj</span>.<span style="color:#a6e22e">val</span>();
-        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">usernameVal</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">usernameVal</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">4</span>){
-            <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;Username is empty or short!&#34;</span>);
-            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
-        }
-        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">passwordVal</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">passwordVal</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">4</span>){
-            <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;Password is empty or short!&#34;</span>);
-            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
-        }
-        <span style="color:#a6e22e">$</span>.<span style="color:#a6e22e">post</span>(<span style="color:#e6db74">&#34;/ctf/api.php?method=login&#34;</span>,{
-            <span style="color:#e6db74">&#34;username&#34;</span><span style="color:#f92672">:</span><span style="color:#a6e22e">usernameVal</span>,<span style="color:#e6db74">&#34;password&#34;</span><span style="color:#f92672">:</span><span style="color:#a6e22e">passwordVal</span>
-        },<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">data</span>,<span style="color:#a6e22e">status</span>){
-            <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">obj</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">jQuery</span>.<span style="color:#a6e22e">parseJSON</span>(<span style="color:#a6e22e">data</span>);
-            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">status</span>);
-            <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">status</span>){
-                <span style="color:#a6e22e">alert</span>(<span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">data</span>);
-                window.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;/ctf/index.php&#39;</span>;
-                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>;
-            }<span style="color:#66d9ef">else</span>{
-                <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;Error :&#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">data</span>);
-                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
-            }
-        })
-    });
-
-</code></pre></div><p>登录后的主页：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span><span style="color:#f92672">&lt;</span><span style="color:#a6e22e">script</span><span style="color:#f92672">&gt;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#login&#34;</span>).<span style="color:#a6e22e">bind</span>(<span style="color:#e6db74">&#39;click&#39;</span>,<span style="color:#66d9ef">function</span>(){
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">usernameObj</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#username&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">passwordObj</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#password&#34;</span>);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">usernameVal</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">usernameObj</span>.<span style="color:#a6e22e">val</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">passwordVal</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">passwordObj</span>.<span style="color:#a6e22e">val</span>();
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">usernameVal</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">usernameVal</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">4</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;Username is empty or short!&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">passwordVal</span> <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">passwordVal</span>.<span style="color:#a6e22e">length</span> <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">4</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;Password is empty or short!&#34;</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">$</span>.<span style="color:#a6e22e">post</span>(<span style="color:#e6db74">&#34;/ctf/api.php?method=login&#34;</span>,{
+</span></span><span style="display:flex;"><span>            <span style="color:#e6db74">&#34;username&#34;</span><span style="color:#f92672">:</span><span style="color:#a6e22e">usernameVal</span>,<span style="color:#e6db74">&#34;password&#34;</span><span style="color:#f92672">:</span><span style="color:#a6e22e">passwordVal</span>
+</span></span><span style="display:flex;"><span>        },<span style="color:#66d9ef">function</span>(<span style="color:#a6e22e">data</span>,<span style="color:#a6e22e">status</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">obj</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">jQuery</span>.<span style="color:#a6e22e">parseJSON</span>(<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">status</span>);
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">if</span>(<span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">status</span>){
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">alert</span>(<span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>                window.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;/ctf/index.php&#39;</span>;
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>;
+</span></span><span style="display:flex;"><span>            }<span style="color:#66d9ef">else</span>{
+</span></span><span style="display:flex;"><span>                <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;Error :&#34;</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">obj</span>.<span style="color:#a6e22e">data</span>);
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>;
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        })
+</span></span><span style="display:flex;"><span>    });
+</span></span></code></pre></div><p>登录后的主页：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e6abeb86-4f5e-11ec-b1e3-00d861bf4abb.png" alt="index.php"></p>
 <p>然后我想到了越权，换个浏览器直接访问<code>index.php</code>，可还是跳转(服务端重定向)到<code>login.php</code>。</p>
 <p>页面上有一个Check按钮，其点击后会跳转到<code>check.php</code>：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-javascript" data-lang="javascript">    <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#logout&#34;</span>).<span style="color:#a6e22e">bind</span>(<span style="color:#e6db74">&#39;click&#39;</span>,<span style="color:#66d9ef">function</span>(){
-        window.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/ctf/logout.php&#34;</span>;
-    });
-    <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#check&#34;</span>).<span style="color:#a6e22e">bind</span>(<span style="color:#e6db74">&#39;click&#39;</span>,<span style="color:#66d9ef">function</span>(){
-        window.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/ctf/check.php&#34;</span>;
-    });
-</code></pre></div><p>访问<code>check.php</code>后：
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-javascript" data-lang="javascript"><span style="display:flex;"><span>    <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#logout&#34;</span>).<span style="color:#a6e22e">bind</span>(<span style="color:#e6db74">&#39;click&#39;</span>,<span style="color:#66d9ef">function</span>(){
+</span></span><span style="display:flex;"><span>        window.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/ctf/logout.php&#34;</span>;
+</span></span><span style="display:flex;"><span>    });
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">$</span>(<span style="color:#e6db74">&#34;#check&#34;</span>).<span style="color:#a6e22e">bind</span>(<span style="color:#e6db74">&#39;click&#39;</span>,<span style="color:#66d9ef">function</span>(){
+</span></span><span style="display:flex;"><span>        window.<span style="color:#a6e22e">location</span>.<span style="color:#a6e22e">href</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/ctf/check.php&#34;</span>;
+</span></span><span style="display:flex;"><span>    });
+</span></span></code></pre></div><p>访问<code>check.php</code>后：
 <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e6f84a26-4f5e-11ec-a41a-00d861bf4abb.png" alt="check.php"></p>
 <p>这个页面的意思是统计数据库中有几个人和我使用的手机号是一样的。</p>
 <p>根据场景还原一下SQL语句：<code>SELECT COUNT(*) FROM user WHERE phone = '123456'</code></p>

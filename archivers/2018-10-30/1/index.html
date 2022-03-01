@@ -78,34 +78,34 @@
 
         </div>
     <h2 id="查看分区">查看分区</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">rvn0xsy@Rvn0xsy ~/&gt; diskutil list
-/dev/disk0 <span style="color:#f92672">(</span>internal<span style="color:#f92672">)</span>:
-   <span style="color:#75715e">#:                       TYPE NAME                    SIZE       IDENTIFIER</span>
-   0:      GUID_partition_scheme                         500.3 GB   disk0
-   1:                        EFI EFI                     314.6 MB   disk0s1
-   2:                 Apple_APFS Container disk1         500.0 GB   disk0s2
-
-/dev/disk1 <span style="color:#f92672">(</span>synthesized<span style="color:#f92672">)</span>:
-   <span style="color:#75715e">#:                       TYPE NAME                    SIZE       IDENTIFIER</span>
-   0:      APFS Container Scheme -                      +500.0 GB   disk1
-                                 Physical Store disk0s2
-   1:                APFS Volume Macintosh HD            209.0 GB   disk1s1
-   2:                APFS Volume Preboot                 25.1 MB    disk1s2
-   3:                APFS Volume Recovery                515.8 MB   disk1s3
-   4:                APFS Volume VM                      3.2 GB     disk1s4
-
-/dev/disk2 <span style="color:#f92672">(</span>external, physical<span style="color:#f92672">)</span>:
-   <span style="color:#75715e">#:                       TYPE NAME                    SIZE       IDENTIFIER</span>
-   0:                            disk                    *2.0 TB     disk2
-
-rvn0xsy@Rvn0xsy ~/&gt;
-</code></pre></div><p>那个<code>/dev/disk2</code>是我的硬盘</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>rvn0xsy@Rvn0xsy ~/&gt; diskutil list
+</span></span><span style="display:flex;"><span>/dev/disk0 <span style="color:#f92672">(</span>internal<span style="color:#f92672">)</span>:
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">#:                       TYPE NAME                    SIZE       IDENTIFIER</span>
+</span></span><span style="display:flex;"><span>   0:      GUID_partition_scheme                         500.3 GB   disk0
+</span></span><span style="display:flex;"><span>   1:                        EFI EFI                     314.6 MB   disk0s1
+</span></span><span style="display:flex;"><span>   2:                 Apple_APFS Container disk1         500.0 GB   disk0s2
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>/dev/disk1 <span style="color:#f92672">(</span>synthesized<span style="color:#f92672">)</span>:
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">#:                       TYPE NAME                    SIZE       IDENTIFIER</span>
+</span></span><span style="display:flex;"><span>   0:      APFS Container Scheme -                      +500.0 GB   disk1
+</span></span><span style="display:flex;"><span>                                 Physical Store disk0s2
+</span></span><span style="display:flex;"><span>   1:                APFS Volume Macintosh HD            209.0 GB   disk1s1
+</span></span><span style="display:flex;"><span>   2:                APFS Volume Preboot                 25.1 MB    disk1s2
+</span></span><span style="display:flex;"><span>   3:                APFS Volume Recovery                515.8 MB   disk1s3
+</span></span><span style="display:flex;"><span>   4:                APFS Volume VM                      3.2 GB     disk1s4
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>/dev/disk2 <span style="color:#f92672">(</span>external, physical<span style="color:#f92672">)</span>:
+</span></span><span style="display:flex;"><span>   <span style="color:#75715e">#:                       TYPE NAME                    SIZE       IDENTIFIER</span>
+</span></span><span style="display:flex;"><span>   0:                            disk                    *2.0 TB     disk2
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>rvn0xsy@Rvn0xsy ~/&gt;
+</span></span></code></pre></div><p>那个<code>/dev/disk2</code>是我的硬盘</p>
 <h2 id="重新挂载">重新挂载</h2>
 <h3 id="卸载">卸载</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">sudo umount /Volumes/disk
-</code></pre></div><h3 id="挂载">挂载</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sh" data-lang="sh">sudo mount -t ntfs -o rw,auto,nobrowse /dev/disk2 /Volumes/Mydisk/
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sudo umount /Volumes/disk
+</span></span></code></pre></div><h3 id="挂载">挂载</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>sudo mount -t ntfs -o rw,auto,nobrowse /dev/disk2 /Volumes/Mydisk/
+</span></span></code></pre></div>
 </div>
 <div class="container">
     <section class="bio" itemprop="author" itemscope="" itemtype="http://schema.org/Person">

@@ -78,15 +78,14 @@
 <p>以popup当做修饰符号的函数体是菜单，一般是Cobalt Strike的菜单栏；</p>
 <p>先构建一个简单的菜单：</p>
 <pre tabindex="0"><code>popup event_say {
-        item(&quot;&amp;Say&quot;, { 
+        item(&#34;&amp;Say&#34;, { 
            # 函数体
         });
         separator(); #分割线
 }
-
 </code></pre><p>一个菜单可以有多个item，也就是多个元素，元素中可以写动作代码，也可以写函数。</p>
 <pre tabindex="0"><code>popup event_say {
-        item(&quot;&amp;Say&quot;, { 
+        item(&#34;&amp;Say&#34;, { 
             say();
         });
         separator();
@@ -96,29 +95,29 @@
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/92da6cd4-4f5f-11ec-9f1d-00d861bf4abb.png" alt="2020-03-01-11-43-30"></p>
 <h2 id="日志函数">日志函数</h2>
 <p>通过elog函数可以打印事件日志：</p>
-<pre tabindex="0"><code>elog(&quot;something ...&quot;);
+<pre tabindex="0"><code>elog(&#34;something ...&#34;);
 </code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/93151ca8-4f5f-11ec-8a98-00d861bf4abb.png" alt="2020-03-01-11-43-38"></p>
 <p>我们可以封装一个函数，名为say：</p>
 <pre tabindex="0"><code>sub say {
-	elog(&quot;\c3Hello Everyone!&quot;);
+	elog(&#34;\c3Hello Everyone!&#34;);
 }
 </code></pre><p><code>\c</code>是Cobalt Strike的彩色样式开关，类似的还有其他颜色：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/937309da-4f5f-11ec-86b9-00d861bf4abb.png" alt="2020-03-01-11-43-47"></p>
 <p>执行结果：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/93bef9bc-4f5f-11ec-b54d-00d861bf4abb.png" alt="2020-03-01-11-43-53"></p>
 <h2 id="对话框-输入">对话框-输入</h2>
-<pre tabindex="0"><code>dialog(&quot;Hello&quot;, # 对话框标题-字符串 
-%(name =&gt; &quot;tom&quot;),  # 对话框输入项及默认值-hashes
+<pre tabindex="0"><code>dialog(&#34;Hello&#34;, # 对话框标题-字符串 
+%(name =&gt; &#34;tom&#34;),  # 对话框输入项及默认值-hashes
 &amp;callback); # 对话框点击完成后的回调函数
 </code></pre><p>这里我实现了一个输入框，并将输入框的值通过elog打印出来：</p>
 <pre tabindex="0"><code>sub say {
-	elog(&quot;\c3Hello &quot;.$1.&quot;!&quot;); # 日志打印
+	elog(&#34;\c3Hello &#34;.$1.&#34;!&#34;); # 日志打印
 }
 
-menubar(&quot;Event-Say&quot;, &quot;event_say&quot;); # 注册菜单
+menubar(&#34;Event-Say&#34;, &#34;event_say&#34;); # 注册菜单
 
 popup event_say {
-        item(&quot;&amp;Say&quot;, { 
+        item(&#34;&amp;Say&#34;, { 
             dialog_show($dialog); # 展示对话框
         });
         separator(); # 分割线
@@ -126,13 +125,12 @@ popup event_say {
 
 
 sub callback {
-	say($3['name']); # $1 为 dialog的引用 $2 按钮的名称 $3 对话框输入的值，hashes类型
+	say($3[&#39;name&#39;]); # $1 为 dialog的引用 $2 按钮的名称 $3 对话框输入的值，hashes类型
 }
 
-$dialog = dialog(&quot;Hello&quot;, %(name =&gt; &quot;tom&quot;), &amp;callback);
-drow_text($dialog, &quot;name&quot;, &quot;YourName:  &quot;);
-dbutton_action($dialog, &quot;Go&quot;);
-
+$dialog = dialog(&#34;Hello&#34;, %(name =&gt; &#34;tom&#34;), &amp;callback);
+drow_text($dialog, &#34;name&#34;, &#34;YourName:  &#34;);
+dbutton_action($dialog, &#34;Go&#34;);
 </code></pre><p>dialog的手册：https://cobaltstrike.com/aggressor-script/functions.html#dialog</p>
 <p>当点击 菜单项时，弹出对话框：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/940884d8-4f5f-11ec-9437-00d861bf4abb.png" alt="2020-03-01-11-44-03"></p>

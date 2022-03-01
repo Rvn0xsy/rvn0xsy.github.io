@@ -126,32 +126,31 @@
 <h2 id="0x02-get与post的区别">0x02 GET与POST的区别</h2>
 <p>Http定义了与服务器交互的不同方法，最基本的方法有4种，分别是GET，POST，PUT，DELETE。URL全称是资源描述符，我们可以这样认为：一个URL地址，它用于描述一个网络上的资源，而HTTP中的GET，POST，PUT，DELETE就对应着对这个资源的查，改，增，删4个操作。到这里，大家应该有个大概的了解了，GET一般用于获取/查询资源信息，而POST一般用于更新资源信息。</p>
 <p>在网上已经有很多朋友写过了其问题的答案，但是对于WAF，我们就要转变角度去看了，第一点就是要看数据包的区别。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-http" data-lang="http"><span style="color:#a6e22e">GET</span> /sql/index2.php?id=2 <span style="color:#66d9ef">HTTP</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1.1</span>
-Host<span style="color:#f92672">:</span> <span style="color:#ae81ff">192.168.1.102</span>
-User-Agent<span style="color:#f92672">:</span> <span style="color:#ae81ff">Mozilla/5.0 (Windows NT 10.0; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0</span>
-Accept<span style="color:#f92672">:</span> <span style="color:#ae81ff">text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</span>
-Accept-Language<span style="color:#f92672">:</span> <span style="color:#ae81ff">zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3</span>
-Accept-Encoding<span style="color:#f92672">:</span> <span style="color:#ae81ff">gzip, deflate</span>
-Cookie<span style="color:#f92672">:</span> <span style="color:#ae81ff">yunsuo_session_verify=a89786c1a180124a6820b6387b85b693</span>
-Connection<span style="color:#f92672">:</span> <span style="color:#ae81ff">keep-alive</span>
-Upgrade-Insecure-Requests<span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>
-Cache-Control<span style="color:#f92672">:</span> <span style="color:#ae81ff">max-age=0</span>
-
-</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-http" data-lang="http"><span style="color:#a6e22e">POST</span> /sql/search.php <span style="color:#66d9ef">HTTP</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1.1</span>
-Host<span style="color:#f92672">:</span> <span style="color:#ae81ff">192.168.1.102</span>
-User-Agent<span style="color:#f92672">:</span> <span style="color:#ae81ff">Mozilla/5.0 (Windows NT 10.0; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0</span>
-Accept<span style="color:#f92672">:</span> <span style="color:#ae81ff">text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</span>
-Accept-Language<span style="color:#f92672">:</span> <span style="color:#ae81ff">zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3</span>
-Accept-Encoding<span style="color:#f92672">:</span> <span style="color:#ae81ff">gzip, deflate</span>
-Referer<span style="color:#f92672">:</span> <span style="color:#ae81ff">http://192.168.1.102/sql/search.php</span>
-Cookie<span style="color:#f92672">:</span> <span style="color:#ae81ff">yunsuo_session_verify=a89786c1a180124a6820b6387b85b693</span>
-Connection<span style="color:#f92672">:</span> <span style="color:#ae81ff">keep-alive</span>
-Upgrade-Insecure-Requests<span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>
-Content-Type<span style="color:#f92672">:</span> <span style="color:#ae81ff">application/x-www-form-urlencoded</span>
-Content-Length<span style="color:#f92672">:</span> <span style="color:#ae81ff">10</span>
-
-keywords=t
-</code></pre></div><p>可见在请求的数据包中，POST比GET多了一个Content-Type: application/x-www-form-urlencoded</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-http" data-lang="http"><span style="display:flex;"><span><span style="color:#a6e22e">GET</span> /sql/index2.php?id=2 <span style="color:#66d9ef">HTTP</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1.1</span>
+</span></span><span style="display:flex;"><span>Host<span style="color:#f92672">:</span> <span style="color:#ae81ff">192.168.1.102</span>
+</span></span><span style="display:flex;"><span>User-Agent<span style="color:#f92672">:</span> <span style="color:#ae81ff">Mozilla/5.0 (Windows NT 10.0; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0</span>
+</span></span><span style="display:flex;"><span>Accept<span style="color:#f92672">:</span> <span style="color:#ae81ff">text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</span>
+</span></span><span style="display:flex;"><span>Accept-Language<span style="color:#f92672">:</span> <span style="color:#ae81ff">zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3</span>
+</span></span><span style="display:flex;"><span>Accept-Encoding<span style="color:#f92672">:</span> <span style="color:#ae81ff">gzip, deflate</span>
+</span></span><span style="display:flex;"><span>Cookie<span style="color:#f92672">:</span> <span style="color:#ae81ff">yunsuo_session_verify=a89786c1a180124a6820b6387b85b693</span>
+</span></span><span style="display:flex;"><span>Connection<span style="color:#f92672">:</span> <span style="color:#ae81ff">keep-alive</span>
+</span></span><span style="display:flex;"><span>Upgrade-Insecure-Requests<span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>Cache-Control<span style="color:#f92672">:</span> <span style="color:#ae81ff">max-age=0</span>
+</span></span></code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-http" data-lang="http"><span style="display:flex;"><span><span style="color:#a6e22e">POST</span> /sql/search.php <span style="color:#66d9ef">HTTP</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1.1</span>
+</span></span><span style="display:flex;"><span>Host<span style="color:#f92672">:</span> <span style="color:#ae81ff">192.168.1.102</span>
+</span></span><span style="display:flex;"><span>User-Agent<span style="color:#f92672">:</span> <span style="color:#ae81ff">Mozilla/5.0 (Windows NT 10.0; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0</span>
+</span></span><span style="display:flex;"><span>Accept<span style="color:#f92672">:</span> <span style="color:#ae81ff">text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</span>
+</span></span><span style="display:flex;"><span>Accept-Language<span style="color:#f92672">:</span> <span style="color:#ae81ff">zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3</span>
+</span></span><span style="display:flex;"><span>Accept-Encoding<span style="color:#f92672">:</span> <span style="color:#ae81ff">gzip, deflate</span>
+</span></span><span style="display:flex;"><span>Referer<span style="color:#f92672">:</span> <span style="color:#ae81ff">http://192.168.1.102/sql/search.php</span>
+</span></span><span style="display:flex;"><span>Cookie<span style="color:#f92672">:</span> <span style="color:#ae81ff">yunsuo_session_verify=a89786c1a180124a6820b6387b85b693</span>
+</span></span><span style="display:flex;"><span>Connection<span style="color:#f92672">:</span> <span style="color:#ae81ff">keep-alive</span>
+</span></span><span style="display:flex;"><span>Upgrade-Insecure-Requests<span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>Content-Type<span style="color:#f92672">:</span> <span style="color:#ae81ff">application/x-www-form-urlencoded</span>
+</span></span><span style="display:flex;"><span>Content-Length<span style="color:#f92672">:</span> <span style="color:#ae81ff">10</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>keywords=t
+</span></span></code></pre></div><p>可见在请求的数据包中，POST比GET多了一个Content-Type: application/x-www-form-urlencoded</p>
 <p>这个是将提交数据变成url编码来传递给服务器，那么如此说来，也有的WAF会解析这行Content-Type去识别是否是POST注入，因为要防止方法污染。</p>
 <p>如图：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/d4922e42-4f5e-11ec-98fd-00d861bf4abb.jpg" alt="enter description here"></p>
@@ -159,38 +158,37 @@ keywords=t
 <h2 id="0x03-文件上传">0x03 文件上传</h2>
 <p>关于文件上传我们来分享几点，用于延伸下方HPP这一点。
 先看一个上传数据包。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-http" data-lang="http"><span style="color:#a6e22e">POST</span> /upload.php <span style="color:#66d9ef">HTTP</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1.1</span>
-Host<span style="color:#f92672">:</span> <span style="color:#ae81ff">192.168.1.100</span>
-User-Agent<span style="color:#f92672">:</span> <span style="color:#ae81ff">Mozilla/5.0 (Windows NT 10.0; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0</span>
-Accept<span style="color:#f92672">:</span> <span style="color:#ae81ff">text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</span>
-Accept-Language<span style="color:#f92672">:</span> <span style="color:#ae81ff">zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3</span>
-Accept-Encoding<span style="color:#f92672">:</span> <span style="color:#ae81ff">gzip, deflate</span>
-Referer<span style="color:#f92672">:</span> <span style="color:#ae81ff">http://192.168.1.100/</span>
-Cookie<span style="color:#f92672">:</span><span style="color:#ae81ff">yunsuo_session_verify=1a9c7117538a7a9bce39a4695ff3f0cc; safedog-flow-item=</span>
-X-Forwarded-For<span style="color:#f92672">:</span> <span style="color:#ae81ff">1.1.1.1</span>
-CLIENT_IP<span style="color:#f92672">:</span> <span style="color:#ae81ff">2.2.2.2</span>
-Connection<span style="color:#f92672">:</span> <span style="color:#ae81ff">keep-alive</span>
-Upgrade-Insecure-Requests<span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>
-Content-Type<span style="color:#f92672">:</span><span style="color:#ae81ff">multipart/form-data; boundary=---------------------------440470572354</span>
-Content-Length<span style="color:#f92672">:</span> <span style="color:#ae81ff">1089</span>
-
------------------------------440470572354
-Content-Disposition: form-data; name=&#34;file&#34;; filename=&#34;n.php&#34;
-Content-Type: application/octet-stream
-
-&lt;?php
-phpinfo();
-?&gt;
------------------------------440470572354
-Content-Disposition: form-data; name=&#34;submit&#34;
-
-Submit
------------------------------440470572354--
-
-
-Content-Type:multipart/form-data; 指代的是这个数据是来自表单提交的
-
-</code></pre></div><p>某些WAF是通过Content-Type识别是否是文件上传数据包。假设我们将Content-Type更改，数据包也是正常提交过去的。这个就完成了一次bypass。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-http" data-lang="http"><span style="display:flex;"><span><span style="color:#a6e22e">POST</span> /upload.php <span style="color:#66d9ef">HTTP</span><span style="color:#f92672">/</span><span style="color:#ae81ff">1.1</span>
+</span></span><span style="display:flex;"><span>Host<span style="color:#f92672">:</span> <span style="color:#ae81ff">192.168.1.100</span>
+</span></span><span style="display:flex;"><span>User-Agent<span style="color:#f92672">:</span> <span style="color:#ae81ff">Mozilla/5.0 (Windows NT 10.0; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0</span>
+</span></span><span style="display:flex;"><span>Accept<span style="color:#f92672">:</span> <span style="color:#ae81ff">text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</span>
+</span></span><span style="display:flex;"><span>Accept-Language<span style="color:#f92672">:</span> <span style="color:#ae81ff">zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3</span>
+</span></span><span style="display:flex;"><span>Accept-Encoding<span style="color:#f92672">:</span> <span style="color:#ae81ff">gzip, deflate</span>
+</span></span><span style="display:flex;"><span>Referer<span style="color:#f92672">:</span> <span style="color:#ae81ff">http://192.168.1.100/</span>
+</span></span><span style="display:flex;"><span>Cookie<span style="color:#f92672">:</span><span style="color:#ae81ff">yunsuo_session_verify=1a9c7117538a7a9bce39a4695ff3f0cc; safedog-flow-item=</span>
+</span></span><span style="display:flex;"><span>X-Forwarded-For<span style="color:#f92672">:</span> <span style="color:#ae81ff">1.1.1.1</span>
+</span></span><span style="display:flex;"><span>CLIENT_IP<span style="color:#f92672">:</span> <span style="color:#ae81ff">2.2.2.2</span>
+</span></span><span style="display:flex;"><span>Connection<span style="color:#f92672">:</span> <span style="color:#ae81ff">keep-alive</span>
+</span></span><span style="display:flex;"><span>Upgrade-Insecure-Requests<span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>Content-Type<span style="color:#f92672">:</span><span style="color:#ae81ff">multipart/form-data; boundary=---------------------------440470572354</span>
+</span></span><span style="display:flex;"><span>Content-Length<span style="color:#f92672">:</span> <span style="color:#ae81ff">1089</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>-----------------------------440470572354
+</span></span><span style="display:flex;"><span>Content-Disposition: form-data; name=&#34;file&#34;; filename=&#34;n.php&#34;
+</span></span><span style="display:flex;"><span>Content-Type: application/octet-stream
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt;?php
+</span></span><span style="display:flex;"><span>phpinfo();
+</span></span><span style="display:flex;"><span>?&gt;
+</span></span><span style="display:flex;"><span>-----------------------------440470572354
+</span></span><span style="display:flex;"><span>Content-Disposition: form-data; name=&#34;submit&#34;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Submit
+</span></span><span style="display:flex;"><span>-----------------------------440470572354--
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Content-Type:multipart/form-data; 指代的是这个数据是来自表单提交的
+</span></span></code></pre></div><p>某些WAF是通过Content-Type识别是否是文件上传数据包。假设我们将Content-Type更改，数据包也是正常提交过去的。这个就完成了一次bypass。</p>
 <p>还有的时候就是Content-Disposition: form-data;，也有某些WAF是根据Content-Disposition匹配filename的（Safe Dog 3.5/4.0通杀），用于验证黑名单。我们经过混淆大小写也是可以bypass的。</p>
 <p>拦截：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/d4e9901a-4f5e-11ec-be33-00d861bf4abb.jpg" alt="enter description here"></p>

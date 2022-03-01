@@ -80,46 +80,46 @@
         </div>
     <h2 id="0x01-windows-pebprocess-environment-block">0x01 Windows PEB(Process Environment Block)</h2>
 <p>Windows <a href="https://docs.microsoft.com/en-us/windows/win32/api/winternl/ns-winternl-peb">PEB</a>，中文的含义是进程环境块，意味着其中包含了很多与进程相关的复杂信息。微软官方给出了Windows PEB的结构体标准，每一个字段都代表了特定的意义。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _PEB {
-  BYTE                          Reserved1[<span style="color:#ae81ff">2</span>];
-  BYTE                          BeingDebugged;
-  BYTE                          Reserved2[<span style="color:#ae81ff">1</span>];
-  PVOID                         Reserved3[<span style="color:#ae81ff">2</span>];
-  PPEB_LDR_DATA                 Ldr;
-  PRTL_USER_PROCESS_PARAMETERS  ProcessParameters;
-  PVOID                         Reserved4[<span style="color:#ae81ff">3</span>];
-  PVOID                         AtlThunkSListPtr;
-  PVOID                         Reserved5;
-  ULONG                         Reserved6;
-  PVOID                         Reserved7;
-  ULONG                         Reserved8;
-  ULONG                         AtlThunkSListPtr32;
-  PVOID                         Reserved9[<span style="color:#ae81ff">45</span>];
-  BYTE                          Reserved10[<span style="color:#ae81ff">96</span>];
-  PPS_POST_PROCESS_INIT_ROUTINE PostProcessInitRoutine;
-  BYTE                          Reserved11[<span style="color:#ae81ff">128</span>];
-  PVOID                         Reserved12[<span style="color:#ae81ff">1</span>];
-  ULONG                         SessionId;
-} PEB, <span style="color:#f92672">*</span>PPEB;
-</code></pre></div><p>在Windbg中可以直观的看到PEB字段的详细信息：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _PEB {
+</span></span><span style="display:flex;"><span>  BYTE                          Reserved1[<span style="color:#ae81ff">2</span>];
+</span></span><span style="display:flex;"><span>  BYTE                          BeingDebugged;
+</span></span><span style="display:flex;"><span>  BYTE                          Reserved2[<span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>  PVOID                         Reserved3[<span style="color:#ae81ff">2</span>];
+</span></span><span style="display:flex;"><span>  PPEB_LDR_DATA                 Ldr;
+</span></span><span style="display:flex;"><span>  PRTL_USER_PROCESS_PARAMETERS  ProcessParameters;
+</span></span><span style="display:flex;"><span>  PVOID                         Reserved4[<span style="color:#ae81ff">3</span>];
+</span></span><span style="display:flex;"><span>  PVOID                         AtlThunkSListPtr;
+</span></span><span style="display:flex;"><span>  PVOID                         Reserved5;
+</span></span><span style="display:flex;"><span>  ULONG                         Reserved6;
+</span></span><span style="display:flex;"><span>  PVOID                         Reserved7;
+</span></span><span style="display:flex;"><span>  ULONG                         Reserved8;
+</span></span><span style="display:flex;"><span>  ULONG                         AtlThunkSListPtr32;
+</span></span><span style="display:flex;"><span>  PVOID                         Reserved9[<span style="color:#ae81ff">45</span>];
+</span></span><span style="display:flex;"><span>  BYTE                          Reserved10[<span style="color:#ae81ff">96</span>];
+</span></span><span style="display:flex;"><span>  PPS_POST_PROCESS_INIT_ROUTINE PostProcessInitRoutine;
+</span></span><span style="display:flex;"><span>  BYTE                          Reserved11[<span style="color:#ae81ff">128</span>];
+</span></span><span style="display:flex;"><span>  PVOID                         Reserved12[<span style="color:#ae81ff">1</span>];
+</span></span><span style="display:flex;"><span>  ULONG                         SessionId;
+</span></span><span style="display:flex;"><span>} PEB, <span style="color:#f92672">*</span>PPEB;
+</span></span></code></pre></div><p>在Windbg中可以直观的看到PEB字段的详细信息：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/bb618174-4f5f-11ec-b63c-00d861bf4abb.png" alt="2021-09-14-09-56-44"></p>
 <h3 id="shellcode">Shellcode</h3>
 <p>shellcode是一段用于利用软件漏洞而执行的代码，shellcode执行后经常让攻击者获得shell而得名。一个漏洞从发现到利用，是艰巨的任务，因此往往编写shellcode是对漏洞挖掘黑客的一个风水岭。大部分shellcode编写知识都与Windows PEB结构紧密相连，Windows PEB结构中保存了当前进程的复杂信息，这些复杂信息中包含了PE文件的内存地址，通过解析PE文件，可以直接寻找到<code>kernel32.dll</code>模块，利用这个模块中的<code>Loadlibrary</code>API可以导入Windows所有的模块，最终能够在目标进程实现所有代码的执行。在实际应用领域的shellcode并不会太长，不同的漏洞利用对shellcode长度限制不同，所以越短越能直接达到目的的shellcode才是好code。</p>
 <p>那么，如何找到PEB呢？ - Thread Environment Block (TEB structure)</p>
 <p>Windows操作系统中，CPU的FS寄存器指向当前活动线程的TEB结构（线程结构），TEB结构中包含了PEB结构：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _TEB {
-  PVOID Reserved1[<span style="color:#ae81ff">12</span>];
-  PPEB  ProcessEnvironmentBlock; <span style="color:#75715e">//  PEB 结构
-</span><span style="color:#75715e"></span>  PVOID Reserved2[<span style="color:#ae81ff">399</span>];
-  BYTE  Reserved3[<span style="color:#ae81ff">1952</span>];
-  PVOID TlsSlots[<span style="color:#ae81ff">64</span>];
-  BYTE  Reserved4[<span style="color:#ae81ff">8</span>];
-  PVOID Reserved5[<span style="color:#ae81ff">26</span>];
-  PVOID ReservedForOle;
-  PVOID Reserved6[<span style="color:#ae81ff">4</span>];
-  PVOID TlsExpansionSlots;
-} TEB, <span style="color:#f92672">*</span>PTEB;
-</code></pre></div><p>从这一点，我们就更能深刻理解，线程才是一个程序的执行单元，进程只是一个“容器”。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _TEB {
+</span></span><span style="display:flex;"><span>  PVOID Reserved1[<span style="color:#ae81ff">12</span>];
+</span></span><span style="display:flex;"><span>  PPEB  ProcessEnvironmentBlock; <span style="color:#75715e">//  PEB 结构
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  PVOID Reserved2[<span style="color:#ae81ff">399</span>];
+</span></span><span style="display:flex;"><span>  BYTE  Reserved3[<span style="color:#ae81ff">1952</span>];
+</span></span><span style="display:flex;"><span>  PVOID TlsSlots[<span style="color:#ae81ff">64</span>];
+</span></span><span style="display:flex;"><span>  BYTE  Reserved4[<span style="color:#ae81ff">8</span>];
+</span></span><span style="display:flex;"><span>  PVOID Reserved5[<span style="color:#ae81ff">26</span>];
+</span></span><span style="display:flex;"><span>  PVOID ReservedForOle;
+</span></span><span style="display:flex;"><span>  PVOID Reserved6[<span style="color:#ae81ff">4</span>];
+</span></span><span style="display:flex;"><span>  PVOID TlsExpansionSlots;
+</span></span><span style="display:flex;"><span>} TEB, <span style="color:#f92672">*</span>PTEB;
+</span></span></code></pre></div><p>从这一点，我们就更能深刻理解，线程才是一个程序的执行单元，进程只是一个“容器”。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/bbc1ed02-4f5f-11ec-a5ba-00d861bf4abb.png" alt="2021-09-14-10-59-33"></p>
 <h2 id="0x02-使用汇编语言访问peb">0x02 使用汇编语言访问PEB</h2>
 <p>我的理解：汇编语言分为纯汇编、伪汇编、宏汇编</p>
@@ -129,53 +129,53 @@
 <li>宏汇编是一定程度上将汇编语言进行了抽象、过程封装，比如MASM调用Windows只需要INVOKE即可，不需要关注保存现场、堆栈情况。</li>
 </ol>
 <p>这里我使用C语言内置的汇编块进行获取PEB中<code>BeingDebugged</code>的值，它只有1个字节。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
-{
-	DWORD dwIsDebug <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-	<span style="color:#66d9ef">__asm</span> {
-		pushad
-		mov eax, fs: [<span style="color:#ae81ff">30</span>h]
-		movzx eax, byte ptr[eax <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>]
-		mov dword ptr [dwIsDebug], eax
-		popad
-	}
-	<span style="color:#66d9ef">if</span> (dwIsDebug) {
-		printf(<span style="color:#e6db74">&#34;Debug.....&#34;</span>);
-	}
-	printf(<span style="color:#e6db74">&#34;Debug : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, dwIsDebug);
-	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-}
-</code></pre></div><p>这个程序在没有调试的情况下启动，会输出<code>Debug : 0</code>，如果有调试器进行调试，会输出<code>Debug.....Debug : 1</code>。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	DWORD dwIsDebug <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">__asm</span> {
+</span></span><span style="display:flex;"><span>		pushad
+</span></span><span style="display:flex;"><span>		mov eax, fs: [<span style="color:#ae81ff">30</span>h]
+</span></span><span style="display:flex;"><span>		movzx eax, byte ptr[eax <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>]
+</span></span><span style="display:flex;"><span>		mov dword ptr [dwIsDebug], eax
+</span></span><span style="display:flex;"><span>		popad
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (dwIsDebug) {
+</span></span><span style="display:flex;"><span>		printf(<span style="color:#e6db74">&#34;Debug.....&#34;</span>);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	printf(<span style="color:#e6db74">&#34;Debug : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, dwIsDebug);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这个程序在没有调试的情况下启动，会输出<code>Debug : 0</code>，如果有调试器进行调试，会输出<code>Debug.....Debug : 1</code>。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/bc04433c-4f5f-11ec-9b23-00d861bf4abb.png" alt="2021-09-14-11-39-43"></p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/bc3d6432-4f5f-11ec-a05e-00d861bf4abb.png" alt="2021-09-14-11-41-12"></p>
 <p>如果想要判断当前程序是否被调试，可以获取PEB中的<code>BeingDebugged</code>的值，看看它是否为1即可。</p>
 <h2 id="0x03-反调试代码优化">0x03 反调试代码优化</h2>
 <p>有些时候调试沙箱会自动跳过一些判断，让程序继续执行，这样一定程度会绕过反调试代码，所以判断是否被调试的代码最好不要用<code>if...else</code>语法去写。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
-{
-	DWORD dwIsDebug <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-    <span style="color:#66d9ef">__asm</span> {
-        pushad
-        mov eax, fs: [<span style="color:#ae81ff">30</span>h]
-        movzx ecx, byte ptr[eax <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>]
-        cmp ecx, <span style="color:#ae81ff">1</span>
-        jz Again
-        jmp Bye
-        Again :
-            <span style="color:#66d9ef">int</span> <span style="color:#ae81ff">3</span>
-        Bye :
-            popad
-    }
-    printf(<span style="color:#e6db74">&#34;HelloWorld...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-}
-</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/bc78a042-4f5f-11ec-a0c6-00d861bf4abb.png" alt="2021-09-14-11-47-16"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	DWORD dwIsDebug <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">__asm</span> {
+</span></span><span style="display:flex;"><span>        pushad
+</span></span><span style="display:flex;"><span>        mov eax, fs: [<span style="color:#ae81ff">30</span>h]
+</span></span><span style="display:flex;"><span>        movzx ecx, byte ptr[eax <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>]
+</span></span><span style="display:flex;"><span>        cmp ecx, <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span>        jz Again
+</span></span><span style="display:flex;"><span>        jmp Bye
+</span></span><span style="display:flex;"><span>        Again :
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">int</span> <span style="color:#ae81ff">3</span>
+</span></span><span style="display:flex;"><span>        Bye :
+</span></span><span style="display:flex;"><span>            popad
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>    printf(<span style="color:#e6db74">&#34;HelloWorld...</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/bc78a042-4f5f-11ec-a0c6-00d861bf4abb.png" alt="2021-09-14-11-47-16"></p>
 <p>上图中，如果遇到调试器，将会无限触发断点，而这个汇编代码块，在Windows代码中也是可以通用的。</p>
 <p><strong>编译器生成的机器代码其实往往并不是可控的，都是有迹可循的。</strong></p>
 <h2 id="0x04-总结">0x04 总结</h2>

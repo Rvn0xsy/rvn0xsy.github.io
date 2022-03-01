@@ -134,21 +134,21 @@
 <p>刚才百科告诉我们，套接字用（IP地址：端口号）表示。</p>
 <p>那么在网络编程中如何告诉计算机，什么是端口，什么是端口号呢？</p>
 <p>于是出现了被计算机界公认的结构体，这个结构体保存在系统的标准库中：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
-<span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;arpa/inet.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">struct</span> sockaddr_in
-  {
-    __SOCKADDR_COMMON (sin_);
-    in_port_t sin_port;			<span style="color:#75715e">/* Port number.  */</span>
-    <span style="color:#66d9ef">struct</span> in_addr sin_addr;		<span style="color:#75715e">/* Internet address.  */</span>
-
-    <span style="color:#75715e">/* Pad to size of `struct sockaddr&#39;.  */</span>
-    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> sin_zero[<span style="color:#66d9ef">sizeof</span> (<span style="color:#66d9ef">struct</span> sockaddr) <span style="color:#f92672">-</span>
-			   __SOCKADDR_COMMON_SIZE <span style="color:#f92672">-</span>
-			   <span style="color:#66d9ef">sizeof</span> (in_port_t) <span style="color:#f92672">-</span>
-			   <span style="color:#66d9ef">sizeof</span> (<span style="color:#66d9ef">struct</span> in_addr)];
-  };
-</code></pre></div><p>看起来还是比较复杂的，但是用起来一点都不复杂。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;arpa/inet.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">struct</span> sockaddr_in
+</span></span><span style="display:flex;"><span>  {
+</span></span><span style="display:flex;"><span>    __SOCKADDR_COMMON (sin_);
+</span></span><span style="display:flex;"><span>    in_port_t sin_port;			<span style="color:#75715e">/* Port number.  */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">struct</span> in_addr sin_addr;		<span style="color:#75715e">/* Internet address.  */</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/* Pad to size of `struct sockaddr&#39;.  */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span> sin_zero[<span style="color:#66d9ef">sizeof</span> (<span style="color:#66d9ef">struct</span> sockaddr) <span style="color:#f92672">-</span>
+</span></span><span style="display:flex;"><span>			   __SOCKADDR_COMMON_SIZE <span style="color:#f92672">-</span>
+</span></span><span style="display:flex;"><span>			   <span style="color:#66d9ef">sizeof</span> (in_port_t) <span style="color:#f92672">-</span>
+</span></span><span style="display:flex;"><span>			   <span style="color:#66d9ef">sizeof</span> (<span style="color:#66d9ef">struct</span> in_addr)];
+</span></span><span style="display:flex;"><span>  };
+</span></span></code></pre></div><p>看起来还是比较复杂的，但是用起来一点都不复杂。</p>
 <h3 id="套接字的类型3种">套接字的类型（3种）</h3>
 <p>套接字的类型一般在创建套接字描述符的时候用到。</p>
 <ul>
@@ -159,11 +159,10 @@
 </ul>
 <h3 id="套接字描述符">套接字描述符</h3>
 <p>这里就要引入一个<code>socket</code>函数了，它在C语言的头文件中：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
-<span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> socket (<span style="color:#66d9ef">int</span> __domain, <span style="color:#66d9ef">int</span> __type, <span style="color:#66d9ef">int</span> __protocol)
-
-</code></pre></div><p>该函数用于创建描述符</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> socket (<span style="color:#66d9ef">int</span> __domain, <span style="color:#66d9ef">int</span> __type, <span style="color:#66d9ef">int</span> __protocol)
+</span></span></code></pre></div><p>该函数用于创建描述符</p>
 <p>我们的操作系统中此时此刻有很多网络连接，为了区分他们，我们就给它们编个号，也就相当于我们自己的身份证。有了身份证做其他事情就比较方便了。</p>
 <h3 id="网络字节序">网络字节序</h3>
 <p>不同的CPU有不同的字节序类型，这些字节序是指 整数 在内存中保存的顺序，这个叫做 主机序。</p>
@@ -179,45 +178,45 @@
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/22b224ba-4f5f-11ec-a5d3-00d861bf4abb.jpg" alt="enter description here" title="0x02"></p>
 <p>到这里，我们就需要动手写代码了！</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/22ecc1ec-4f5f-11ec-850e-00d861bf4abb.png" alt="enter description here" title="0x03"></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
-<span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;arpa/inet.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc,<span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span> argv) {
-
-    <span style="color:#66d9ef">int</span> clientSock,serverSock,serverPort;
-    serverPort <span style="color:#f92672">=</span> <span style="color:#ae81ff">8877</span>;
-
-    serverSock <span style="color:#f92672">=</span> socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
-
-    <span style="color:#66d9ef">struct</span> sockaddr_in serverAddr,clientAddr;
-
-    socklen_t clientSockLen;
-    clientSockLen <span style="color:#f92672">=</span> <span style="color:#66d9ef">sizeof</span>(clientAddr);
-
-    serverAddr.sin_addr.s_addr <span style="color:#f92672">=</span> inet_addr(<span style="color:#e6db74">&#34;127.0.0.1&#34;</span>);
-
-    serverAddr.sin_port <span style="color:#f92672">=</span> htons(serverPort);
-
-    serverAddr.sin_family <span style="color:#f92672">=</span> AF_INET;
-
-    bind(serverSock,(<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>serverAddr, <span style="color:#66d9ef">sizeof</span>(serverAddr));
-
-    listen(serverSock,<span style="color:#ae81ff">5</span>);
-    printf(<span style="color:#e6db74">&#34;[*]Listen Port : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,serverPort);
-    <span style="color:#66d9ef">while</span>((clientSock <span style="color:#f92672">=</span> accept(serverSock,(<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>clientAddr,<span style="color:#f92672">&amp;</span>clientSockLen))){
-        <span style="color:#66d9ef">char</span> recvBuff[<span style="color:#ae81ff">100</span>];
-        printf(<span style="color:#e6db74">&#34;[*]Client %s Connected .. </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,inet_ntoa(clientAddr.sin_addr));
-        <span style="color:#66d9ef">if</span>(recv(clientSock,recvBuff, <span style="color:#66d9ef">sizeof</span>(recvBuff)<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>)<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">0</span>){
-            printf(<span style="color:#e6db74">&#34;[*]Recv : %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,recvBuff);
-        }
-        close(clientSock);
-    }
-
-    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-}
-</code></pre></div><p>这只是一个简单的TCP服务端，只能发送一次内容，就会断开连接</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;arpa/inet.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc,<span style="color:#66d9ef">char</span> <span style="color:#f92672">**</span> argv) {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> clientSock,serverSock,serverPort;
+</span></span><span style="display:flex;"><span>    serverPort <span style="color:#f92672">=</span> <span style="color:#ae81ff">8877</span>;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    serverSock <span style="color:#f92672">=</span> socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">struct</span> sockaddr_in serverAddr,clientAddr;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    socklen_t clientSockLen;
+</span></span><span style="display:flex;"><span>    clientSockLen <span style="color:#f92672">=</span> <span style="color:#66d9ef">sizeof</span>(clientAddr);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    serverAddr.sin_addr.s_addr <span style="color:#f92672">=</span> inet_addr(<span style="color:#e6db74">&#34;127.0.0.1&#34;</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    serverAddr.sin_port <span style="color:#f92672">=</span> htons(serverPort);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    serverAddr.sin_family <span style="color:#f92672">=</span> AF_INET;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    bind(serverSock,(<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>serverAddr, <span style="color:#66d9ef">sizeof</span>(serverAddr));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    listen(serverSock,<span style="color:#ae81ff">5</span>);
+</span></span><span style="display:flex;"><span>    printf(<span style="color:#e6db74">&#34;[*]Listen Port : %d </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,serverPort);
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">while</span>((clientSock <span style="color:#f92672">=</span> accept(serverSock,(<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>clientAddr,<span style="color:#f92672">&amp;</span>clientSockLen))){
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">char</span> recvBuff[<span style="color:#ae81ff">100</span>];
+</span></span><span style="display:flex;"><span>        printf(<span style="color:#e6db74">&#34;[*]Client %s Connected .. </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,inet_ntoa(clientAddr.sin_addr));
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(recv(clientSock,recvBuff, <span style="color:#66d9ef">sizeof</span>(recvBuff)<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>)<span style="color:#f92672">&gt;</span><span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>            printf(<span style="color:#e6db74">&#34;[*]Recv : %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,recvBuff);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        close(clientSock);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>这只是一个简单的TCP服务端，只能发送一次内容，就会断开连接</p>
 <h2 id="0x02-协议选择">0x02 协议选择</h2>
 <p>由于是任务处理的服务端，我比较倾向于UDP协议，无需繁琐的握手，只需要发送接收一次即可。</p>
 <p>这个后面的服务端模型会介绍到为什么选择UDP协议。</p>
@@ -239,64 +238,64 @@ UDP没有拥塞控制，因此网络出现拥塞不会使源主机的发送速�
 <p>首先，主进程用于创建套接字，管理僵尸进程，子进程用于服务监听，接收客户端发送来的数据，它主要用于创建孙进程，客户端派发N个任务就创建N个孙进程。</p>
 <p>这个模型很适合UDP协议呀，有木有！</p>
 <h3 id="模型代码">模型代码</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp">
-<span style="color:#66d9ef">bool</span> Server<span style="color:#f92672">::</span>startServer() {
-
-    signal(SIGCHLD, _signalHandler);
-    pid_t pid<span style="color:#f92672">=</span>fork(); <span style="color:#75715e">// 创建子进程
-</span><span style="color:#75715e"></span>
-    <span style="color:#66d9ef">if</span>(pid<span style="color:#f92672">==</span><span style="color:#ae81ff">0</span>){  <span style="color:#75715e">//子进程处理开始
-</span><span style="color:#75715e"></span>
-        <span style="color:#75715e">// 创建SOCKET描述符
-</span><span style="color:#75715e"></span>        _serverSock <span style="color:#f92672">=</span> socket(AF_INET,SOCK_STREAM,<span style="color:#ae81ff">0</span>);
-
-        <span style="color:#75715e">// 设置超时
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">linger</span> timeWit;
-        timeWit.l_onoff <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
-        timeWit.l_linger <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
-        setsockopt(_serverSock,SOL_SOCKET,SO_LINGER,<span style="color:#f92672">&amp;</span>timeWit, <span style="color:#66d9ef">sizeof</span>(timeWit));
-
-        <span style="color:#75715e">// 地址重用
-</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">int</span> reuse <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
-        setsockopt(_serverSock,SOL_SOCKET,SO_REUSEADDR,<span style="color:#f92672">&amp;</span>reuse, <span style="color:#66d9ef">sizeof</span>(reuse));
-
-        _serverAddr.sin_family <span style="color:#f92672">=</span> AF_INET;
-        _serverAddr.sin_addr.s_addr <span style="color:#f92672">=</span> INADDR_ANY;
-
-        <span style="color:#75715e">// 绑定端口
-</span><span style="color:#75715e"></span>        _serverAddr.sin_port <span style="color:#f92672">=</span> htons((<span style="color:#66d9ef">uint16_t</span>)_listenPort);
-
-        <span style="color:#66d9ef">if</span>(bind(_serverSock,(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">sockaddr</span> <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>_serverAddr, <span style="color:#66d9ef">sizeof</span>(_serverAddr))<span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>){
-            std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;[*]Server bind Success ...&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
-        }<span style="color:#66d9ef">else</span>{
-            std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;[!]Server bind Fail ...&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
-            exit(<span style="color:#ae81ff">0</span>);
-        }
-        _clientSize <span style="color:#f92672">=</span> <span style="color:#66d9ef">sizeof</span>(_clientAddr);
-
-        listen(_serverSock,_clientMaxNum);
-        <span style="color:#66d9ef">while</span>(<span style="color:#ae81ff">1</span>){
-            <span style="color:#75715e">// 接收客户端请求
-</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span>((_clientSock <span style="color:#f92672">=</span> accept(_serverSock,(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">sockaddr</span> <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>_clientAddr,<span style="color:#f92672">&amp;</span>_clientSize))<span style="color:#f92672">!=-</span><span style="color:#ae81ff">1</span>){
-                _clientPID <span style="color:#f92672">=</span> fork();
-                <span style="color:#66d9ef">if</span>(_clientPID <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>){
-                    close(_serverSock); <span style="color:#75715e">// 关闭服务端Socket
-</span><span style="color:#75715e"></span>                    recv(_clientSock,_fromClientBUFF,<span style="color:#ae81ff">500</span>,<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// 接收数据
-</span><span style="color:#75715e"></span>
-						<span style="color:#75715e">// ........
-</span><span style="color:#75715e"></span>
-                    shutdown(_clientSock,SHUT_RDWR);
-                    exit(<span style="color:#ae81ff">0</span>);
-                }
-            }
-        }
-    }<span style="color:#66d9ef">else</span>{
-        <span style="color:#66d9ef">int</span> status;
-        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;[*]Server is running ...&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
-        waitpid(pid,<span style="color:#f92672">&amp;</span>status,<span style="color:#ae81ff">0</span>);
-    }
-}
-</code></pre></div><h2 id="0x04-信号处理">0x04 信号处理</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">bool</span> Server<span style="color:#f92672">::</span>startServer() {
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    signal(SIGCHLD, _signalHandler);
+</span></span><span style="display:flex;"><span>    pid_t pid<span style="color:#f92672">=</span>fork(); <span style="color:#75715e">// 创建子进程
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(pid<span style="color:#f92672">==</span><span style="color:#ae81ff">0</span>){  <span style="color:#75715e">//子进程处理开始
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 创建SOCKET描述符
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        _serverSock <span style="color:#f92672">=</span> socket(AF_INET,SOCK_STREAM,<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 设置超时
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">linger</span> timeWit;
+</span></span><span style="display:flex;"><span>        timeWit.l_onoff <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>        timeWit.l_linger <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>;
+</span></span><span style="display:flex;"><span>        setsockopt(_serverSock,SOL_SOCKET,SO_LINGER,<span style="color:#f92672">&amp;</span>timeWit, <span style="color:#66d9ef">sizeof</span>(timeWit));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 地址重用
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#66d9ef">int</span> reuse <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+</span></span><span style="display:flex;"><span>        setsockopt(_serverSock,SOL_SOCKET,SO_REUSEADDR,<span style="color:#f92672">&amp;</span>reuse, <span style="color:#66d9ef">sizeof</span>(reuse));
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        _serverAddr.sin_family <span style="color:#f92672">=</span> AF_INET;
+</span></span><span style="display:flex;"><span>        _serverAddr.sin_addr.s_addr <span style="color:#f92672">=</span> INADDR_ANY;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// 绑定端口
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        _serverAddr.sin_port <span style="color:#f92672">=</span> htons((<span style="color:#66d9ef">uint16_t</span>)_listenPort);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(bind(_serverSock,(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">sockaddr</span> <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>_serverAddr, <span style="color:#66d9ef">sizeof</span>(_serverAddr))<span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>            std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;[*]Server bind Success ...&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>        }<span style="color:#66d9ef">else</span>{
+</span></span><span style="display:flex;"><span>            std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;[!]Server bind Fail ...&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>            exit(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>        _clientSize <span style="color:#f92672">=</span> <span style="color:#66d9ef">sizeof</span>(_clientAddr);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        listen(_serverSock,_clientMaxNum);
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">while</span>(<span style="color:#ae81ff">1</span>){
+</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// 接收客户端请求
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span>((_clientSock <span style="color:#f92672">=</span> accept(_serverSock,(<span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">sockaddr</span> <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>_clientAddr,<span style="color:#f92672">&amp;</span>_clientSize))<span style="color:#f92672">!=-</span><span style="color:#ae81ff">1</span>){
+</span></span><span style="display:flex;"><span>                _clientPID <span style="color:#f92672">=</span> fork();
+</span></span><span style="display:flex;"><span>                <span style="color:#66d9ef">if</span>(_clientPID <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>                    close(_serverSock); <span style="color:#75715e">// 关闭服务端Socket
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                    recv(_clientSock,_fromClientBUFF,<span style="color:#ae81ff">500</span>,<span style="color:#ae81ff">0</span>); <span style="color:#75715e">// 接收数据
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>						<span style="color:#75715e">// ........
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>                    shutdown(_clientSock,SHUT_RDWR);
+</span></span><span style="display:flex;"><span>                    exit(<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>                }
+</span></span><span style="display:flex;"><span>            }
+</span></span><span style="display:flex;"><span>        }
+</span></span><span style="display:flex;"><span>    }<span style="color:#66d9ef">else</span>{
+</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> status;
+</span></span><span style="display:flex;"><span>        std<span style="color:#f92672">::</span>cout <span style="color:#f92672">&lt;&lt;</span> <span style="color:#e6db74">&#34;[*]Server is running ...&#34;</span> <span style="color:#f92672">&lt;&lt;</span> std<span style="color:#f92672">::</span>endl;
+</span></span><span style="display:flex;"><span>        waitpid(pid,<span style="color:#f92672">&amp;</span>status,<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    }
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><h2 id="0x04-信号处理">0x04 信号处理</h2>
 <p>信号机制是进程之间相互传递消息的一种方法，信号全称为软中断信号，也有人称软中断。从它的命名可以看出，它的实质和使用很像中断，所有，信号可以说是进程控制的一部分</p>
 <p>这段话写的可能有点晦涩难懂，我就写一个程序给你看看：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/23685e4c-4f5f-11ec-8cac-00d861bf4abb.png" alt="enter description here" title="0x05"></p>
@@ -337,32 +336,30 @@ UDP没有拥塞控制，因此网络出现拥塞不会使源主机的发送速�
 </ul>
 <h3 id="处理僵尸进程">处理僵尸进程</h3>
 <p>waitpid()会暂时停止目前进程的执行，直到有信号来到或子进程结束。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"> 
-<span style="color:#75715e">#include</span><span style="color:#75715e">&lt;sys/types.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span><span style="color:#75715e">&lt;sys/wait.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>pid_t <span style="color:#a6e22e">waitpid</span>(pid_t pid,<span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span> status,<span style="color:#66d9ef">int</span> options);
-
-</code></pre></div><h2 id="0x05-多进程多线程">0x05 多进程、多线程</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span> 
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span><span style="color:#75715e">&lt;sys/types.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span><span style="color:#75715e">&lt;sys/wait.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>pid_t <span style="color:#a6e22e">waitpid</span>(pid_t pid,<span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span> status,<span style="color:#66d9ef">int</span> options);
+</span></span></code></pre></div><h2 id="0x05-多进程多线程">0x05 多进程、多线程</h2>
 <p>由于客户端派发过来的任务需要子进程处理，来创建孙进程。</p>
 <p>孙进程处理任务会创建N个线程</p>
 <h3 id="进程的创建fork">进程的创建fork()</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
-<span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>pid_t <span style="color:#a6e22e">fork</span>();
-
-</code></pre></div><p>实例代码：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
-<span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span>pid_t childPid <span style="color:#f92672">=</span> fork();
-<span style="color:#66d9ef">if</span>(childPid <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>){
-
-printf(<span style="color:#e6db74">&#34;child ...&#34;</span>);
-<span style="color:#75715e">// .... 子进程处理
-</span><span style="color:#75715e"></span>}<span style="color:#66d9ef">else</span>{
-<span style="color:#75715e">/// 父进程处理
-</span><span style="color:#75715e"></span>}
-</code></pre></div><p>为什么两个进程的fpid不同呢，这与fork函数的特性有关。fork调用的一个奇妙之处就是它仅仅被调用一次，却能够返回两次，它可能有三种不同的返回值：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>pid_t <span style="color:#a6e22e">fork</span>();
+</span></span></code></pre></div><p>实例代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>pid_t childPid <span style="color:#f92672">=</span> fork();
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span>(childPid <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>printf(<span style="color:#e6db74">&#34;child ...&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// .... 子进程处理
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}<span style="color:#66d9ef">else</span>{
+</span></span><span style="display:flex;"><span><span style="color:#75715e">/// 父进程处理
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}
+</span></span></code></pre></div><p>为什么两个进程的fpid不同呢，这与fork函数的特性有关。fork调用的一个奇妙之处就是它仅仅被调用一次，却能够返回两次，它可能有三种不同的返回值：</p>
 <ul>
 <li>1）在父进程中，fork返回新创建子进程的进程ID；</li>
 <li>2）在子进程中，fork返回0；</li>
@@ -370,15 +367,15 @@ printf(<span style="color:#e6db74">&#34;child ...&#34;</span>);
 </ul>
 <h3 id="多线程">多线程</h3>
 <p>Linux系统下的多线程遵循POSIX线程接口，称为pthread。编写Linux下的多线程程序，需要使用头文件pthread.h，连接时需要使用库libpthread.a。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;pthread.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> pthread_create(pthread_t  <span style="color:#f92672">*</span>  <span style="color:#66d9ef">thread</span>,
-
-pthread_attr_t <span style="color:#f92672">*</span> attr,
-
-<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span> (<span style="color:#f92672">*</span>start_routine)(<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>),
-
-<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span> arg)
-</code></pre></div><ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;pthread.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> pthread_create(pthread_t  <span style="color:#f92672">*</span>  <span style="color:#66d9ef">thread</span>,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>pthread_attr_t <span style="color:#f92672">*</span> attr,
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span> (<span style="color:#f92672">*</span>start_routine)(<span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>),
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span> arg)
+</span></span></code></pre></div><ul>
 <li>
 <p>thread：返回创建的线程的ID</p>
 </li>
@@ -397,66 +394,64 @@ pthread_attr_t <span style="color:#f92672">*</span> attr,
 <p>我的项目在：https://github.com/KoonsTools/PenloopGather</p>
 <p>为了锻炼编程能力，我选择了TCP协议，后面优化的时候自己再改成UDP吧</p>
 <p>首先，需要自己拟定一个协议，让客户端与服务器端能解析报文。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
-<span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;string.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;arpa/inet.h&gt;</span><span style="color:#75715e">
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> shadowPls{
-<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> <span style="color:#66d9ef">int</span> id;
-<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> <span style="color:#66d9ef">int</span>  rq;
-<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> <span style="color:#66d9ef">int</span>  type;
-<span style="color:#66d9ef">char</span>  authcode[<span style="color:#ae81ff">33</span>];
-<span style="color:#66d9ef">char</span>  target[<span style="color:#ae81ff">100</span>];
-<span style="color:#66d9ef">char</span>  comment[<span style="color:#ae81ff">100</span>];
-<span style="color:#66d9ef">char</span>  jobname[<span style="color:#ae81ff">100</span>];
-<span style="color:#66d9ef">char</span>  username[<span style="color:#ae81ff">100</span>];
-}Pls;
-<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc,<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> argv[]) {
-<span style="color:#66d9ef">char</span> sendBuff[<span style="color:#ae81ff">500</span>];
-
-Pls <span style="color:#f92672">*</span> data <span style="color:#f92672">=</span> (Pls <span style="color:#f92672">*</span> )sendBuff;
-
-data<span style="color:#f92672">-&gt;</span>id<span style="color:#f92672">=</span>htons(<span style="color:#ae81ff">12</span>);
-data<span style="color:#f92672">-&gt;</span>rq<span style="color:#f92672">=</span>htons(<span style="color:#ae81ff">1</span>);
-data<span style="color:#f92672">-&gt;</span>type<span style="color:#f92672">=</span>htons(<span style="color:#ae81ff">1</span>);
-strcpy(data<span style="color:#f92672">-&gt;</span>authcode,<span style="color:#e6db74">&#34;6848d756da66e55b42f79c0728e351ad&#34;</span>);
-strcpy(data<span style="color:#f92672">-&gt;</span>target,argv[<span style="color:#ae81ff">1</span>]);
-strcpy(data<span style="color:#f92672">-&gt;</span>comment,<span style="color:#e6db74">&#34;wwww&#34;</span>);
-strcpy(data<span style="color:#f92672">-&gt;</span>jobname,<span style="color:#e6db74">&#34;123&#34;</span>);
-strcpy(data<span style="color:#f92672">-&gt;</span>username,<span style="color:#e6db74">&#34;admin&#34;</span>);
-<span style="color:#66d9ef">int</span> clientSock <span style="color:#f92672">=</span> socket(AF_INET,SOCK_STREAM,<span style="color:#ae81ff">0</span>);
-
-<span style="color:#66d9ef">struct</span> sockaddr_in serverAddr;
-serverAddr.sin_port <span style="color:#f92672">=</span> htons(<span style="color:#ae81ff">7788</span>);
-serverAddr.sin_addr.s_addr <span style="color:#f92672">=</span> inet_addr(<span style="color:#e6db74">&#34;10.211.55.14&#34;</span>);
-serverAddr.sin_family <span style="color:#f92672">=</span> AF_INET;
-<span style="color:#66d9ef">if</span>(connect(clientSock,(<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>serverAddr, <span style="color:#66d9ef">sizeof</span>(serverAddr))<span style="color:#f92672">==</span><span style="color:#ae81ff">0</span>){
-    send(clientSock,sendBuff, <span style="color:#66d9ef">sizeof</span>(sendBuff),<span style="color:#ae81ff">0</span>);
-    printf(<span style="color:#e6db74">&#34;buff : %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,sendBuff);
-}
-
-    <span style="color:#75715e">//sleep(13);
-</span><span style="color:#75715e"></span>    shutdown(clientSock,SHUT_RDWR);
-<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-}
-
-</code></pre></div><p>上面是客户端，主要是封装了一个报文，把扫描任务发给服务器。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c">
-<span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> shadowPls{
-<span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> <span style="color:#66d9ef">int</span> id; <span style="color:#75715e">// ID
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> <span style="color:#66d9ef">int</span>  rq; <span style="color:#75715e">// 请求状态
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> <span style="color:#66d9ef">int</span>  type; <span style="color:#75715e">// 扫描类型，可以是 1=&gt;域名，2=&gt;IP
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">char</span>  authcode[<span style="color:#ae81ff">33</span>]; <span style="color:#75715e">// KEY
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">char</span>  target[<span style="color:#ae81ff">100</span>]; <span style="color:#75715e">// 扫描目标
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">char</span>  comment[<span style="color:#ae81ff">100</span>]; <span style="color:#75715e">// 任务说明
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">char</span>  jobname[<span style="color:#ae81ff">100</span>]; <span style="color:#75715e">// 任务名称
-</span><span style="color:#75715e"></span><span style="color:#66d9ef">char</span>  username[<span style="color:#ae81ff">100</span>]; <span style="color:#75715e">// 用户名
-</span><span style="color:#75715e"></span>}Pls;
-
-</code></pre></div><p>服务器根据数据包格式来解析，读取目标、描述、注释，并且在创建子进程之前认证用户是否有权限派发任务。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;string.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;sys/socket.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;arpa/inet.h&gt;</span><span style="color:#75715e">
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> shadowPls{
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> <span style="color:#66d9ef">int</span> id;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> <span style="color:#66d9ef">int</span>  rq;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> <span style="color:#66d9ef">int</span>  type;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">char</span>  authcode[<span style="color:#ae81ff">33</span>];
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">char</span>  target[<span style="color:#ae81ff">100</span>];
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">char</span>  comment[<span style="color:#ae81ff">100</span>];
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">char</span>  jobname[<span style="color:#ae81ff">100</span>];
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">char</span>  username[<span style="color:#ae81ff">100</span>];
+</span></span><span style="display:flex;"><span>}Pls;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc,<span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> argv[]) {
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">char</span> sendBuff[<span style="color:#ae81ff">500</span>];
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>Pls <span style="color:#f92672">*</span> data <span style="color:#f92672">=</span> (Pls <span style="color:#f92672">*</span> )sendBuff;
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>data<span style="color:#f92672">-&gt;</span>id<span style="color:#f92672">=</span>htons(<span style="color:#ae81ff">12</span>);
+</span></span><span style="display:flex;"><span>data<span style="color:#f92672">-&gt;</span>rq<span style="color:#f92672">=</span>htons(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>data<span style="color:#f92672">-&gt;</span>type<span style="color:#f92672">=</span>htons(<span style="color:#ae81ff">1</span>);
+</span></span><span style="display:flex;"><span>strcpy(data<span style="color:#f92672">-&gt;</span>authcode,<span style="color:#e6db74">&#34;6848d756da66e55b42f79c0728e351ad&#34;</span>);
+</span></span><span style="display:flex;"><span>strcpy(data<span style="color:#f92672">-&gt;</span>target,argv[<span style="color:#ae81ff">1</span>]);
+</span></span><span style="display:flex;"><span>strcpy(data<span style="color:#f92672">-&gt;</span>comment,<span style="color:#e6db74">&#34;wwww&#34;</span>);
+</span></span><span style="display:flex;"><span>strcpy(data<span style="color:#f92672">-&gt;</span>jobname,<span style="color:#e6db74">&#34;123&#34;</span>);
+</span></span><span style="display:flex;"><span>strcpy(data<span style="color:#f92672">-&gt;</span>username,<span style="color:#e6db74">&#34;admin&#34;</span>);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> clientSock <span style="color:#f92672">=</span> socket(AF_INET,SOCK_STREAM,<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">struct</span> sockaddr_in serverAddr;
+</span></span><span style="display:flex;"><span>serverAddr.sin_port <span style="color:#f92672">=</span> htons(<span style="color:#ae81ff">7788</span>);
+</span></span><span style="display:flex;"><span>serverAddr.sin_addr.s_addr <span style="color:#f92672">=</span> inet_addr(<span style="color:#e6db74">&#34;10.211.55.14&#34;</span>);
+</span></span><span style="display:flex;"><span>serverAddr.sin_family <span style="color:#f92672">=</span> AF_INET;
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span>(connect(clientSock,(<span style="color:#66d9ef">struct</span> sockaddr <span style="color:#f92672">*</span>)<span style="color:#f92672">&amp;</span>serverAddr, <span style="color:#66d9ef">sizeof</span>(serverAddr))<span style="color:#f92672">==</span><span style="color:#ae81ff">0</span>){
+</span></span><span style="display:flex;"><span>    send(clientSock,sendBuff, <span style="color:#66d9ef">sizeof</span>(sendBuff),<span style="color:#ae81ff">0</span>);
+</span></span><span style="display:flex;"><span>    printf(<span style="color:#e6db74">&#34;buff : %s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,sendBuff);
+</span></span><span style="display:flex;"><span>}
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">//sleep(13);
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    shutdown(clientSock,SHUT_RDWR);
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
+</span></span><span style="display:flex;"><span>}
+</span></span></code></pre></div><p>上面是客户端，主要是封装了一个报文，把扫描任务发给服务器。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> shadowPls{
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> <span style="color:#66d9ef">int</span> id; <span style="color:#75715e">// ID
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> <span style="color:#66d9ef">int</span>  rq; <span style="color:#75715e">// 请求状态
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> <span style="color:#66d9ef">int</span>  type; <span style="color:#75715e">// 扫描类型，可以是 1=&gt;域名，2=&gt;IP
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">char</span>  authcode[<span style="color:#ae81ff">33</span>]; <span style="color:#75715e">// KEY
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">char</span>  target[<span style="color:#ae81ff">100</span>]; <span style="color:#75715e">// 扫描目标
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">char</span>  comment[<span style="color:#ae81ff">100</span>]; <span style="color:#75715e">// 任务说明
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">char</span>  jobname[<span style="color:#ae81ff">100</span>]; <span style="color:#75715e">// 任务名称
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">char</span>  username[<span style="color:#ae81ff">100</span>]; <span style="color:#75715e">// 用户名
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>}Pls;
+</span></span></code></pre></div><p>服务器根据数据包格式来解析，读取目标、描述、注释，并且在创建子进程之前认证用户是否有权限派发任务。</p>
 <p>有了独有的协议，我们可以使用：任何语言来做客户端，大大的方便了我们的工作！</p>
 <h2 id="参考">参考</h2>
 <ul>

