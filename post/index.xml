@@ -5,7 +5,16 @@
     <link>https://payloads.online/post/</link>
     <description>Recent content in Posts on 倾旋的博客</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Tue, 01 Mar 2022 17:23:32 +0800</lastBuildDate><atom:link href="https://payloads.online/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 04 Mar 2022 17:23:32 +0800</lastBuildDate><atom:link href="https://payloads.online/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>通过Windows RPC批量寻找“出网”机器</title>
+      <link>https://payloads.online/archivers/2022-03-04/1/</link>
+      <pubDate>Fri, 04 Mar 2022 17:23:32 +0800</pubDate>
+      
+      <guid>https://payloads.online/archivers/2022-03-04/1/</guid>
+      <description>在获取内网通用口令的情景下，如何从大量的主机中寻找可以访问互联网的据点作为守控的高地？</description>
+    </item>
+    
     <item>
       <title>利用NPM仓库充当文件托管服务</title>
       <link>https://payloads.online/archivers/2022-03-01/1/</link>
@@ -175,15 +184,6 @@
       
       <guid>https://payloads.online/archivers/2020-08-24/1/</guid>
       <description>近期发生了很多的事儿，很多时候在晚上会产生一些感触，但是都没有把它们给记录下来，现在点来一支烟，慢慢回忆……</description>
-    </item>
-    
-    <item>
-      <title>通过OXID解析器获取Windows远程主机上网卡地址</title>
-      <link>https://payloads.online/archivers/2020-07-16/1/</link>
-      <pubDate>Thu, 16 Jul 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://payloads.online/archivers/2020-07-16/1/</guid>
-      <description>本文主要参考通过OXID解析器获取Windows远程主机上网卡地址的拓展...</description>
     </item>
     
   </channel>
