@@ -78,7 +78,7 @@
 
         </div>
     <h2 id="0x00-windows-rpc">0x00 Windows RPC</h2>
-<p>RPC（Remote Procedure Call）远程过程调用协议，一种通过网络从远程计算机上请求服务，而不需要了解底层网络技术的协议。RPC它假定某些协议的存在，例如TPC/UDP等，为通信程序之间携带信息数据。在OSI网络七层模型中，RPC跨越了传输层和应用层，RPC使得开发，包括网络分布式多程序在内的应用程序更加容易。在Windows操作系统中，<a href="https://docs.microsoft.com/en-us/windows/win32/rpc/rpc-start-page">Remote Procedure Call (RPC)</a> 已经存在了许久，一些漏洞挖掘研究员也已经将RPC相关的漏洞挖的差不多了。但是想要调用Windows RPC接口完成某些事情，我感觉比直接使用Windows API麻烦很多，最近一直在看Windows RPC相关的知识，也实现了一些小工具，但最终我发现还是impacket香！</p>
+<p>RPC（Remote Procedure Call）远程过程调用协议，一种通过网络从远程计算机上请求服务，而不需要了解底层网络技术的协议。RPC它假定某些协议的存在，例如TPC/UDP等，为通信程序之间携带信息数据。在OSI网络七层模型中，RPC跨越了传输层和应用层，RPC使得开发，包括网络分布式多程序在内的应用程序更加容易。在Windows操作系统中，<a href="https://docs.microsoft.com/en-us/windows/win32/rpc/rpc-start-page">RPC（Remote Procedure Call）</a> 已经存在了许久，一些漏洞挖掘研究员也已经将RPC相关的漏洞挖的差不多了。但是想要调用Windows RPC接口完成某些事情，我感觉比直接使用Windows API麻烦很多，最近一直在看Windows RPC相关的知识，也实现了一些小工具，但最终我发现还是<a href="https://github.com/SecureAuthCorp/impacket">impacket</a>香！</p>
 <p>Windows RPC实现的小工具-远程/本地创建任务计划：</p>
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-03-04-18-45-19.png" alt=""></p>
 <p>在本文开始之前，不得不提一下之前的文章也是调用的Windows RPC接口：<a href="https://payloads.online/archivers/2020-07-16/1/">通过OXID解析器获取Windows远程主机上网卡地址</a></p>
@@ -108,7 +108,7 @@
 <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-03-04-18-46-02.png" alt=""></p>
 <p>假设Kali Linux具有192.168.117.0/24网段内的通用口令凭据，只有Windows 10可以访问互联网，那么常规的办法就是逐个让这些机器访问某个互联网地址，然后看哪一个请求成功了，最终请求成功的那个必定是可以访问互联网的。通过常规办法会有比较大的“动静”，也可能需要落地一些文件，产生更多的日志。</p>
 <h2 id="0x02-通过rpcopenprinter作为代理访问">0x02 通过<strong><strong>RpcOpenPrinter作为代理访问</strong></strong></h2>
-<p><a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-rprn/989357e2-446e-4872-bb38-1dce21e1313f">RpcOpenPrinter</a> 是一个工作在<a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-rprn/d42db7d5-f141-4466-8f47-0a4be14e2fc1">MS-RPRN</a>协议下的监视打印机的具柄方法，方法定义如下：</p>
+<p><a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-rprn/989357e2-446e-4872-bb38-1dce21e1313f">RpcOpenPrinter</a> 是一个工作在<a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-rprn/d42db7d5-f141-4466-8f47-0a4be14e2fc1">MS-RPRN</a>协议下的监视打印机的句柄方法，方法定义如下：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>DWORD <span style="color:#a6e22e">RpcOpenPrinter</span>(
 </span></span><span style="display:flex;"><span>   [in, string, unique] STRING_HANDLE pPrinterName,
 </span></span><span style="display:flex;"><span>   [out] PRINTER_HANDLE<span style="color:#f92672">*</span> pHandle,
@@ -131,10 +131,11 @@
 <li>经过测试，任意URL格式都支持</li>
 <li>调用该方法需要提供凭据</li>
 </ul>
-<p>调用RPC有两个解决办法，第一种看官方文档，下周Idl接口文件，从头开始写码，第二种使用impacket，调用python模块完成。</p>
-<p>我选择了第二种，因为第一种实在是太麻烦了。</p>
+<p>调用RPC有两个解决办法，第一种看官方文档，下载<a href="https://docs.microsoft.com/en-us/windows/win32/com/idl-files">idl接口文件</a>，从头开始写码，第二种使用impacket，调用python模块完成。</p>
+<p>我选择了后者，第一种实在是太麻烦了。</p>
 <h2 id="0x03-impacket的通用开发流程">0x03 <strong><strong>impacket的通用开发流程</strong></strong></h2>
 <p>在阅读了几个<a href="https://github.com/SecureAuthCorp/impacket">impacket</a>官方仓库的示例以后，大致对impacket的调用有了清楚的认识。</p>
+<p>示例代码:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> impacket.dcerpc.v5 <span style="color:#f92672">import</span> rprn
 </span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> impacket.dcerpc.v5.dtypes <span style="color:#f92672">import</span> NULL
 </span></span><span style="display:flex;"><span><span style="color:#f92672">from</span> impacket.dcerpc.v5 <span style="color:#f92672">import</span> transport
@@ -142,14 +143,14 @@
 </span></span><span style="display:flex;"><span>TS <span style="color:#f92672">=</span> (<span style="color:#e6db74">&#39;8a885d04-1ceb-11c9-9fe8-08002b104860&#39;</span>, <span style="color:#e6db74">&#39;2.0&#39;</span>)
 </span></span><span style="display:flex;"><span>IFACE_UUID <span style="color:#f92672">=</span> rprn<span style="color:#f92672">.</span>MSRPC_UUID_RPRN
 </span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">getDce</span>(destination):
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;ncacn_np:</span><span style="color:#e6db74">%s</span><span style="color:#e6db74">[</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">pipe</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">spoolss]&#39;</span> <span style="color:#f92672">%</span> destination
-</span></span><span style="display:flex;"><span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;__main__&#39;</span>:
 </span></span><span style="display:flex;"><span>    username <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;administrator&#39;</span> <span style="color:#75715e"># 用户名</span>
 </span></span><span style="display:flex;"><span>    password <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;admin@123&#39;</span>     <span style="color:#75715e"># 密码</span>
+</span></span><span style="display:flex;"><span>    domain <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>    lmhash <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
+</span></span><span style="display:flex;"><span>    nthash <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;&#39;</span>
 </span></span><span style="display:flex;"><span>    rpctransport <span style="color:#f92672">=</span> transport<span style="color:#f92672">.</span>DCERPCTransportFactory(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#39;ncacn_np:192.168.117.141[\pipe\spoolss]&#39;</span>)
-</span></span><span style="display:flex;"><span>    rpctransport<span style="color:#f92672">.</span>set_credentials(username, password, <span style="color:#e6db74">&#39;&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>, <span style="color:#e6db74">&#39;&#39;</span>)
+</span></span><span style="display:flex;"><span>    rpctransport<span style="color:#f92672">.</span>set_credentials(username, password, domain, lmhash, nthash)
 </span></span><span style="display:flex;"><span>    dce <span style="color:#f92672">=</span> rpctransport<span style="color:#f92672">.</span>get_dce_rpc()
 </span></span><span style="display:flex;"><span>    dce<span style="color:#f92672">.</span>connect()
 </span></span><span style="display:flex;"><span>    dce<span style="color:#f92672">.</span>bind(IFACE_UUID, transfer_syntax<span style="color:#f92672">=</span>TS)
