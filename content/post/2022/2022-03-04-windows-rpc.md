@@ -7,7 +7,7 @@ url: /archivers/2022-03-04/1
 
 ## 0x00 Windows RPC
 
-RPC（Remote Procedure Call）远程过程调用协议，一种通过网络从远程计算机上请求服务，而不需要了解底层网络技术的协议。RPC它假定某些协议的存在，例如TPC/UDP等，为通信程序之间携带信息数据。在OSI网络七层模型中，RPC跨越了传输层和应用层，RPC使得开发，包括网络分布式多程序在内的应用程序更加容易。在Windows操作系统中，[RPC（Remote Procedure Call）](https://docs.microsoft.com/en-us/windows/win32/rpc/rpc-start-page) 已经存在了许久，一些漏洞挖掘研究员也已经将RPC相关的漏洞挖的差不多了。但是想要调用Windows RPC接口完成某些事情，我感觉比直接使用Windows API麻烦很多，最近一直在看Windows RPC相关的知识，也实现了一些小工具，但最终我发现还是[impacket](https://github.com/SecureAuthCorp/impacket)香！
+RPC（Remote Procedure Call）远程过程调用协议，一种通过网络从远程计算机上请求服务，而不需要了解底层网络技术的协议。RPC它假定某些协议的存在，例如TCP/UDP等，为通信程序之间携带信息数据。在OSI网络七层模型中，RPC跨越了传输层和应用层，RPC使得开发，包括网络分布式多程序在内的应用程序更加容易。在Windows操作系统中，[RPC（Remote Procedure Call）](https://docs.microsoft.com/en-us/windows/win32/rpc/rpc-start-page) 已经存在了许久，一些漏洞挖掘研究员也已经将RPC相关的漏洞挖的差不多了。但是想要调用Windows RPC接口完成某些事情，我感觉比直接使用Windows API麻烦很多，最近一直在看Windows RPC相关的知识，也实现了一些小工具，但最终我发现还是[impacket](https://github.com/SecureAuthCorp/impacket)香！
 
 Windows RPC实现的小工具-远程/本地创建任务计划：
 
