@@ -4,14 +4,21 @@
   
   <url>
     <loc>https://payloads.online/post/</loc>
-    <lastmod>2022-03-04T17:23:32+08:00</lastmod>
+    <lastmod>2022-08-11T17:23:32+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://payloads.online/</loc>
-    <lastmod>2022-03-04T17:23:32+08:00</lastmod>
+    <lastmod>2022-08-11T17:23:32+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://payloads.online/archivers/2022-08-11/1/</loc>
+    <lastmod>2022-08-11T17:23:32+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -933,13 +940,13 @@
   </url>
   
   <url>
-    <loc>https://payloads.online/categories/c&#43;&#43;/c/</loc>
+    <loc>https://payloads.online/categories/c/c&#43;&#43;/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://payloads.online/categories/c/c&#43;&#43;/</loc>
+    <loc>https://payloads.online/categories/c&#43;&#43;/c/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
