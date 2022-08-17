@@ -5,7 +5,16 @@
     <link>https://payloads.online/post/</link>
     <description>Recent content in Posts on 倾旋的博客</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Thu, 11 Aug 2022 17:23:32 +0800</lastBuildDate><atom:link href="https://payloads.online/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 17 Aug 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>x64dbg中的白加黑利用</title>
+      <link>https://payloads.online/archivers/2022-08-17/1/</link>
+      <pubDate>Wed, 17 Aug 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2022-08-17/1/</guid>
+      <description>在木马样本与杀毒软件的对抗中，再隐蔽的木马在被发现的那一刻，它的这一生就结束了。杀毒软件厂商通过SHA1/2、MD5等算法取得样本的唯一值来构建云端的特征库，当下一次攻击发生时，将会通过特征库进行比对，因此成本对抗不言而喻，红队的木马需要重新修改、编译，大大增加了对抗的时间、精力，这就是威胁情报的一种价值。反观有些软件确实会需要开发一些敏感行为的功能，如修改注册表、屏幕录像截图但这些是用户知情且授权的行为，这时杀毒软件再进行拦截的话，将大大降低软件使用的体验，所以出现了软件签名技术可以解决这类问题，当然软件签名技术不仅仅是为了只解决这一个问题而出现的....</description>
+    </item>
+    
     <item>
       <title>通过动态链接库绕过反病毒软件Hook - Break JVM</title>
       <link>https://payloads.online/archivers/2022-08-11/1/</link>
@@ -175,15 +184,6 @@
       
       <guid>https://payloads.online/archivers/2020-11-01/1/</guid>
       <description>本篇文章，主要是记录工作中遇到一个在不出网的机器上，构建正向代理尝试出的一个其他办法。</description>
-    </item>
-    
-    <item>
-      <title>静态恶意代码逃逸（第七课）</title>
-      <link>https://payloads.online/archivers/2020-10-23/1/</link>
-      <pubDate>Fri, 23 Oct 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://payloads.online/archivers/2020-10-23/1/</guid>
-      <description>本节课，我们需要引入导入表的概念，并且通过代码的小技巧来隐藏导入表，减少文件特征</description>
     </item>
     
   </channel>
