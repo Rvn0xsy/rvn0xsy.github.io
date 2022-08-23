@@ -10,4 +10,3 @@ url = "/about"
 * ID：倾旋 / Rvn0xsy
 * [GitHub](https://github.com/Rvn0xsy/).
 
-特点：爪子长、个子高、身体瘦弱
