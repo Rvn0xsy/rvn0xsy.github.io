@@ -1,0 +1,10 @@
+<ul class="index_nav">
+    {{ with .Site.Menus.main }}
+        {{ $navbar_len := len . }}
+        {{ range $i, $nav_item := . }}
+            <li class="">
+                <a href="{{ $nav_item.URL }}"><i class="{{ $nav_item.Pre }}"></i> {{ $nav_item.Name }}</a>
+            </li>
+        {{ end }}
+    {{ end }}
+</ul>

@@ -6,9 +6,7 @@
     <meta name="description" content="{{ .Site.Params.description }}">
     <meta name="author" content='{{ .Site.Params.author }}'>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
-   
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/FortAwesome/Font-Awesome@5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="/css/Font-Awesome-5.15.3.all.min.css">
 
     {{ $style := resources.Get "sass/researcher.css" | minify }}
     <link rel="stylesheet" href="{{ $style.RelPermalink }}">
