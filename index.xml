@@ -5,7 +5,16 @@
     <link>https://payloads.online/</link>
     <description>Recent content on 倾旋的博客</description>
     <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Mon, 19 Sep 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 23 Oct 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>使用RPC Filter技术防御内网RPC横向攻击</title>
+      <link>https://payloads.online/archivers/2022-10-23/1/</link>
+      <pubDate>Sun, 23 Oct 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://payloads.online/archivers/2022-10-23/1/</guid>
+      <description>本文介绍了RPC Filter技术的概念与使用，并演示了如何通过RPC Filter阻断基于计划任务的横向攻击，并给出了大量RPC Filter的参考，能够有效的应对impacket所提供的内网横向技术的攻击.....</description>
+    </item>
+    
     <item>
       <title>我的三年红队生涯总结</title>
       <link>https://payloads.online/archivers/2022-09-19/1/</link>
@@ -175,15 +184,6 @@
       
       <guid>https://payloads.online/archivers/2020-11-29/2/</guid>
       <description>本节课，使用HeapCreate API来关闭DEP保护，获取在堆上的代码执行权限，从而绕过对VirtualAlloc的检测。</description>
-    </item>
-    
-    <item>
-      <title>静态恶意代码逃逸（第八课）</title>
-      <link>https://payloads.online/archivers/2020-11-29/1/</link>
-      <pubDate>Sun, 29 Nov 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://payloads.online/archivers/2020-11-29/1/</guid>
-      <description>本节课，需要使用C++的特性来解决特殊字符串被标记的情况</description>
     </item>
     
   </channel>
