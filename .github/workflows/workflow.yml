@@ -18,9 +18,6 @@ jobs:
         with:
           hugo-version: latest
 
-      - name: Replace Image Path
-        run: sed -i "s/..\/..\/..\/static\/images/https:\/\/cdn.jsdelivr.net\/gh\/Rvn0xsy\/rvn0xsy.github.io\/static\/images/g" `grep -rl ../../../static ./content/post`
-
       - name: Build 
         run: hugo
       
