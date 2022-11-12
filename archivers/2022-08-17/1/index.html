@@ -76,7 +76,10 @@
 <p>在木马样本与杀毒软件的对抗中，再隐蔽的木马在被发现的那一刻，它的这一生就结束了。杀毒软件厂商通过SHA1/2、MD5等算法取得样本的唯一值来构建云端的特征库，当下一次攻击发生时，将会通过特征库进行比对，因此成本对抗不言而喻，红队的木马需要重新修改、编译，大大增加了对抗的时间、精力，这就是威胁情报的一种价值。反观有些软件确实会需要开发一些敏感行为的功能，如修改注册表、屏幕录像截图但这些是用户知情且授权的行为，这时杀毒软件再进行拦截的话，将大大降低软件使用的体验，所以出现了软件签名技术可以解决这类问题，当然软件签名技术不仅仅是为了只解决这一个问题而出现的。有些APT组织会通过控制软件开发商的代码仓库进行投毒或者通过入侵软件开发商来窃取签名，给自己的木马加上签名验证，杀毒软件遇到签名将会默认信任这个程序。但攻击软件开发商所需要投入的成本也相对比较高，telegram上也出现了花钱签名的服务，不过白嫖怪的数量可比金主爸爸要多，白嫖怪为了得到一个可以以签名程序运行自己任意代码的条件就会去挖掘一些软件厂商的程序是否存在DLL劫持漏洞，利用DLL劫持的特性达到披着羊皮的狼的目的。现阶段基本上大多数的APT组织在进行权限维持都会采用白加黑的技术来绕过杀毒软件的拦截和检测（特殊行为除外）。本文将会分享一个关于x64dbg这款调试工具的白加黑利用技巧。</p>
 <h2 id="0x02-x64dbg的dll加载组件">0x02 x64dbg的DLL加载组件</h2>
 <p><a href="https://github.com/x64dbg/x64dbg">x64dbg</a> 是一个开源的Windows平台下的调试工具，相比于OllyDbg我更喜欢x64dbg。打开x64dbg的目录，可以看到有一个loaddll.exe程序，顾名思义，它一定具有dll加载的功能。</p>
-<p><img src="../../../static/images/2022-08-17-15-50-00.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-17-15-50-00.png" alt=""  />
+  </p></p>
 <p>在跟进到它的<a href="https://github.com/x64dbg/x64dbg/blob/development/src/loaddll/loaddll.cpp">源代码</a>：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;windows.h&gt;</span><span style="color:#75715e">
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
@@ -205,21 +208,45 @@
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> TRUE;
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><h2 id="0x03-加载任意dll测试">0x03 加载任意dll测试</h2>
-<p><img src="../../../static/images/2022-08-17-15-51-15.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-17-15-51-15.png" alt=""  />
+  </p></p>
 <p>双击Invoke-Loader.exe，就会弹出计算器：</p>
-<p><img src="../../../static/images/2022-08-17-15-51-29.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-17-15-51-29.png" alt=""  />
+  </p></p>
 <p>通过ProcessMonitor分析一下过程是不是如我所想的那样：</p>
-<p><img src="../../../static/images/2022-08-17-15-51-41.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-17-15-51-41.png" alt=""  />
+  </p></p>
 <p>首先创建了2.log，内容是DllMain.dll的绝对路径，然后再创建loaddll.exe：</p>
-<p><img src="../../../static/images/2022-08-17-15-51-52.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-17-15-51-52.png" alt=""  />
+  </p></p>
 <p>主线程创建的时候因为是暂停状态，是没有加载任何dll的，当文件映射设置完毕，恢复线程状态后，它成功的加载了DllMain.dll。
-<img src="../../../static/images/2022-08-17-15-52-04.png" alt=""></p>
-<p><img src="../../../static/images/2022-08-17-15-52-14.png" alt=""></p>
+<p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-17-15-52-04.png" alt=""  />
+  </p></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-17-15-52-14.png" alt=""  />
+  </p></p>
 <p>这里的calc.exe的父进程是loaddll.exe。</p>
 <h2 id="0x04-总结">0x04 总结</h2>
-<p><img src="../../../static/images/2022-08-17-15-52-37.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-17-15-52-37.png" alt=""  />
+  </p></p>
 <p>该程序上次更新已经是2020年了，可能已经被大范围滥用。</p>
-<p><img src="../../../static/images/2022-08-17-15-52-47.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-17-15-52-47.png" alt=""  />
+  </p></p>
 <p>白加黑是一个降低红队攻击成本的一个方案，能够规避很多杀毒软件的拦截和扫描，在应急响应阶段对于签名程序的分析应更加关注签名程序加载的模块、进程行为做了哪些操作，签名验证仅仅是提高了攻击的门槛，不应该绝对信任签名程序。</p>
 
 </div>

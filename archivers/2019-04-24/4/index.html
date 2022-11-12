@@ -177,7 +177,10 @@ redirect_ok:true
 <p>看完代码读者可能会有疑问，hostrule函数为什么返回false？</p>
 <p>在hostrule中返回false是因为如果是true会自动调用action，此时port的值是nil，所以会抛出一些错误。</p>
 <p>紧接着就是将端口号为80的host和port交给action函数执行，调用can_use_head函数，判断status是否为true，是true则支持HEAD方法请求。最后生成一个output_table，用来将响应内容填入这个表，以便于格式化显示。</p>
-<p><img src="../../../static/images/70176fbc-4f5f-11ec-af96-00d861bf4abb.png" alt="2019-04-24-10-11-39"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/70176fbc-4f5f-11ec-af96-00d861bf4abb.png" alt="2019-04-24-10-11-39"  />
+  </p></p>
 <p>如果只想取得目标主机响应的server，我们可以这样写：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">……</span>
 </span></span><span style="display:flex;"><span>action <span style="color:#f92672">=</span> <span style="color:#66d9ef">function</span>(host,port)
@@ -194,7 +197,10 @@ redirect_ok:true
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">……</span>
 </span></span></code></pre></div><p>执行结果如下：</p>
-<p><img src="../../../static/images/7062b9cc-4f5f-11ec-b1dd-00d861bf4abb.png" alt="2019-04-24-10-12-06"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7062b9cc-4f5f-11ec-b1dd-00d861bf4abb.png" alt="2019-04-24-10-12-06"  />
+  </p></p>
 <h2 id="0x04-发送一个http请求">0x04 发送一个HTTP请求</h2>
 <p><a href="https://nmap.org/nsedoc/lib/http.html#generic_request">generic_request</a>是一个最基本的发送HTTP请求的函数，参数有以下几个：</p>
 <ul>
@@ -232,7 +238,10 @@ redirect_ok:true
 </span></span><span style="display:flex;"><span>postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
 </span></span></code></pre></div><p>执行结果如下：</p>
-<p><img src="../../../static/images/70aae206-4f5f-11ec-a9b4-00d861bf4abb.png" alt="2019-04-24-10-13-46"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/70aae206-4f5f-11ec-a9b4-00d861bf4abb.png" alt="2019-04-24-10-13-46"  />
+  </p></p>
 <ul>
 <li>返回值：</li>
 </ul>
@@ -270,7 +279,10 @@ redirect_ok:true
 </span></span><span style="display:flex;"><span>postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
 </span></span></code></pre></div><p>执行结果：</p>
-<p><img src="../../../static/images/70ed47ea-4f5f-11ec-a9d1-00d861bf4abb.png" alt="2019-04-24-10-14-43"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/70ed47ea-4f5f-11ec-a9d1-00d861bf4abb.png" alt="2019-04-24-10-14-43"  />
+  </p></p>
 <ul>
 <li>返回值：</li>
 </ul>
@@ -323,7 +335,10 @@ redirect_ok:true
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">……</span>
 </span></span></code></pre></div><p>执行结果：</p>
-<p><img src="../../../static/images/712f5dce-4f5f-11ec-b79d-00d861bf4abb.png" alt="2019-04-24-10-16-22"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/712f5dce-4f5f-11ec-b79d-00d861bf4abb.png" alt="2019-04-24-10-16-22"  />
+  </p></p>
 <ul>
 <li>返回值：</li>
 </ul>
@@ -343,7 +358,10 @@ redirect_ok:true
 <li>putdata : 要上传的文件的内容</li>
 </ul>
 <p>这里我使用Docker已经搭建好了一个Tomcat环境：</p>
-<p><img src="../../../static/images/716bc3cc-4f5f-11ec-ae7c-00d861bf4abb.png" alt="2019-04-24-10-17-24"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/716bc3cc-4f5f-11ec-ae7c-00d861bf4abb.png" alt="2019-04-24-10-17-24"  />
+  </p></p>
 <p>编写的脚本如下：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#66d9ef">local</span> stdnse <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;stdnse&#34;</span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">local</span> http <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;http&#34;</span>
@@ -377,9 +395,15 @@ redirect_ok:true
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
 </span></span></code></pre></div><p>在action函数中，首先生成一个随机的文件名，然后发送PUT请求，判断响应码是否是201。注意，发送PUT请求的时候，文件扩展名后门必须带”/”，是为了绕过tomcat的检测。</p>
 <p>执行结果：</p>
-<p><img src="../../../static/images/71a7cff2-4f5f-11ec-8fc2-00d861bf4abb.png" alt="2019-04-24-10-18-23"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/71a7cff2-4f5f-11ec-8fc2-00d861bf4abb.png" alt="2019-04-24-10-18-23"  />
+  </p></p>
 <p>使用浏览器访问：</p>
-<p><img src="../../../static/images/71ec6734-4f5f-11ec-b61f-00d861bf4abb.png" alt="2019-04-24-10-18-33"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/71ec6734-4f5f-11ec-b61f-00d861bf4abb.png" alt="2019-04-24-10-18-33"  />
+  </p></p>
 <p>发现CVE-2017-12615这个字符，证明该漏洞的确存在。</p>
 <h2 id="0x07-响应内容匹配">0x07 响应内容匹配</h2>
 <p>当我们需要对HTTP响应内容进行操作的时候，需要学习一些字符串操作函数、HTTP包内的函数。</p>
@@ -415,14 +439,23 @@ redirect_ok:true
 <ul>
 <li>优化前：</li>
 </ul>
-<p><img src="../../../static/images/7227a40c-4f5f-11ec-a9f9-00d861bf4abb.png" alt="2019-04-24-10-19-52"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7227a40c-4f5f-11ec-a9f9-00d861bf4abb.png" alt="2019-04-24-10-19-52"  />
+  </p></p>
 <p>首先脚本直接向80端口发送了一个PUT请求，然后服务器响应405，漏洞利用失败。</p>
 <p>紧接着脚本又请求了8080端口，服务器响应201，证明漏洞利用成功。</p>
-<p><img src="../../../static/images/725b5234-4f5f-11ec-bf46-00d861bf4abb.png" alt="2019-04-24-10-20-01"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/725b5234-4f5f-11ec-bf46-00d861bf4abb.png" alt="2019-04-24-10-20-01"  />
+  </p></p>
 <ul>
 <li>优化后：</li>
 </ul>
-<p><img src="../../../static/images/72a648f2-4f5f-11ec-8fd4-00d861bf4abb.png" alt="2019-04-24-10-20-09"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/72a648f2-4f5f-11ec-8fd4-00d861bf4abb.png" alt="2019-04-24-10-20-09"  />
+  </p></p>
 <p>通过向8080端口发送PUT请求成功利用后，又向写入文件发送了一次GET请求，获取响应内容，进行字符串匹配，达到更加深度的验证漏洞是否利用成功。</p>
 <h2 id="0x08-并发http请求">0x08 并发HTTP请求</h2>
 <p>这里说的并发HTTP请求的原理是与目标主机建立一个socket，在每一次发送报文后都不会断开（除了最后一次请求）。平常我们在扩展脚本中调用一个http.get函数，将会返回一个响应表，代表已经获取了目标主机的响应报文，当返回响应表之前就已经与目标主机断开了连接。下一次调用http.get时，还需要进行一次建立连接的过程，导致我们会消耗一定的时间。如果一个扩展脚本需要发送多次请求，可以考虑使用http.pipeline_add与http.pipline_go配合使用。</p>
@@ -453,7 +486,10 @@ redirect_ok:true
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
 </span></span><span style="display:flex;"><span><span style="color:#960050;background-color:#1e0010">……</span>
 </span></span></code></pre></div><p>执行结果：</p>
-<p><img src="../../../static/images/72e1190a-4f5f-11ec-8f3e-00d861bf4abb.png" alt="2019-04-24-10-21-19"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/72e1190a-4f5f-11ec-8f3e-00d861bf4abb.png" alt="2019-04-24-10-21-19"  />
+  </p></p>
 <p>因为调用了两次http.pipeline_add，所以会产生两个请求列表队列元素，如果只想获取第一个请求队列元素，可以return all_requests[1]。</p>
 <p>下面我们要开始将队列交给http.pipeline_go函数，由它来完成所有请求，函数参数如下：</p>
 <ul>
@@ -486,7 +522,10 @@ redirect_ok:true
 </ul>
 <p>将队列交给http.pipeline_go函数后，返回一个响应列表，all_response[1]对应index.jsp的响应表，all_response[2]对应/docs/changelog.html的响应表。因此可以使用迭代，将每个请求的某个字段放入一个输出表里，本次示例是取得了两次请求队status-line。</p>
 <p>执行结果：</p>
-<p><img src="../../../static/images/73221202-4f5f-11ec-948f-00d861bf4abb.png" alt="2019-04-24-10-22-31"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/73221202-4f5f-11ec-948f-00d861bf4abb.png" alt="2019-04-24-10-22-31"  />
+  </p></p>
 <h2 id="0x09-表单操作">0x09 表单操作</h2>
 <p>关于表单操作，在爬虫、漏洞扫描、爆破时用的较多，一般要先取回目标主机的响应body，然后字符串匹配获得表单结构。但是这些操作在Nmap中已经提供了一些方法，接下来就让我们一起学习http包中的表单操作函数吧。</p>
 <p>http.grab_forms 用于在响应内容中查找表单，并返回一个form_list表，参数如下：</p>
@@ -501,9 +540,15 @@ redirect_ok:true
 <p>获取页面中的表单列表</p>
 </blockquote>
 <p>我使用apache和php搭建了一个简单的登录界面，尝试通过nmap的扩展脚本来获取表单列表。</p>
-<p><img src="../../../static/images/73655b0c-4f5f-11ec-8bc3-00d861bf4abb.png" alt="2019-04-24-10-23-28"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/73655b0c-4f5f-11ec-8bc3-00d861bf4abb.png" alt="2019-04-24-10-23-28"  />
+  </p></p>
 <p>查看一下HTML源码：</p>
-<p><img src="../../../static/images/73a59f64-4f5f-11ec-848c-00d861bf4abb.png" alt="2019-04-24-10-23-36"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/73a59f64-4f5f-11ec-848c-00d861bf4abb.png" alt="2019-04-24-10-23-36"  />
+  </p></p>
 <p>可以发现页面中这个表单是提交到index.php的，并且提供了两个输入值，分别是username和password，这种情况下我们完全可以采用lua的字符串匹配模式获得input的name，但是如果页面上有很多表单，这就会增加我们处理数据的压力。</p>
 <p>我们来试试http.grab_forms函数：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-lua" data-lang="lua"><span style="display:flex;"><span><span style="color:#66d9ef">local</span> http <span style="color:#f92672">=</span> require <span style="color:#e6db74">&#34;http&#34;</span>
@@ -526,11 +571,20 @@ redirect_ok:true
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
 </span></span></code></pre></div><p>因为http.grab_forms函数接收的是响应表的body，所以需要调用http.get函数将响应表取到，再把响应表的body传递进去。</p>
 <p>执行结果：</p>
-<p><img src="../../../static/images/73debc86-4f5f-11ec-95bc-00d861bf4abb.png" alt="2019-04-24-10-24-01"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/73debc86-4f5f-11ec-95bc-00d861bf4abb.png" alt="2019-04-24-10-24-01"  />
+  </p></p>
 <p>目前是获得了一个登录表单，注意：返回的是一个表单列表，而不是只能获得一个表单，在登录页面中新添加一个表单后：</p>
-<p><img src="../../../static/images/7426b39c-4f5f-11ec-872f-00d861bf4abb.png" alt="2019-04-24-10-24-07"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7426b39c-4f5f-11ec-872f-00d861bf4abb.png" alt="2019-04-24-10-24-07"  />
+  </p></p>
 <p>再执行脚本观察一下：</p>
-<p><img src="../../../static/images/74702c3e-4f5f-11ec-9a62-00d861bf4abb.png" alt="2019-04-24-10-24-15"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/74702c3e-4f5f-11ec-9a62-00d861bf4abb.png" alt="2019-04-24-10-24-15"  />
+  </p></p>
 <p>如果还想进一步获得input的name值，就要学习另外一个函数—— http. parse_form</p>
 <p>参数如下：</p>
 <ul>

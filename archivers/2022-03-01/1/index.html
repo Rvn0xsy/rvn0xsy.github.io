@@ -77,20 +77,38 @@
 <h2 id="0x01-托管代码前的准备工作">0x01 托管代码前的准备工作</h2>
 <p>NPM的认证机制是双因素的（密码+邮箱验证码），注册的时候需要提供真实邮箱：<a href="https://www.npmjs.com/signup">https://www.npmjs.com/signup</a></p>
 <p>注册完毕后，本地安装好NPM环境：<code>sudo apt install npm</code></p>
-<p><img src="../../../static/images/2022-03-01-18-01-57.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-03-01-18-01-57.png" alt=""  />
+  </p></p>
 <p>本地登录NPM：<code>npm login</code> 同样会需要邮箱验证码</p>
-<p><img src="../../../static/images/2022-03-01-18-02-12.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-03-01-18-02-12.png" alt=""  />
+  </p></p>
 <h2 id="0x02-托管第一个静态文件">0x02 托管第一个静态文件</h2>
 <p>新建一个包名的目录，注意包名不能与NPM官方源上发布的包名同步</p>
 <p>这里我新建目录名为 <code>my-npm</code></p>
-<p><img src="../../../static/images/2022-03-01-18-02-25.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-03-01-18-02-25.png" alt=""  />
+  </p></p>
 <p>npm init 可以初始化一个包的基本信息，例如版本号、作者、描述、测试命令等等。</p>
-<p><img src="../../../static/images/2022-03-01-18-02-38.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-03-01-18-02-38.png" alt=""  />
+  </p></p>
 <p>在设置package name时为了怕重复，我设置包名为touch-file。</p>
-<p><img src="../../../static/images/2022-03-01-18-02-49.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-03-01-18-02-49.png" alt=""  />
+  </p></p>
 <p>可以看到已经生成了package.json这个包的基础信息文件，接下来可以继续创建这个包内的其他文件，这里我随便写了一个index.js。</p>
 <p><code>npm publish</code> 用于发布这个包。</p>
-<p><img src="../../../static/images/2022-03-01-18-03-01.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-03-01-18-03-01.png" alt=""  />
+  </p></p>
 <h2 id="0x03-如何使用静态文件">0x03 如何使用静态文件？</h2>
 <p>NPM有很多源，这里我随便写几个：</p>
 <ul>
@@ -100,8 +118,14 @@
 <li><a href="https://mirrors.cloud.tencent.com/npm/touch-file">https://mirrors.cloud.tencent.com/npm/touch-file</a></li>
 <li><a href="https://repo.huaweicloud.com/repository/npm/touch-file/-/touch-file-1.0.0.tgz">https://repo.huaweicloud.com/repository/npm/touch-file/-/touch-file-1.0.0.tgz</a></li>
 </ul>
-<p><img src="../../../static/images/2022-03-01-18-03-17.png" alt=""></p>
-<p><img src="../../../static/images/2022-03-01-18-03-25.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-03-01-18-03-17.png" alt=""  />
+  </p></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-03-01-18-03-25.png" alt=""  />
+  </p></p>
 <p>可以看到至少阿里、腾讯是有NPM同步的，但是文件是压缩包，而jsdelivr可以直接访问源文件，这一点可以当作图床、文件传输&hellip;. 我博客的图床就是用的Github + jsdelivr进行加速。</p>
 <p>发挥想象：</p>
 <ul>
@@ -111,7 +135,10 @@
 <li>&hellip;.</li>
 </ul>
 <p>PS：如果遇到不太正常的NPM，可以通过Report举报滥用。</p>
-<p><img src="../../../static/images/2022-03-01-18-03-40.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-03-01-18-03-40.png" alt=""  />
+  </p></p>
 
 </div>
 <div class="container">

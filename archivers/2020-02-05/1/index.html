@@ -131,12 +131,21 @@
 <p>在2019年的上半年，安全客上披露了穷奇、海莲花这两个APT组织的攻击活动</p>
 <h3 id="穷奇毒云藤">穷奇（毒云藤）</h3>
 <p>穷奇组织是一个对我国持续攻击时间长达数十年的老牌APT组织，该组织的攻击活动在2015年左右达到高峰，之后的活动慢慢减少，2019年以来该组织活动减少了很多，攻击频次和攻击范围都大大缩小，但其依然保持活动，如2019年3月份，该组织就使用编号为CVE-2018-20250的WinRAR ACE漏洞向中国大陆数十个重点目标投递了多个RAT木马。投递的RAT木马核心与3年前的版本相比除了配置信息外并未发现新的功能性更新，由此也可印证该组织的活跃度确实在下降。</p>
-<p><img src="../../../static/images/8378c02e-4f5f-11ec-ba2a-00d861bf4abb.png" alt="2020-02-05-07-04-37"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/8378c02e-4f5f-11ec-ba2a-00d861bf4abb.png" alt="2020-02-05-07-04-37"  />
+  </p></p>
 <h3 id="海莲花apt32oceanlotus">海莲花（APT32、OceanLotus）</h3>
 <p>其攻击的目标众多且广泛，包括政府部门、大型国企、金融机构、科研机构以及部分重要的私营企业等。该组织攻击人员非常熟悉我国，对我国的时事、新闻热点、政府结构等都非常熟悉，如刚出个税改革时候，就立马使用个税改革方案做为攻击诱饵主题。此外钓鱼主题还包括绩效、薪酬、工作报告、总结报告等。</p>
-<p><img src="../../../static/images/83bb3918-4f5f-11ec-bf01-00d861bf4abb.png" alt="2020-02-05-07-05-36"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/83bb3918-4f5f-11ec-bf01-00d861bf4abb.png" alt="2020-02-05-07-05-36"  />
+  </p></p>
 <h2 id="鱼叉攻击背后的攻击链路">鱼叉攻击背后的攻击链路</h2>
-<p><img src="../../../static/images/841488b0-4f5f-11ec-bedf-00d861bf4abb.png" alt="2020-02-05-07-05-47"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/841488b0-4f5f-11ec-bedf-00d861bf4abb.png" alt="2020-02-05-07-05-47"  />
+  </p></p>
 <p>通常情况下，黑客通过投递邮件到目标邮件服务器，受害者接收后，经受邮件的诱惑、欺骗，会尝试运行邮件附带的木马，最后进入模块化加载的过程。其中，APT组织在木马模块化的构建过程中，会采用穿插多种复杂的技术以及文件格式，涉及加密解密、Shellcode隐写混淆、反射DLL加载、DLL注入、系统特性等。</p>
 <p>经历过木马模块化的过程后，转而进入C2环节，<strong>“C2环节占了红队的大部分工作周期”</strong>，通过C2环节来横向攻击，对目标进行长期的摸排，寻找数据再进而获取数据，这就是整个红队鱼叉的过程。</p>
 <h2 id="smtp协议简介">SMTP协议简介</h2>
@@ -156,7 +165,10 @@
 <p><a href="https://tools.ietf.org/html/rfc6376">https://tools.ietf.org/html/rfc6376</a></p>
 <h3 id="smtp相关安全协议---dmarc">SMTP相关安全协议 - DMARC</h3>
 <p>DMARC（Domain-based Message Authentication, Reporting &amp; Conformance）是txt记录中的一种，是一种基于现有的SPF和DKIM协议的可扩展电子邮件认证协议，其核心思想是邮件的发送方通过特定方式（DNS）公开表明自己会用到的发件服务器（SPF）、并对发出的邮件内容进行签名(DKIM)，而邮件的接收方则检查收到的邮件是否来自发送方授权过的服务器并核对签名是否有效。对于未通过前述检查的邮件，接收方则按照发送方指定的策略进行处理，如直接投入垃圾箱或拒收。</p>
-<p><img src="../../../static/images/844c8d82-4f5f-11ec-9aae-00d861bf4abb.png" alt="2020-02-05-07-06-09"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/844c8d82-4f5f-11ec-9aae-00d861bf4abb.png" alt="2020-02-05-07-06-09"  />
+  </p></p>
 <p><a href="https://en.wikipedia.org/wiki/DMARC#Alignment">https://en.wikipedia.org/wiki/DMARC#Alignment</a></p>
 <h2 id="smtp基础报文结构">SMTP基础报文结构</h2>
 <p>这个报文结构需要拿出来重点的阐述一下。</p>
@@ -166,18 +178,30 @@
 <li>信封</li>
 <li>信的内容</li>
 </ul>
-<p><img src="../../../static/images/8484339a-4f5f-11ec-bd02-00d861bf4abb.png" alt="2020-02-05-07-06-19"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/8484339a-4f5f-11ec-bd02-00d861bf4abb.png" alt="2020-02-05-07-06-19"  />
+  </p></p>
 <p>注意观察，其中信封中有MAIL FROM，而信的内容中，也有MAIL FROM，这时问题就出现了。</p>
 <h2 id="smtp-relay欺骗攻击">SMTP Relay欺骗攻击</h2>
-<p><img src="../../../static/images/84c18f92-4f5f-11ec-bc69-00d861bf4abb.png" alt="2020-02-05-07-06-29"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/84c18f92-4f5f-11ec-bc69-00d861bf4abb.png" alt="2020-02-05-07-06-29"  />
+  </p></p>
 <p>通过比对STMP两个报文，我们可以发现，右边的报文中的From信的内容被更改了，此时当B@examle2.com收到的邮件就是P@example3.com发送过来的。</p>
 <p>修改From后的邮件会经过邮件网关的检查并且符合邮件服务器配置的安全协议，最终到达邮件客户端。其中邮件客户端可以是浏览器、也可以是邮件客户端软件，一般情况下，邮件客户端是不具备邮件安全协议验证的，因此在客户端会解析成正常邮件。</p>
-<p><img src="../../../static/images/850646aa-4f5f-11ec-99b0-00d861bf4abb.png" alt="2020-02-05-07-06-49"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/850646aa-4f5f-11ec-99b0-00d861bf4abb.png" alt="2020-02-05-07-06-49"  />
+  </p></p>
 <p>上图中，我的邮箱地址并不是To，但被穿透进入了我的收件箱。</p>
 <p>在早期我还写过类似的介绍：<a href="https://payloads.online/archivers/2019-05-09/1">Swaks伪造邮件</a></p>
 <p>通过Swaks可以发送简单的邮件来做测试，说了那么多，SMTP Relay有什么办法防御呢？</p>
 <h2 id="relay技术穿透">Relay技术穿透</h2>
-<p><img src="../../../static/images/855267b0-4f5f-11ec-b6aa-00d861bf4abb.png" alt="2020-02-05-07-07-03"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/855267b0-4f5f-11ec-b6aa-00d861bf4abb.png" alt="2020-02-05-07-07-03"  />
+  </p></p>
 <p>SMTP Relay技术无法穿透配置有DMARC的安全协议的邮件服务。</p>
 <h3 id="dmarc-的运作方式">DMARC 的运作方式</h3>
 <p>DMARC 会验证发件人的域名，从而协助电子邮件发件人和收件人验证传入的邮件。DMARC 还定义了应该对传入的可疑邮件执行哪些操作。</p>
@@ -190,9 +214,18 @@
 <h2 id="smtp-relay-基础设施构建">SMTP Relay 基础设施构建</h2>
 <p>在这个环节中，需要搭建一个邮件服务器用于转发邮件，其次还需要考虑对C2进行构建、编写。</p>
 <p>首先来说邮件服务器，我们可以搭建一个支持SPF、DKIM的邮件服务器，但是搭建起来太麻烦了，是否有符合我们需要的现成的邮件服务器呢？这里可以选择一些免费的企业邮箱服务器，它们的宽容度足够高。宽容度指的是：对垃圾邮件的处理、对邮件安全协议的兼容程度比较高。当邮件服务器接收或者发送一封邮件时，会检查邮件内容，同时收到邮件后，会检测是否支持SPF、DKIM、DMARC，这三者可能大多数发送方邮件服务器都不满足，因此会着重检测SPF，由此说来，SPF是比较重要的一个邮件安全协议且我们仅仅支持SPF、DKIM即可。</p>
-<p><img src="../../../static/images/8590bf6a-4f5f-11ec-8d6b-00d861bf4abb.png" alt="2020-02-05-07-08-07"></p>
-<p><img src="../../../static/images/85cfaefa-4f5f-11ec-80ad-00d861bf4abb.png" alt="2020-02-05-07-08-28"></p>
-<p><img src="../../../static/images/86051112-4f5f-11ec-95b4-00d861bf4abb.png" alt="2020-02-05-07-08-37"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/8590bf6a-4f5f-11ec-8d6b-00d861bf4abb.png" alt="2020-02-05-07-08-07"  />
+  </p></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/85cfaefa-4f5f-11ec-80ad-00d861bf4abb.png" alt="2020-02-05-07-08-28"  />
+  </p></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/86051112-4f5f-11ec-95b4-00d861bf4abb.png" alt="2020-02-05-07-08-37"  />
+  </p></p>
 <p>上图是通过swaks来登录一个邮件服务器，去向我的Gmail发送一封邮件，伪造linux.org的邮箱，成功进入收件箱。</p>
 <h2 id="c2构建思路">C2构建思路</h2>
 <h3 id="c2零接触概念">C2零接触概念</h3>
@@ -200,13 +233,19 @@
 <li>面对IP封禁、IOC标记等这种临时的处置措施，如何持续控制目标？</li>
 <li>能否有一种技术，使得C2服务器不直接与被控目标直接交互？</li>
 </ul>
-<p><img src="../../../static/images/863c5492-4f5f-11ec-997b-00d861bf4abb.png" alt="2020-02-05-07-09-06"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/863c5492-4f5f-11ec-997b-00d861bf4abb.png" alt="2020-02-05-07-09-06"  />
+  </p></p>
 <p>这里先抛出一个问题，后续我们展开来讲。</p>
 <p>再来说说对木马的构建。</p>
 <h3 id="期望木马达到的效果--免杀">期望木马达到的效果 – 免杀</h3>
 <p>免杀的技术已经很多了，而我更喜欢在源码层面进行修改达到免杀，或者自己去写混淆之类的。</p>
 <p>常用的技术如下：</p>
-<p><img src="../../../static/images/8671a282-4f5f-11ec-862b-00d861bf4abb.png" alt="2020-02-05-07-09-16"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/8671a282-4f5f-11ec-862b-00d861bf4abb.png" alt="2020-02-05-07-09-16"  />
+  </p></p>
 <ul>
 <li><a href="https://payloads.online/archivers/2019-11-10/1">静态恶意代码逃逸（第一课）</a></li>
 <li><a href="https://payloads.online/archivers/2019-11-10/2">静态恶意代码逃逸（第二课）</a></li>
@@ -221,24 +260,51 @@
 <p>爱折腾的程序员自己也想实现这个过程，那就是反射，这个反射机制就是将Windows PE格式通过自己的程序代码进行解析，并把不同的节数据加载到对应的内存中，通常这个反射加载技术被很多APT组织、大型渗透框架、病毒作者、游戏厂商使用比较广泛。</p>
 <p>当一个Windows PE格式的文件变成了一个内存中的字符串，意味着这个文件可以被任意方式去转换、加密、混淆，因此反病毒软件也难以查杀。</p>
 <p>MemoryModule就是实现了这个核心过程：https://github.com/fancycode/MemoryModule</p>
-<p><img src="../../../static/images/86ade8b4-4f5f-11ec-bc05-00d861bf4abb.png" alt="2020-02-05-07-11-25"></p>
-<p><img src="../../../static/images/86ec8a6a-4f5f-11ec-a517-00d861bf4abb.png" alt="2020-02-05-07-11-37"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/86ade8b4-4f5f-11ec-bc05-00d861bf4abb.png" alt="2020-02-05-07-11-25"  />
+  </p></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/86ec8a6a-4f5f-11ec-a517-00d861bf4abb.png" alt="2020-02-05-07-11-37"  />
+  </p></p>
 <p>详见： <a href="https://payloads.online/archivers/2020-01-02/1">静态恶意代码逃逸（第六课）</a></p>
 <h3 id="期望木马达到的效果--体积小">期望木马达到的效果 – 体积小</h3>
-<p><img src="../../../static/images/87261b18-4f5f-11ec-aec3-00d861bf4abb.png" alt="2020-02-05-07-11-57"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/87261b18-4f5f-11ec-aec3-00d861bf4abb.png" alt="2020-02-05-07-11-57"  />
+  </p></p>
 <p>这里主要是在编译前和编译后做一些注意事项，例如静态改为动态编译、压缩壳、远程加载等等。</p>
-<p><img src="../../../static/images/8761949a-4f5f-11ec-8a6f-00d861bf4abb.png" alt="2020-02-05-07-12-06"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/8761949a-4f5f-11ec-8a6f-00d861bf4abb.png" alt="2020-02-05-07-12-06"  />
+  </p></p>
 <p>如果是调用系统的API，则使用动态链接库代替静态链接。</p>
 <h3 id="期望木马达到的效果--持久可控">期望木马达到的效果 – 持久可控</h3>
-<p><img src="../../../static/images/87a167c8-4f5f-11ec-81de-00d861bf4abb.png" alt="2020-02-05-07-12-15"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/87a167c8-4f5f-11ec-81de-00d861bf4abb.png" alt="2020-02-05-07-12-15"  />
+  </p></p>
 <p>这块基本上没什么好展开的，其中 白利用DLL劫持是我经常使用的。</p>
-<p><img src="../../../static/images/87d6b69e-4f5f-11ec-ba4c-00d861bf4abb.png" alt="2020-02-05-07-12-24"></p>
-<p><img src="../../../static/images/88331812-4f5f-11ec-ab8f-00d861bf4abb.png" alt="2020-02-05-07-12-34"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/87d6b69e-4f5f-11ec-ba4c-00d861bf4abb.png" alt="2020-02-05-07-12-24"  />
+  </p></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/88331812-4f5f-11ec-ab8f-00d861bf4abb.png" alt="2020-02-05-07-12-34"  />
+  </p></p>
 <h3 id="期望木马达到的效果--uac">期望木马达到的效果 – UAC</h3>
 <p>用户帐户控制（User Account Control，简写作UAC)是微软公司在其Windows Vista及更高版本操作系统中采用的一种控制机制。其原理是通知用户是否对应用程序使用硬盘驱动器和系统文件授权，以达到帮助阻止恶意程序（有时也称为“恶意软件”）损坏系统的效果。</p>
-<p><img src="../../../static/images/88741d94-4f5f-11ec-b8f6-00d861bf4abb.png" alt="2020-02-05-07-12-47"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/88741d94-4f5f-11ec-b8f6-00d861bf4abb.png" alt="2020-02-05-07-12-47"  />
+  </p></p>
 <p>在编译前,可以直接控制程序启动权限:</p>
-<p><img src="../../../static/images/88aa5b98-4f5f-11ec-8281-00d861bf4abb.png" alt="2020-02-05-07-12-55"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/88aa5b98-4f5f-11ec-8281-00d861bf4abb.png" alt="2020-02-05-07-12-55"  />
+  </p></p>
 <ul>
 <li>aslnvoker 默认权限</li>
 <li>highestAvailable 最高权限</li>
@@ -247,7 +313,10 @@
 <p>我编译选项调整为requireAdministrator,当用户运行程序后,将获得管理员权限会话,不需要绕过UAC了.</p>
 <h2 id="cobalt-strike">Cobalt Strike</h2>
 <p>Cobalt Strike是目前应用最多的一款红队C2平台，它的高扩展性、信息同步、网络架构得到很多红队的青睐。</p>
-<p><img src="../../../static/images/88e6b764-4f5f-11ec-9d81-00d861bf4abb.png" alt="2020-02-05-07-13-06"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/88e6b764-4f5f-11ec-9d81-00d861bf4abb.png" alt="2020-02-05-07-13-06"  />
+  </p></p>
 <h3 id="external-c2">External C2</h3>
 <p>Cobaltstrike External C2 旨在开发者可以通过扩展C2的模型来开发适配不同环境的C2使得目标上线。</p>
 <ul>
@@ -258,23 +327,41 @@
 <li>场景五：某个目标溯源到C2，同步到多个目标，或C2被威胁情报标记，被封，所有会话丢失 - 应对红蓝对抗</li>
 </ul>
 <p>文档链接：https://www.cobaltstrike.com/downloads/externalc2spec.pdf</p>
-<p><img src="../../../static/images/8923a0f2-4f5f-11ec-80fb-00d861bf4abb.png" alt="2020-02-05-07-13-18"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/8923a0f2-4f5f-11ec-80fb-00d861bf4abb.png" alt="2020-02-05-07-13-18"  />
+  </p></p>
 <p>关于External C2就不展开说了,官方文档已经很详细</p>
 <h3 id="external-c2-执行流程">External C2 执行流程</h3>
-<p><img src="../../../static/images/895c0c6c-4f5f-11ec-a4db-00d861bf4abb.png" alt="2020-02-05-07-13-26"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/895c0c6c-4f5f-11ec-a4db-00d861bf4abb.png" alt="2020-02-05-07-13-26"  />
+  </p></p>
 <p>当客户端请求到控制器后,控制器将会向External C2去请求Stage,这个Stage就是一个DLL文件,将DLL文件拿到客户端内存中后,申请可执行内存页,创建线程即可运行,其中,这个DLL是使用了反射DLL加载技术.</p>
-<p><img src="../../../static/images/899dad20-4f5f-11ec-8e7b-00d861bf4abb.png" alt="2020-02-05-07-13-40"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/899dad20-4f5f-11ec-8e7b-00d861bf4abb.png" alt="2020-02-05-07-13-40"  />
+  </p></p>
 <h2 id="domain-fronting">Domain Fronting</h2>
 <p>域前置技术（Domain-Fronting）是一个能够利用CDN识别域名进行转发流量的特性来隐藏命令控制（Command &amp; Control ，C&amp;C）的一种技术。</p>
 <p>根据本次议题,我最终实现的C2模型如下:</p>
-<p><img src="../../../static/images/89dc8be4-4f5f-11ec-bc5c-00d861bf4abb.png" alt="2020-02-05-07-13-53"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/89dc8be4-4f5f-11ec-bc5c-00d861bf4abb.png" alt="2020-02-05-07-13-53"  />
+  </p></p>
 <h3 id="domain-fronting--http-请求">Domain Fronting – HTTP 请求</h3>
 <p>一个正常的域名解析-请求-响应过程：</p>
-<p><img src="../../../static/images/8a1c92b6-4f5f-11ec-9ca7-00d861bf4abb.png" alt="2020-02-05-07-14-03"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/8a1c92b6-4f5f-11ec-9ca7-00d861bf4abb.png" alt="2020-02-05-07-14-03"  />
+  </p></p>
 <p>当客户端向服务器要请求一个网站时,会先经过DNS请求，然后获得Ｗeb服务器的IP地址进行Socket连接,那么接下来我们再来引入CDN的概念．</p>
 <h3 id="domain-fronting---cdn">Domain Fronting –  CDN</h3>
 <p>CDN，内容分发网络（Content Delivery Network，CDN）通过将站点内容发布至遍布全国的海量加速节点，使其用户可就近获取所需内容，避免网络拥堵、地域、运营商等因素带来的访问延迟问题，有效提升下载速度、降低响应时间，提供流畅的用户体验。</p>
-<p><img src="../../../static/images/8a61630a-4f5f-11ec-8b22-00d861bf4abb.png" alt="2020-02-05-07-14-13"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/8a61630a-4f5f-11ec-8b22-00d861bf4abb.png" alt="2020-02-05-07-14-13"  />
+  </p></p>
 <ul>
 <li>Origin Server ： 源站，是网站本身，CDN会将请求以最短路径转发至源站。
  </li>
@@ -289,9 +376,15 @@ Connection: Keep-Alive
 Cache-Control: no-cache
 </code></pre><h3 id="external-c2--控制器的设计http协议状态化">External C2 – 控制器的设计（HTTP协议状态化）</h3>
 <p>HTTP协议是无状态的，同时有两个会话上线就糟糕了 - 现以采用SESSION-ID来确定Socket套接字。</p>
-<p><img src="../../../static/images/8a9d7412-4f5f-11ec-b39f-00d861bf4abb.png" alt="2020-02-05-07-14-30"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/8a9d7412-4f5f-11ec-b39f-00d861bf4abb.png" alt="2020-02-05-07-14-30"  />
+  </p></p>
 <p>SESSION-ID：这里的SESSION-ID等于木马在本地生成的Windows GUID。</p>
-<p><img src="../../../static/images/8ae0b006-4f5f-11ec-82f8-00d861bf4abb.png" alt="2020-02-05-07-14-41"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/8ae0b006-4f5f-11ec-82f8-00d861bf4abb.png" alt="2020-02-05-07-14-41"  />
+  </p></p>
 <p>最终实现了这一项目，将External C2隐藏在CDN后方。</p>
 <h2 id="鱼叉攻击">鱼叉攻击</h2>
 <h3 id="鱼叉攻击的木马表现形式">鱼叉攻击的木马表现形式</h3>
@@ -301,14 +394,23 @@ Cache-Control: no-cache
 <li>假冒加固工具</li>
 <li>木马捆绑</li>
 </ul>
-<p><img src="../../../static/images/8b47be36-4f5f-11ec-8617-00d861bf4abb.png" alt="2020-02-05-07-14-51"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/8b47be36-4f5f-11ec-8617-00d861bf4abb.png" alt="2020-02-05-07-14-51"  />
+  </p></p>
 <p>通常办公软件具有最大的安装量，将文档插入邮件中已经是惯用的工作方式，因此许多APT组织在进行鱼叉攻击的过程中也会穿插许多关于Ｏffice的利用技巧。</p>
 <h3 id="鱼叉攻击--信">鱼叉攻击 – 信</h3>
-<p><img src="../../../static/images/8b92ddee-4f5f-11ec-a16b-00d861bf4abb.png" alt="2020-02-05-07-15-00"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/8b92ddee-4f5f-11ec-a16b-00d861bf4abb.png" alt="2020-02-05-07-15-00"  />
+  </p></p>
 <p>上图是我根据分析一些鱼叉攻击的邮件来总结的特点。</p>
 <p>信需要串联许多细节性的信息，根据人类的心理，寻找突破口。将目标构建在一个它所熟悉的区域内，将会降低他的警惕性。</p>
 <h3 id="鱼叉攻击--自动化">鱼叉攻击 – 自动化</h3>
-<p><img src="../../../static/images/8bd0f444-4f5f-11ec-ad16-00d861bf4abb.png" alt="2020-02-05-07-15-08"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/8bd0f444-4f5f-11ec-ad16-00d861bf4abb.png" alt="2020-02-05-07-15-08"  />
+  </p></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e">#!/usr/bin/python</span>
 </span></span><span style="display:flex;"><span><span style="color:#e6db74">&#34;&#34;&#34;
 </span></span></span><span style="display:flex;"><span><span style="color:#e6db74">@Rvn0xsy - 鱼叉自动化脚本

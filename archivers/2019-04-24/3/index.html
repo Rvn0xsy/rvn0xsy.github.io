@@ -79,7 +79,10 @@
 <p>在进行主机扫描的时候会执行hostrule这个函数，从以往的nmap扩展脚本代码中我们都可以发现在hostrule这个函数中做了一些针对host操作的动作。</p>
 <p>hostrule有一个参数，变量名叫host，我们可以把它理解为一个对象，在这里称之为对象是为了方便读者理解，在lua中实际它的数据类型是一个多维的table（表），具有很多属性。由于这些rule函数都是被动调用的，我们只能在函数内部对形参进行操作了。</p>
 <p>参考：https://nmap.org/book/nse-api.html</p>
-<p><img src="../../../static/images/6e7b0678-4f5f-11ec-bf1a-00d861bf4abb.png" alt="2019-04-24-10-02-11"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6e7b0678-4f5f-11ec-bf1a-00d861bf4abb.png" alt="2019-04-24-10-02-11"  />
+  </p></p>
 <p>通过上面这个表格我们能够清楚的了解到从host这个table中可以读取到哪些信息。</p>
 <p>为了让读者吸收，建立一个需求，请大家与我一起完成。</p>
 <blockquote>
@@ -102,7 +105,10 @@
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
 </span></span></code></pre></div><p>通过host.mac_addr获取的mac地址是二进制编码的，我们要转换成字符串，需要引入stdnse这个扩展包，stdnse包中有一个format_mac函数，能够将host.mac_addr转换成字符串。</p>
 <p>执行效果如下：</p>
-<p><img src="../../../static/images/6ebb6fce-4f5f-11ec-8628-00d861bf4abb.png" alt="2019-04-24-10-02-57"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6ebb6fce-4f5f-11ec-8628-00d861bf4abb.png" alt="2019-04-24-10-02-57"  />
+  </p></p>
 <pre tabindex="0"><code>00:50:56:ec:95:48
 00:50:56:f8:1e:b8
 00:50:56:c0:00:08
@@ -110,7 +116,10 @@
 </code></pre><p>以上这些MAC地址就是当前内网中的所有主机了。</p>
 <h2 id="0x02-扩展脚本对象-端口">0X02 扩展脚本对象-端口</h2>
 <p>端口相对于主机来说，属性较少，主要是针对端口状态、端口协议、端口服务、端口服务版本的一些描述。</p>
-<p><img src="../../../static/images/6effee2e-4f5f-11ec-913d-00d861bf4abb.png" alt="2019-04-24-10-03-27"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6effee2e-4f5f-11ec-913d-00d861bf4abb.png" alt="2019-04-24-10-03-27"  />
+  </p></p>
 <h3 id="0x02-完成一个需求">0X02 完成一个需求</h3>
 <p>还是老样子，假设一个需求，解决这个需求：</p>
 <blockquote>
@@ -141,7 +150,10 @@
 </span></span></code></pre></div><p>既然是针对服务/端口的需求，我们可以在portrule中进行编写，肯定有读者会产生疑问，nmap的-p参数就能指定端口，为何还要再portrule中判断。</p>
 <p>是因为我们最终写的脚本可能不只是做这一件事，而是做多件事情，以不同的条件限定它去执行哪些代码。</p>
 <p>扫描结果：</p>
-<p><img src="../../../static/images/6f412b14-4f5f-11ec-a638-00d861bf4abb.png" alt="2019-04-24-10-05-42"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6f412b14-4f5f-11ec-a638-00d861bf4abb.png" alt="2019-04-24-10-05-42"  />
+  </p></p>
 <p>通过上面的扫描，我们获得了内网中开启HTTP服务的主机的MAC地址，虽然Nmap已经给出了，但是学习都是一步一步来的，后面还有更复杂的需求等着你呢！</p>
 <h2 id="0x03-优化输出格式表table">0x03 优化输出格式——表（table）</h2>
 <p>在stdnse包中有一个函数叫output_table()，它能够返回一个table数据类型，通过操作这个table，将Key-&gt;Value的对应关系数据或列表数据放入，再return，就可以输出漂亮的格式~</p>
@@ -164,10 +176,16 @@
 </span></span><span style="display:flex;"><span>postrule<span style="color:#f92672">=</span><span style="color:#66d9ef">function</span>()
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">end</span>
 </span></span></code></pre></div><p>执行效果如下：</p>
-<p><img src="../../../static/images/6f815d4c-4f5f-11ec-a1fb-00d861bf4abb.png" alt="2019-04-24-10-06-19"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6f815d4c-4f5f-11ec-a1fb-00d861bf4abb.png" alt="2019-04-24-10-06-19"  />
+  </p></p>
 <p>可见在portrule返回true的时候才会执行action函数，在脚本刚开始执行前，声明了一个http_table全局变量，当遇到端口80/443时，会把当前主机的MAC地址装入http_table，在action中返回。</p>
 <p>对象结构图：</p>
-<p><img src="../../../static/images/6fc0b96a-4f5f-11ec-806a-00d861bf4abb.png" alt="2019-04-24-10-06-46"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6fc0b96a-4f5f-11ec-806a-00d861bf4abb.png" alt="2019-04-24-10-06-46"  />
+  </p></p>
 <p>下一章：HTTP包的使用</p>
 <p>会介绍HTTP包的使用，并且会教大家写一些批量检测HTTP协议相关的漏洞脚本，例如：CVE-2017-12615</p>
 

@@ -227,7 +227,10 @@
 <p>注意:</p>
 <p>1.Chanllenge是Server产生的一个16字节的随机数，每次认证都不同</p>
 <p>2.Response的表现形式是Net-NTLM Hash，它是由客户端 提供的密码Hash加密Server返回的Chanllenge产生的结果。</p>
-<p><img src="../../../static/images/35efa6d8-4f5f-11ec-807d-00d861bf4abb.png" alt="0x01.png"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/35efa6d8-4f5f-11ec-807d-00d861bf4abb.png" alt="0x01.png"  />
+  </p></p>
 <h3 id="ntlm-v2协议">NTLM V2协议</h3>
 <p>NTLM v1与NTLM v2最显著的区别就是Challenge与加密算法不同，共同点就是加密的原料都是NTLM Hash。</p>
 <p>下面细说一下有什么不同:</p>
@@ -324,7 +327,10 @@ TGT（Ticket Granting Ticket）：入场券，通过入场券能够获得票据�
 </li>
 </ol>
 <h3 id="域认证">域认证</h3>
-<p><img src="../../../static/images/3635ef80-4f5f-11ec-8279-00d861bf4abb.png" alt="0x02.png"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3635ef80-4f5f-11ec-8279-00d861bf4abb.png" alt="0x02.png"  />
+  </p></p>
 <p>首先，客户端需要发送自己的身份信息到KDC，身份信息中起码包含用户名，KDC根据用户名在AD中寻找是否在白名单中，然后根据用户名提取到对应的NTLM Hash。</p>
 <p>KDC此时生成一个随机字符串，叫Session Key，使用用户名对应的NTLM Hash加密Session Key，作为AS数据，使用KDC中某个用户的NTLM Hash加密Session Key和客户端的信息，生成TGT。</p>
 <ul>
@@ -333,20 +339,35 @@ TGT（Ticket Granting Ticket）：入场券，通过入场券能够获得票据�
 <li>KDC中某个用户指的是krbtgt</li>
 </ul>
 <p>数据结构：</p>
-<p><img src="../../../static/images/3689317c-4f5f-11ec-badc-00d861bf4abb.png" alt="0x03.png"></p>
-<p><img src="../../../static/images/36e560aa-4f5f-11ec-a867-00d861bf4abb.png" alt="0x04.png"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3689317c-4f5f-11ec-badc-00d861bf4abb.png" alt="0x03.png"  />
+  </p></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/36e560aa-4f5f-11ec-a867-00d861bf4abb.png" alt="0x04.png"  />
+  </p></p>
 <p>其中，TGT的到期时间为8小时，如果超过了8小时，还需要重新申请TGT，不能之间进入下一步获取Ticket。</p>
 <p>Kerberos是一个假设网络环境不安全的情况下能够正常进行认证工作的协议。</p>
 <p>第一步中，KDC返回的TGT客户端是无法解密的，因为它没有KDC Hash，如果有，我们就可以伪造黄金票据，这个是后话了。</p>
-<p><img src="../../../static/images/372fa4a8-4f5f-11ec-b927-00d861bf4abb.png" alt="0x05.png"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/372fa4a8-4f5f-11ec-b927-00d861bf4abb.png" alt="0x05.png"  />
+  </p></p>
 <p>第二步客户端需要提供TGT与第一步中使用自己NTLM Hash解密出来的Session Key加密的客户端信息跟时间戳。</p>
 <p>如果假设这个数据被中间人窃取到，也无法在段时间内破解，因为KDC会校验时间戳。</p>
 <p>KDC接到TGT与其他内容后，会首先解密TGT，只有KDC可以解密TGT，从TGT中提取到Session Key，再使用Session Key解密其他内容，解密出来的内容同TGT中的信息进行校验来确认客户端是否受信。</p>
 <p>验证通过后，就会生成一个新的Session Key，我们称之为Server Session Key，这个Server Session Key主要用于和服务器进行通信。同时还会生成一个Ticket，也就是最后的票据了。</p>
 <p>Ticket组成如下：</p>
-<p><img src="../../../static/images/376ce0f2-4f5f-11ec-b1a8-00d861bf4abb.png" alt="0x06.png"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/376ce0f2-4f5f-11ec-b1a8-00d861bf4abb.png" alt="0x06.png"  />
+  </p></p>
 <p>Server Hash：这个Hash是在AD中服务器计算机的NTLM Hash。</p>
-<p><img src="../../../static/images/37acb8e4-4f5f-11ec-b724-00d861bf4abb.png" alt="0x07.png"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/37acb8e4-4f5f-11ec-b724-00d861bf4abb.png" alt="0x07.png"  />
+  </p></p>
 <p>在第三步里，客户端向服务器请求，需要提供Ticket，Server Session Key加密的客户端信息与时间戳。</p>
 <ul>
 <li>Ticket客户端无法解密</li>
@@ -442,11 +463,20 @@ TGT（Ticket Granting Ticket）：入场券，通过入场券能够获得票据�
 <p>使用meterpreter中的kiwi模块：</p>
 <pre tabindex="0"><code>load kiwi
 </code></pre><p>创建票据：</p>
-<p><img src="../../../static/images/39148acc-4f5f-11ec-8156-00d861bf4abb.png" alt="0x08.png"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/39148acc-4f5f-11ec-8156-00d861bf4abb.png" alt="0x08.png"  />
+  </p></p>
 <p>注入到内存：</p>
-<p><img src="../../../static/images/3963ec98-4f5f-11ec-985e-00d861bf4abb.png" alt="0x09.png"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3963ec98-4f5f-11ec-985e-00d861bf4abb.png" alt="0x09.png"  />
+  </p></p>
 <p>使用wmic在目标服务器上创建一个进程：</p>
-<p><img src="../../../static/images/39bd5896-4f5f-11ec-b64d-00d861bf4abb.png" alt="0x010.png"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/39bd5896-4f5f-11ec-b64d-00d861bf4abb.png" alt="0x010.png"  />
+  </p></p>
 <h3 id="黄金票据golden-tickets---伪造">黄金票据(Golden Tickets) - 伪造</h3>
 <p>伪造票据:</p>
 <pre tabindex="0"><code>mimikatz “kerberos::golden /domain:&lt;域名&gt; /sid:&lt;域SID&gt; /rc4:&lt;KRBTGT NTLM Hash&gt; /user:&lt;任意用户名&gt; /ptt&#34; exit

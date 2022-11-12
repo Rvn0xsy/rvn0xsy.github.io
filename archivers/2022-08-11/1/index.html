@@ -89,10 +89,16 @@
 <li>CMD或Powershell中内置的命令</li>
 </ul>
 <p>例如：<code>dir</code> 命令与<code>forfiles</code>命令，这两个命令都可以列出文件夹内的文件，但要执行 <code>dir</code> 需要启动 <code>cmd.exe</code> 或者 <code>powershell.exe</code> ，执行的过程中进程链就像这样：</p>
-<p><img src="../../../static/images/2022-08-11-22-03-10.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-03-10.png" alt=""  />
+  </p></p>
 <p>在这个过程里，进程的链是<code>java.exe</code>创建了<code>cmd.exe</code> ，那么很容易就能发现问题，每执行一条命了都会创建一个<code>cmd.exe</code> 的进程。从<code>Runtime.exec</code> 执行命令到Windows API CreateProcess 创建<code>cmd.exe</code>这个进程是通过JVM翻译过来的，数字杀毒会Hook CreateProcess API达到监控拦截的目的。</p>
 <p>而forfiles是一个PE文件，不是CMD内置的命令，所以不需要创建<code>cmd.exe</code>也可以执行，它的进程链会是这样：</p>
-<p><img src="../../../static/images/2022-08-11-22-03-39.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-03-39.png" alt=""  />
+  </p></p>
 <p>达到了同样的目的，但是没有创建<code>cmd.exe</code> ，为了体验上的考量现在的大部分Webshell管理工具执行命令都是要创建cmd.exe的，那么如何让我们的操作都不创建<code>cmd.exe</code>呢？</p>
 <p>其实只需要改一下原来的小马即可：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
@@ -105,15 +111,27 @@
 </span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
 </span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
 </span></span></code></pre></div><p>这样虽然不会创建进程，但大部分命令还是会拦截，例如：net.exe net1.exe</p>
-<p><img src="../../../static/images/2022-08-11-22-04-02.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-04-02.png" alt=""  />
+  </p></p>
 <h2 id="0x02-windows错误代码">0x02 Windows错误代码</h2>
 <p>经常会遇到一些Windows下的工具刨出Error Code 5，到底代表什么意思？</p>
 <p>这个Error Code 5其实是Windows的错误代码，每一个代码都代表了不同的含义。</p>
 <p>查询错误代码的含义可以通过 <code>net helpmsg</code> 命令：</p>
-<p><img src="../../../static/images/2022-08-11-22-04-15.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-04-15.png" alt=""  />
+  </p></p>
 <p>Visual Studio 有一个工具可以查询错误代码，名为errlookup：</p>
-<p><img src="../../../static/images/2022-08-11-22-04-27.png" alt=""></p>
-<p><img src="../../../static/images/2022-08-11-22-04-35.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-04-27.png" alt=""  />
+  </p></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-04-35.png" alt=""  />
+  </p></p>
 <p>有的时候Webshell管理工具并没有直接给出错误代码的含义，而是直接抛出错误代码，这种情况就能使用命令或者工具去查询，了解错误的发生到底是因为什么问题。</p>
 <h2 id="0x03-java加载动态链接库常见的三种办法">0x03 Java加载动态链接库常见的三种办法</h2>
 <p>Java加载动态链接库常见的有三种办法：</p>
@@ -344,17 +362,35 @@
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> TRUE;
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>在DllMain函数中调用CreateAdminUserInternal实现添加管理员用户audit。将dll文件进行base64编码，发送到加载动态链接库的jsp页面，就可以绕过数字杀毒添加用户了：</p>
-<p><img src="../../../static/images/2022-08-11-22-05-16.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-05-16.png" alt=""  />
+  </p></p>
 <p>发送之前：</p>
-<p><img src="../../../static/images/2022-08-11-22-05-42.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-05-42.png" alt=""  />
+  </p></p>
 <p>发送之后：</p>
-<p><img src="../../../static/images/2022-08-11-22-05-54.png" alt=""></p>
-<p><img src="../../../static/images/2022-08-11-22-05-59.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-05-54.png" alt=""  />
+  </p></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-05-59.png" alt=""  />
+  </p></p>
 <p>至此管理员用户添加成功。</p>
 <p>当DLL的编译架构与Java进程的位数不同，加载会失败，抛出：<code>Can't load AMD 64-bit .dll on a IA 32-bit platform。</code></p>
-<p><img src="../../../static/images/2022-08-11-22-06-15.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-06-15.png" alt=""  />
+  </p></p>
 <p>这个问题只需要调整DLL的编译架构就行：</p>
-<p><img src="../../../static/images/2022-08-11-22-06-31.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-06-31.png" alt=""  />
+  </p></p>
 <p>同样的我们还可以调用comsvcs.dll导出的MiniDumpW转储lsass.exe进程的内存。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// dllmain.cpp : 定义 DLL 应用程序的入口点。
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;pch.h&#34;</span><span style="color:#75715e">
@@ -425,10 +461,16 @@
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> TRUE;
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>编译成DLL文件发送过去后，我们可以看到Tomcat.exe或者Java.exe的Debug权限已经被开启：</p>
-<p><img src="../../../static/images/2022-08-11-22-06-46.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-06-46.png" alt=""  />
+  </p></p>
 <p>在<code>C:\Windows\Temp</code>目录下已经生成进程的内存转储文件。</p>
 <p><strong>注意：如果Tomcat是以SERVICE账户启动的，那么直接加载DLL会造成Tomcat直接崩溃无法工作，这些敏感操作的失败会引发系统的错误处理程序，最终导致Tomcat进程关闭，在实战中应根据业务的重要程度谨慎操作。</strong></p>
-<p><img src="../../../static/images/2022-08-11-22-07-05.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-07-05.png" alt=""  />
+  </p></p>
 <p>为了避免类似的风险情况，我增加了权限判断、重复转储判断：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#75715e">// dllmain.cpp : 定义 DLL 应用程序的入口点。
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75715e">#include</span> <span style="color:#75715e">&#34;pch.h&#34;</span><span style="color:#75715e">
@@ -560,7 +602,10 @@
 </span></span></code></pre></div><p>首先判断权限是否是管理员或者SYSTEM权限，然后尝试启用SE_DEBUG权限，最后才进行转储，代码我上传到了Github仓库：<a href="https://github.com/Rvn0xsy/j2osWin">https://github.com/Rvn0xsy/j2osWin</a></p>
 <h2 id="0x06-将java进程进行权限提升">0x06 将Java进程进行权限提升</h2>
 <p>Tomcat 有三种权限运行模式：</p>
-<p><img src="../../../static/images/2022-08-11-22-07-36.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-07-36.png" alt=""  />
+  </p></p>
 <p>● Local Service
 ● Network Service
 ● Users
@@ -662,7 +707,10 @@
 </span></span><span style="display:flex;"><span>	}RpcEndExcept
 </span></span></code></pre></div><p>每次调用EfsRpcOpenFileRaw都会触发SYSTEM进程连接命名管道，然后再通过ImpersonateNamedPipeClient模拟SYSTEM进程的权限执行代码，当ImpersonateNamedPipeClient函数调用成功后，当前线程的Token其实已经变成了SYSTEM账户的，特权代码执行完成后还可以用RevertToSelf恢复到原来的线程Token。</p>
 <p>在我实现成功后遇到数字杀毒会拦截提权的行为，其实很多土豆提权成功后，会复制一份Token去创建进程，一般调用CreateProcessWithToken和CreateProcessAsUser比较多，被拦截的时候会是这样：</p>
-<p><img src="../../../static/images/2022-08-11-22-08-11.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-08-11.png" alt=""  />
+  </p></p>
 <p>因此常规的办法是不行了，于是请教了头像哥，他的回复与我想的一样，用高权限的Token去跑一个特权线程，利用这个特权线程去执行Shellcode。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">ExecuteShellCodeWithToken</span>(HANDLE hToken) {
 </span></span><span style="display:flex;"><span>	HANDLE hThread <span style="color:#f92672">=</span> INVALID_HANDLE_VALUE;
@@ -682,7 +730,10 @@
 <li>恢复线程执行</li>
 </ul>
 <p>成功执行Shellcode后的样子是这样的：</p>
-<p><img src="../../../static/images/2022-08-11-22-08-27.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-08-27.png" alt=""  />
+  </p></p>
 <p>上线的User是SYSTEM，但是whoami是Local Service，这是因为当前线程是SYSTEM的，获取用户名的GetUserName API是以当前线程Token作为权限查询的，而创建进程时并不会直接复制模拟的特权Token，这个时候只需要使用CobaltStrike的进程注入到其他SYSTEM进程即可。解决完Local Service提权到SYSTEM被数字杀毒拦截的问题后，那就要思考如何做武器化了，因为在实战中不可能上传一个个DLL文件，我需要把所有的代码写到一个DLL中，通过控制JSP Webshell的参数来达到各种功能的调用。</p>
 <h2 id="0x07-武器化的思路与实现">0x07 武器化的思路与实现</h2>
 <p>所有的代码跑在Tomcat的进程里的，而且只能执行DLLMain，那么怎么通过某种技术可以使得发送一个Web请求就执行DLL中的一些功能呢？</p>
@@ -924,7 +975,10 @@
 </span></span><span style="display:flex;"><span><span style="color:#f92672">%&gt;</span>
 </span></span></code></pre></div><p><code>java.io.RandomAccessFile</code>可以读写命令管道，通过修改Header头<code>WWW-Authenticate</code>来控制不同的功能，每个功能都有一个16进制的编号，剩余的Body内容将会被放到其他内存区域，以供功能函数调用读取，如此以来解决了每个请求都可以执行不同功能的问题，只发送一次DLL就可以将DLL模块打入Tomcat/Java进程的内存中执行，并且利用管道读写的特性也能够实现数据的回显，这个已经在示例代码中体现出来了。</p>
 <p>SERVICE提权到SYSTEM权限并执行任意代码的流程示例图如下：</p>
-<p><img src="../../../static/images/2022-08-11-22-08-44.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-08-11-22-08-44.png" alt=""  />
+  </p></p>
 <p>公开的DLL模块代码：<a href="https://github.com/Rvn0xsy/j2osWin">https://github.com/Rvn0xsy/j2osWin</a></p>
 <p>演示视频：暂无。</p>
 

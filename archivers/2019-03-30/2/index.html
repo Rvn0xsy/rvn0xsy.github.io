@@ -107,24 +107,36 @@
 <p>C2，其含义在安全领域中意思是命令与控制，具体的技术表现为远控木马。
 是一种通常用于持续控制一个或多个目标的技术手段，这个技术手段覆盖了<strong>多种</strong>网络通信（计算机交互、通信）的方式。</p>
 <p>这个“多种”指的是有很多种方式，基于HTTP、SMTP、HTTPS、纯数据报文、&hellip;.</p>
-<p><img src="../../../static/images/544f0bbe-4f5f-11ec-8dda-00d861bf4abb.png" alt="2019-03-30-13-59-17"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/544f0bbe-4f5f-11ec-8dda-00d861bf4abb.png" alt="2019-03-30-13-59-17"  />
+  </p></p>
 <h2 id="0x03-c2的原理">0x03 C2的原理</h2>
 <p>命令与控制的原理就是目标机器主动或被动的与控制端进行交互，不断获取指令执行。</p>
 <p>交互：可能不是一个直接的网络连接</p>
 <p>命令与控制在行为上一般需要与许多操作系统接口进行交互，例如：网络通信、文件读写、进程管理等。</p>
 <h2 id="0x04-后渗透平台--cobalt-strike">0x04 后渗透平台 – Cobalt Strike</h2>
-<p><img src="../../../static/images/54b23a54-4f5f-11ec-8073-00d861bf4abb.png" alt="2019-03-30-14-01-17"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/54b23a54-4f5f-11ec-8073-00d861bf4abb.png" alt="2019-03-30-14-01-17"  />
+  </p></p>
 <p>Cobalt Strike是一个跨平台、多人协作式、红队评估后渗透平台。
 它支持多人通信、权限维持、文件操作、提权、横向渗透……等多种功能，使用者只需要部署好teamserver就可以在任意平台上连接teamserver进行渗透。</p>
 <p><a href="https://www.cobaltstrike.com/">https://www.cobaltstrike.com/</a></p>
 <h2 id="0x05-后渗透平台--metasploit-framework">0x05 后渗透平台 – Metasploit Framework</h2>
-<p><img src="../../../static/images/54ecdbb4-4f5f-11ec-8615-00d861bf4abb.png" alt="2019-03-30-14-02-15"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/54ecdbb4-4f5f-11ec-8615-00d861bf4abb.png" alt="2019-03-30-14-02-15"  />
+  </p></p>
 <p>Metasploit Framework是一个跨平台、开源、较为开放式的安全评估平台。
 它支持权限维持、文件操作、提权、横向渗透、载荷生成……等多种功能，使得渗透更加灵活。</p>
 <p><a href="https://www.metasploit.com/">https://www.metasploit.com/</a></p>
 <h2 id="0x06-后渗透的需求">0x06 后渗透的需求</h2>
 <p>通过一些常用的平台、工具总结，我得出一些以下几个基本需求：</p>
-<p><img src="../../../static/images/55265e0c-4f5f-11ec-8636-00d861bf4abb.png" alt="2019-03-30-14-03-35"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/55265e0c-4f5f-11ec-8636-00d861bf4abb.png" alt="2019-03-30-14-03-35"  />
+  </p></p>
 <p>这些需求就必定要形成一个跨平台支持、兼容性最好、拓展性强的框架，而大部分框架的基础模式就是如下所说。</p>
 <h3 id="框架基本组成">框架基本组成</h3>
 <ul>
@@ -167,7 +179,10 @@
 <li>DLL 劫持不需要创建进程，被动加载。</li>
 </ul>
 <h2 id="0x11-windows内存管理方式">0x11 Windows内存管理方式</h2>
-<p><img src="../../../static/images/55ba1444-4f5f-11ec-bc27-00d861bf4abb.png" alt="2019-03-30-14-15-26"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/55ba1444-4f5f-11ec-bc27-00d861bf4abb.png" alt="2019-03-30-14-15-26"  />
+  </p></p>
 <p>在32位Windows操作系统中，每个进程都拥有一个独立的线性4GB虚拟地址空间。由内存管理器将虚拟地址空间与物理内存地址进行对应。</p>
 <ul>
 <li>32位地址：0x00000000 ~ 0xFFFFFFFF</li>
@@ -187,7 +202,10 @@
 <p><a href="http://payloads.online/archivers/2019-01-20/">DLL Injection Example</a></p>
 <h2 id="0x13-反射dll注入reflective-dll-injection">0x13 反射DLL注入（Reflective DLL injection）</h2>
 <p>这里不得不铺垫一些Windows PE格式的基本概念：</p>
-<p><img src="../../../static/images/55fc3054-4f5f-11ec-8e4a-00d861bf4abb.png" alt="2019-03-30-14-19-33"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/55fc3054-4f5f-11ec-8e4a-00d861bf4abb.png" alt="2019-03-30-14-19-33"  />
+  </p></p>
 <p>在Windows中，所有的（exe、dll）等文件的格式都是同一套标准，例如当你双击启动一个软件的时候，操作系统会读取你双击启动的那个程序到内存去根据PE格式解析，把该加载的资源加载到位。</p>
 <p>每个PE文件至少有以下几个元素组成：</p>
 <ul>
@@ -207,10 +225,16 @@
 <p>如果我们手动实现一个LoadLibrary，就能绕过大部分反病毒软件，从而让后渗透框架使用起来更加得心应手。</p>
 <p>PS：实现了一个LoadLibrary还要实现一个加密通道，支持框架中的不同模块进行传输，这里可以参考Metasploit的Stager模式，不铺垫细节了。</p>
 <h2 id="0x14-cobalt-strike-external-c2">0x14 Cobalt Strike external C2</h2>
-<p><img src="../../../static/images/56537ee0-4f5f-11ec-afad-00d861bf4abb.png" alt="2019-03-30-14-33-50"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/56537ee0-4f5f-11ec-afad-00d861bf4abb.png" alt="2019-03-30-14-33-50"  />
+  </p></p>
 <p>Cobalt Strike支持拓展C2，这个拓展C2的工作方式可谓是非常灵活，太具体细节不作介绍，我只介绍它的工作流程，可以去官网下载PDF，文末有参考文章。</p>
 <p>工作原理：</p>
-<p><img src="../../../static/images/56957c82-4f5f-11ec-af46-00d861bf4abb.png" alt="2019-03-30-14-35-34"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/56957c82-4f5f-11ec-af46-00d861bf4abb.png" alt="2019-03-30-14-35-34"  />
+  </p></p>
 <p>其中有4个角色：</p>
 <ul>
 <li>Team Server ： Cobalt Strike 后端的主程序</li>
@@ -220,7 +244,10 @@
 </ul>
 <p>流程简介：启动teamserver，加载扩展服务，在目标机器上运行控制器，控制器会向扩展服务取得PAYLOAD，写入一个管道，另外木马读取管道，运行代码，通过管道与控制器不断交互，控制器把数据反馈给扩展服务，这样就形成了一个多样化的C2。</p>
 <p>控制器客户端与控制器通信的报文格式：</p>
-<p><img src="../../../static/images/56d93666-4f5f-11ec-a5e4-00d861bf4abb.png" alt="2019-03-30-14-44-02"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/56d93666-4f5f-11ec-a5e4-00d861bf4abb.png" alt="2019-03-30-14-44-02"  />
+  </p></p>
 <p>前四个字节是数据包的大小（不包含本身），后面就是数据。</p>
 <p>这种报文在控制与管道再到木马的传输过程中可以改变为任意应用层协议，可以是文件、内存、管道、油槽等&hellip;.</p>
 <p>Tips：在目标机器管道与控制器客户端之间的传输可以进行流量混淆，轻松绕过网络告警设备。</p>
@@ -267,12 +294,24 @@
 </video>
 <p>目前我已经开发出DLL版，可通过rundll32调用。</p>
 <h2 id="0x15-cooolis--bypass-av---原理">0x15 Cooolis – Bypass AV - 原理</h2>
-<p><img src="../../../static/images/5dc7b68c-4f5f-11ec-b292-00d861bf4abb.png" alt="2019-03-30-14-55-52"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/5dc7b68c-4f5f-11ec-b292-00d861bf4abb.png" alt="2019-03-30-14-55-52"  />
+  </p></p>
 <p>在Metasploit环境下，我使用了<code>windows/patchupdllinject/reverse_tcp</code>用于充当加载器的前半部分，建立连接后发送一个DLL过去。</p>
-<p><img src="../../../static/images/5e1528cc-4f5f-11ec-bc4a-00d861bf4abb.png" alt="2019-03-30-14-57-54"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/5e1528cc-4f5f-11ec-bc4a-00d861bf4abb.png" alt="2019-03-30-14-57-54"  />
+  </p></p>
 <p>接收完毕后，<code>Cooolis</code>负责在内存寻找<code>PE</code>文件头，然后加载模块到内存空间，调用<code>DLL Main</code>实现上线。</p>
-<p><img src="../../../static/images/5e6c5d72-4f5f-11ec-ab32-00d861bf4abb.png" alt="2019-03-30-14-59-04"></p>
-<p><img src="../../../static/images/5eb7e562-4f5f-11ec-ba1c-00d861bf4abb.png" alt="2019-03-30-14-59-10"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/5e6c5d72-4f5f-11ec-ab32-00d861bf4abb.png" alt="2019-03-30-14-59-04"  />
+  </p></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/5eb7e562-4f5f-11ec-ba1c-00d861bf4abb.png" alt="2019-03-30-14-59-10"  />
+  </p></p>
 <h2 id="0x16-高度安全下的apt邮服实验">0x16 高度安全下的APT邮服实验</h2>
 <p>这个先晾在这，部门分享完毕继续写。。。</p>
 <h2 id="结语">结语</h2>

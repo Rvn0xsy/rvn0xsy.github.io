@@ -83,10 +83,16 @@
 <h2 id="0x01-powershell">0x01 Powershell</h2>
 <p>目前已经有很多Powershell集合脚本，用于域渗透简直舒爽</p>
 <p>今天推荐一款名字叫<code>DomainPasswordSpray.ps1</code>的脚本，主要原理是先来抓取域用户账号，然后指定密码字典进行域认证。认证通过的就是密码正确的了。</p>
-<p><img src="../../../static/images/23ba8e1a-4f5f-11ec-bac7-00d861bf4abb.png" alt="0x00"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/23ba8e1a-4f5f-11ec-bac7-00d861bf4abb.png" alt="0x00"  />
+  </p></p>
 <p><strong>GitHub项目地址：https://github.com/dafthack/DomainPasswordSpray</strong></p>
 <p>由于作者的脚本有一个小瑕疵，故此我改了一下，避免抛出了一些错误。</p>
-<p><img src="../../../static/images/23f92d78-4f5f-11ec-a331-00d861bf4abb.png" alt="0x01"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/23f92d78-4f5f-11ec-a331-00d861bf4abb.png" alt="0x01"  />
+  </p></p>
 <p><strong>优化后的地址：http://payloads.online/scripts/Invoke-DomainPasswordSpray.txt</strong></p>
 <h2 id="0x02-参数说明">0x02 参数说明</h2>
 <p>在代码的开头就已经有介绍了，我简单汉化一下。</p>
@@ -131,7 +137,10 @@ testPass
 webManager
 dba
 </code></pre><h3 id="密码枚举">密码枚举</h3>
-<p><img src="../../../static/images/243c3a28-4f5f-11ec-937a-00d861bf4abb.png" alt="0x02"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/243c3a28-4f5f-11ec-937a-00d861bf4abb.png" alt="0x02"  />
+  </p></p>
 <p><strong>命令：</strong> <code>C:\PS&gt; Invoke-DomainPasswordSpray -Domain 域名 -Password w!23456 -OutFile sprayed-creds.txt</code></p>
 <p><strong>输出：</strong></p>
 <pre tabindex="0"><code>[*] Current domain is compatible with Fine-Grained Password Policy.

@@ -84,7 +84,10 @@
 <p>Sleep语言下载地址：http://sleep.dashnine.org/download/sleep.jar</p>
 <p>启动Sleep脚本语言解释器：</p>
 <p><code>java -jar sleep.jar</code></p>
-<p><img src="../../../static/images/9112d6ca-4f5f-11ec-9f40-00d861bf4abb.png" alt="2020-03-01-11-37-38"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9112d6ca-4f5f-11ec-9f40-00d861bf4abb.png" alt="2020-03-01-11-37-38"  />
+  </p></p>
 <h2 id="sleep语言数据类型">Sleep语言数据类型</h2>
 <ul>
 <li>数字</li>
@@ -102,7 +105,10 @@
 <pre tabindex="0"><code># create a  List
 @foo = @(&#39;foo&#39;,123.0,&#39;bar&#39;);
 println(@foo[0])
-</code></pre><p><img src="../../../static/images/914ebd7a-4f5f-11ec-929e-00d861bf4abb.png" alt="2020-03-01-11-37-53"></p>
+</code></pre><p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/914ebd7a-4f5f-11ec-929e-00d861bf4abb.png" alt="2020-03-01-11-37-53"  />
+  </p></p>
 <p>遍历：</p>
 <pre tabindex="0"><code>@foo = @(&#39;foo&#39;,123.0,&#39;bar&#39;);
 foreach $var (@foo)
@@ -119,7 +125,10 @@ println(&#34;Stack is: &#34; . @stack);
 $value = pop(@stack);
 println(&#34;Top item is: &#34; . $value);
 println(&#34;Stack is: &#34; . @stack[0]);
-</code></pre><p><img src="../../../static/images/918fbf78-4f5f-11ec-a2a2-00d861bf4abb.png" alt="2020-03-01-11-38-02"></p>
+</code></pre><p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/918fbf78-4f5f-11ec-a2a2-00d861bf4abb.png" alt="2020-03-01-11-38-02"  />
+  </p></p>
 <p>Hashes 更像是Python中的字典 Key-Value</p>
 <pre tabindex="0"><code>$x = 3;
 %foo[&#34;name&#34;] = &#34;Raphael&#34;;
@@ -127,7 +136,10 @@ println(&#34;Stack is: &#34; . @stack[0]);
 %foo[$x]     = &#34;Michelangelo&#34;;
 
 println(&#34;%foo is: &#34; . %foo);
-</code></pre><p><img src="../../../static/images/91c85450-4f5f-11ec-bb58-00d861bf4abb.png" alt="2020-03-01-11-38-12"></p>
+</code></pre><p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/91c85450-4f5f-11ec-bb58-00d861bf4abb.png" alt="2020-03-01-11-38-12"  />
+  </p></p>
 <h2 id="创建一个与用户交互的函数">创建一个与用户交互的函数</h2>
 <p>一般，我们通常会在beacon中输入命令给Cobalt Strike，这些命令背后的代码其实都被事件关联起来了，下面来一个示例，做一次我们自己的命令绑定。</p>
 <pre tabindex="0"><code>sub print_hello{
@@ -138,8 +150,14 @@ command say {
 	print_hello($1);
 }
 </code></pre><p>加载到Cobalt Strike后，在Aggressor Script控制台输入say Tom就可以运行脚本了：</p>
-<p><img src="../../../static/images/920175dc-4f5f-11ec-a32b-00d861bf4abb.png" alt="2020-03-01-11-38-22"></p>
-<p><img src="../../../static/images/923f427c-4f5f-11ec-b95d-00d861bf4abb.png" alt="2020-03-01-11-38-29"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/920175dc-4f5f-11ec-a32b-00d861bf4abb.png" alt="2020-03-01-11-38-22"  />
+  </p></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/923f427c-4f5f-11ec-b95d-00d861bf4abb.png" alt="2020-03-01-11-38-29"  />
+  </p></p>
 <p>可以发现，Sleep的函数通过$数字来寻找函数参数，这个虽然友好，但是还是有说不出的难受&hellip;</p>
 <p>下一课介绍Cobalt Strike的菜单创建以及快捷键绑定。</p>
 

