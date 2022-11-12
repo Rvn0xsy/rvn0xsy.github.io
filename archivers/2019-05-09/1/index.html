@@ -82,14 +82,14 @@
 <p>通常最简单的发送命令：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swaks --to user@example.com --server test-server.example.net
 </span></span></code></pre></div><p>但是邮件头中会带上<code>X-Mailer</code>：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/74cbdcfa-4f5f-11ec-9bc1-00d861bf4abb.png" alt="2019-05-09-14-24-53"></p>
+<p><img src="../../../static/images/74cbdcfa-4f5f-11ec-9bc1-00d861bf4abb.png" alt="2019-05-09-14-24-53"></p>
 <p>同时，SPF检测会FAIL。</p>
 <h2 id="0x01-smtp2go">0x01 smtp2go</h2>
 <p>这个是从evi1cg师傅那里看到的，smtp2go主要是相当于邮件托管，可以分发子账户进行发送。</p>
 <p>地址：https://support.smtp2go.com/hc/en-gb</p>
 <p>（邮箱注册）普通账户可以免费发1000封邮件。</p>
 <p>分配好账户后，可以通过swaks进行登录发送邮件：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/750c7a8a-4f5f-11ec-889d-00d861bf4abb.png" alt="2019-05-09-14-28-50"></p>
+<p><img src="../../../static/images/750c7a8a-4f5f-11ec-889d-00d861bf4abb.png" alt="2019-05-09-14-28-50"></p>
 <h2 id="0x02-swaks发送邮件">0x02 swaks发送邮件</h2>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swaks --to rvn0xsy@gmail.com --from admin@qq.com --ehlo gmail.com --body hello --server mail.smtp2go.com -p <span style="color:#ae81ff">2525</span> -au &lt;USER&gt; -ap &lt;PASS&gt;
 </span></span></code></pre></div><p>但是上面这个邮件无法绕过SPF。</p>
@@ -100,13 +100,13 @@
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swaks --to rvn0xsy@gmail.com --from admin@qq.com --ehlo gmail.com --body hello --server mail.smtp2go.com -p <span style="color:#ae81ff">2525</span> -au &lt;USER&gt; -ap &lt;PASS&gt;
 </span></span></code></pre></div><p>smtp.from就是admin@qq.com，和mail.smtp2go.com的IP肯定不同，所以SPF校验失败，而校验失败的邮件，会有很高的几率被扔到垃圾邮件中。</p>
 <p>默认情况下，如果未设置Mail.From也就是邮件头的From，则会使用smtp.from作为Mail.From。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7546e2d8-4f5f-11ec-8699-00d861bf4abb.png" alt="2019-05-09-14-38-39"></p>
+<p><img src="../../../static/images/7546e2d8-4f5f-11ec-8699-00d861bf4abb.png" alt="2019-05-09-14-38-39"></p>
 <h2 id="0x04-绕过spf">0x04 绕过SPF</h2>
 <p>由于邮件显示的是Header中的From不是smtp.from，因此可以将smtp.from设置为正常的邮件服务器地址，伪造一个Mail.From即可。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swaks --to payloads@aliyun.com --from xx@smtp2go.com --h-From: <span style="color:#e6db74">&#39;管理员&lt;admin@qq.com&gt;&#39;</span> --ehlo gmail.com --body hello --server mail.smtp2go.com -p <span style="color:#ae81ff">2525</span> -au &lt;USER&gt; -ap &lt;PASSS&gt;
 </span></span></code></pre></div><p>Gmail接收到这封邮件后，会校验<code>--from xx@smtp2go.com</code>中的smtp2go.com是否等于mail.smtp2go.com的IP，由于是相等的，所以完成了SPF的校验。</p>
 <p>而DKIM是校验邮件完整性的，smtp2go与Gmail直接使用的是TLS，不会发生什么问题。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/758edade-4f5f-11ec-947a-00d861bf4abb.png" alt="2019-05-09-14-42-55"></p>
+<p><img src="../../../static/images/758edade-4f5f-11ec-947a-00d861bf4abb.png" alt="2019-05-09-14-42-55"></p>
 <h2 id="0x05-header">0x05 Header</h2>
 <p>swaks支持自定义某些Header，参数如下：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>swaks --header-&lt;Name&gt; &lt;Value&gt;

@@ -138,7 +138,7 @@
 <p>例如我需要扫描192.168.85.132的HTTP服务的中间件信息，使用Nmap时需要输入以下命令：</p>
 <p><code>nmap --script=http-server-header 192.168.85.132</code></p>
 <p>执行结果如下：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6c77ed3c-4f5f-11ec-b582-00d861bf4abb.png" alt="2019-04-24-09-51-33"></p>
+<p><img src="../../../static/images/6c77ed3c-4f5f-11ec-b582-00d861bf4abb.png" alt="2019-04-24-09-51-33"></p>
 <p>从扫描结果可以看出，在扫描到80端口的开放状态及服务名称下方会输出关于http-server-header脚本的结果：Apache/2.4.29 (Debian)</p>
 <p>一般情况下，在nmap安装目录下有一个scripts文件夹，里面存放了很多供我们调用的脚本，脚本的语言是lua，文件扩展名是nse。使用脚本时我们不需要输入脚本的全名，例如，调用http-server-header.nse时，只需要输入文件名http-server-header即可。</p>
 <p>下面介绍一些带参数的扩展脚本使用方法。同样的，设定一个需求，我需要扫描192.168.85.132的HTTP服务下有哪些目录或者文件，那么可以采用http-enum.nse脚本。</p>
@@ -153,14 +153,14 @@
 </ul>
 <p>假设要从admin目录开始进行枚举，需要输入如下命令：</p>
 <p><code>nmap --script=http-enum --script-args 'http-enum.basepath=admin' 192.168.85.132</code></p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6cbb77d2-4f5f-11ec-a8eb-00d861bf4abb.png" alt="2019-04-24-09-52-35"></p>
+<p><img src="../../../static/images/6cbb77d2-4f5f-11ec-a8eb-00d861bf4abb.png" alt="2019-04-24-09-52-35"></p>
 <h3 id="0x03-如何查看nmap扩展脚本的usage使用方法">0X03 如何查看Nmap扩展脚本的Usage（使用方法）</h3>
 <p>使用&ndash;script-help参数</p>
 <p><code>nmap --script-help=http-enum</code></p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6cf45d9a-4f5f-11ec-b58b-00d861bf4abb.png" alt="2019-04-24-09-53-19"></p>
+<p><img src="../../../static/images/6cf45d9a-4f5f-11ec-b58b-00d861bf4abb.png" alt="2019-04-24-09-53-19"></p>
 <p>直接查看脚本文件</p>
 <p><code>cat /usr/share/nmap/scripts/http-enum.nse</code></p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/6d35774e-4f5f-11ec-a2c3-00d861bf4abb.png" alt="2019-04-24-09-53-40"></p>
+<p><img src="../../../static/images/6d35774e-4f5f-11ec-a2c3-00d861bf4abb.png" alt="2019-04-24-09-53-40"></p>
 <p>下一章：扩展脚本（NSE引擎）执行规则</p>
 
 </div>

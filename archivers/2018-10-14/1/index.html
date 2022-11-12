@@ -131,7 +131,7 @@
 <p>首先需要介绍一下CLSID(Class Identifier)，中文翻译为：“全局唯一标识符”。</p>
 <p>CLSID是指Windows系统对于不同的应用程序，文件类型，OLE对象，特殊文件夹以及各种系统组件分配的一个唯一表示它的ID代码，用于对其身份的标识和与其他对象进行区分。</p>
 <p>也就是说CLSID就是对象的身份证号，而当一个应用程序想要调用某个对象时，也是通过CLSID来寻找对象的。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2f2090f6-4f5f-11ec-a05c-00d861bf4abb.png" alt=""></p>
+<p><img src="../../../static/images/2f2090f6-4f5f-11ec-a05c-00d861bf4abb.png" alt=""></p>
 <p>按下Ctrl+R打开运行窗口，键入 <code>::{20D04FE0-3AEA-1069-A2D8-08002B30309D}</code>即可打开“我的电脑”</p>
 <p>回收站的CLISD是：<code>::{645FF040-5081-101B-9F08-00AA002F954E}</code></p>
 <h3 id="clsid是如何创建的">CLSID是如何创建的</h3>
@@ -180,7 +180,7 @@
 <blockquote>
 <p><code>HKCU</code>即<code>HKEY_CURRENT_USER</code></p>
 </blockquote>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2f71ce94-4f5f-11ec-92b0-00d861bf4abb.png" alt=""></p>
+<p><img src="../../../static/images/2f71ce94-4f5f-11ec-92b0-00d861bf4abb.png" alt=""></p>
 <h2 id="0x02-com-组件劫持的原理">0x02 COM 组件劫持的原理</h2>
 <p>当进程寻找COM组件时，首先会寻找：
 <code>HKCU\Software\Classes\CLSID</code></p>
@@ -260,7 +260,7 @@
 </ul>
 <p>创建完毕后，会启动<code>cmd.exe /c eventvwr.exe</code>，接着会反弹回来一个管理员会话。</p>
 <p>
-<video src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2fab14ba-4f5f-11ec-8fa4-00d861bf4abb.mp4" controls="controls" width="500px">
+<video src="../../../static/images/2fab14ba-4f5f-11ec-8fa4-00d861bf4abb.mp4" controls="controls" width="500px">
 哎呀~ 换个浏览器试试吧！
 </video>
 </p>

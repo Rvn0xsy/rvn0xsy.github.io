@@ -115,11 +115,11 @@
 </tbody>
 </table>
 <p>我们可以先看一个请求：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/d3ff0d6a-4f5e-11ec-add5-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/d3ff0d6a-4f5e-11ec-add5-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>可见是一个GET请求，此服务器是一个Apache+PHP的环境。</p>
 <p>假设服务器只拦截GET/POST请求，那么根据Apache服务器的特性，发送其他请求只要脚本接收的是GET参数，那么也是可以传递参数值的。</p>
 <p>如图：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/d447e0a8-4f5e-11ec-bcb0-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/d447e0a8-4f5e-11ec-bcb0-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>此知识点需要先知道各个Web服务器环境的特性，然后再针对特性去做测试。</p>
 <h2 id="0x02-get与post的区别">0x02 GET与POST的区别</h2>
 <p>Http定义了与服务器交互的不同方法，最基本的方法有4种，分别是GET，POST，PUT，DELETE。URL全称是资源描述符，我们可以这样认为：一个URL地址，它用于描述一个网络上的资源，而HTTP中的GET，POST，PUT，DELETE就对应着对这个资源的查，改，增，删4个操作。到这里，大家应该有个大概的了解了，GET一般用于获取/查询资源信息，而POST一般用于更新资源信息。</p>
@@ -151,7 +151,7 @@
 </span></span></code></pre></div><p>可见在请求的数据包中，POST比GET多了一个Content-Type: application/x-www-form-urlencoded</p>
 <p>这个是将提交数据变成url编码来传递给服务器，那么如此说来，也有的WAF会解析这行Content-Type去识别是否是POST注入，因为要防止方法污染。</p>
 <p>如图：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/d4922e42-4f5e-11ec-98fd-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/d4922e42-4f5e-11ec-98fd-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>这样也可以有几率扰乱WAF的判断。</p>
 <h2 id="0x03-文件上传">0x03 文件上传</h2>
 <p>关于文件上传我们来分享几点，用于延伸下方HPP这一点。
@@ -189,9 +189,9 @@
 </span></span></code></pre></div><p>某些WAF是通过Content-Type识别是否是文件上传数据包。假设我们将Content-Type更改，数据包也是正常提交过去的。这个就完成了一次bypass。</p>
 <p>还有的时候就是Content-Disposition: form-data;，也有某些WAF是根据Content-Disposition匹配filename的（Safe Dog 3.5/4.0通杀），用于验证黑名单。我们经过混淆大小写也是可以bypass的。</p>
 <p>拦截：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/d4e9901a-4f5e-11ec-be33-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/d4e9901a-4f5e-11ec-be33-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>Bypass:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/d52c3e88-4f5e-11ec-ad39-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/d52c3e88-4f5e-11ec-ad39-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>具体看关于Safe DOG的文件上传bypass
 0x04 HTTP参数污染（HPP）
 上一节已经讲过了文件上传，在HPP中最典型的的例子就是“双文件上传”。</p>
@@ -203,12 +203,12 @@
 [参数名]=参数值 亦或者
 
 [参数名]=参数值;
-</code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/d5725a1c-4f5e-11ec-8134-00d861bf4abb.jpg" alt="enter description here"></p>
+</code></pre><p><img src="../../../static/images/d5725a1c-4f5e-11ec-8134-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>这类都会被解析，只要根据正规协议数据结构去构造数据包即可bypass。</p>
 <p>我们来看一个例子：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/d5b26f30-4f5e-11ec-8d77-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/d5b26f30-4f5e-11ec-8d77-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>这里已经被拦截，我们根据上述条件来修改数据包：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/d5f96c1e-4f5e-11ec-8981-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/d5f96c1e-4f5e-11ec-8981-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>已经bypass成功了。此文涉及的知识面并不广，只是有些小技巧，如果你还有更好的研究方法，可以一同交流。</p>
 
 </div>

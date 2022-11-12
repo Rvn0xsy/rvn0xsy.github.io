@@ -97,14 +97,14 @@ Start:
 </code></pre><p>通过nasm编译：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>nasm <span style="color:#f92672">-</span>f obj win.<span style="color:#66d9ef">asm</span> <span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#960050;background-color:#1e0010">生成目标文件</span>
 </span></span><span style="display:flex;"><span>nasm <span style="color:#f92672">-</span>f win32 win.<span style="color:#66d9ef">asm</span> <span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#960050;background-color:#1e0010">如果要采用</span>VS自带的链接器<span style="color:#960050;background-color:#1e0010">，就使用</span>win32格式<span style="color:#960050;background-color:#1e0010">。</span>
-</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-27-19.png" alt=""></p>
+</span></span></code></pre></div><p><img src="../../../static/images/2022-02-16-17-27-19.png" alt=""></p>
 <p>如果要采用VS自带的链接器，就使用win32格式: <code>nasm -f win32 win.asm</code></p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-27-48.png" alt=""></p>
+<p><img src="../../../static/images/2022-02-16-17-27-48.png" alt=""></p>
 <p>可以看到生成了win.obj，接下来使用链接器进行链接，选择不同的链接器生成的文件会有差异，经过测试w32nasm中提供的alink生成的PE文件和VS自带的Link有很大区别，而且PE的节表名称不能带<code>.</code> ，而Windows平台大部分PE文件的节表名称都是带.的，比较规范，因此这里就采用了VS自带的Link。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-28-08.png" alt=""></p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-28-17.png" alt=""></p>
+<p><img src="../../../static/images/2022-02-16-17-28-08.png" alt=""></p>
+<p><img src="../../../static/images/2022-02-16-17-28-17.png" alt=""></p>
 <p>将win.exe拖入x32dbg进行调试查看：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-28-30.png" alt=""></p>
+<p><img src="../../../static/images/2022-02-16-17-28-30.png" alt=""></p>
 <p>汇编生成的文件就是那么简洁&hellip;.</p>
 <h2 id="0x03-shellcode的通用编写思路">0x03 Shellcode的通用编写思路</h2>
 <p>大部分通用的Shellcode编写思路都是从FS寄存器去寻找PEB，然后遍历PEB中的模块列表，从模块列表中寻找Kernel32.dll和ntdll.dll的基址，最终不断从模块中找到API的地址进行调用。</p>
@@ -227,7 +227,7 @@ Start:
 <p>0x1C = ULONG Length + BOOLEAN Initialized + PVOID SsHandle + sizeof(LIST_ENTRY InLoadOrderModuleList) + sizeof(LIST_ENTRY InLoadOrderModuleList)</p>
 <p>EBX+0x8 是从InInitializationOrderLinks开始增加8字节，获取指向到DllBase成员的地址，而这个地址就是DLL加载到内存中的基址，有了基址，就可以从DLL的导出表寻找导出函数进行调用了。</p>
 <p>InInitializationOrderModuleList中的DLL加载顺序是固定的，第一个DLL是NTDDLL.dll，第二个是KERNELBASE.dll、第三个是KERNEL32.DLL。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-29-08.png" alt=""></p>
+<p><img src="../../../static/images/2022-02-16-17-29-08.png" alt=""></p>
 <pre tabindex="0"><code>0:000&gt; dd 00aa41d0
 00aa41d0  00aa4b38 77dc5d9c **77ca0000** 00000000
 00aa41e0  001a3000 003c003a 00aa40a0 00140012
@@ -263,10 +263,10 @@ Start:
 </span></span><span style="display:flex;"><span> mov ebx, [ebx<span style="color:#f92672">+</span><span style="color:#ae81ff">0x78</span>]     ; EBX <span style="color:#f92672">=</span> RVA ExportTable      <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x777B0</span> <span style="color:#f92672">=</span> [<span style="color:#f92672">&amp;</span>NewExeHeader <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x78</span>]
 </span></span><span style="display:flex;"><span> add ebx, eax            ; EBX <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>ExportTable         <span style="color:#f92672">=</span> RVA ExportTable <span style="color:#f92672">+</span> <span style="color:#f92672">&amp;</span>kernel32.dll
 </span></span></code></pre></div><p><code>[eax+0x3C]</code>  此时EAX中保存着DLL的基地址，指向DOS头</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-29-53.png" alt=""></p>
+<p><img src="../../../static/images/2022-02-16-17-29-53.png" alt=""></p>
 <p>EAX+0x3C指向DOS头的e_lfanew成员，e_lfanew保存的是从PE文件第一个字节到PE头的文件偏移。mov ebx, [eax+0x3C]  的含义就是将PE头的文件偏移地址保存到ebx。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-30-16.png" alt=""></p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-31-09.png" alt=""></p>
+<p><img src="../../../static/images/2022-02-16-17-30-16.png" alt=""></p>
+<p><img src="../../../static/images/2022-02-16-17-31-09.png" alt=""></p>
 <p>add ebx, eax 的含义是将PE头的地址保存到ebx中。从PE头向下偏移0x78就是PE文件相对于PE头的导出表偏移地址，后续就是从PE文件寻找导出函数地址了，根据公开的一些Shellcode，可以封装出一些常用的过程，比如从Kernel32.dll中寻找GetProcAddress API的地址，以便后续传入API的名字自动帮助我们去寻找API的地址。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>GetKernel32BaseAddr:
 </span></span><span style="display:flex;"><span>    push ebp
@@ -327,7 +327,7 @@ Start:
 </span></span><span style="display:flex;"><span>  [in] LPCSTR lpCmdLine,
 </span></span><span style="display:flex;"><span>  [in] UINT   uCmdShow
 </span></span><span style="display:flex;"><span>);
-</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-31-35.png" alt=""></p>
+</span></span></code></pre></div><p><img src="../../../static/images/2022-02-16-17-31-35.png" alt=""></p>
 <p>在Kernel32.dll中导出，那这就容易多了。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>; exec_calc.<span style="color:#66d9ef">asm</span>
 </span></span><span style="display:flex;"><span>
@@ -417,14 +417,14 @@ Start:
 </span></span><span style="display:flex;"><span>    ret
 </span></span></code></pre></div><p>使用NASM汇编器进行汇编：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nasm -f win32 .<span style="color:#ae81ff">\e</span>xec_calc.asm
-</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-32-05.png" alt=""></p>
+</span></span></code></pre></div><p><img src="../../../static/images/2022-02-16-17-32-05.png" alt=""></p>
 <p>生成Obj文件后，使用VS Link 链接器进行链接：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>link.exe /OUT:<span style="color:#e6db74">&#34;exec_calc.exe&#34;</span> /MACHINE:X86 /SUBSYSTEM:WINDOWS /NOLOGO /TLBID:1 /ENTRY:Start .<span style="color:#ae81ff">\e</span>xec_calc.obj
-</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-32-16.png" alt=""></p>
+</span></span></code></pre></div><p><img src="../../../static/images/2022-02-16-17-32-16.png" alt=""></p>
 <h2 id="0x03-汇编传递字符串的方式">0x03 汇编传递字符串的方式</h2>
 <p>在写Shellcode或者汇编程序的过程中，难免需要将大量的字符串当作参数传递给函数。不能以高级语言的认知去理解汇编语言传递参数，这里涉及到堆栈平衡、字符串在内存中的形态、计算机存储模式（大端、小端）、函数参数入栈方式等，由于本文篇幅与重点有限，不展开讲解了。</p>
 <p>从字符串入栈开始进行调试：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-32-34.png" alt=""></p>
+<p><img src="../../../static/images/2022-02-16-17-32-34.png" alt=""></p>
 <p>这一段是调用GetProcAddress这个API，它有两个参数：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>FARPROC <span style="color:#a6e22e">GetProcAddress</span>(
 </span></span><span style="display:flex;"><span>  [in] HMODULE hModule,
@@ -437,11 +437,11 @@ Start:
 </span></span><span style="display:flex;"><span><span style="color:#ae81ff">007</span>D1022     <span style="color:#f92672">|</span> FF75 FC               <span style="color:#f92672">|</span> PUSH DWORD PTR SS:[EBP <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x4</span>]                  <span style="color:#f92672">|</span>
 </span></span><span style="display:flex;"><span><span style="color:#ae81ff">007</span>D1025     <span style="color:#f92672">|</span> FF55 F8               <span style="color:#f92672">|</span> CALL DWORD PTR SS:[EBP <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x8</span>]                  <span style="color:#f92672">|</span>
 </span></span></code></pre></div><p>当栈中压入两个值后，代表了字符串本身已经入栈，再次将指向这个字符串起始位置的内存地址压入栈来完成传入第一个参数的操作，这时刚好ESP栈顶指向的就是字符串的起始位置，所以PUSH ESP就是传递的字符串指针。大部分Shellcode中的字符串传递方式都是如此。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-32-51.png" alt=""></p>
+<p><img src="../../../static/images/2022-02-16-17-32-51.png" alt=""></p>
 <h2 id="0x04-shellcode加载器实现">0x04 Shellcode加载器实现</h2>
 <p>思路其实与C语言实现的过程并无任何差异，只不过是用更加灵活的汇编语言完成，汇编语言生成的目标文件经过链接后的体积非常小，使得杀毒软件定位特征变得棘手。</p>
 <p>这个项目的开端是用编写Shellcode的视角去做的，可以生成加载器版本的Shellcode去替换到各类软件中，字节码就是它的灵魂。上一个案例中的程序编译完毕的体积仅仅只有1.5KB，由于对齐的因素实际占用空间4KB。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-33-08.png" alt=""></p>
+<p><img src="../../../static/images/2022-02-16-17-33-08.png" alt=""></p>
 <p>思路：寻找PEB →定位Kernel32.DLL的PE基址→定位GetProcAddress API的地址，获取GetFileSize、CreateFileA、ReadFile、CreateFileMappingA、MapViewOfFileA、VirtualAlloc、VirtualProtect这类常用的API地址对Shellcode进行读取，放入可执行的内存，最终call一下执行。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>global StartMain
 </span></span><span style="display:flex;"><span>
@@ -450,7 +450,7 @@ Start:
 </span></span><span style="display:flex;"><span>StartMain:
 </span></span><span style="display:flex;"><span>	; <span style="color:#960050;background-color:#1e0010">这里就不公开了</span>
 </span></span><span style="display:flex;"><span>  ; <span style="color:#960050;background-color:#1e0010">这里就不公开了</span>
-</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-33-21.png" alt=""></p>
+</span></span></code></pre></div><p><img src="../../../static/images/2022-02-16-17-33-21.png" alt=""></p>
 <p>生成的样本只有2KB，能够完成Shellcode的执行，我还增加了一系列的反调试功能，预防一些自动分析沙箱，延长样本存活时间。</p>
 
 </div>

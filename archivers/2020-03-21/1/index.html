@@ -112,7 +112,7 @@
 </ol>
 <p>所有的可访问对象都有三种ACE，分别是Access-denied ACE，Access-allowed ACE，System-audit ACE。Access-denied ACE用于拒绝账户访问，Access-allowed ACE用于允许账户访问，而System-audit ACE用于SACL中。</p>
 <p><em>当一个线程尝试去访问一个对象时，系统会检查线程持有的令牌以及被访问对象的安全描述符中的DACL。如果安全描述符中不存在DACL，则系统会允许线程进行访问。</em></p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/987be79e-4f5f-11ec-9011-00d861bf4abb.png" alt="2020-03-21-16-51-32"></p>
+<p><img src="../../../static/images/987be79e-4f5f-11ec-9011-00d861bf4abb.png" alt="2020-03-21-16-51-32"></p>
 <p>如果存在DACL，系统会顺序遍历DACL中的每个ACE，检查ACE中的SID在线程的令牌中是否存在。</p>
 <p>当满足以下条件时，遍历会终止：</p>
 <p>某个Access-denied ACE中的SID在线程令牌中存在，而且该ACE中的权限与线程要求的权限相符，此时系统拒绝该线程访问对象。</p>
@@ -123,7 +123,7 @@
 <li>第二个ACE允许Group A账户组中的所有账户对Object进行写入操作；</li>
 <li>第三个ACE允许任何账户对Object进行读取和执行操作；</li>
 </ol>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/98c67232-4f5f-11ec-8ed9-00d861bf4abb.png" alt="2020-03-21-16-51-52"></p>
+<p><img src="../../../static/images/98c67232-4f5f-11ec-8ed9-00d861bf4abb.png" alt="2020-03-21-16-51-52"></p>
 <p>线程A试图访问Object，在遍历DACL的时候，遇到第一个ACE，满足上述的条件，遍历终止，线程A被拒绝访问Object，尽管线程A的访问令牌中含有Group A账户组的SID，并满足第二个ACE。同理，第三个ACE也没有被检查。对于线程B的分析是一样的，这里就不啰嗦了。可见ACE的排列顺序对线程能否访问对象是很重要的。</p>
 <p>前面在介绍访问令牌的内容时，提到一个“受限制的SID列表”，对于这个东西，我曾经迷惑了很久，始终搞不懂它是干什么用的。经过一些实验之后，猜出了它的用途，尽管不一定对，这里简单说一下。</p>
 <p>当一个访问令牌中含有受限制的SID列表时，系统在遍历ACE的时候只会与这些受限制的SID进行匹配，而忽略令牌中其余的SID，也就是相当于从访问令牌中删除了其它的SID。</p>
@@ -164,11 +164,11 @@
 </code></pre><h2 id="0x03-从cve-2020-0668说起">0x03 从CVE-2020-0668说起</h2>
 <p>原文：<a href="https://itm4n.github.io/cve-2020-0668-windows-service-tracing-eop/">https://itm4n.github.io/cve-2020-0668-windows-service-tracing-eop/</a></p>
 <p>该漏洞作者发现了一个存在于Windows操作系统vista版本到现在最新版本都存在的漏洞，同时也影响服务器操作系统（2003-2016）。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9902c58e-4f5f-11ec-9913-00d861bf4abb.png" alt="2020-03-21-16-52-50"></p>
+<p><img src="../../../static/images/9902c58e-4f5f-11ec-9913-00d861bf4abb.png" alt="2020-03-21-16-52-50"></p>
 <p>漏洞的原因：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9939e67c-4f5f-11ec-9a3b-00d861bf4abb.png" alt="2020-03-21-16-53-08"></p>
+<p><img src="../../../static/images/9939e67c-4f5f-11ec-9a3b-00d861bf4abb.png" alt="2020-03-21-16-53-08"></p>
 <p><code>HKLM\SOFTWARE\Microsoft\Tracing</code> 注册表项任意用户（Everyone）可写可读，Tracing注册表项主要用于Windows服务跟踪调试，调试过程中会以SYSTEM权限产生一个日志文件：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/997a7764-4f5f-11ec-a82c-00d861bf4abb.png" alt="2020-03-21-16-53-22"></p>
+<p><img src="../../../static/images/997a7764-4f5f-11ec-a82c-00d861bf4abb.png" alt="2020-03-21-16-53-22"></p>
 <p>其中：<code>FileDirectory</code> 项主要用于设置日志产生的目录，经过作者分析发现，日志文件名不可控、日志内容更不可控，其次，当日志文件大小超过了<code>MaxFileSize</code>时，会将文件重命名到当前目录，扩展名改为OLD。</p>
 <pre tabindex="0"><code>    \RPC Control\RASTAPI.LOG -&gt; \??\C:\EXPLOIT\FakeDll.dll (owner = current user)
     \RPC Control\RASTAPI.OLD -&gt; \??\C:\Windows\System32\WindowsCoreDeviceInfo.dll
@@ -181,14 +181,14 @@
 </blockquote>
 <p>通过学习Project Zero中的开源项目，以及他们的博客，给我带来更多的学习兴趣：<a href="https://googleprojectzero.blogspot.com/">https://googleprojectzero.blogspot.com/</a></p>
 <p>符号链接技术是在2015年公布的，翻到一篇2015年关于Windows 10的沙箱绕过防御（那时候国内还在用Windows 8? 7吧）。<a href="https://googleprojectzero.blogspot.com/2015/08/windows-10hh-symbolic-link-mitigations.html">https://googleprojectzero.blogspot.com/2015/08/windows-10hh-symbolic-link-mitigations.html</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/99b319ac-4f5f-11ec-b90a-00d861bf4abb.png" alt="2020-03-21-16-54-18"></p>
+<p><img src="../../../static/images/99b319ac-4f5f-11ec-b90a-00d861bf4abb.png" alt="2020-03-21-16-54-18"></p>
 <p>这篇文章介绍了不止一种链接方式，“Link”可以理解为一种传送门，你可以使用CreateSymLink.exe做一次实验：</p>
 <pre><code>CreateSymLink.exe C:\Log\1.txt E:\Log\1.txt
 echo 1 &gt; C:\Log\1.txt
 </code></pre>
 <p>这时你会发现，<code>E:\Log\1.txt</code>中的内容就是1，代入场景：如果一个高权限用户，要向一个低权限用户可控的目录中写入文件，那么低权限用户可以将目标文件通过符号链接重定向到另外一个无权限的文件，甚至达到任意代码执行。</p>
 <p><strong>其他链接方式：</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/99eba718-4f5f-11ec-aa0d-00d861bf4abb.png" alt="2020-03-21-16-54-32"></p>
+<p><img src="../../../static/images/99eba718-4f5f-11ec-aa0d-00d861bf4abb.png" alt="2020-03-21-16-54-32"></p>
 <h2 id="0x04-ntfs挂载点的魔术--cve-2019-18194">0x04 NTFS挂载点的魔术 -(CVE-2019-18194)</h2>
 <p>感兴趣可以点击油管地址看一下，非常有趣：</p>
 <p><a href="https://www.youtube.com/watch?v=88qeaLq98Gc">https://www.youtube.com/watch?v=88qeaLq98Gc</a></p>
@@ -202,7 +202,7 @@ echo 1 &gt; C:\Log\1.txt
 <li>A Report folder is also created in the scratch path: <code>C:\Users\Bob\AppData\Local\Temp\Microsoft\F12\perftools\visualprofiler\Report.c13851b2-b1e1-438f-bf73-949df897f1bf.1</code></li>
 <li>A folder with a random GUID is created in the report folder: <code>C:\Users\Bob\AppData\Local\Temp\Microsoft\F12\perftools\visualprofiler\Report.c13851b2-b1e1-438f-bf73-949df897f1bf.1\EAD6A227-31D4-4EA2-94A9-5DF276F69E65</code></li>
 </ol>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9a30fe94-4f5f-11ec-8c3f-00d861bf4abb.png" alt="2020-03-21-16-56-47"></p>
+<p><img src="../../../static/images/9a30fe94-4f5f-11ec-8c3f-00d861bf4abb.png" alt="2020-03-21-16-56-47"></p>
 <ul>
 <li><a href="https://www.youtube.com/watch?v=1axTbxPz2_8">CVE-2020-0683 MSI Packages Symbolic Links Processing - Windows 10 Privilege Escalation</a></li>
 <li><a href="https://github.com/nomi-sec/PoC-in-GitHub#cve-2020-8950">CVE-2020-8950</a></li>

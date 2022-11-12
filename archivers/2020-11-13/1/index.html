@@ -120,7 +120,7 @@
 <p>因此我不得不开始完全适应更多在Linux上渗透的场景，这也让我收获颇多，这篇文章就记录一下我如何学习自己搭建透明代理实现愉快的工作环境。</p>
 <h2 id="0x01-透明代理">0x01 透明代理</h2>
 <h3 id="什么是透明代理">什么是透明代理？</h3>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a5194b40-4f5f-11ec-85cb-00d861bf4abb.png" alt="2020-11-13-20-03-20"></p>
+<p><img src="../../../static/images/a5194b40-4f5f-11ec-85cb-00d861bf4abb.png" alt="2020-11-13-20-03-20"></p>
 <p>透明代理的意思是客户端根本不需要知道有代理服务器的存在，它改变你的request fields（报文），并会传送真实IP，多用于路由器的NAT转发中。</p>
 <h3 id="为什么要用到透明代理">为什么要用到透明代理？</h3>
 <p>因为这样能够让我的机器“身处”在内网中，也能让我的机器在“世界上的任何角落里”。</p>
@@ -133,9 +133,9 @@
 <p>它的缺点却是每个命令必须要在前面加上<code>proxychains</code>，这样<code>Bash shell</code>有时候可能不会正常工作给我们进行参数提示。</p>
 <p>我要做的就是使用<code>iptables</code>实现透明代理，让我的机器所有与目标地址相关的流量都导入<code>socks5</code>代理端口。</p>
 <p>题外话一，关闭<code>proxychains</code>的输出信息可以将<code>/etc/proxychains.conf</code>文件中的<code>quiet_mode</code>前面的<code>#</code>去除。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a555ab4e-4f5f-11ec-885e-00d861bf4abb.png" alt="2020-11-13-20-18-48"></p>
+<p><img src="../../../static/images/a555ab4e-4f5f-11ec-885e-00d861bf4abb.png" alt="2020-11-13-20-18-48"></p>
 <p>题外话二，设置metasploit全局代理的方法：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a5aea60e-4f5f-11ec-89ed-00d861bf4abb.png" alt="2020-11-13-22-15-29"></p>
+<p><img src="../../../static/images/a5aea60e-4f5f-11ec-89ed-00d861bf4abb.png" alt="2020-11-13-22-15-29"></p>
 <p>可以将metasploit全局变量<code>proxies</code>的值进行设置来使得后续所有的流量都经过代理发出，这样能够达到内网穿透的效果。</p>
 <blockquote>
 <p>图中演示了2层代理的设置</p>
@@ -393,13 +393,13 @@ iptables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner $redsocks_user  -j REDSO
 <ul>
 <li>打点模式简单使用（每执行一次，向API拉取新的代理）：</li>
 </ul>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a5fc0642-4f5f-11ec-a814-00d861bf4abb.png" alt="2020-11-13-22-04-21"></p>
+<p><img src="../../../static/images/a5fc0642-4f5f-11ec-a814-00d861bf4abb.png" alt="2020-11-13-22-04-21"></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo ./socks-switch.sh install
 </span></span><span style="display:flex;"><span>sudo ./socks-switch.sh start
 </span></span></code></pre></div><ul>
 <li>切换至内网模式使用：</li>
 </ul>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a65575e2-4f5f-11ec-81ed-00d861bf4abb.png" alt="2020-11-13-22-00-56"></p>
+<p><img src="../../../static/images/a65575e2-4f5f-11ec-81ed-00d861bf4abb.png" alt="2020-11-13-22-00-56"></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo ./socks-switch.sh uninstall
 </span></span><span style="display:flex;"><span>sudo ./socks-switch.sh pentest &lt;Socks IP&gt; &lt;Socks Port&gt;
 </span></span></code></pre></div><ul>
@@ -407,7 +407,7 @@ iptables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner $redsocks_user  -j REDSO
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo ./socks-switch.sh change &lt;Socks IP&gt; &lt;Socks Port&gt;
 </span></span></code></pre></div><h2 id="0x06-树莓派实现6小时切换一次出口的wifi">0x06 树莓派实现6小时切换一次出口的WiFi</h2>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a6b460f2-4f5f-11ec-bc9f-00d861bf4abb.png" alt="2020-11-13-21-36-29"></p>
+<p><img src="../../../static/images/a6b460f2-4f5f-11ec-bc9f-00d861bf4abb.png" alt="2020-11-13-21-36-29"></p>
 <p>这个是我在熟悉透明代理后产生的想法，适合“团队作战”，尤其是Web渗透这块最消耗IP了，实验室的小伙伴大多也都是笔记本，因此想出了用树莓派实现6小时切换一次出口的WiFi，当然了，也能把穿透内网的Socks变成一个WiFi :)</p>
 <h3 id="更改redsocks监听地址">更改redsocks监听地址</h3>
 <p>如果是多网卡需要把redsocks配置文件<code>/etc/redsocks.conf</code>的监听IP地址改为：0.0.0.0，不然在<code>wlan0</code>的流量转向<code>eth0</code>的时候，会找不到31338端口。</p>
@@ -452,7 +452,7 @@ WantedBy=multi-user.target
 <p>比如在切换新的出口时，WiFi是关闭的，现在的客户端一般都是会自动寻找下一个WiFi自动连接的，如果工具正在扫描会导致真实出口IP被发现。</p>
 <p>思路：在切换WiFi前，将<code>wlan0</code>网卡的流量全部<code>DROP</code>，这样WiFi也不需要重启。</p>
 <p>放两张喜爱的桌面：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a701e3d6-4f5f-11ec-b204-00d861bf4abb.png" alt="2020-11-13-21-55-15"></p>
+<p><img src="../../../static/images/a701e3d6-4f5f-11ec-b204-00d861bf4abb.png" alt="2020-11-13-21-55-15"></p>
 <h2 id="0x07-总结">0x07 总结</h2>
 <p>通过动手实践，解决了工作痛点，让技术的价值发挥出来更能收获成就感。</p>
 <p>期间还实现了科学上网的透明代理，但是与工作无关，网络上已经大把帖子了，收获颇多，关于渗透还需要研究更多，看问题的角度也要多变，就如上一篇<a href="https://payloads.online/archivers/2020-11-01/1">Web正向代理的思考</a>

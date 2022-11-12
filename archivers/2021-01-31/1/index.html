@@ -147,17 +147,17 @@ ntdll!_SECURITY_DESCRIPTOR
 </ul>
 <p>一般情况下，大部分用户接触更多的可能就是文件了，我们就以文件开始，文件对于我们去学习访问控制是最直观的。</p>
 <p>一个文件的权限描述符主要表现为：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a87eb66c-4f5f-11ec-adb7-00d861bf4abb.png" alt="2021-01-31-21-43-05"></p>
+<p><img src="../../../static/images/a87eb66c-4f5f-11ec-adb7-00d861bf4abb.png" alt="2021-01-31-21-43-05"></p>
 <p>上图中的安全选项卡主要是表述了sethc.exe这个文件能够被哪些用户访问，并且这些用户拥有sethc.exe的哪些权限，如：读取、读取和执行、写入、完全控制等。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a8c5e5a0-4f5f-11ec-b9be-00d861bf4abb.png" alt="2021-01-31-21-44-40"></p>
+<p><img src="../../../static/images/a8c5e5a0-4f5f-11ec-b9be-00d861bf4abb.png" alt="2021-01-31-21-44-40"></p>
 <h2 id="0x02-安全描述符的组成">0x02 安全描述符的组成</h2>
 <p>DACL通过一系列ACE定义了所有被允许或者禁止的安全对象的访问者，SACL描述了系统应该审核的内容，系统会根据审核项产生对应的系统日志。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a90af0be-4f5f-11ec-94bd-00d861bf4abb.png" alt="2021-01-31-21-45-22"></p>
+<p><img src="../../../static/images/a90af0be-4f5f-11ec-94bd-00d861bf4abb.png" alt="2021-01-31-21-45-22"></p>
 <blockquote>
 <p>权限选项卡代表了 DACL，审核选项卡代表了 SACL。</p>
 </blockquote>
 <h3 id="什么是sidsecurity-identifiersid">什么是SID（Security Identifier，SID）</h3>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a95f5988-4f5f-11ec-8610-00d861bf4abb.png" alt="2021-01-31-21-49-18"></p>
+<p><img src="../../../static/images/a95f5988-4f5f-11ec-8610-00d861bf4abb.png" alt="2021-01-31-21-49-18"></p>
 <p>每个参与权限决策的角色都拥有一个SID，这个SID为了保证角色的唯一性。</p>
 <pre tabindex="0"><code>S-[修订级别]-[权值]-[标识符]
 </code></pre><p>SID分为两种：</p>
@@ -185,7 +185,7 @@ ntdll!_SECURITY_DESCRIPTOR
 </ul>
 <p>其中RID为<code>500</code>的用户代表管理员用户，账户个RID值是固定的，通常渗透中常说的RID劫持、克隆用户就是修改其他用户的RID值来实现让系统认为当前用户是管理员。</p>
 <h2 id="0x03-自主访问控制列表discretionary-access-control-listdacl">0x03 自主访问控制列表（Discretionary access control list，DACL）</h2>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a99be9c0-4f5f-11ec-93a4-00d861bf4abb.png" alt="2021-01-31-21-51-33"></p>
+<p><img src="../../../static/images/a99be9c0-4f5f-11ec-93a4-00d861bf4abb.png" alt="2021-01-31-21-51-33"></p>
 <p>解读：每一个Windows进程都拥有一个线程，当程序想要访问某个安全对象时，系统会提取当前线程的访问令牌，然后将访问令牌的权限和被访问的安全对象DACL进行比较。</p>
 <ul>
 <li>
@@ -201,7 +201,7 @@ ntdll!_SECURITY_DESCRIPTOR
 </blockquote>
 <p>当一个线程访问安全对象时，操作系统会将访问令牌的属性与被访问对象安全描述符中的DACL进行检查，检查的条目就是访问控制条目（Access control entries，ACE），最先检查的ACE优先级越高。</p>
 <h2 id="0x04-系统访问控制列表system-access-control-listsacl">0x04 系统访问控制列表（System access control list，SACL）</h2>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/a9d46df4-4f5f-11ec-98aa-00d861bf4abb.png" alt="2021-01-31-22-00-15"></p>
+<p><img src="../../../static/images/a9d46df4-4f5f-11ec-98aa-00d861bf4abb.png" alt="2021-01-31-22-00-15"></p>
 <p>系统访问控制列表主要是配置审核对象的ACE，当这些ACE被允许或拒绝的时候，系统将自动产生“安全”日志。</p>
 <p>图中设置了Service.log的SACL，当它的DACL被改变成功后，操作系统会自动帮助我们产生一条安全日志，我们可以提取其中的关键信息，如：</p>
 <ul>
@@ -212,7 +212,7 @@ ntdll!_SECURITY_DESCRIPTOR
 <li>访问的用户名等</li>
 <li>&hellip;</li>
 </ul>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/aa196238-4f5f-11ec-9987-00d861bf4abb.png" alt="2021-01-31-22-03-10"></p>
+<p><img src="../../../static/images/aa196238-4f5f-11ec-9987-00d861bf4abb.png" alt="2021-01-31-22-03-10"></p>
 <h2 id="0x05-修改访问控制列表access-control-listacl">0x05 修改访问控制列表（Access control list，ACL）</h2>
 <p>在Windows中，修改内核对象的方法只有调用API，因此，可以将安全描述符也理解为一个内核对象的属性。</p>
 <p>以下是修改ACL的简要过程：</p>
@@ -277,7 +277,7 @@ ntdll!_SECURITY_DESCRIPTOR
 <li>拥有目标进程访问令牌的<code>TOKEN_DUPLICATE | TOKEN_IMPERSONATE</code>权限</li>
 </ul>
 <p>Windows将每一个权限都以二进制位标示，但在C语言头文件中是以16禁止标示的。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/aa5f8a9c-4f5f-11ec-9212-00d861bf4abb.png" alt="2021-01-31-22-10-47"></p>
+<p><img src="../../../static/images/aa5f8a9c-4f5f-11ec-9212-00d861bf4abb.png" alt="2021-01-31-22-10-47"></p>
 <p>两个权限的组合就是两个二进制数的与运算结果，由此可以看出Windows进程权限最大可以表示0xFFFF个，也就是2个字节，当然一般情况下用不到那么多。同时，我们也可以推断，任何可以设置权限的安全对象，想要设置全部权限<code>ALL_ACCESS</code>，可以全部用0xFFFFFFFF填充。</p>
 <h2 id="0x08-进程注入process-inject">0x08 进程注入（Process Inject）</h2>
 <p>进程注入是为了解决A进程想要在B进程的安全上下文中执行代码的技术手段。要完成一个进程注入需要A进程的访问令牌拥有B进程的权限。</p>
@@ -288,10 +288,10 @@ ntdll!_SECURITY_DESCRIPTOR
 <li>调用CreateRemoteThread，传入进程句柄，创建远程线程</li>
 </ol>
 <p>场景：某些终端安全软件禁止用户转储lsass.exe进程内存，但我们可以先进程注入到lsass.exe，然后再转储内存。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/aa9a27d8-4f5f-11ec-b281-00d861bf4abb.png" alt="2021-01-31-22-16-26"></p>
+<p><img src="../../../static/images/aa9a27d8-4f5f-11ec-b281-00d861bf4abb.png" alt="2021-01-31-22-16-26"></p>
 <p>小技巧：有些软件在失败后返回一些数字，其实是Windows错误代码，我们可以通过<code>net helpmsg</code>命令来查看详情。</p>
 <pre tabindex="0"><code>net helpmsg &lt;错误代码&gt;
-</code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/aace09a4-4f5f-11ec-a006-00d861bf4abb.png" alt="2021-01-31-22-17-03"></p>
+</code></pre><p><img src="../../../static/images/aace09a4-4f5f-11ec-a006-00d861bf4abb.png" alt="2021-01-31-22-17-03"></p>
 <h2 id="0x09-文件的权限修改">0x09 文件的权限修改</h2>
 <p>在Windows系统中，除了用户交互的窗口以外，还可以通过icacls命令修改文件的权限。</p>
 <pre tabindex="0"><code>icacls c:\windows\* /save AclFile /T
@@ -306,12 +306,12 @@ ntdll!_SECURITY_DESCRIPTOR
   icacls file /grant *S-1-1-0:(D,WDAC)
   - 将授予由 sid S-1-1-0 定义的用户对文件删除和写入 DAC 的权限。
 </code></pre><p>还可以查看文件的权限，例如常见的Shift后门：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ab070f92-4f5f-11ec-a1c5-00d861bf4abb.png" alt="2021-01-31-22-17-42"></p>
+<p><img src="../../../static/images/ab070f92-4f5f-11ec-a1c5-00d861bf4abb.png" alt="2021-01-31-22-17-42"></p>
 <p>现如今普通用户，包括管理员、系统账户都不能随意更改这个文件了，能够看出Windows对这块有做加强。</p>
 <h3 id="创建匿名共享">创建匿名共享</h3>
 <p>在内网渗透中，经常会需要一个机器的共享作为中转，因此可以使用net share命令快速开启一个任意用户可读可写的共享。</p>
 <pre tabindex="0"><code>net share everyone=C:\Windows /grant:everyone,full
-</code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ab3ec108-4f5f-11ec-82f4-00d861bf4abb.png" alt="2021-01-31-22-18-14"></p>
+</code></pre><p><img src="../../../static/images/ab3ec108-4f5f-11ec-82f4-00d861bf4abb.png" alt="2021-01-31-22-18-14"></p>
 <h2 id="0x10-创造提权漏洞服务后门">0x10 创造提权漏洞——服务后门</h2>
 <p>前面提到可以通过API修改内核对象的ACL，那么是否可以通过代码帮助我们完成一些窗口无法做到的操作，例如：任意用户可以读写的内核对象。</p>
 <p>我尝试过以下几种方案用作后门：</p>
@@ -322,12 +322,12 @@ ntdll!_SECURITY_DESCRIPTOR
 <li>进程 失败</li>
 </ol>
 <p>服务是最容易被利用的，通常情况下，Guest用户是无法启动、创建服务的，通过修改某个服务的ACL，让Guest轻松创建以SYSTEM权限运行的进程。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ab84c306-4f5f-11ec-ae41-00d861bf4abb.png" alt="2021-01-31-22-19-00"></p>
+<p><img src="../../../static/images/ab84c306-4f5f-11ec-ae41-00d861bf4abb.png" alt="2021-01-31-22-19-00"></p>
 <p>由于Windows没有提供修改服务的窗口操作接口，所以按常规情况来看，上机查看的管理员不容易发现这类后门。</p>
 <blockquote>
 <p><a href="https://docs.microsoft.com/en-us/windows/win32/services/modifying-the-dacl-for-a-service">https://docs.microsoft.com/en-us/windows/win32/services/modifying-the-dacl-for-a-service</a></p>
 </blockquote>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/abc10a82-4f5f-11ec-8408-00d861bf4abb.png" alt="2021-01-31-22-19-23"></p>
+<p><img src="../../../static/images/abc10a82-4f5f-11ec-8408-00d861bf4abb.png" alt="2021-01-31-22-19-23"></p>
 <h3 id="powershell更改服务权限">Powershell更改服务权限</h3>
 <p><a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/set-service?view=powershell-7.1">https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/set-service?view=powershell-7.1</a></p>
 <p>使用Powershell修改服务的权限可以使用Set-Service：</p>
@@ -335,12 +335,12 @@ ntdll!_SECURITY_DESCRIPTOR
 Set-Service -Name &#34;BITS&#34; -SecurityDescriptorSddl $SDDL
 </code></pre><h3 id="cmd修改服务权限">CMD修改服务权限</h3>
 <p>想象一个场景，如果随时都拥有一个服务器的权限，但是不能长时间登录某个特权账户，那么可以留置一个任意用户可以修改的系统服务，方便随时提权。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ac1169be-4f5f-11ec-98c9-00d861bf4abb.png" alt="2021-01-31-22-27-28"></p>
+<p><img src="../../../static/images/ac1169be-4f5f-11ec-98c9-00d861bf4abb.png" alt="2021-01-31-22-27-28"></p>
 <pre tabindex="0"><code>sc setsd &lt;Service Name&gt; &lt;SDDL String&gt;
 sc sdset defragsvc &#34;D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRCWDWO;;;BA)&#34;
 </code></pre><h2 id="0x11-windows域下的dcsync攻击及后门实现">0x11 Windows域下的DCSync攻击及后门实现</h2>
 <p>DCSync是域控之间同步域数据的一个传递方式，一旦攻击者获取了具有域复制权限的特权帐户，攻击者就可以利用复制协议来模仿域控制器，诱使域控制器将域用户相关的数据发送出来。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ac48005a-4f5f-11ec-be47-00d861bf4abb.png" alt="2021-01-31-22-28-23"></p>
+<p><img src="../../../static/images/ac48005a-4f5f-11ec-be47-00d861bf4abb.png" alt="2021-01-31-22-28-23"></p>
 <p>其中最核心的一步就是调用 <a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-drsr/b63730ac-614c-431c-9501-28d6aca91894?redirectedfrom=MSDN">GetNCChanges</a> 复制用户凭据。</p>
 <p>这篇文章中展示了更加详细的原理：<a href="https://adsecurity.org/?p=1729">《Mimikatz DCSync Usage, Exploitation, and Detection》</a></p>
 <h3 id="哪些用户拥有域复制权限">哪些用户拥有域复制权限？</h3>
@@ -372,7 +372,7 @@ sc sdset defragsvc &#34;D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRC
 </ol>
 <h3 id="ds-replication-get-changes">DS-Replication-Get-Changes</h3>
 <p>从指定NC复制更改所需的扩展权限。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/acb2c0c0-4f5f-11ec-be1f-00d861bf4abb.png" alt="2021-01-31-22-29-40"></p>
+<p><img src="../../../static/images/acb2c0c0-4f5f-11ec-be1f-00d861bf4abb.png" alt="2021-01-31-22-29-40"></p>
 <p>为了方便未来扩展新的特性，每一个扩展权限都具有一个GUID值，如果要对域对象赋予这个权限，可以传入这个GUID值。GUID等效于权限常量。</p>
 <p>DS-Replication-Get-Changes扩展权限支持的系统版本：</p>
 <ul>
@@ -387,13 +387,13 @@ sc sdset defragsvc &#34;D:(A;;CCLCSWRPWPDTLOCRRC;;;SY)(A;;CCDCLCSWRPWPDTLOCRSDRC
 <h3 id="dcsync后门实现">DcSync后门实现</h3>
 <p>通过调用活动目录自身独有的COM组件接口，可以获取域对象的安全描述符，修改方式与本地修改ACL没有太多差别。</p>
 <p><a href="https://github.com/PowerShellMafia/PowerSploit/blob/dev/Recon/PowerView.ps1#L8270">Powerview</a>实现了Powershell版本的DCSync后门植入：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/acece174-4f5f-11ec-991c-00d861bf4abb.png" alt="2021-01-31-22-30-43"></p>
+<p><img src="../../../static/images/acece174-4f5f-11ec-991c-00d861bf4abb.png" alt="2021-01-31-22-30-43"></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-cpp" data-lang="cpp"><span style="display:flex;"><span>Add<span style="color:#f92672">-</span>DomainObjectAcl <span style="color:#f92672">-</span>TargetIdentity <span style="color:#e6db74">&#34;DC=Domain,DC=com&#34;</span> <span style="color:#f92672">-</span>PrincipalIdentity <span style="color:#f92672">&lt;</span>UserName<span style="color:#f92672">&gt;</span> <span style="color:#f92672">-</span>Rights DCSync <span style="color:#f92672">-</span>Verbose
 </span></span></code></pre></div><p>我这里实现了一个C++版本的：<a href="https://github.com/Rvn0xsy/PDacl">https://github.com/Rvn0xsy/PDacl</a></p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ad26d0be-4f5f-11ec-aa64-00d861bf4abb.png" alt="2021-01-31-22-33-32"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ad79864c-4f5f-11ec-90cc-00d861bf4abb.png" alt="2021-01-31-22-33-58"></p>
+<p><img src="../../../static/images/ad26d0be-4f5f-11ec-aa64-00d861bf4abb.png" alt="2021-01-31-22-33-32"></p>
+<p><img src="../../../static/images/ad79864c-4f5f-11ec-90cc-00d861bf4abb.png" alt="2021-01-31-22-33-58"></p>
 <p>在Cobalt Strike中以普通用户权限转储NTLM验证成功：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/adbf79e0-4f5f-11ec-8d7f-00d861bf4abb.png" alt="2021-01-31-22-34-59"></p>
+<p><img src="../../../static/images/adbf79e0-4f5f-11ec-8d7f-00d861bf4abb.png" alt="2021-01-31-22-34-59"></p>
 <p>C++实现过程：</p>
 <ul>
 <li>获取IADsSecurityDescriptor接口指针</li>

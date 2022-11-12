@@ -239,9 +239,9 @@
 <h2 id="0x04-利用静态资源filter绕过权限检测进行任意对象的反射">0x04 利用静态资源Filter绕过权限检测进行任意对象的反射</h2>
 <p>了解清楚Filter的过滤过程，那么就可以利用StaticFilter满足在为授权的情况下，调用LoaderFilter去执行任意Servlet对象的doGet、doPost方法，如果某个Servlet的方法存在漏洞，就可以达到完美利用。</p>
 <p>构造URL：http://localhost/MyWeb_war/test.css?class=com.web.IndexServlet&amp;method=doGet</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-01-00-03-48.png" alt=""></p>
+<p><img src="../../../static/images/2021-12-01-00-03-48.png" alt=""></p>
 <p>执行效果：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-01-00-04-27.png" alt=""></p>
+<p><img src="../../../static/images/2021-12-01-00-04-27.png" alt=""></p>
 <h2 id="0x05-文件解压缩目录穿越问题">0x05 文件解压缩目录穿越问题</h2>
 <p>许多时候一些Java Web开发者对于压缩包内的文件名可信程度非常高，这就出现了许多由非常规压缩文件名导致的路径穿越漏洞，很多办公类的系统好像大多都有类似问题，危害其实最大的是利用路径穿越解压功能（其实就是任意目录写）可以让Webshell写入到一个能够执行的目录。</p>
 <p>常见的库：</p>

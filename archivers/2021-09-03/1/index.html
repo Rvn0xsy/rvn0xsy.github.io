@@ -103,10 +103,10 @@ pop ebx ; ebx = 10h
 <h2 id="0x02-使用汇编调用win32-api">0x02 使用汇编调用Win32 API</h2>
 <p>环境：Visual Studio 2019 （MSVC工具集版本14.26以下）</p>
 <p>MSVC工具集版本14.26以下才能够编译MASM正常调用Win32 API的代码，这里我使用的是<code>14.21.27702</code>。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b987e190-4f5f-11ec-a263-00d861bf4abb.png" alt="2021-09-03-11-12-09"></p>
+<p><img src="../../../static/images/b987e190-4f5f-11ec-a263-00d861bf4abb.png" alt="2021-09-03-11-12-09"></p>
 <h3 id="安装低版本msvc工具集版本">安装低版本MSVC工具集版本</h3>
 <p>打开Visual Studio Installer，点击<code>修改</code>：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b9d216d4-4f5f-11ec-821a-00d861bf4abb.png" alt="2021-09-03-11-14-46"></p>
+<p><img src="../../../static/images/b9d216d4-4f5f-11ec-821a-00d861bf4abb.png" alt="2021-09-03-11-14-46"></p>
 <p>红框内的工具集版本都支持正常编译。</p>
 <h3 id="masm-invoke">MASM INVOKE</h3>
 <p>32位模式中，可以用Microsoft的INVOKE、PROTO 和扩展 PROC 伪指令新建多模块程序。与更加传统的CALL和EXTERN相比，它们的主要优势在于：能够将INVOKE传递的参数列表与PROC声明的相应列表进行匹配。</p>
@@ -180,7 +180,7 @@ push lpAddress
 push dwSize
 call VirtualProtect
 </code></pre><p>调试一下看看情况</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ba185cb6-4f5f-11ec-840c-00d861bf4abb.png" alt="2021-09-03-12-32-02"></p>
+<p><img src="../../../static/images/ba185cb6-4f5f-11ec-840c-00d861bf4abb.png" alt="2021-09-03-12-32-02"></p>
 <p>此时<code>EAX = 0x00170000</code>指向了要改变属性的内存地址，但第一个<code>push eax</code>并不是开始给<code>VirtualProtect</code>传递参数，而是从<code>call</code>往上数四个<code>push</code>指令，这些<code>push</code>的数据才是<code>VirtualProtect</code>的参数。</p>
 <pre tabindex="0"><code class="language-assembly" data-lang="assembly">00E6102B   | 8D55 FC         | lea edx,dword ptr ss:[ebp-4]                   |
 00E6102E   | 52              | push edx                                       |
@@ -190,9 +190,9 @@ call VirtualProtect
 00E61033   | E8 E6FFFFFF     | call &lt;JMP.&amp;VirtualProtect&gt;                     |
 </code></pre><p><code>lea edx,dword ptr ss:[ebp-4]</code>代表把ebp-4的地址复制给edx，<code>EBP=0014F830</code>，<code>0014F830-4=0014F82C</code>，那么<code>edx=0014F82C</code>，下一句<code>push edx</code>作为<code>VirtualProtect</code>的第一个参数<code>lpflOldProtect</code>传递进去。</p>
 <p>注：<code>lpflOldProtect</code>的数据类型是<code>PDWORD</code>，也就是DWORD的指针，传指针而非传递值。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ba5c7144-4f5f-11ec-bd4b-00d861bf4abb.png" alt="2021-09-03-12-37-46"></p>
+<p><img src="../../../static/images/ba5c7144-4f5f-11ec-bd4b-00d861bf4abb.png" alt="2021-09-03-12-37-46"></p>
 <p>第二个<code>push 10</code>，代表了<code>flNewProtect</code>，0x10代表了<a href="https://docs.microsoft.com/en-us/windows/win32/memory/memory-protection-constants">内存属性常量</a><code>PAGE_EXECUTE</code>。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/baa642f6-4f5f-11ec-ba52-00d861bf4abb.png" alt="常见的内存属性常量"></p>
+<p><img src="../../../static/images/baa642f6-4f5f-11ec-ba52-00d861bf4abb.png" alt="常见的内存属性常量"></p>
 <p>第三个<code>push eax</code>，代表了<code>lpAddress</code>，指向要改变的内存地址。</p>
 <p>第四个<code>push ebx</code>，代表了<code>dwSize</code>，ebx的值是<code>000000C1</code>，说明要改变内存属性的内存大小是0xC1个字节。</p>
 <p>其中，第三个push和第四个push的顺序按照函数声明的格式是先传递大小，后传递内存地址的，经过分析，我发现必须先传递内存地址后传递大小才能正常执行。</p>
@@ -204,7 +204,7 @@ call VirtualProtect
 75CC22CB   | FF75 08         | push dword ptr ss:[ebp+8]                      |
 75CC22CE   | 6A FF           | push FFFFFFFF                                  |
 75CC22D0   | E8 09000000     | call &lt;kernelbase.VirtualProtectEx&gt;             |
-</code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/bb0ad55e-4f5f-11ec-927a-00d861bf4abb.png" alt="2021-09-03-12-49-31"></p>
+</code></pre><p><img src="../../../static/images/bb0ad55e-4f5f-11ec-927a-00d861bf4abb.png" alt="2021-09-03-12-49-31"></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C++" data-lang="C++"><span style="display:flex;"><span>BOOL <span style="color:#a6e22e">VirtualProtectEx</span>(
 </span></span><span style="display:flex;"><span>  HANDLE hProcess,
 </span></span><span style="display:flex;"><span>  LPVOID lpAddress,

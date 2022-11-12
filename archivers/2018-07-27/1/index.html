@@ -133,12 +133,12 @@
 <p>例如我需要扫描192.168.85.132的HTTP服务的中间件信息，使用Nmap时需要输入以下命令：</p>
 <p>nmap &ndash;script=http-server-header 192.168.85.132</p>
 <p>执行结果如下：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2681fd2c-4f5f-11ec-aa9c-00d861bf4abb.jpg" alt=""></p>
+<p><img src="../../../static/images/2681fd2c-4f5f-11ec-aa9c-00d861bf4abb.jpg" alt=""></p>
 <p>从扫描结果可以看出，在扫描到80端口的开放状态及服务名称下方会输出关于http-server-header脚本的结果：Apache/2.4.29 (Debian)</p>
 <p>一般情况下，在nmap安装目录下有一个scripts文件夹，里面存放了很多供我们调用的脚本，脚本的语言是lua，文件扩展名是nse。使用脚本时我们不需要输入脚本的全名，例如，调用http-server-header.nse时，只需要输入文件名http-server-header即可。</p>
 <p>下面介绍一些带参数的扩展脚本使用方法。同样的，设定一个需求，我需要扫描192.168.85.132的HTTP服务下有哪些目录或者文件，那么可以采用http-enum.nse脚本。</p>
 <p><strong>http-enum.nse用于枚举http服务下的目录或文件</strong></p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/26ca16ac-4f5f-11ec-a788-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/26ca16ac-4f5f-11ec-a788-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>但是单单使用这个脚本，而不根据实际情况设定内置参数，结果可能并不理想。这个脚本有一些参数：</p>
 <ul>
 <li>http-enum.basepath 开始目录</li>
@@ -151,14 +151,14 @@
 <p>假设要从admin目录开始进行枚举，需要输入如下命令：</p>
 <p>nmap &ndash;script=http-enum &ndash;script-args ‘http-enum.basepath=admin’
 192.168.85.132</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/271f1f94-4f5f-11ec-be27-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/271f1f94-4f5f-11ec-be27-00d861bf4abb.jpg" alt="enter description here"></p>
 <h3 id="0x03-3-如何查看nmap扩展脚本的usage使用方法">0X03 [3] 如何查看Nmap扩展脚本的Usage（使用方法）</h3>
 <p>使用&ndash;script-help参数</p>
 <p>nmap &ndash;script-help=http-enum</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/27621010-4f5f-11ec-bec8-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/27621010-4f5f-11ec-bec8-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>直接查看脚本文件</p>
 <p>cat /usr/share/nmap/scripts/http-enum.nse</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/279ea6b0-4f5f-11ec-86b5-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/279ea6b0-4f5f-11ec-86b5-00d861bf4abb.jpg" alt="enter description here"></p>
 
 </div>
 <div class="container">

@@ -115,9 +115,9 @@
 </span></span><span style="display:flex;"><span><span style="color:#75715e">?&gt;</span><span style="color:#960050;background-color:#1e0010">
 </span></span></span></code></pre></div><p>从上方代码可以看到ID并没有做过滤</p>
 <p>那我们现在测试一下注入点是否可以注入到数据</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/d9ee0afa-4f5e-11ec-8b7b-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/d9ee0afa-4f5e-11ec-8b7b-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>现在我们开启某锁漏洞防护功能</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/da30f6d0-4f5e-11ec-9bd7-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/da30f6d0-4f5e-11ec-9bd7-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>下面我们开始研究bypass的方法</p>
 <p>我们会根据以下几个知识点</p>
 <ul>
@@ -128,7 +128,7 @@
 <li>编码</li>
 <li>注释</li>
 </ul>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/da722308-4f5e-11ec-9df6-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/da722308-4f5e-11ec-9df6-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>从上面图片数据可看到 某锁防护已经拦截了我这条语句</p>
 <p>我们先测试简单的布尔值运算</p>
 <ul>
@@ -145,7 +145,7 @@
 <p>= 等价于 like</p>
 <p>据我所知只有那么多 还有知道的多多提供</p>
 <p>那我们可以把“=”替换成 like</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/dabad24c-4f5e-11ec-939b-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/dabad24c-4f5e-11ec-939b-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>从上图可看到简单布尔值运算完全绕过某锁了</p>
 <p>那我们继续获取数据吧</p>
 <h2 id="0x02-继续深入">0x02 继续深入</h2>
@@ -153,7 +153,7 @@
 <p>倾旋曾挖掘过一个x全狗的盲注</p>
 <p>这时倾旋提出试试盲注呗</p>
 <p>二话不说 上去就是干盲注</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/db088a6e-4f5e-11ec-b790-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/db088a6e-4f5e-11ec-b790-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>id=1 and &lsquo;1&rsquo; like IF(1 LiKe 1,1,2)</p>
 <p>上方信息可看出使用了大小写替换而且通过if做了一次判断</p>
 <p>If()函数：if(条件,如果真返回的值,如果假返回的值)</p>
@@ -168,7 +168,7 @@
 <p>基于时间的盲注测试</p>
 <p>我的mysql是默认账号密码也就是第一个首字母是r</p>
 <p>我们查一查r的ASCII码为114</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/db5c8de4-4f5e-11ec-8cee-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/db5c8de4-4f5e-11ec-8cee-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>现在我们构造语句：</p>
 <pre tabindex="0"><code>
 And &#39;1&#39; like IF(ascii(substr(user(),1,1)) LiKe 113,1,sleep(5))
@@ -176,7 +176,7 @@ And &#39;1&#39; like IF(ascii(substr(user(),1,1)) LiKe 113,1,sleep(5))
 <p>Substr()截取user()用户名第一位 为r</p>
 <p>Ascii(‘r’) 将r 转换成ascii码</p>
 <p>If()判断114 Like(=) 113 如果等于值为1如果不等于Sleep(延时)5秒</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/dbaa6e9c-4f5e-11ec-8fbc-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/dbaa6e9c-4f5e-11ec-8fbc-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>可看到数据没有查出来 页面延时了5秒才加载出来</p>
 <p>最后答案 114不等于113</p>
 <p>剩下盲注出你想要的数据就要慢慢去测试了</p>
@@ -188,7 +188,7 @@ And &#39;1&#39; like IF(ascii(substr(user(),1,1)) LiKe 113,1,sleep(5))
 <h2 id="0x03-自动化bypass扩展">0x03 自动化Bypass（扩展）</h2>
 <p>这里扩充一下编写tamper bypass脚本</p>
 <p>先直接使用SQLmap进行测试（毋庸置疑，肯定失败）：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/dbf66720-4f5e-11ec-bdc6-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/dbf66720-4f5e-11ec-bdc6-00d861bf4abb.jpg" alt="enter description here"></p>
 <p>在经过大量测试以后，我们定位特征，写出了bypass脚本：</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#75715e">#!/usr/bin/env python</span>
 </span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> re
@@ -204,7 +204,7 @@ And &#39;1&#39; like IF(ascii(substr(user(),1,1)) LiKe 113,1,sleep(5))
 </span></span><span style="display:flex;"><span>              payload<span style="color:#f92672">=</span> p<span style="color:#f92672">.</span>sub(<span style="color:#e6db74">r</span><span style="color:#e6db74">&#34;&#39;\1&#39;LikE &#34;</span>, payload)
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> payload
 </span></span></code></pre></div><p>测试结果：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/dc39a562-4f5e-11ec-bb41-00d861bf4abb.jpg" alt="enter description here"></p>
+<p><img src="../../../static/images/dc39a562-4f5e-11ec-bb41-00d861bf4abb.jpg" alt="enter description here"></p>
 <h2 id="0x04-小总结">0x04 小总结</h2>
 <p>等价替换</p>
 <p>前面已经讲解了 等价函数和等价符号</p>

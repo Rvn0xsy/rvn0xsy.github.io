@@ -87,10 +87,10 @@
 <p>Shellcode是一段机器指令的集合，通常会被压缩至很小的长度，达到为后续恶意代码铺垫的作用。当然你可以通过msfvenom生成各种用于测试的shellcode。</p>
 <h2 id="0x03-raw文件">0x03 RAW文件</h2>
 <p>RAW 中文意思是原始的、未经加工的，通常使用Cobaltstrike生成的BIN文件。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/77966e28-4f5f-11ec-87ab-00d861bf4abb.png" alt="2019-11-10-01-55-50"></p>
+<p><img src="../../../static/images/77966e28-4f5f-11ec-87ab-00d861bf4abb.png" alt="2019-11-10-01-55-50"></p>
 <p>RAW文件是可以直接进行字节操作读取的，因此加载到内存较为方便，通常我一般使用混淆的方式再生成一遍。</p>
 <h2 id="0x04-c文件">0x04 C文件</h2>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/77eeeb20-4f5f-11ec-b609-00d861bf4abb.png" alt="2019-11-10-01-56-09"></p>
+<p><img src="../../../static/images/77eeeb20-4f5f-11ec-b609-00d861bf4abb.png" alt="2019-11-10-01-56-09"></p>
 <p>C文件给出的是一个C语言中的字符数组，也是可以通过以字节单位操作的。</p>
 <h2 id="0x05-组合">0x05 组合</h2>
 <p>由于反病毒软件对于默认生成的文件查杀较为严格，我通常会采用混淆、加密解密的方式把载荷还原。</p>
@@ -143,7 +143,7 @@
 <p>先生成bin文件，然后运行python脚本：</p>
 <pre tabindex="0"><code>python3 .\xor_shellcoder.py -s .\payload.bin  -d payload.c -n 10 -r out.bin
 </code></pre><p>在payload.c中会看到raw文件里的每一个字节与10的异或运算出的C语言数组。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/782970e2-4f5f-11ec-b6f7-00d861bf4abb.png" alt="2019-11-10-01-57-13"></p>
+<p><img src="../../../static/images/782970e2-4f5f-11ec-b6f7-00d861bf4abb.png" alt="2019-11-10-01-57-13"></p>
 <p>这个数组的内容，将由下一篇文章用到，实践一下Shellcode混淆免杀。</p>
 <p><strong>注：-r 参数输出的是混淆过的二进制版本shellcode，-d 参数输出的是C语言格式的shellcode</strong></p>
 

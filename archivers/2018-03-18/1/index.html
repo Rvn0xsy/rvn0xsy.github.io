@@ -92,12 +92,12 @@ deb http://security.ubuntu.com/ubuntu artful-security multiverse
 <p>我们可以通过<code>nautilus-actions-config-tool</code> 来配置自己想要的菜单</p>
 <p>安装方式很简单：<code>sudo apt-get install nautilus-actions</code></p>
 <p>在命令行中启动<code>nautilus-actions-config-tool</code>就可以打开配置页面</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/1fdfde30-4f5f-11ec-817b-00d861bf4abb.png" alt="enter description here" title="0x01"></p>
+<p><img src="../../../static/images/1fdfde30-4f5f-11ec-817b-00d861bf4abb.png" alt="enter description here" title="0x01"></p>
 <p>可以看到我已经自己添加了两个菜单，主要用于Nmap从文本中读取目标进行扫描</p>
 <p>Ubuntu默认情况下是没有新建文本这个菜单的，我们自己通过这个工具添加一下试试：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2019ecba-4f5f-11ec-8af4-00d861bf4abb.png" alt="enter description here" title="0x02"></p>
+<p><img src="../../../static/images/2019ecba-4f5f-11ec-8af4-00d861bf4abb.png" alt="enter description here" title="0x02"></p>
 <p>配置一下命令：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/20587ad4-4f5f-11ec-ae0f-00d861bf4abb.png" alt="enter description here" title="0x03"></p>
+<p><img src="../../../static/images/20587ad4-4f5f-11ec-ae0f-00d861bf4abb.png" alt="enter description here" title="0x03"></p>
 <p>这里有几个变量介绍一下：</p>
 <ul>
 <li>%d 当前目录</li>
@@ -107,30 +107,30 @@ deb http://security.ubuntu.com/ubuntu artful-security multiverse
 <li>&hellip;&hellip;</li>
 </ul>
 <p>剩下的自己摸索，以上的已经够用了</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/20a93f28-4f5f-11ec-835e-00d861bf4abb.png" alt="enter description here" title="0x04"></p>
+<p><img src="../../../static/images/20a93f28-4f5f-11ec-835e-00d861bf4abb.png" alt="enter description here" title="0x04"></p>
 <p>点击保存以后，我们就可以使用了</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/20e51df4-4f5f-11ec-b39e-00d861bf4abb.png" alt="enter description here" title="0x05"></p>
+<p><img src="../../../static/images/20e51df4-4f5f-11ec-b39e-00d861bf4abb.png" alt="enter description here" title="0x05"></p>
 <h2 id="0x02-nmap自动导入目标扫描">0x02 Nmap自动导入目标扫描</h2>
 <p>新建一个Document.txt，里面写入&quot;192.168.3.1&quot;</p>
 <p>我们在菜单里新建一个动作：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/211eba64-4f5f-11ec-891b-00d861bf4abb.png" alt="enter description here" title="0x06"></p>
+<p><img src="../../../static/images/211eba64-4f5f-11ec-891b-00d861bf4abb.png" alt="enter description here" title="0x06"></p>
 <p>解读一下：</p>
 <pre tabindex="0"><code>
 /usr/bin/gnome-terminal
 
 -x bash -c &#34;/usr/bin/nmap -iL %f -oN %d/NmapScan10000Result.txt -A;bash&#34;
 </code></pre><p>这个参数是用于创建一个新的终端，并且执行Nmap。最后的<code>;bash</code>很重要，是用于保留终端不被关闭而写的</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/216ad7dc-4f5f-11ec-affe-00d861bf4abb.png" alt="enter description here" title="0x07"></p>
+<p><img src="../../../static/images/216ad7dc-4f5f-11ec-affe-00d861bf4abb.png" alt="enter description here" title="0x07"></p>
 <p>有了这个方式，我们可以自定义很多工具的参数传递，是不是很方便呢？</p>
 <h2 id="0x04-快捷键">0x04 快捷键</h2>
 <p>Windows下按<code>Print Screen</code>，而Linux需要自己安装软件</p>
 <p>安装命令：<code>sudo apt-get install shutter</code></p>
 <p>打开系统设置-&gt;设备-&gt;键盘</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/21aa6884-4f5f-11ec-8a0f-00d861bf4abb.png" alt="enter description here" title="0x08"></p>
+<p><img src="../../../static/images/21aa6884-4f5f-11ec-8a0f-00d861bf4abb.png" alt="enter description here" title="0x08"></p>
 <p>添加一个快捷键，并且输入名称、命令，按下快捷键：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/21e80ffe-4f5f-11ec-b18a-00d861bf4abb.png" alt="enter description here" title="0x09"></p>
+<p><img src="../../../static/images/21e80ffe-4f5f-11ec-b18a-00d861bf4abb.png" alt="enter description here" title="0x09"></p>
 <p>此时按下快捷键激活截图软件:</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2221acbe-4f5f-11ec-a62b-00d861bf4abb.png" alt="enter description here" title="0x10"></p>
+<p><img src="../../../static/images/2221acbe-4f5f-11ec-a62b-00d861bf4abb.png" alt="enter description here" title="0x10"></p>
 <h2 id="0x03-参考">0x03 参考</h2>
 <ul>
 <li>

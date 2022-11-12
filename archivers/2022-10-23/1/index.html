@@ -99,7 +99,7 @@
 </blockquote>
 <p>顾名思义，他是一个网络流量处理平台，用于替代Windows Server 2003、Windows XP平台下的网络流量过滤接口。WFP 由一组进入网络堆栈的钩子和一个协调网络堆栈交互的过滤引擎组成。</p>
 <p>随便查看WFP的<a href="https://learn.microsoft.com/en-us/windows/win32/api/fwpmu/nf-fwpmu-fwpmfilteradd0">API</a>，可以大致确定这个技术的支持版本，大部分API还是兼容性较强的，也就是说这个技术在Windows很早就有了：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-10-23-22-51-22.png" alt=""></p>
+<p><img src="../../../static/images/2022-10-23-22-51-22.png" alt=""></p>
 <h3 id="rpc-filer">RPC Filer</h3>
 <p>而RPC Filter他是一种基于RPC协议的一种过滤技术，可以通过多个维度进行过滤，本文仅仅展开基于UUID来过滤对应的RPC协议。RPC Filter属于在WFP技术中的一部分。通过设置FWPM_FILTER0和FWPM_FILTER_CONDITION0结构可以配置Filter规则，然后调用相对应的API就能够完成Filter的注册。</p>
 <h3 id="使用netsh命令添加rpc-filer规则阻断impacket-atexec">使用Netsh命令添加RPC Filer规则阻断Impacket atexec</h3>
@@ -110,21 +110,21 @@
 <li>攻击者 Linux</li>
 </ul>
 <p>首先使用atexec.py正常攻击一次：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-10-23-22-51-41.png" alt=""></p>
+<p><img src="../../../static/images/2022-10-23-22-51-41.png" alt=""></p>
 <p>这里可以看到可以攻击成功，RPC SchRpcRegisterTask 成功，这个API其实就是之前实现的<a href="https://github.com/Rvn0xsy/SchtaskCreator">远程创建任务计划工具</a>，原理没有任何区别。</p>
 <p>在Windows Server 2008上开始操作netsh，添加Filter：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-10-23-22-51-55.png" alt=""></p>
+<p><img src="../../../static/images/2022-10-23-22-51-55.png" alt=""></p>
 <pre tabindex="0"><code>rpc
 filter
 add rule layer=um actiontype=block
 add condition field=if_uuid matchtype=equal data=86D35949-83C9-4044-B424-DB363231FD0C
 add filter
 </code></pre><p>86D35949-83C9-4044-B424-DB363231FD0C 这个UUID代表了ITaskSchedulerService，在数据包中我们可以看到：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-10-23-22-52-16.png" alt=""></p>
+<p><img src="../../../static/images/2022-10-23-22-52-16.png" alt=""></p>
 <p>添加完Filter以后，我们这个时候再进行一次横向测试：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-10-23-22-52-29.png" alt=""></p>
+<p><img src="../../../static/images/2022-10-23-22-52-29.png" alt=""></p>
 <p>可以看到，已经无法注册任务计划了，atexec执行失败，而且RPC Filter其实和防火墙没有直接的关系，在测试期间Windows Server 2008的防火墙是关闭的状态。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-10-23-22-52-43.png" alt=""></p>
+<p><img src="../../../static/images/2022-10-23-22-52-43.png" alt=""></p>
 <p>除了计划任务以外还有很多，这里罗列一下：</p>
 <ul>
 <li><code>1FF70682-0A51-30E8-076D-740BE8CEE98B</code>  <a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-tsch/d1058a28-7e02-4948-8b8d-4a347fa64931">Schedueled Task (MS-TSCH)</a> ATSvc</li>
@@ -148,23 +148,23 @@ add filter
 </ul>
 <h2 id="拦截dcom-ioxidresolver接口网卡探测">拦截DCOM IOXIDResolver接口网卡探测</h2>
 <p>之前有写过一篇 <a href="https://payloads.online/archivers/2020-07-16/1/">《通过OXID解析器获取Windows远程主机上网卡地址》</a> ，后来国内红队大部分扫描器就都开始集成这个功能，可以在未授权的情况下访问Windows操作系统的135端口获取网卡上的IP地址，主要是利用了IOXIDResolver 这个接口，通过抓包分析：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-10-23-22-53-10.png" alt=""></p>
+<p><img src="../../../static/images/2022-10-23-22-53-10.png" alt=""></p>
 <p>IOXIDResolver 对应的UUID是 99fcfec4-5260-101b-bbcb-00aa0021347a ，因此我们也同样可以使用netsh将这个协议给拦截掉。</p>
 <pre tabindex="0"><code>add rule layer=um actiontype=block
 add condition field=if_uuid matchtype=equal data=99fcfec4-5260-101b-bbcb-00aa0021347a
 add filter
 </code></pre><p>添加RPC Filter之前：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-10-23-22-53-28.png" alt=""></p>
+<p><img src="../../../static/images/2022-10-23-22-53-28.png" alt=""></p>
 <p>添加RPC Filter之后：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-10-23-22-53-38.png" alt=""></p>
+<p><img src="../../../static/images/2022-10-23-22-53-38.png" alt=""></p>
 <h2 id="批量添加rpc-filter规则">批量添加RPC Filter规则</h2>
 <p>netsh命令支持以文件作为命令输入，例如：</p>
 <pre tabindex="0"><code>netsh -f &lt;command file&gt;
 </code></pre><p>我们可以将多条指令存放到文件中，执行命令加载：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-10-23-22-53-53.png" alt=""></p>
+<p><img src="../../../static/images/2022-10-23-22-53-53.png" alt=""></p>
 <h2 id="防御petitpotam漏洞">防御<strong><strong>PetitPotam漏洞</strong></strong></h2>
 <p><a href="https://twitter.com/gentilkiwi">Benjamin Delpy</a> 早在去年有提到可以通过RPC Filter阻断PetitPotam漏洞：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-10-23-22-54-06.png" alt=""></p>
+<p><img src="../../../static/images/2022-10-23-22-54-06.png" alt=""></p>
 <pre tabindex="0"><code>rpc
 filter
 add rule layer=um actiontype=block

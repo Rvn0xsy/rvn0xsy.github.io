@@ -71,7 +71,7 @@
 
 
         </div>
-    <p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/928c40c2-4f5f-11ec-83fc-00d861bf4abb.png" alt=""></p>
+    <p><img src="../../../static/images/928c40c2-4f5f-11ec-83fc-00d861bf4abb.png" alt=""></p>
 <h2 id="基础菜单">基础菜单</h2>
 <p>以popup当做修饰符号的函数体是菜单，一般是Cobalt Strike的菜单栏；</p>
 <p>先构建一个简单的菜单：</p>
@@ -90,19 +90,19 @@
 }
 </code></pre><p>紧接着还有一个重要的菜单函数：<code>menubar(&quot;Event-Say&quot;, &quot;event_say&quot;);</code></p>
 <p>第一个参数是菜单名称，第二个是函数名称，这个函数通过参数将菜单名称与函数名绑定起来。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/92da6cd4-4f5f-11ec-9f1d-00d861bf4abb.png" alt="2020-03-01-11-43-30"></p>
+<p><img src="../../../static/images/92da6cd4-4f5f-11ec-9f1d-00d861bf4abb.png" alt="2020-03-01-11-43-30"></p>
 <h2 id="日志函数">日志函数</h2>
 <p>通过elog函数可以打印事件日志：</p>
 <pre tabindex="0"><code>elog(&#34;something ...&#34;);
-</code></pre><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/93151ca8-4f5f-11ec-8a98-00d861bf4abb.png" alt="2020-03-01-11-43-38"></p>
+</code></pre><p><img src="../../../static/images/93151ca8-4f5f-11ec-8a98-00d861bf4abb.png" alt="2020-03-01-11-43-38"></p>
 <p>我们可以封装一个函数，名为say：</p>
 <pre tabindex="0"><code>sub say {
 	elog(&#34;\c3Hello Everyone!&#34;);
 }
 </code></pre><p><code>\c</code>是Cobalt Strike的彩色样式开关，类似的还有其他颜色：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/937309da-4f5f-11ec-86b9-00d861bf4abb.png" alt="2020-03-01-11-43-47"></p>
+<p><img src="../../../static/images/937309da-4f5f-11ec-86b9-00d861bf4abb.png" alt="2020-03-01-11-43-47"></p>
 <p>执行结果：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/93bef9bc-4f5f-11ec-b54d-00d861bf4abb.png" alt="2020-03-01-11-43-53"></p>
+<p><img src="../../../static/images/93bef9bc-4f5f-11ec-b54d-00d861bf4abb.png" alt="2020-03-01-11-43-53"></p>
 <h2 id="对话框-输入">对话框-输入</h2>
 <pre tabindex="0"><code>dialog(&#34;Hello&#34;, # 对话框标题-字符串 
 %(name =&gt; &#34;tom&#34;),  # 对话框输入项及默认值-hashes
@@ -131,8 +131,8 @@ drow_text($dialog, &#34;name&#34;, &#34;YourName:  &#34;);
 dbutton_action($dialog, &#34;Go&#34;);
 </code></pre><p>dialog的手册：https://cobaltstrike.com/aggressor-script/functions.html#dialog</p>
 <p>当点击 菜单项时，弹出对话框：</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/940884d8-4f5f-11ec-9437-00d861bf4abb.png" alt="2020-03-01-11-44-03"></p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9451dc00-4f5f-11ec-bcca-00d861bf4abb.png" alt="2020-03-01-11-44-10"></p>
+<p><img src="../../../static/images/940884d8-4f5f-11ec-9437-00d861bf4abb.png" alt="2020-03-01-11-44-03"></p>
+<p><img src="../../../static/images/9451dc00-4f5f-11ec-bcca-00d861bf4abb.png" alt="2020-03-01-11-44-10"></p>
 
 </div>
 <div class="container">

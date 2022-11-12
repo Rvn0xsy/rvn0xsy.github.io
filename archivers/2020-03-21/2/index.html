@@ -84,7 +84,7 @@
     <h2 id="ssrf-服务器请求伪造">SSRF 服务器请求伪造</h2>
 <p>SSRF(Server-side Request Forge, 服务端请求伪造)。由攻击者构造的攻击链接传给服务端执行造成的漏洞，一般用来在外网探测或攻击内网服务。</p>
 <h3 id="常见的功能点">常见的功能点</h3>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/960b6a34-4f5f-11ec-80ff-00d861bf4abb.png" alt="2020-03-21-16-58-32"></p>
+<p><img src="../../../static/images/960b6a34-4f5f-11ec-80ff-00d861bf4abb.png" alt="2020-03-21-16-58-32"></p>
 <ul>
 <li>Net-NTLM &amp;&amp; NTLM Relay</li>
 <li>获取服务器真实IP</li>
@@ -93,7 +93,7 @@
 <li>&hellip;&hellip;</li>
 </ul>
 <h3 id="网页代理---http-proxy">网页代理 - HTTP Proxy</h3>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/964b0f36-4f5f-11ec-85c3-00d861bf4abb.png" alt="2020-03-21-17-01-01"></p>
+<p><img src="../../../static/images/964b0f36-4f5f-11ec-85c3-00d861bf4abb.png" alt="2020-03-21-17-01-01"></p>
 <p><strong>客户端应用HTTP代理后，可通过代理服务器访问内网HTTP协议资源</strong></p>
 <p><strong>而在SSRF场景，需要SSRF具备支持HTTP两大请求方式：GET、POST，且有响应Body</strong></p>
 <pre tabindex="0"><code>POST /application/services/proxy/doPostAndGet HTTP/1.1
@@ -112,7 +112,7 @@ Accept-Language: zh-CN,zh;q=0.9
     &#34;jsonBody&#34;:&#34;{\&#34;username\&#34;:\&#34;123456\&#34;}&#34;
 }
 </code></pre><h2 id="flask-框架">Flask 框架</h2>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9685f1a0-4f5f-11ec-b8a6-00d861bf4abb.png" alt="2020-03-21-17-02-11"></p>
+<p><img src="../../../static/images/9685f1a0-4f5f-11ec-b8a6-00d861bf4abb.png" alt="2020-03-21-17-02-11"></p>
 <p>Flask是一个用Python编写的Web应用程序框架，它基于Werkzeug WSGI工具包和Jinja2模板引擎。</p>
 <p>Flask也被称为“microframework” ，因为它使用简单的核心，用extension增加其他功能，它没有默认使用的数据库、窗体验证工具。</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> flask <span style="color:#f92672">import</span> Flask
@@ -121,7 +121,7 @@ Accept-Language: zh-CN,zh;q=0.9
 </span></span><span style="display:flex;"><span><span style="color:#a6e22e">@app</span><span style="color:#f92672">.</span>route(<span style="color:#e6db74">&#39;/&#39;</span>)
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">def</span> <span style="color:#a6e22e">hello_world</span>():
 </span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">return</span> <span style="color:#e6db74">&#39;Hello, World!&#39;</span>
-</span></span></code></pre></div><p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/96ce8dca-4f5f-11ec-826f-00d861bf4abb.png" alt="2020-03-21-17-02-36"></p>
+</span></span></code></pre></div><p><img src="../../../static/images/96ce8dca-4f5f-11ec-826f-00d861bf4abb.png" alt="2020-03-21-17-02-36"></p>
 <pre tabindex="0"><code>$ export FLASK_APP=hello.py
 $ python -m flask run
  * Running on http://127.0.0.1:5000/
@@ -133,7 +133,7 @@ $ python -m flask run
 <li>teardown_request → 异常处理</li>
 <li>after_this_request</li>
 </ol>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/97b9303c-4f5f-11ec-a5f5-00d861bf4abb.png" alt="2020-03-21-17-03-02"></p>
+<p><img src="../../../static/images/97b9303c-4f5f-11ec-a5f5-00d861bf4abb.png" alt="2020-03-21-17-03-02"></p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-python" data-lang="python"><span style="display:flex;"><span><span style="color:#f92672">from</span> flask <span style="color:#f92672">import</span> Flask, request, Response
 </span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> requests
 </span></span><span style="display:flex;"><span>app <span style="color:#f92672">=</span> Flask(__name__)
@@ -157,9 +157,9 @@ $ python -m flask run
 </span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> __name__ <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;__main__&#34;</span>:
 </span></span><span style="display:flex;"><span>    app<span style="color:#f92672">.</span>run(debug<span style="color:#f92672">=</span><span style="color:#66d9ef">True</span>)
 </span></span></code></pre></div><p>Flask的默认端口是：5000</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/97f79534-4f5f-11ec-ac7e-00d861bf4abb.png" alt="2020-03-21-17-03-33"></p>
+<p><img src="../../../static/images/97f79534-4f5f-11ec-ac7e-00d861bf4abb.png" alt="2020-03-21-17-03-33"></p>
 <p>插件名称：SwitchyOmega</p>
-<p><img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/982fb572-4f5f-11ec-b357-00d861bf4abb.png" alt="2020-03-21-17-03-48"></p>
+<p><img src="../../../static/images/982fb572-4f5f-11ec-b357-00d861bf4abb.png" alt="2020-03-21-17-03-48"></p>
 <p>通过把代理服务器设置为5000（Flask默认）端口，浏览器的所有请求都会经过这五个装饰器，在每个装饰器中，可以写自己的检测规则。由于许多的SSRF漏洞接口返回的Content-Type始终都是一样的，因此会产生图片、JS等静态文件无法加载，下面我们将解决这个问题。</p>
 <h3 id="解决文件类型问题">解决文件类型问题</h3>
 <p>遇到这个问题，首先分析浏览器为什么无法加载。</p>
