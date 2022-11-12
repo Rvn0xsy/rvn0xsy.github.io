@@ -1,0 +1,4 @@
+<p class="md__image">
+    {{ $url :=  .Destination | safeURL }}
+    <img src="{{ replace $url "../../../static/images/" "https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/" }}" alt="{{ .Text }}" {{ with .Title}} title="{{ . }}"{{ end }} />
+  </p>
