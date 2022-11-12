@@ -1,109 +1,15 @@
-<!DOCTYPE html>
-<html lang=""><head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <title>MemoryModule-实现原理 « 倾旋的博客</title>
-    <meta name="description" content="倾旋的博客">
-    <meta name="author" content='倾旋'>
-
-    <link rel="stylesheet" href="/css/Font-Awesome-5.15.3.all.min.css">
-
-    
-    <link rel="stylesheet" href="/sass/researcher.min.css">
-    
-    
-        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
-    
-
-    
-        
-    
-</head>
-
-    <body>
-<input type="checkbox" id="menu-toggle" class="menu-toggle">
-<label tabindex="0" for="menu-toggle" class="burger"><span></span> <span></span> <span></span><div class="burger-text">Menu</div></label>
-<nav class="main-nav">
-    
-    <ul>
-    
-        
-        
-            <li><a href="/projects/">Projects</a></li>
-        
-            <li><a href="/links/">Links</a></li>
-        
-            <li><a href="/post/">Posts</a></li>
-        
-            <li><a href="/index.xml">Rss</a></li>
-        
-            <li><a href="/tools/">Tools</a></li>
-        
-    
-    </ul>
-   
-</nav>
-<nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-<div class="container">
-    <h1>MemoryModule-实现原理</h1>
-    <p>MemoryModule-实现原理</p>
-        <div class = "toc-wrapper">
-            
-<div class="post-toc" id="post-toc">
-<aside>
-    
-    
-    
-    <nav id="TableOfContents">
-  <ul>
-    <li><a href="#dos-header--stub">DOS header / stub</a></li>
-    <li><a href="#pe-header">PE header</a></li>
-    <li><a href="#section-header">Section header</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#allocate-memory">Allocate memory</a></li>
-    <li><a href="#copy-sections">Copy sections</a></li>
-    <li><a href="#base-relocation">Base relocation</a></li>
-    <li><a href="#resolve-imports">Resolve imports</a></li>
-    <li><a href="#protect-memory">Protect memory</a></li>
-    <li><a href="#notify-library">Notify library</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#downloads">Downloads</a></li>
-    <li><a href="#known-issues">Known issues</a></li>
-    <li><a href="#license">License</a></li>
-  </ul>
-</nav>
-    
-    
-</aside>
-<a href="#" id="toc-toggle"></a>
-</div>
-
-
-
-        </div>
-    <h1 id="url">URL</h1>
-<p><a href="https://github.com/fancycode/MemoryModule/blob/master/doc/readme.rst">https://github.com/fancycode/MemoryModule/blob/master/doc/readme.rst</a></p>
-<h1 id="overview">Overview</h1>
-<p>The default windows API functions to load external libraries into a program
-(LoadLibrary, LoadLibraryEx) only work with files on the filesystem.  It&rsquo;s
+<!doctype html><html lang><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>MemoryModule-实现原理 « 倾旋的博客</title><meta name=description content="倾旋的博客"><meta name=author content="倾旋"><link rel=stylesheet href=/css/Font-Awesome-5.15.3.all.min.css><link rel=stylesheet href=/sass/researcher.min.css><link rel=icon type=image/ico href=https://payloads.online/favicon.ico></head><body><input type=checkbox id=menu-toggle class=menu-toggle>
+<label tabindex=0 for=menu-toggle class=burger><span></span> <span></span> <span></span><div class=burger-text>Menu</div></label><nav class=main-nav><ul><li><a href=/projects/>Projects</a></li><li><a href=/links/>Links</a></li><li><a href=/post/>Posts</a></li><li><a href=/index.xml>Rss</a></li><li><a href=/tools/>Tools</a></li></ul></nav><nav><a href=/ class=all-posts-link>‹ All Posts</a></nav><div id=content><div class=container><h1>MemoryModule-实现原理</h1><p>MemoryModule-实现原理</p><div class=toc-wrapper><div class=post-toc id=post-toc><aside><nav id=TableOfContents><ul><li><a href=#dos-header--stub>DOS header / stub</a></li><li><a href=#pe-header>PE header</a></li><li><a href=#section-header>Section header</a></li></ul><ul><li><a href=#allocate-memory>Allocate memory</a></li><li><a href=#copy-sections>Copy sections</a></li><li><a href=#base-relocation>Base relocation</a></li><li><a href=#resolve-imports>Resolve imports</a></li><li><a href=#protect-memory>Protect memory</a></li><li><a href=#notify-library>Notify library</a></li></ul><ul><li><a href=#downloads>Downloads</a></li><li><a href=#known-issues>Known issues</a></li><li><a href=#license>License</a></li></ul></nav></aside><a href=# id=toc-toggle></a></div></div><h1 id=url>URL</h1><p><a href=https://github.com/fancycode/MemoryModule/blob/master/doc/readme.rst>https://github.com/fancycode/MemoryModule/blob/master/doc/readme.rst</a></p><h1 id=overview>Overview</h1><p>The default windows API functions to load external libraries into a program
+(LoadLibrary, LoadLibraryEx) only work with files on the filesystem. It&rsquo;s
 therefore impossible to load a DLL from memory.
 But sometimes, you need exactly this functionality (e.g. you don&rsquo;t want to
-distribute a lot of files or want to make disassembling harder).  Common
+distribute a lot of files or want to make disassembling harder). Common
 workarounds for this problems are to write the DLL into a temporary file
-first and import it from there.  When the program terminates, the temporary
-file gets deleted.</p>
-<p>In this tutorial, I will describe first, how DLL files are structured and
+first and import it from there. When the program terminates, the temporary
+file gets deleted.</p><p>In this tutorial, I will describe first, how DLL files are structured and
 will present some code that can be used to load a DLL completely from memory -
-without storing on the disk first.</p>
-<h1 id="windows-executables---the-pe-format">Windows executables - the PE format</h1>
-<p>Most windows binaries that can contain executable code (.exe, .dll, .sys)
-share a common file format that consists of the following parts:</p>
-<pre tabindex="0"><code>+----------------+
+without storing on the disk first.</p><h1 id=windows-executables---the-pe-format>Windows executables - the PE format</h1><p>Most windows binaries that can contain executable code (.exe, .dll, .sys)
+share a common file format that consists of the following parts:</p><pre tabindex=0><code>+----------------+
 | DOS header     |
 |                |
 | DOS stub       |
@@ -120,58 +26,48 @@ share a common file format that consists of the following parts:</p>
 +----------------+
 | Section n      |
 +----------------+
-</code></pre><p>All structures given below can be found in the header file <code>winnt.h</code>.</p>
-<h2 id="dos-header--stub">DOS header / stub</h2>
-<p>The DOS header is only used for backwards compatibility.  It precedes the DOS
+</code></pre><p>All structures given below can be found in the header file <code>winnt.h</code>.</p><h2 id=dos-header--stub>DOS header / stub</h2><p>The DOS header is only used for backwards compatibility. It precedes the DOS
 stub that normally just displays an error message about the program not being
-able to be run from DOS mode.</p>
-<p>Microsoft defines the DOS header as follows::</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _IMAGE_DOS_HEADER {      <span style="color:#75715e">// DOS .EXE header
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_magic;                     <span style="color:#75715e">// Magic number
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_cblp;                      <span style="color:#75715e">// Bytes on last page of file
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_cp;                        <span style="color:#75715e">// Pages in file
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_crlc;                      <span style="color:#75715e">// Relocations
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_cparhdr;                   <span style="color:#75715e">// Size of header in paragraphs
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_minalloc;                  <span style="color:#75715e">// Minimum extra paragraphs needed
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_maxalloc;                  <span style="color:#75715e">// Maximum extra paragraphs needed
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_ss;                        <span style="color:#75715e">// Initial (relative) SS value
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_sp;                        <span style="color:#75715e">// Initial SP value
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_csum;                      <span style="color:#75715e">// Checksum
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_ip;                        <span style="color:#75715e">// Initial IP value
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_cs;                        <span style="color:#75715e">// Initial (relative) CS value
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_lfarlc;                    <span style="color:#75715e">// File address of relocation table
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_ovno;                      <span style="color:#75715e">// Overlay number
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_res[<span style="color:#ae81ff">4</span>];                    <span style="color:#75715e">// Reserved words
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_oemid;                     <span style="color:#75715e">// OEM identifier (for e_oeminfo)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_oeminfo;                   <span style="color:#75715e">// OEM information; e_oemid specific
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        WORD   e_res2[<span style="color:#ae81ff">10</span>];                  <span style="color:#75715e">// Reserved words
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        LONG   e_lfanew;                    <span style="color:#75715e">// File address of new exe header
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>      } IMAGE_DOS_HEADER, <span style="color:#f92672">*</span>PIMAGE_DOS_HEADER;
-</span></span></code></pre></div><h2 id="pe-header">PE header</h2>
-<p>The PE header contains informations about the different sections inside the
+able to be run from DOS mode.</p><p>Microsoft defines the DOS header as follows::</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>    <span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>struct</span> _IMAGE_DOS_HEADER {      <span style=color:#75715e>// DOS .EXE header
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_magic;                     <span style=color:#75715e>// Magic number
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_cblp;                      <span style=color:#75715e>// Bytes on last page of file
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_cp;                        <span style=color:#75715e>// Pages in file
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_crlc;                      <span style=color:#75715e>// Relocations
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_cparhdr;                   <span style=color:#75715e>// Size of header in paragraphs
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_minalloc;                  <span style=color:#75715e>// Minimum extra paragraphs needed
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_maxalloc;                  <span style=color:#75715e>// Maximum extra paragraphs needed
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_ss;                        <span style=color:#75715e>// Initial (relative) SS value
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_sp;                        <span style=color:#75715e>// Initial SP value
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_csum;                      <span style=color:#75715e>// Checksum
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_ip;                        <span style=color:#75715e>// Initial IP value
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_cs;                        <span style=color:#75715e>// Initial (relative) CS value
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_lfarlc;                    <span style=color:#75715e>// File address of relocation table
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_ovno;                      <span style=color:#75715e>// Overlay number
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_res[<span style=color:#ae81ff>4</span>];                    <span style=color:#75715e>// Reserved words
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_oemid;                     <span style=color:#75715e>// OEM identifier (for e_oeminfo)
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_oeminfo;                   <span style=color:#75715e>// OEM information; e_oemid specific
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        WORD   e_res2[<span style=color:#ae81ff>10</span>];                  <span style=color:#75715e>// Reserved words
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        LONG   e_lfanew;                    <span style=color:#75715e>// File address of new exe header
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>      } IMAGE_DOS_HEADER, <span style=color:#f92672>*</span>PIMAGE_DOS_HEADER;
+</span></span></code></pre></div><h2 id=pe-header>PE header</h2><p>The PE header contains informations about the different sections inside the
 executable that are used to store code and data or to define imports from other
-libraries or exports this libraries provides.</p>
-<p>It&rsquo;s defined as follows::</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _IMAGE_NT_HEADERS {
-</span></span><span style="display:flex;"><span>        DWORD Signature;
-</span></span><span style="display:flex;"><span>        IMAGE_FILE_HEADER FileHeader;
-</span></span><span style="display:flex;"><span>        IMAGE_OPTIONAL_HEADER32 OptionalHeader;
-</span></span><span style="display:flex;"><span>    } IMAGE_NT_HEADERS32, <span style="color:#f92672">*</span>PIMAGE_NT_HEADERS32;
+libraries or exports this libraries provides.</p><p>It&rsquo;s defined as follows::</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>    <span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>struct</span> _IMAGE_NT_HEADERS {
+</span></span><span style=display:flex><span>        DWORD Signature;
+</span></span><span style=display:flex><span>        IMAGE_FILE_HEADER FileHeader;
+</span></span><span style=display:flex><span>        IMAGE_OPTIONAL_HEADER32 OptionalHeader;
+</span></span><span style=display:flex><span>    } IMAGE_NT_HEADERS32, <span style=color:#f92672>*</span>PIMAGE_NT_HEADERS32;
 </span></span></code></pre></div><p>The <code>FileHeader</code> describes the <em>physical</em> format of the file, i.e. contents, informations
-about symbols, etc::</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _IMAGE_FILE_HEADER {
-</span></span><span style="display:flex;"><span>        WORD    Machine;
-</span></span><span style="display:flex;"><span>        WORD    NumberOfSections;
-</span></span><span style="display:flex;"><span>        DWORD   TimeDateStamp;
-</span></span><span style="display:flex;"><span>        DWORD   PointerToSymbolTable;
-</span></span><span style="display:flex;"><span>        DWORD   NumberOfSymbols;
-</span></span><span style="display:flex;"><span>        WORD    SizeOfOptionalHeader;
-</span></span><span style="display:flex;"><span>        WORD    Characteristics;
-</span></span><span style="display:flex;"><span>    } IMAGE_FILE_HEADER, <span style="color:#f92672">*</span>PIMAGE_FILE_HEADER;
-</span></span></code></pre></div><p>.. _OptionalHeader:</p>
-<p>The <code>OptionalHeader</code> contains informations about the <em>logical</em> format of the library,
-including required OS version, memory requirements and entry points::</p>
-<pre tabindex="0"><code>    typedef struct _IMAGE_OPTIONAL_HEADER {
+about symbols, etc::</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>    <span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>struct</span> _IMAGE_FILE_HEADER {
+</span></span><span style=display:flex><span>        WORD    Machine;
+</span></span><span style=display:flex><span>        WORD    NumberOfSections;
+</span></span><span style=display:flex><span>        DWORD   TimeDateStamp;
+</span></span><span style=display:flex><span>        DWORD   PointerToSymbolTable;
+</span></span><span style=display:flex><span>        DWORD   NumberOfSymbols;
+</span></span><span style=display:flex><span>        WORD    SizeOfOptionalHeader;
+</span></span><span style=display:flex><span>        WORD    Characteristics;
+</span></span><span style=display:flex><span>    } IMAGE_FILE_HEADER, <span style=color:#f92672>*</span>PIMAGE_FILE_HEADER;
+</span></span></code></pre></div><p>.. _OptionalHeader:</p><p>The <code>OptionalHeader</code> contains informations about the <em>logical</em> format of the library,
+including required OS version, memory requirements and entry points::</p><pre tabindex=0><code>    typedef struct _IMAGE_OPTIONAL_HEADER {
         //
         // Standard fields.
         //
@@ -213,10 +109,8 @@ including required OS version, memory requirements and entry points::</p>
         DWORD   NumberOfRvaAndSizes;
         IMAGE_DATA_DIRECTORY DataDirectory[IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
     } IMAGE_OPTIONAL_HEADER32, *PIMAGE_OPTIONAL_HEADER32;
-</code></pre><p>.. _DataDirectory:</p>
-<p>The <code>DataDirectory</code> contains 16 (<code>IMAGE_NUMBEROF_DIRECTORY_ENTRIES</code>) entries
-defining the logical components of the library:</p>
-<pre tabindex="0"><code>===== ==========================
+</code></pre><p>.. _DataDirectory:</p><p>The <code>DataDirectory</code> contains 16 (<code>IMAGE_NUMBEROF_DIRECTORY_ENTRIES</code>) entries
+defining the logical components of the library:</p><pre tabindex=0><code>===== ==========================
 Index Description
 ===== ==========================
 0     Exported functions
@@ -250,377 +144,154 @@ Index Description
 14    COM runtime descriptor
 ===== ==========================
 </code></pre><p>For importing the DLL we only need the entries describing the imports and the
-base relocation table.  In order to provide access to the exported functions,
-the exports entry is required.</p>
-<h2 id="section-header">Section header</h2>
-<p>The section header is stored after the OptionalHeader_ structure in the PE
-header.  Microsoft provides the macro <code>IMAGE_FIRST_SECTION</code> to get the start
-address based on the PE header.</p>
-<p>Actually, the section header is a list of informations about each section in
-the file::</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _IMAGE_SECTION_HEADER {
-</span></span><span style="display:flex;"><span>        BYTE    Name[IMAGE_SIZEOF_SHORT_NAME];
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">union</span> {
-</span></span><span style="display:flex;"><span>                DWORD   PhysicalAddress;
-</span></span><span style="display:flex;"><span>                DWORD   VirtualSize;
-</span></span><span style="display:flex;"><span>        } Misc;
-</span></span><span style="display:flex;"><span>        DWORD   VirtualAddress;
-</span></span><span style="display:flex;"><span>        DWORD   SizeOfRawData;
-</span></span><span style="display:flex;"><span>        DWORD   PointerToRawData;
-</span></span><span style="display:flex;"><span>        DWORD   PointerToRelocations;
-</span></span><span style="display:flex;"><span>        DWORD   PointerToLinenumbers;
-</span></span><span style="display:flex;"><span>        WORD    NumberOfRelocations;
-</span></span><span style="display:flex;"><span>        WORD    NumberOfLinenumbers;
-</span></span><span style="display:flex;"><span>        DWORD   Characteristics;
-</span></span><span style="display:flex;"><span>    } IMAGE_SECTION_HEADER, <span style="color:#f92672">*</span>PIMAGE_SECTION_HEADER;
+base relocation table. In order to provide access to the exported functions,
+the exports entry is required.</p><h2 id=section-header>Section header</h2><p>The section header is stored after the OptionalHeader_ structure in the PE
+header. Microsoft provides the macro <code>IMAGE_FIRST_SECTION</code> to get the start
+address based on the PE header.</p><p>Actually, the section header is a list of informations about each section in
+the file::</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>    <span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>struct</span> _IMAGE_SECTION_HEADER {
+</span></span><span style=display:flex><span>        BYTE    Name[IMAGE_SIZEOF_SHORT_NAME];
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>union</span> {
+</span></span><span style=display:flex><span>                DWORD   PhysicalAddress;
+</span></span><span style=display:flex><span>                DWORD   VirtualSize;
+</span></span><span style=display:flex><span>        } Misc;
+</span></span><span style=display:flex><span>        DWORD   VirtualAddress;
+</span></span><span style=display:flex><span>        DWORD   SizeOfRawData;
+</span></span><span style=display:flex><span>        DWORD   PointerToRawData;
+</span></span><span style=display:flex><span>        DWORD   PointerToRelocations;
+</span></span><span style=display:flex><span>        DWORD   PointerToLinenumbers;
+</span></span><span style=display:flex><span>        WORD    NumberOfRelocations;
+</span></span><span style=display:flex><span>        WORD    NumberOfLinenumbers;
+</span></span><span style=display:flex><span>        DWORD   Characteristics;
+</span></span><span style=display:flex><span>    } IMAGE_SECTION_HEADER, <span style=color:#f92672>*</span>PIMAGE_SECTION_HEADER;
 </span></span></code></pre></div><p>A section can contain code, data, relocation informations, resources, export or
-import definitions, etc.</p>
-<h1 id="loading-the-library">Loading the library</h1>
-<p>To emulate the PE loader, we must first understand, which steps are neccessary
+import definitions, etc.</p><h1 id=loading-the-library>Loading the library</h1><p>To emulate the PE loader, we must first understand, which steps are neccessary
 to load the file to memory and prepare the structures so they can be called from
-other programs.</p>
-<p>When issuing the API call <code>LoadLibrary</code>, Windows basically performs these tasks:</p>
-<ol>
-<li>
-<p>Open the given file and check the DOS and PE headers.</p>
-</li>
-<li>
-<p>Try to allocate a memory block of <code>PEHeader.OptionalHeader.SizeOfImage</code> bytes
-at position <code>PEHeader.OptionalHeader.ImageBase</code>.</p>
-</li>
-<li>
-<p>Parse section headers and copy sections to their addresses.  The destination
+other programs.</p><p>When issuing the API call <code>LoadLibrary</code>, Windows basically performs these tasks:</p><ol><li><p>Open the given file and check the DOS and PE headers.</p></li><li><p>Try to allocate a memory block of <code>PEHeader.OptionalHeader.SizeOfImage</code> bytes
+at position <code>PEHeader.OptionalHeader.ImageBase</code>.</p></li><li><p>Parse section headers and copy sections to their addresses. The destination
 address for each section, relative to the base of the allocated memory block,
 is stored in the <code>VirtualAddress</code> attribute of the <code>IMAGE_SECTION_HEADER</code>
-structure.</p>
-</li>
-<li>
-<p>If the allocated memory block differs from <code>ImageBase</code>, various references in
-the code and/or data sections must be adjusted.  This is called <em>Base
-relocation</em>.</p>
-</li>
-<li>
-<p>The required imports for the library must be resolved by loading the
-corresponding libraries.</p>
-</li>
-<li>
-<p>The memory regions of the different sections must be protected depending on
-the section&rsquo;s characteristics.  Some sections are marked as <em>discardable</em>
-and therefore can be safely freed at this point.  These sections normally
+structure.</p></li><li><p>If the allocated memory block differs from <code>ImageBase</code>, various references in
+the code and/or data sections must be adjusted. This is called <em>Base
+relocation</em>.</p></li><li><p>The required imports for the library must be resolved by loading the
+corresponding libraries.</p></li><li><p>The memory regions of the different sections must be protected depending on
+the section&rsquo;s characteristics. Some sections are marked as <em>discardable</em>
+and therefore can be safely freed at this point. These sections normally
 contain temporary data that is only needed during the import, like the
-informations for the base relocation.</p>
-</li>
-<li>
-<p>Now the library is loaded completely.  It must be notified about this by
-calling the entry point using the flag <code>DLL_PROCESS_ATTACH</code>.</p>
-</li>
-</ol>
-<p>In the following paragraphs, each step is described.</p>
-<h2 id="allocate-memory">Allocate memory</h2>
-<p>All memory required for the library must be reserved / allocated using
+informations for the base relocation.</p></li><li><p>Now the library is loaded completely. It must be notified about this by
+calling the entry point using the flag <code>DLL_PROCESS_ATTACH</code>.</p></li></ol><p>In the following paragraphs, each step is described.</p><h2 id=allocate-memory>Allocate memory</h2><p>All memory required for the library must be reserved / allocated using
 <code>VirtualAlloc</code>, as Windows provides functions to protect these memory blocks.
 This is required to restrict access to the memory, like blocking write access
-to the code or constant data.</p>
-<p>The OptionalHeader_ structure defines the size of the required memory block
-for the library.  It must be reserved at the address specified by <code>ImageBase</code>
-if possible::</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    memory <span style="color:#f92672">=</span> VirtualAlloc((LPVOID)(PEHeader<span style="color:#f92672">-&gt;</span>OptionalHeader.ImageBase),
-</span></span><span style="display:flex;"><span>        PEHeader<span style="color:#f92672">-&gt;</span>OptionalHeader.SizeOfImage,
-</span></span><span style="display:flex;"><span>        MEM_RESERVE,
-</span></span><span style="display:flex;"><span>        PAGE_READWRITE);
+to the code or constant data.</p><p>The OptionalHeader_ structure defines the size of the required memory block
+for the library. It must be reserved at the address specified by <code>ImageBase</code>
+if possible::</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>    memory <span style=color:#f92672>=</span> VirtualAlloc((LPVOID)(PEHeader<span style=color:#f92672>-&gt;</span>OptionalHeader.ImageBase),
+</span></span><span style=display:flex><span>        PEHeader<span style=color:#f92672>-&gt;</span>OptionalHeader.SizeOfImage,
+</span></span><span style=display:flex><span>        MEM_RESERVE,
+</span></span><span style=display:flex><span>        PAGE_READWRITE);
 </span></span></code></pre></div><p>If the reserved memory differs from the address given in <code>ImageBase</code>, base
-relocation as described below must be done.</p>
-<h2 id="copy-sections">Copy sections</h2>
-<p>Once the memory has been reserved, the file contents can be copied to the
-system.  The section header must get evaluated in order to determine the
-position in the file and the target area in memory.</p>
-<p>Before copying the data, the memory block must get committed::</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    dest <span style="color:#f92672">=</span> VirtualAlloc(baseAddress <span style="color:#f92672">+</span> section<span style="color:#f92672">-&gt;</span>VirtualAddress,
-</span></span><span style="display:flex;"><span>        section<span style="color:#f92672">-&gt;</span>SizeOfRawData,
-</span></span><span style="display:flex;"><span>        MEM_COMMIT,
-</span></span><span style="display:flex;"><span>        PAGE_READWRITE);
+relocation as described below must be done.</p><h2 id=copy-sections>Copy sections</h2><p>Once the memory has been reserved, the file contents can be copied to the
+system. The section header must get evaluated in order to determine the
+position in the file and the target area in memory.</p><p>Before copying the data, the memory block must get committed::</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>    dest <span style=color:#f92672>=</span> VirtualAlloc(baseAddress <span style=color:#f92672>+</span> section<span style=color:#f92672>-&gt;</span>VirtualAddress,
+</span></span><span style=display:flex><span>        section<span style=color:#f92672>-&gt;</span>SizeOfRawData,
+</span></span><span style=display:flex><span>        MEM_COMMIT,
+</span></span><span style=display:flex><span>        PAGE_READWRITE);
 </span></span></code></pre></div><p>Sections without data in the file (like data sections for the used variables)
 have a <code>SizeOfRawData</code> of <code>0</code>, so you can use the <code>SizeOfInitializedData</code>
-or <code>SizeOfUninitializedData</code> of the OptionalHeader_.  Which one must get
+or <code>SizeOfUninitializedData</code> of the OptionalHeader_. Which one must get
 choosen depending on the bit flags <code>IMAGE_SCN_CNT_INITIALIZED_DATA</code> and
 <code>IMAGE_SCN_CNT_UNINITIALIZED_DATA</code> that may be set in the section`s
-characteristics.</p>
-<h2 id="base-relocation">Base relocation</h2>
-<p>All memory addresses in the code / data sections of a library are stored relative
-to the address defined by <code>ImageBase</code> in the OptionalHeader_.  If the library
+characteristics.</p><h2 id=base-relocation>Base relocation</h2><p>All memory addresses in the code / data sections of a library are stored relative
+to the address defined by <code>ImageBase</code> in the OptionalHeader_. If the library
 can&rsquo;t be imported to this memory address, the references must get adjusted
-=&gt; <em>relocated</em>.  The file format helps for this by storing informations about
+=> <em>relocated</em>. The file format helps for this by storing informations about
 all these references in the base relocation table, which can be found in the
-directory entry 5 of the DataDirectory_ in the OptionalHeader_.</p>
-<p>This table consists of a series of this structure</p>
-<p>::</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _IMAGE_BASE_RELOCATION {
-</span></span><span style="display:flex;"><span>        DWORD   VirtualAddress;
-</span></span><span style="display:flex;"><span>        DWORD   SizeOfBlock;
-</span></span><span style="display:flex;"><span>    } IMAGE_BASE_RELOCATION;
+directory entry 5 of the DataDirectory_ in the OptionalHeader_.</p><p>This table consists of a series of this structure</p><p>::</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>    <span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>struct</span> _IMAGE_BASE_RELOCATION {
+</span></span><span style=display:flex><span>        DWORD   VirtualAddress;
+</span></span><span style=display:flex><span>        DWORD   SizeOfBlock;
+</span></span><span style=display:flex><span>    } IMAGE_BASE_RELOCATION;
 </span></span></code></pre></div><p>It contains <code>(SizeOfBlock - IMAGE_SIZEOF_BASE_RELOCATION) / 2</code> entries of 16 bits
-each.  The upper 4 bits define the type of relocation, the lower 12 bits define
-the offset relative to the <code>VirtualAddress</code>.</p>
-<p>The only types that seem to be used in DLLs are</p>
-<p>IMAGE_REL_BASED_ABSOLUTE
-No operation relocation.  Used for padding.
+each. The upper 4 bits define the type of relocation, the lower 12 bits define
+the offset relative to the <code>VirtualAddress</code>.</p><p>The only types that seem to be used in DLLs are</p><p>IMAGE_REL_BASED_ABSOLUTE
+No operation relocation. Used for padding.
 IMAGE_REL_BASED_HIGHLOW
 Add the delta between the <code>ImageBase</code> and the allocated memory block to the
-32 bits found at the offset.</p>
-<h2 id="resolve-imports">Resolve imports</h2>
-<p>The directory entry 1 of the DataDirectory_ in the OptionalHeader_ specifies
-a list of libraries to import symbols from.  Each entry in this list is defined
-as follows::</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _IMAGE_IMPORT_DESCRIPTOR {
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">union</span> {
-</span></span><span style="display:flex;"><span>            DWORD   Characteristics;            <span style="color:#75715e">// 0 for terminating null import descriptor
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>            DWORD   OriginalFirstThunk;         <span style="color:#75715e">// RVA to original unbound IAT (PIMAGE_THUNK_DATA)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        };
-</span></span><span style="display:flex;"><span>        DWORD   TimeDateStamp;                  <span style="color:#75715e">// 0 if not bound,
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                                                <span style="color:#75715e">// -1 if bound, and real date\time stamp
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                                                <span style="color:#75715e">//     in IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT (new BIND)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>                                                <span style="color:#75715e">// O.W. date/time stamp of DLL bound to (Old BIND)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span>        DWORD   ForwarderChain;                 <span style="color:#75715e">// -1 if no forwarders
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        DWORD   Name;
-</span></span><span style="display:flex;"><span>        DWORD   FirstThunk;                     <span style="color:#75715e">// RVA to IAT (if bound this IAT has actual addresses)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    } IMAGE_IMPORT_DESCRIPTOR;
+32 bits found at the offset.</p><h2 id=resolve-imports>Resolve imports</h2><p>The directory entry 1 of the DataDirectory_ in the OptionalHeader_ specifies
+a list of libraries to import symbols from. Each entry in this list is defined
+as follows::</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>    <span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>struct</span> _IMAGE_IMPORT_DESCRIPTOR {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>union</span> {
+</span></span><span style=display:flex><span>            DWORD   Characteristics;            <span style=color:#75715e>// 0 for terminating null import descriptor
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>            DWORD   OriginalFirstThunk;         <span style=color:#75715e>// RVA to original unbound IAT (PIMAGE_THUNK_DATA)
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        };
+</span></span><span style=display:flex><span>        DWORD   TimeDateStamp;                  <span style=color:#75715e>// 0 if not bound,
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>                                                <span style=color:#75715e>// -1 if bound, and real date\time stamp
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>                                                <span style=color:#75715e>//     in IMAGE_DIRECTORY_ENTRY_BOUND_IMPORT (new BIND)
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>                                                <span style=color:#75715e>// O.W. date/time stamp of DLL bound to (Old BIND)
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span>        DWORD   ForwarderChain;                 <span style=color:#75715e>// -1 if no forwarders
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        DWORD   Name;
+</span></span><span style=display:flex><span>        DWORD   FirstThunk;                     <span style=color:#75715e>// RVA to IAT (if bound this IAT has actual addresses)
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    } IMAGE_IMPORT_DESCRIPTOR;
 </span></span></code></pre></div><p>The <code>Name</code> entry describes the offset to the NULL-terminated string of the library
-name (e.g. <code>KERNEL32.DLL</code>).  The <code>OriginalFirstThunk</code> entry points to a list
+name (e.g. <code>KERNEL32.DLL</code>). The <code>OriginalFirstThunk</code> entry points to a list
 of references to the function names to import from the external library.
 <code>FirstThunk</code> points to a list of addresses that gets filled with pointers to
-the imported symbols.</p>
-<p>When we resolve the imports, we walk both lists in parallel, import the function
+the imported symbols.</p><p>When we resolve the imports, we walk both lists in parallel, import the function
 defined by the name in the first list and store the pointer to the symbol in the
-second list::</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    nameRef <span style="color:#f92672">=</span> (DWORD <span style="color:#f92672">*</span>)(baseAddress <span style="color:#f92672">+</span> importDesc<span style="color:#f92672">-&gt;</span>OriginalFirstThunk);
-</span></span><span style="display:flex;"><span>    symbolRef <span style="color:#f92672">=</span> (DWORD <span style="color:#f92672">*</span>)(baseAddress <span style="color:#f92672">+</span> importDesc<span style="color:#f92672">-&gt;</span>FirstThunk);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">for</span> (; <span style="color:#f92672">*</span>nameRef; nameRef<span style="color:#f92672">++</span>, symbolRef<span style="color:#f92672">++</span>)
-</span></span><span style="display:flex;"><span>    {
-</span></span><span style="display:flex;"><span>        PIMAGE_IMPORT_BY_NAME thunkData <span style="color:#f92672">=</span> (PIMAGE_IMPORT_BY_NAME)(codeBase <span style="color:#f92672">+</span> <span style="color:#f92672">*</span>nameRef);
-</span></span><span style="display:flex;"><span>        <span style="color:#f92672">*</span>symbolRef <span style="color:#f92672">=</span> (DWORD)GetProcAddress(handle, (LPCSTR)<span style="color:#f92672">&amp;</span>thunkData<span style="color:#f92672">-&gt;</span>Name);
-</span></span><span style="display:flex;"><span>        <span style="color:#66d9ef">if</span> (<span style="color:#f92672">*</span>funcRef <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>)
-</span></span><span style="display:flex;"><span>        {
-</span></span><span style="display:flex;"><span>            handleImportError();
-</span></span><span style="display:flex;"><span>            <span style="color:#66d9ef">return</span>;
-</span></span><span style="display:flex;"><span>        }
-</span></span><span style="display:flex;"><span>    }
-</span></span></code></pre></div><h2 id="protect-memory">Protect memory</h2>
-<p>Every section specifies permission flags in it&rsquo;s <code>Characteristics</code> entry.
-These flags can be one or a combination of</p>
-<p>IMAGE_SCN_MEM_EXECUTE
-The section contains data that can be executed.</p>
-<p>IMAGE_SCN_MEM_READ
-The section contains data that is readable.</p>
-<p>IMAGE_SCN_MEM_WRITE
-The section contains data that is writeable.</p>
-<p>These flags must get mapped to the protection flags</p>
-<ul>
-<li>PAGE_NOACCESS</li>
-<li>PAGE_WRITECOPY</li>
-<li>PAGE_READONLY</li>
-<li>PAGE_READWRITE</li>
-<li>PAGE_EXECUTE</li>
-<li>PAGE_EXECUTE_WRITECOPY</li>
-<li>PAGE_EXECUTE_READ</li>
-<li>PAGE_EXECUTE_READWRITE</li>
-</ul>
-<p>Now, the function <code>VirtualProtect</code> can be used to limit access to the memory.
+second list::</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>    nameRef <span style=color:#f92672>=</span> (DWORD <span style=color:#f92672>*</span>)(baseAddress <span style=color:#f92672>+</span> importDesc<span style=color:#f92672>-&gt;</span>OriginalFirstThunk);
+</span></span><span style=display:flex><span>    symbolRef <span style=color:#f92672>=</span> (DWORD <span style=color:#f92672>*</span>)(baseAddress <span style=color:#f92672>+</span> importDesc<span style=color:#f92672>-&gt;</span>FirstThunk);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> (; <span style=color:#f92672>*</span>nameRef; nameRef<span style=color:#f92672>++</span>, symbolRef<span style=color:#f92672>++</span>)
+</span></span><span style=display:flex><span>    {
+</span></span><span style=display:flex><span>        PIMAGE_IMPORT_BY_NAME thunkData <span style=color:#f92672>=</span> (PIMAGE_IMPORT_BY_NAME)(codeBase <span style=color:#f92672>+</span> <span style=color:#f92672>*</span>nameRef);
+</span></span><span style=display:flex><span>        <span style=color:#f92672>*</span>symbolRef <span style=color:#f92672>=</span> (DWORD)GetProcAddress(handle, (LPCSTR)<span style=color:#f92672>&amp;</span>thunkData<span style=color:#f92672>-&gt;</span>Name);
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> (<span style=color:#f92672>*</span>funcRef <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>)
+</span></span><span style=display:flex><span>        {
+</span></span><span style=display:flex><span>            handleImportError();
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span></code></pre></div><h2 id=protect-memory>Protect memory</h2><p>Every section specifies permission flags in it&rsquo;s <code>Characteristics</code> entry.
+These flags can be one or a combination of</p><p>IMAGE_SCN_MEM_EXECUTE
+The section contains data that can be executed.</p><p>IMAGE_SCN_MEM_READ
+The section contains data that is readable.</p><p>IMAGE_SCN_MEM_WRITE
+The section contains data that is writeable.</p><p>These flags must get mapped to the protection flags</p><ul><li>PAGE_NOACCESS</li><li>PAGE_WRITECOPY</li><li>PAGE_READONLY</li><li>PAGE_READWRITE</li><li>PAGE_EXECUTE</li><li>PAGE_EXECUTE_WRITECOPY</li><li>PAGE_EXECUTE_READ</li><li>PAGE_EXECUTE_READWRITE</li></ul><p>Now, the function <code>VirtualProtect</code> can be used to limit access to the memory.
 If the program tries to access it in a unauthorized way, an exception gets
-raised by Windows.</p>
-<p>In addition the section flags above, the following can be added:</p>
-<p>IMAGE_SCN_MEM_DISCARDABLE
-The data in this section can be freed after the import.  Usually this is
-specified for relocation data.</p>
-<p>IMAGE_SCN_MEM_NOT_CACHED
-The data in this section must not get cached by Windows.  Add the bit
-flag <code>PAGE_NOCACHE</code> to the protection flags above.</p>
-<h2 id="notify-library">Notify library</h2>
-<p>The last thing to do is to call the DLL entry point (defined by
+raised by Windows.</p><p>In addition the section flags above, the following can be added:</p><p>IMAGE_SCN_MEM_DISCARDABLE
+The data in this section can be freed after the import. Usually this is
+specified for relocation data.</p><p>IMAGE_SCN_MEM_NOT_CACHED
+The data in this section must not get cached by Windows. Add the bit
+flag <code>PAGE_NOCACHE</code> to the protection flags above.</p><h2 id=notify-library>Notify library</h2><p>The last thing to do is to call the DLL entry point (defined by
 <code>AddressOfEntryPoint</code>) and so notifying the library about being attached
-to a process.</p>
-<p>The function at the entry point is defined as</p>
-<p>::</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">typedef</span> <span style="color:#a6e22e">BOOL</span> (WINAPI <span style="color:#f92672">*</span>DllEntryProc)(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved);
-</span></span></code></pre></div><p>So the last code we need to execute is</p>
-<p>::</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>	DllEntryProc entry <span style="color:#f92672">=</span> (DllEntryProc)(baseAddress <span style="color:#f92672">+</span> PEHeader<span style="color:#f92672">-&gt;</span>OptionalHeader.AddressOfEntryPoint);
-</span></span><span style="display:flex;"><span>	(<span style="color:#f92672">*</span>entry)((HINSTANCE)baseAddress, DLL_PROCESS_ATTACH, <span style="color:#ae81ff">0</span>);
-</span></span></code></pre></div><p>Afterwards we can use the exported functions as with any normal library.</p>
-<h1 id="exported-functions">Exported functions</h1>
-<p>If you want to access the functions that are exported by the library, you need to find the entry
-point to a symbol, i.e. the name of the function to call.</p>
-<p>The directory entry 0 of the DataDirectory_ in the OptionalHeader_ contains informations about
-the exported functions. It&rsquo;s defined as follows::</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> _IMAGE_EXPORT_DIRECTORY {
-</span></span><span style="display:flex;"><span>        DWORD   Characteristics;
-</span></span><span style="display:flex;"><span>        DWORD   TimeDateStamp;
-</span></span><span style="display:flex;"><span>        WORD    MajorVersion;
-</span></span><span style="display:flex;"><span>        WORD    MinorVersion;
-</span></span><span style="display:flex;"><span>        DWORD   Name;
-</span></span><span style="display:flex;"><span>        DWORD   Base;
-</span></span><span style="display:flex;"><span>        DWORD   NumberOfFunctions;
-</span></span><span style="display:flex;"><span>        DWORD   NumberOfNames;
-</span></span><span style="display:flex;"><span>        DWORD   AddressOfFunctions;     <span style="color:#75715e">// RVA from base of image
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        DWORD   AddressOfNames;         <span style="color:#75715e">// RVA from base of image
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        DWORD   AddressOfNameOrdinals;  <span style="color:#75715e">// RVA from base of image
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    } IMAGE_EXPORT_DIRECTORY, <span style="color:#f92672">*</span>PIMAGE_EXPORT_DIRECTORY;
+to a process.</p><p>The function at the entry point is defined as</p><p>::</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>typedef</span> <span style=color:#a6e22e>BOOL</span> (WINAPI <span style=color:#f92672>*</span>DllEntryProc)(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved);
+</span></span></code></pre></div><p>So the last code we need to execute is</p><p>::</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>	DllEntryProc entry <span style=color:#f92672>=</span> (DllEntryProc)(baseAddress <span style=color:#f92672>+</span> PEHeader<span style=color:#f92672>-&gt;</span>OptionalHeader.AddressOfEntryPoint);
+</span></span><span style=display:flex><span>	(<span style=color:#f92672>*</span>entry)((HINSTANCE)baseAddress, DLL_PROCESS_ATTACH, <span style=color:#ae81ff>0</span>);
+</span></span></code></pre></div><p>Afterwards we can use the exported functions as with any normal library.</p><h1 id=exported-functions>Exported functions</h1><p>If you want to access the functions that are exported by the library, you need to find the entry
+point to a symbol, i.e. the name of the function to call.</p><p>The directory entry 0 of the DataDirectory_ in the OptionalHeader_ contains informations about
+the exported functions. It&rsquo;s defined as follows::</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>    <span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>struct</span> _IMAGE_EXPORT_DIRECTORY {
+</span></span><span style=display:flex><span>        DWORD   Characteristics;
+</span></span><span style=display:flex><span>        DWORD   TimeDateStamp;
+</span></span><span style=display:flex><span>        WORD    MajorVersion;
+</span></span><span style=display:flex><span>        WORD    MinorVersion;
+</span></span><span style=display:flex><span>        DWORD   Name;
+</span></span><span style=display:flex><span>        DWORD   Base;
+</span></span><span style=display:flex><span>        DWORD   NumberOfFunctions;
+</span></span><span style=display:flex><span>        DWORD   NumberOfNames;
+</span></span><span style=display:flex><span>        DWORD   AddressOfFunctions;     <span style=color:#75715e>// RVA from base of image
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        DWORD   AddressOfNames;         <span style=color:#75715e>// RVA from base of image
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        DWORD   AddressOfNameOrdinals;  <span style=color:#75715e>// RVA from base of image
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    } IMAGE_EXPORT_DIRECTORY, <span style=color:#f92672>*</span>PIMAGE_EXPORT_DIRECTORY;
 </span></span></code></pre></div><p>First thing to do, is to map the name of the function to the ordinal number of the exported
 symbol. Therefore, just walk the arrays defined by <code>AddressOfNames</code> and <code>AddressOfNameOrdinals</code>
-parallel until you found the required name.</p>
-<p>Now you can use the ordinal number to read the address by evaluating the n-th element of the
-<code>AddressOfFunctions</code> array.</p>
-<h1 id="freeing-the-library">Freeing the library</h1>
-<p>To free the custom loaded library, perform the steps</p>
-<ul>
-<li>
-<p>Call entry point to notify library about being detached::</p>
-<p>DllEntryProc entry = (DllEntryProc)(baseAddress + PEHeader-&gt;OptionalHeader.AddressOfEntryPoint);
-(*entry)((HINSTANCE)baseAddress, DLL_PROCESS_ATTACH, 0);</p>
-</li>
-<li>
-<p>Free external libraries used to resolve imports.</p>
-</li>
-<li>
-<p>Free allocated memory.</p>
-</li>
-</ul>
-<h1 id="memorymodule">MemoryModule</h1>
-<p>MemoryModule is a C-library that can be used to load a DLL from memory.</p>
-<p>The interface is very similar to the standard methods for loading of libraries::</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span>    <span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>HMEMORYMODULE;
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    HMEMORYMODULE <span style="color:#a6e22e">MemoryLoadLibrary</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">void</span> <span style="color:#f92672">*</span>, size_t);
-</span></span><span style="display:flex;"><span>    FARPROC <span style="color:#a6e22e">MemoryGetProcAddress</span>(HMEMORYMODULE, <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span> <span style="color:#f92672">*</span>);
-</span></span><span style="display:flex;"><span>    <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">MemoryFreeLibrary</span>(HMEMORYMODULE);
-</span></span></code></pre></div><h2 id="downloads">Downloads</h2>
-<p>The latest development release can always be grabbed from Github at
-<a href="http://github.com/fancycode/MemoryModule/">http://github.com/fancycode/MemoryModule/</a></p>
-<h2 id="known-issues">Known issues</h2>
-<ul>
-<li>All memory that is not protected by section flags is gets committed using <code>PAGE_READWRITE</code>.
-I don&rsquo;t know if this is correct.</li>
-</ul>
-<h2 id="license">License</h2>
-<p>Since version 0.0.2, the MemoryModule library is released under the Mozilla Public License (MPL).
-Version 0.0.1 has been released unter the Lesser General Public License (LGPL).</p>
-<p>It is provided as-is without ANY warranty.  You may use it at your own risk.</p>
-<h1 id="copyright">Copyright</h1>
-<p>The MemoryModule library and this tutorial are
-Copyright (c) 2004-2015 by Joachim Bauch.</p>
-
-</div>
-<div class="container">
-    <script src="https://giscus.app/client.js"
-    data-repo="Rvn0xsy/rvn0xsy.github.io"
-    data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY="
-    data-category="General"
-    data-category-id="DIC_kwDOF-pTTM4CRDk_"
-    data-mapping="title"
-    data-strict="0"
-    data-reactions-enabled="1"
-    data-emit-metadata="0"
-    data-input-position="bottom"
-    data-theme="dark_tritanopia"
-    data-lang="zh-CN"
-    data-loading="lazy"
-    crossorigin="anonymous"
-    async>
-  </script>
-</div>
-<div class="container">
-    <section class="bio" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-    <div class="bio__blurb">
-        <h2 class="site-h2">网络安全爱好者、安全工具开发者</h2>
-        <p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p>
-    </div>
-<div class="bio__avatar">
-    <img src="/avatar.jpeg" alt="Duncan McDougall and heir apparent">
-</div></section>
-</div>
-
-        </div>
-<footer class="site-footer">
-    <div class="container">
-        <div class="site-footer__col">
-        <h5>Get in touch</h5>
-        <p>
-            If you like my project or have some questions,feel free
-            to contact me</a>.
-        </p>
-        </div>
-        <div class="site-footer__col site-footer__col--links">
-        <h5>Me Elsewhere</h5>
-        <ul>
-        
-                <li>
-                    <a href="https://twitter.com/Rvn0xsy"><i class="fab fa-twitter"></i> Twitter</a>
-                    
-                </li>
-        
-                <li>
-                    <a href="mailto:rvn0xsy@gmail.com"><i class="fas fa-envelope"></i> E-mail</a>
-                    
-                </li>
-        
-                <li>
-                    <a href="https://github.com/Rvn0xsy"><i class="fab fa-github"></i> Github</a>
-                    
-                </li>
-        
-        </ul>
-        </div>
-        <div class="site-footer__col site-footer__col--links">
-        <h5>Meta Links</h5>
-        <ul>
-            
-                
-                
-                    <li class="">
-                        <a href="/projects/"><i class="fas fa-code"></i> Projects</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/links/"><i class="fas fa-link"></i> Links</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/post/"><i class="fa fa-file-alt"></i> Posts</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/index.xml"><i class="fa fa-rss-square"></i> Rss</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/tools/"><i class="fas fa-tools"></i> Tools</a>
-                    </li>
-                
-            
-        </ul>
-        </div>
-        <p class="site-footer__copyright">
-        © 倾旋 2021. All rights reserved.
-        </p>
-    </div>
-    </footer>
-
-
-
-<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
-<script>
-(function(){
-  let plantumlPrefix = "language-plantuml";
-  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
-    let image = document.createElement("IMG");
-    image.loading = 'lazy'; 
-    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
-    code.parentNode.insertBefore(image, code);
-    code.style.display = 'none';
-  });
-})();
-</script>
-
-</body>
-</html>
+parallel until you found the required name.</p><p>Now you can use the ordinal number to read the address by evaluating the n-th element of the
+<code>AddressOfFunctions</code> array.</p><h1 id=freeing-the-library>Freeing the library</h1><p>To free the custom loaded library, perform the steps</p><ul><li><p>Call entry point to notify library about being detached::</p><p>DllEntryProc entry = (DllEntryProc)(baseAddress + PEHeader->OptionalHeader.AddressOfEntryPoint);
+(*entry)((HINSTANCE)baseAddress, DLL_PROCESS_ATTACH, 0);</p></li><li><p>Free external libraries used to resolve imports.</p></li><li><p>Free allocated memory.</p></li></ul><h1 id=memorymodule>MemoryModule</h1><p>MemoryModule is a C-library that can be used to load a DLL from memory.</p><p>The interface is very similar to the standard methods for loading of libraries::</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>    <span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>void</span> <span style=color:#f92672>*</span>HMEMORYMODULE;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    HMEMORYMODULE <span style=color:#a6e22e>MemoryLoadLibrary</span>(<span style=color:#66d9ef>const</span> <span style=color:#66d9ef>void</span> <span style=color:#f92672>*</span>, size_t);
+</span></span><span style=display:flex><span>    FARPROC <span style=color:#a6e22e>MemoryGetProcAddress</span>(HMEMORYMODULE, <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>MemoryFreeLibrary</span>(HMEMORYMODULE);
+</span></span></code></pre></div><h2 id=downloads>Downloads</h2><p>The latest development release can always be grabbed from Github at
+<a href=http://github.com/fancycode/MemoryModule/>http://github.com/fancycode/MemoryModule/</a></p><h2 id=known-issues>Known issues</h2><ul><li>All memory that is not protected by section flags is gets committed using <code>PAGE_READWRITE</code>.
+I don&rsquo;t know if this is correct.</li></ul><h2 id=license>License</h2><p>Since version 0.0.2, the MemoryModule library is released under the Mozilla Public License (MPL).
+Version 0.0.1 has been released unter the Lesser General Public License (LGPL).</p><p>It is provided as-is without ANY warranty. You may use it at your own risk.</p><h1 id=copyright>Copyright</h1><p>The MemoryModule library and this tutorial are
+Copyright (c) 2004-2015 by Joachim Bauch.</p></div><div class=container><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div><div class=container><section class=bio itemprop=author itemscope itemtype=http://schema.org/Person><div class=bio__blurb><h2 class=site-h2>网络安全爱好者、安全工具开发者</h2><p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p></div><div class=bio__avatar><img src=/avatar.jpeg alt="Duncan McDougall and heir apparent"></div></section></div></div><footer class=site-footer><div class=container><div class=site-footer__col><h5>Get in touch</h5><p>If you like my project or have some questions,feel free
+to contact me</a>.</p></div><div class="site-footer__col site-footer__col--links"><h5>Me Elsewhere</h5><ul><li><a href=https://twitter.com/Rvn0xsy><i class="fab fa-twitter"></i> Twitter</a></li><li><a href=mailto:rvn0xsy@gmail.com><i class="fas fa-envelope"></i> E-mail</a></li><li><a href=https://github.com/Rvn0xsy><i class="fab fa-github"></i> Github</a></li></ul></div><div class="site-footer__col site-footer__col--links"><h5>Meta Links</h5><ul><li><a href=/projects/><i class="fas fa-code"></i> Projects</a></li><li><a href=/links/><i class="fas fa-link"></i> Links</a></li><li><a href=/post/><i class="fa fa-file-alt"></i> Posts</a></li><li><a href=/index.xml><i class="fa fa-rss-square"></i> Rss</a></li><li><a href=/tools/><i class="fas fa-tools"></i> Tools</a></li></ul></div><p class=site-footer__copyright>© 倾旋 2021. All rights reserved.</p></div></footer><script src=https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin=anonymous></script>
+<script>(function(){let e="language-plantuml";Array.prototype.forEach.call(document.querySelectorAll("[class^="+e+"]"),function(e){let t=document.createElement("IMG");t.loading="lazy",t.src="http://www.plantuml.com/plantuml/svg/~1"+plantumlEncoder.encode(e.innerText),e.parentNode.insertBefore(t,e),e.style.display="none"})})()</script></body></html>

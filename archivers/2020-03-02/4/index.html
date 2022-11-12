@@ -1,122 +1,13 @@
-<!DOCTYPE html>
-<html lang=""><head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <title>Cobalt Strike Aggressor Script （第一课） « 倾旋的博客</title>
-    <meta name="description" content="倾旋的博客">
-    <meta name="author" content='倾旋'>
-
-    <link rel="stylesheet" href="/css/Font-Awesome-5.15.3.all.min.css">
-
-    
-    <link rel="stylesheet" href="/sass/researcher.min.css">
-    
-    
-        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
-    
-
-    
-        
-    
-</head>
-
-    <body>
-<input type="checkbox" id="menu-toggle" class="menu-toggle">
-<label tabindex="0" for="menu-toggle" class="burger"><span></span> <span></span> <span></span><div class="burger-text">Menu</div></label>
-<nav class="main-nav">
-    
-    <ul>
-    
-        
-        
-            <li><a href="/projects/">Projects</a></li>
-        
-            <li><a href="/links/">Links</a></li>
-        
-            <li><a href="/post/">Posts</a></li>
-        
-            <li><a href="/index.xml">Rss</a></li>
-        
-            <li><a href="/tools/">Tools</a></li>
-        
-    
-    </ul>
-   
-</nav>
-<nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-<div class="container">
-    <h1>Cobalt Strike Aggressor Script （第一课）</h1>
-    <p>在后渗透阶段，目前较为流行的C2平台就属Cobalt Strike做的比较优秀了；目前国内的论坛、网站上已经放出很多版本，最新的为Cobalt Strike 3.14，目前最新版本4.0已不再有试用版。</p>
-        <div class = "toc-wrapper">
-            
-<div class="post-toc" id="post-toc">
-<aside>
-    
-    
-    
-    <nav id="TableOfContents">
-  <ul>
-    <li><a href="#前言">前言</a></li>
-    <li><a href="#aggressor-script">Aggressor Script</a></li>
-    <li><a href="#安装sleep语言环境">安装Sleep语言环境</a></li>
-    <li><a href="#sleep语言数据类型">Sleep语言数据类型</a></li>
-    <li><a href="#创建一个与用户交互的函数">创建一个与用户交互的函数</a></li>
-  </ul>
-</nav>
-    
-    
-</aside>
-<a href="#" id="toc-toggle"></a>
-</div>
-
-
-
-        </div>
-    <h2 id="前言">前言</h2>
-<p>在后渗透阶段，目前较为流行的C2平台就属Cobalt Strike做的比较优秀了；目前国内的论坛、网站上已经放出很多版本，最新的为Cobalt Strike 3.14，目前最新版本4.0已不再有试用版。</p>
-<p>起初我刚接触Cobalt Strike时，觉得非常不习惯，从Metasploit萌新走来，觉得这个图形化软件远远比不上Metasploit的模块丰富，后经过长时间的使用以及研究，从这个项目中学习到了很多技术，被开发者的思想所折服，应该算比较超前的一款值得学习的平台了。</p>
-<h2 id="aggressor-script">Aggressor Script</h2>
-<p>Aggressor Script是Cobalt Strike 3.0版本以上的一个内置脚本语言，由<a href="http://sleep.dashnine.org/manual">Sleep语言</a>解析，Cobalt Strike 3.0以上版本的菜单、选项、事件都由default.cna构建。红队人员可以通过它来调用一些IRC、Webhook接口去对接机器人，实现自动化渗透与监控，Aggressor Script是Cobalt Strike这款C2平台的画龙点睛之笔。</p>
-<p>对于Python、C/C++爱好者来说，Sleep语言一开始接触的时候感觉很奇怪，会有很多想吐槽的点，但久而久之，就会发现它的便捷之处。</p>
-<h2 id="安装sleep语言环境">安装Sleep语言环境</h2>
-<p>为了快速掌握Aggressor Script，需要先掌握和熟悉一些Sleep的语法，不然遇到错误无法发现自己错在哪里。</p>
-<p>Sleep语言下载地址：http://sleep.dashnine.org/download/sleep.jar</p>
-<p>启动Sleep脚本语言解释器：</p>
-<p><code>java -jar sleep.jar</code></p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9112d6ca-4f5f-11ec-9f40-00d861bf4abb.png" alt="2020-03-01-11-37-38"  />
-  </p></p>
-<h2 id="sleep语言数据类型">Sleep语言数据类型</h2>
-<ul>
-<li>数字</li>
-<li>字符串</li>
-<li>Arrays</li>
-<li>Lists</li>
-<li>Stacks</li>
-<li>Sets</li>
-<li>Hashs</li>
-</ul>
-<p>Sleep语法手册：http://sleep.dashnine.org/manual/</p>
-<p>这里主要介绍一些特殊的数据类型：Stacks、Lists、Hashs</p>
-<p>Array数据类型支持多种数据存放在一起，也就是说Array是一个复合数据类型；</p>
-<p>例如：</p>
-<pre tabindex="0"><code># create a  List
+<!doctype html><html lang><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Cobalt Strike Aggressor Script （第一课） « 倾旋的博客</title><meta name=description content="倾旋的博客"><meta name=author content="倾旋"><link rel=stylesheet href=/css/Font-Awesome-5.15.3.all.min.css><link rel=stylesheet href=/sass/researcher.min.css><link rel=icon type=image/ico href=https://payloads.online/favicon.ico></head><body><input type=checkbox id=menu-toggle class=menu-toggle>
+<label tabindex=0 for=menu-toggle class=burger><span></span> <span></span> <span></span><div class=burger-text>Menu</div></label><nav class=main-nav><ul><li><a href=/projects/>Projects</a></li><li><a href=/links/>Links</a></li><li><a href=/post/>Posts</a></li><li><a href=/index.xml>Rss</a></li><li><a href=/tools/>Tools</a></li></ul></nav><nav><a href=/ class=all-posts-link>‹ All Posts</a></nav><div id=content><div class=container><h1>Cobalt Strike Aggressor Script （第一课）</h1><p>在后渗透阶段，目前较为流行的C2平台就属Cobalt Strike做的比较优秀了；目前国内的论坛、网站上已经放出很多版本，最新的为Cobalt Strike 3.14，目前最新版本4.0已不再有试用版。</p><div class=toc-wrapper><div class=post-toc id=post-toc><aside><nav id=TableOfContents><ul><li><a href=#前言>前言</a></li><li><a href=#aggressor-script>Aggressor Script</a></li><li><a href=#安装sleep语言环境>安装Sleep语言环境</a></li><li><a href=#sleep语言数据类型>Sleep语言数据类型</a></li><li><a href=#创建一个与用户交互的函数>创建一个与用户交互的函数</a></li></ul></nav></aside><a href=# id=toc-toggle></a></div></div><h2 id=前言>前言</h2><p>在后渗透阶段，目前较为流行的C2平台就属Cobalt Strike做的比较优秀了；目前国内的论坛、网站上已经放出很多版本，最新的为Cobalt Strike 3.14，目前最新版本4.0已不再有试用版。</p><p>起初我刚接触Cobalt Strike时，觉得非常不习惯，从Metasploit萌新走来，觉得这个图形化软件远远比不上Metasploit的模块丰富，后经过长时间的使用以及研究，从这个项目中学习到了很多技术，被开发者的思想所折服，应该算比较超前的一款值得学习的平台了。</p><h2 id=aggressor-script>Aggressor Script</h2><p>Aggressor Script是Cobalt Strike 3.0版本以上的一个内置脚本语言，由<a href=http://sleep.dashnine.org/manual>Sleep语言</a>解析，Cobalt Strike 3.0以上版本的菜单、选项、事件都由default.cna构建。红队人员可以通过它来调用一些IRC、Webhook接口去对接机器人，实现自动化渗透与监控，Aggressor Script是Cobalt Strike这款C2平台的画龙点睛之笔。</p><p>对于Python、C/C++爱好者来说，Sleep语言一开始接触的时候感觉很奇怪，会有很多想吐槽的点，但久而久之，就会发现它的便捷之处。</p><h2 id=安装sleep语言环境>安装Sleep语言环境</h2><p>为了快速掌握Aggressor Script，需要先掌握和熟悉一些Sleep的语法，不然遇到错误无法发现自己错在哪里。</p><p>Sleep语言下载地址：http://sleep.dashnine.org/download/sleep.jar</p><p>启动Sleep脚本语言解释器：</p><p><code>java -jar sleep.jar</code></p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9112d6ca-4f5f-11ec-9f40-00d861bf4abb.png alt=2020-03-01-11-37-38></p></p><h2 id=sleep语言数据类型>Sleep语言数据类型</h2><ul><li>数字</li><li>字符串</li><li>Arrays</li><li>Lists</li><li>Stacks</li><li>Sets</li><li>Hashs</li></ul><p>Sleep语法手册：http://sleep.dashnine.org/manual/</p><p>这里主要介绍一些特殊的数据类型：Stacks、Lists、Hashs</p><p>Array数据类型支持多种数据存放在一起，也就是说Array是一个复合数据类型；</p><p>例如：</p><pre tabindex=0><code># create a  List
 @foo = @(&#39;foo&#39;,123.0,&#39;bar&#39;);
 println(@foo[0])
-</code></pre><p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/914ebd7a-4f5f-11ec-929e-00d861bf4abb.png" alt="2020-03-01-11-37-53"  />
-  </p></p>
-<p>遍历：</p>
-<pre tabindex="0"><code>@foo = @(&#39;foo&#39;,123.0,&#39;bar&#39;);
+</code></pre><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/914ebd7a-4f5f-11ec-929e-00d861bf4abb.png alt=2020-03-01-11-37-53></p></p><p>遍历：</p><pre tabindex=0><code>@foo = @(&#39;foo&#39;,123.0,&#39;bar&#39;);
 foreach $var (@foo)
 {
    println($var);
 }
-</code></pre><p>Stacks 栈 - “后进先出”</p>
-<pre tabindex="0"><code># create a Stacks
+</code></pre><p>Stacks 栈 - “后进先出”</p><pre tabindex=0><code># create a Stacks
 push(@stack, &#34;apple&#34;);
 push(@stack, &#34;banana&#34;);
 push(@stack, &#34;cucumber&#34;);
@@ -125,153 +16,19 @@ println(&#34;Stack is: &#34; . @stack);
 $value = pop(@stack);
 println(&#34;Top item is: &#34; . $value);
 println(&#34;Stack is: &#34; . @stack[0]);
-</code></pre><p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/918fbf78-4f5f-11ec-a2a2-00d861bf4abb.png" alt="2020-03-01-11-38-02"  />
-  </p></p>
-<p>Hashes 更像是Python中的字典 Key-Value</p>
-<pre tabindex="0"><code>$x = 3;
+</code></pre><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/918fbf78-4f5f-11ec-a2a2-00d861bf4abb.png alt=2020-03-01-11-38-02></p></p><p>Hashes 更像是Python中的字典 Key-Value</p><pre tabindex=0><code>$x = 3;
 %foo[&#34;name&#34;] = &#34;Raphael&#34;;
 %foo[&#34;job&#34;]  = &#34;wasting time&#34;;
 %foo[$x]     = &#34;Michelangelo&#34;;
 
 println(&#34;%foo is: &#34; . %foo);
-</code></pre><p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/91c85450-4f5f-11ec-bb58-00d861bf4abb.png" alt="2020-03-01-11-38-12"  />
-  </p></p>
-<h2 id="创建一个与用户交互的函数">创建一个与用户交互的函数</h2>
-<p>一般，我们通常会在beacon中输入命令给Cobalt Strike，这些命令背后的代码其实都被事件关联起来了，下面来一个示例，做一次我们自己的命令绑定。</p>
-<pre tabindex="0"><code>sub print_hello{
+</code></pre><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/91c85450-4f5f-11ec-bb58-00d861bf4abb.png alt=2020-03-01-11-38-12></p></p><h2 id=创建一个与用户交互的函数>创建一个与用户交互的函数</h2><p>一般，我们通常会在beacon中输入命令给Cobalt Strike，这些命令背后的代码其实都被事件关联起来了，下面来一个示例，做一次我们自己的命令绑定。</p><pre tabindex=0><code>sub print_hello{
     println(&#34;Hello $1&#34;);
 }
 
 command say {
 	print_hello($1);
 }
-</code></pre><p>加载到Cobalt Strike后，在Aggressor Script控制台输入say Tom就可以运行脚本了：</p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/920175dc-4f5f-11ec-a32b-00d861bf4abb.png" alt="2020-03-01-11-38-22"  />
-  </p></p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/923f427c-4f5f-11ec-b95d-00d861bf4abb.png" alt="2020-03-01-11-38-29"  />
-  </p></p>
-<p>可以发现，Sleep的函数通过$数字来寻找函数参数，这个虽然友好，但是还是有说不出的难受&hellip;</p>
-<p>下一课介绍Cobalt Strike的菜单创建以及快捷键绑定。</p>
-
-</div>
-<div class="container">
-    <script src="https://giscus.app/client.js"
-    data-repo="Rvn0xsy/rvn0xsy.github.io"
-    data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY="
-    data-category="General"
-    data-category-id="DIC_kwDOF-pTTM4CRDk_"
-    data-mapping="title"
-    data-strict="0"
-    data-reactions-enabled="1"
-    data-emit-metadata="0"
-    data-input-position="bottom"
-    data-theme="dark_tritanopia"
-    data-lang="zh-CN"
-    data-loading="lazy"
-    crossorigin="anonymous"
-    async>
-  </script>
-</div>
-<div class="container">
-    <section class="bio" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-    <div class="bio__blurb">
-        <h2 class="site-h2">网络安全爱好者、安全工具开发者</h2>
-        <p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p>
-    </div>
-<div class="bio__avatar">
-    <img src="/avatar.jpeg" alt="Duncan McDougall and heir apparent">
-</div></section>
-</div>
-
-        </div>
-<footer class="site-footer">
-    <div class="container">
-        <div class="site-footer__col">
-        <h5>Get in touch</h5>
-        <p>
-            If you like my project or have some questions,feel free
-            to contact me</a>.
-        </p>
-        </div>
-        <div class="site-footer__col site-footer__col--links">
-        <h5>Me Elsewhere</h5>
-        <ul>
-        
-                <li>
-                    <a href="https://twitter.com/Rvn0xsy"><i class="fab fa-twitter"></i> Twitter</a>
-                    
-                </li>
-        
-                <li>
-                    <a href="mailto:rvn0xsy@gmail.com"><i class="fas fa-envelope"></i> E-mail</a>
-                    
-                </li>
-        
-                <li>
-                    <a href="https://github.com/Rvn0xsy"><i class="fab fa-github"></i> Github</a>
-                    
-                </li>
-        
-        </ul>
-        </div>
-        <div class="site-footer__col site-footer__col--links">
-        <h5>Meta Links</h5>
-        <ul>
-            
-                
-                
-                    <li class="">
-                        <a href="/projects/"><i class="fas fa-code"></i> Projects</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/links/"><i class="fas fa-link"></i> Links</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/post/"><i class="fa fa-file-alt"></i> Posts</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/index.xml"><i class="fa fa-rss-square"></i> Rss</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/tools/"><i class="fas fa-tools"></i> Tools</a>
-                    </li>
-                
-            
-        </ul>
-        </div>
-        <p class="site-footer__copyright">
-        © 倾旋 2021. All rights reserved.
-        </p>
-    </div>
-    </footer>
-
-
-
-<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
-<script>
-(function(){
-  let plantumlPrefix = "language-plantuml";
-  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
-    let image = document.createElement("IMG");
-    image.loading = 'lazy'; 
-    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
-    code.parentNode.insertBefore(image, code);
-    code.style.display = 'none';
-  });
-})();
-</script>
-
-</body>
-</html>
+</code></pre><p>加载到Cobalt Strike后，在Aggressor Script控制台输入say Tom就可以运行脚本了：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/920175dc-4f5f-11ec-a32b-00d861bf4abb.png alt=2020-03-01-11-38-22></p></p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/923f427c-4f5f-11ec-b95d-00d861bf4abb.png alt=2020-03-01-11-38-29></p></p><p>可以发现，Sleep的函数通过$数字来寻找函数参数，这个虽然友好，但是还是有说不出的难受&mldr;</p><p>下一课介绍Cobalt Strike的菜单创建以及快捷键绑定。</p></div><div class=container><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div><div class=container><section class=bio itemprop=author itemscope itemtype=http://schema.org/Person><div class=bio__blurb><h2 class=site-h2>网络安全爱好者、安全工具开发者</h2><p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p></div><div class=bio__avatar><img src=/avatar.jpeg alt="Duncan McDougall and heir apparent"></div></section></div></div><footer class=site-footer><div class=container><div class=site-footer__col><h5>Get in touch</h5><p>If you like my project or have some questions,feel free
+to contact me</a>.</p></div><div class="site-footer__col site-footer__col--links"><h5>Me Elsewhere</h5><ul><li><a href=https://twitter.com/Rvn0xsy><i class="fab fa-twitter"></i> Twitter</a></li><li><a href=mailto:rvn0xsy@gmail.com><i class="fas fa-envelope"></i> E-mail</a></li><li><a href=https://github.com/Rvn0xsy><i class="fab fa-github"></i> Github</a></li></ul></div><div class="site-footer__col site-footer__col--links"><h5>Meta Links</h5><ul><li><a href=/projects/><i class="fas fa-code"></i> Projects</a></li><li><a href=/links/><i class="fas fa-link"></i> Links</a></li><li><a href=/post/><i class="fa fa-file-alt"></i> Posts</a></li><li><a href=/index.xml><i class="fa fa-rss-square"></i> Rss</a></li><li><a href=/tools/><i class="fas fa-tools"></i> Tools</a></li></ul></div><p class=site-footer__copyright>© 倾旋 2021. All rights reserved.</p></div></footer><script src=https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin=anonymous></script>
+<script>(function(){let e="language-plantuml";Array.prototype.forEach.call(document.querySelectorAll("[class^="+e+"]"),function(e){let t=document.createElement("IMG");t.loading="lazy",t.src="http://www.plantuml.com/plantuml/svg/~1"+plantumlEncoder.encode(e.innerText),e.parentNode.insertBefore(t,e),e.style.display="none"})})()</script></body></html>

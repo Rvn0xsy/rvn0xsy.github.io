@@ -1,168 +1,35 @@
-<!DOCTYPE html>
-<html lang=""><head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <title>端口转发工具小结 « 倾旋的博客</title>
-    <meta name="description" content="倾旋的博客">
-    <meta name="author" content='倾旋'>
-
-    <link rel="stylesheet" href="/css/Font-Awesome-5.15.3.all.min.css">
-
-    
-    <link rel="stylesheet" href="/sass/researcher.min.css">
-    
-    
-        <link rel="icon" type="image/ico" href="https://payloads.online/favicon.ico">
-    
-
-    
-        
-    
-</head>
-
-    <body>
-<input type="checkbox" id="menu-toggle" class="menu-toggle">
-<label tabindex="0" for="menu-toggle" class="burger"><span></span> <span></span> <span></span><div class="burger-text">Menu</div></label>
-<nav class="main-nav">
-    
-    <ul>
-    
-        
-        
-            <li><a href="/projects/">Projects</a></li>
-        
-            <li><a href="/links/">Links</a></li>
-        
-            <li><a href="/post/">Posts</a></li>
-        
-            <li><a href="/index.xml">Rss</a></li>
-        
-            <li><a href="/tools/">Tools</a></li>
-        
-    
-    </ul>
-   
-</nav>
-<nav><a href="/" class="all-posts-link">‹ All Posts</a></nav><div id="content">
-<div class="container">
-    <h1>端口转发工具小结</h1>
-    <p>介绍几款端口转发工具</p>
-        <div class = "toc-wrapper">
-            
-<div class="post-toc" id="post-toc">
-<aside>
-    
-    
-    
-    <nav id="TableOfContents">
-  <ul>
-    <li><a href="#0x00-ncat">0X00 ncat</a>
-      <ul>
-        <li><a href="#反弹shell">反弹shell</a></li>
-        <li><a href="#建立聊天室">建立聊天室</a></li>
-        <li><a href="#采用ssl加密">采用SSL加密</a></li>
-        <li><a href="#传输文件">传输文件</a></li>
-        <li><a href="#参数列表中文">参数列表(中文)</a></li>
-      </ul>
-    </li>
-    <li><a href="#0x01-socat">0x01 socat</a>
-      <ul>
-        <li><a href="#安装">安装</a></li>
-        <li><a href="#建立通信聊天室">建立通信(聊天室)</a></li>
-        <li><a href="#传输文件-1">传输文件</a></li>
-        <li><a href="#反弹shell-1">反弹Shell</a></li>
-        <li><a href="#端口转发">端口转发</a></li>
-        <li><a href="#udp通信">UDP通信</a></li>
-        <li><a href="#公网转发到内网">公网转发到内网</a></li>
-        <li><a href="#内网转发到公网">内网转发到公网</a></li>
-        <li><a href="#参考文档">参考文档</a></li>
-      </ul>
-    </li>
-    <li><a href="#0x02-lcxgo语言编写">0x02 lcx（go语言编写）</a></li>
-  </ul>
-</nav>
-    
-    
-</aside>
-<a href="#" id="toc-toggle"></a>
-</div>
-
-
-
-        </div>
-    <h2 id="0x00-ncat">0X00 ncat</h2>
-<h3 id="反弹shell">反弹shell</h3>
-<p>服务器：<code>ncat -lnv -c bash 4489</code>  将bash转发到4489端口</p>
-<p>客户端：<code>ncat -nv 172.17.0.1 4489</code> 连接到目标的4489即可获得交互式bash</p>
-<p>Windows下用 <code>-c C:\windows\system32\cmd.exe</code></p>
-<p>参数介绍：</p>
-<p>|<code>-l,--listen &lt;port&gt;</code> | 监听某个端口
-| <code>-n, --nodns</code>　     |不通过DNS解析主机名
-| <code>-v,--verbose</code>      |设置的详细程度(可以使用几次)
-| <code>-c,--sh-exec</code>      | 执行传递的命令行</p>
-<h3 id="建立聊天室">建立聊天室</h3>
-<p>服务端：<code>ncat -lnv --broker --chat 8432</code></p>
-<p>客户端：<code>ncat -nv 172.17.0.1 8432</code></p>
-<p>参数介绍：</p>
-<p>| <code>--broker</code> | 使用ncat的代理连接模式，允许多个组织连接到ncat的服务器和其他人交流，ncat能创建一个经纪人在连接和系统之间通过NAT或者其他的直接连接。这个选项是和监听模式一起使用的。这会使监听端口的经纪人模式启动
-| <code>--chat</code>   |　开启一个简单的ncat聊天服务器</p>
-<h3 id="采用ssl加密">采用SSL加密</h3>
-<ul>
-<li>服务器：<code>ncat -lnv -c bash 4489 --ssl</code></li>
-<li>客户端：<code>ncat -nv 172.17.0.1 4489 --ssl</code></li>
-</ul>
-<h3 id="传输文件">传输文件</h3>
-<p>服务端：</p>
-<pre tabindex="0"><code>root@Kali:~$ ncat -lnv 1788 &gt; tmp.txt
+<!doctype html><html lang><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>端口转发工具小结 « 倾旋的博客</title><meta name=description content="倾旋的博客"><meta name=author content="倾旋"><link rel=stylesheet href=/css/Font-Awesome-5.15.3.all.min.css><link rel=stylesheet href=/sass/researcher.min.css><link rel=icon type=image/ico href=https://payloads.online/favicon.ico></head><body><input type=checkbox id=menu-toggle class=menu-toggle>
+<label tabindex=0 for=menu-toggle class=burger><span></span> <span></span> <span></span><div class=burger-text>Menu</div></label><nav class=main-nav><ul><li><a href=/projects/>Projects</a></li><li><a href=/links/>Links</a></li><li><a href=/post/>Posts</a></li><li><a href=/index.xml>Rss</a></li><li><a href=/tools/>Tools</a></li></ul></nav><nav><a href=/ class=all-posts-link>‹ All Posts</a></nav><div id=content><div class=container><h1>端口转发工具小结</h1><p>介绍几款端口转发工具</p><div class=toc-wrapper><div class=post-toc id=post-toc><aside><nav id=TableOfContents><ul><li><a href=#0x00-ncat>0X00 ncat</a><ul><li><a href=#反弹shell>反弹shell</a></li><li><a href=#建立聊天室>建立聊天室</a></li><li><a href=#采用ssl加密>采用SSL加密</a></li><li><a href=#传输文件>传输文件</a></li><li><a href=#参数列表中文>参数列表(中文)</a></li></ul></li><li><a href=#0x01-socat>0x01 socat</a><ul><li><a href=#安装>安装</a></li><li><a href=#建立通信聊天室>建立通信(聊天室)</a></li><li><a href=#传输文件-1>传输文件</a></li><li><a href=#反弹shell-1>反弹Shell</a></li><li><a href=#端口转发>端口转发</a></li><li><a href=#udp通信>UDP通信</a></li><li><a href=#公网转发到内网>公网转发到内网</a></li><li><a href=#内网转发到公网>内网转发到公网</a></li><li><a href=#参考文档>参考文档</a></li></ul></li><li><a href=#0x02-lcxgo语言编写>0x02 lcx（go语言编写）</a></li></ul></nav></aside><a href=# id=toc-toggle></a></div></div><h2 id=0x00-ncat>0X00 ncat</h2><h3 id=反弹shell>反弹shell</h3><p>服务器：<code>ncat -lnv -c bash 4489</code> 将bash转发到4489端口</p><p>客户端：<code>ncat -nv 172.17.0.1 4489</code> 连接到目标的4489即可获得交互式bash</p><p>Windows下用 <code>-c C:\windows\system32\cmd.exe</code></p><p>参数介绍：</p><p>|<code>-l,--listen &lt;port></code> | 监听某个端口
+| <code>-n, --nodns</code>　 |不通过DNS解析主机名
+| <code>-v,--verbose</code> |设置的详细程度(可以使用几次)
+| <code>-c,--sh-exec</code> | 执行传递的命令行</p><h3 id=建立聊天室>建立聊天室</h3><p>服务端：<code>ncat -lnv --broker --chat 8432</code></p><p>客户端：<code>ncat -nv 172.17.0.1 8432</code></p><p>参数介绍：</p><p>| <code>--broker</code> | 使用ncat的代理连接模式，允许多个组织连接到ncat的服务器和其他人交流，ncat能创建一个经纪人在连接和系统之间通过NAT或者其他的直接连接。这个选项是和监听模式一起使用的。这会使监听端口的经纪人模式启动
+| <code>--chat</code> |　开启一个简单的ncat聊天服务器</p><h3 id=采用ssl加密>采用SSL加密</h3><ul><li>服务器：<code>ncat -lnv -c bash 4489 --ssl</code></li><li>客户端：<code>ncat -nv 172.17.0.1 4489 --ssl</code></li></ul><h3 id=传输文件>传输文件</h3><p>服务端：</p><pre tabindex=0><code>root@Kali:~$ ncat -lnv 1788 &gt; tmp.txt
 Ncat: Version 7.01 ( https://nmap.org/ncat )
 Ncat: Listening on :::1788
 Ncat: Listening on 0.0.0.0:1788
 Ncat: Connection from 172.17.0.2.
 Ncat: Connection from 172.17.0.2:48004.
-</code></pre><p>客户端：</p>
-<pre tabindex="0"><code>root@504d96ae69cc:/docker_files# cat tmp.txt 
+</code></pre><p>客户端：</p><pre tabindex=0><code>root@504d96ae69cc:/docker_files# cat tmp.txt 
 hello :)
 root@504d96ae69cc:/docker_files# ncat -nv 172.17.0.1 1788 &lt; tmp.txt 
 Ncat: Version 7.50 ( https://nmap.org/ncat )
 Ncat: Connected to 172.17.0.1:1788.
 Ncat: 9 bytes sent, 0 bytes received in 0.01 seconds.
 root@504d96ae69cc:/docker_files# 
-</code></pre><h3 id="参数列表中文">参数列表(中文)</h3>
-<p><a href="/tools/ncat.txt">ncat参数</a></p>
-<h2 id="0x01-socat">0x01 socat</h2>
-<h3 id="安装">安装</h3>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>wget http://www.dest-unreach.org/socat/download/socat-2.0.0-b9.tar.gz
-</span></span><span style="display:flex;"><span>tar xvf socat-2.0.0-b9.tar.gz
-</span></span><span style="display:flex;"><span>cd socat-2.0.0-b9
-</span></span><span style="display:flex;"><span>./configure
-</span></span><span style="display:flex;"><span>make
-</span></span><span style="display:flex;"><span>make install
-</span></span></code></pre></div><h3 id="建立通信聊天室">建立通信(聊天室)</h3>
-<p>| 服务端 | <code>socat - tcp4-listen:4444</code>
-| 客户端 | <code>socat tcp:SERVER_IP:4444</code></p>
-<h3 id="传输文件-1">传输文件</h3>
-<p>| 服务端 | <code>socat tcp4-listen:4444 open:data.txt,creat,append</code> |
-| 客户端 | <code>cat test.txt | socat - tcp:SERVER_IP:4444</code> |</p>
-<blockquote>
-<p>传输二进制文件需要将append改成binary</p>
-</blockquote>
-<h3 id="反弹shell-1">反弹Shell</h3>
-<p>| 服务端 | <code>socat tcp-l:4444 exec:sh,pty,stderr</code>
+</code></pre><h3 id=参数列表中文>参数列表(中文)</h3><p><a href=/tools/ncat.txt>ncat参数</a></p><h2 id=0x01-socat>0x01 socat</h2><h3 id=安装>安装</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>wget http://www.dest-unreach.org/socat/download/socat-2.0.0-b9.tar.gz
+</span></span><span style=display:flex><span>tar xvf socat-2.0.0-b9.tar.gz
+</span></span><span style=display:flex><span>cd socat-2.0.0-b9
+</span></span><span style=display:flex><span>./configure
+</span></span><span style=display:flex><span>make
+</span></span><span style=display:flex><span>make install
+</span></span></code></pre></div><h3 id=建立通信聊天室>建立通信(聊天室)</h3><p>| 服务端 | <code>socat - tcp4-listen:4444</code>
+| 客户端 | <code>socat tcp:SERVER_IP:4444</code></p><h3 id=传输文件-1>传输文件</h3><p>| 服务端 | <code>socat tcp4-listen:4444 open:data.txt,creat,append</code> |
+| 客户端 | <code>cat test.txt | socat - tcp:SERVER_IP:4444</code> |</p><blockquote><p>传输二进制文件需要将append改成binary</p></blockquote><h3 id=反弹shell-1>反弹Shell</h3><p>| 服务端 | <code>socat tcp-l:4444 exec:sh,pty,stderr</code>
 | 客户端 | <code>socat - tcp:SERVER_IP:4444</code>
-| tcp-l 是 <code>tcp4-listen</code> 的简写</p>
-<h3 id="端口转发">端口转发</h3>
-<p><code>socat - tcp-l:8888,fork tcp4:192.168.3.1:4477</code></p>
-<p>当本机接收到8888端口的数据，将全部转发给192.168.3.1主机上的4477端口</p>
-<h3 id="udp通信">UDP通信</h3>
-<p>| 服务端 | <code>socat - udp-l:4456</code> |
+| tcp-l 是 <code>tcp4-listen</code> 的简写</p><h3 id=端口转发>端口转发</h3><p><code>socat - tcp-l:8888,fork tcp4:192.168.3.1:4477</code></p><p>当本机接收到8888端口的数据，将全部转发给192.168.3.1主机上的4477端口</p><h3 id=udp通信>UDP通信</h3><p>| 服务端 | <code>socat - udp-l:4456</code> |
 | 客户端 | <code>socat - udp-datagram:192.168.3.1:4456</code>
-|</p>
-<h3 id="公网转发到内网">公网转发到内网</h3>
-<p>| 服务端 | <code>socat tcp-listen:1234 tcp-listen:22</code> | 外网IP(<code>60.*.*.*</code>)
-| 客户端 | <code>socat tcp:60.*.*.*:1234 tcp:192.168.3.1:22</code> | 内网IP(192.168.3.1)</p>
-<h3 id="内网转发到公网">内网转发到公网</h3>
-<pre tabindex="0"><code>                  ------------
+|</p><h3 id=公网转发到内网>公网转发到内网</h3><p>| 服务端 | <code>socat tcp-listen:1234 tcp-listen:22</code> | 外网IP(<code>60.*.*.*</code>)
+| 客户端 | <code>socat tcp:60.*.*.*:1234 tcp:192.168.3.1:22</code> | 内网IP(192.168.3.1)</p><h3 id=内网转发到公网>内网转发到公网</h3><pre tabindex=0><code>                  ------------
                  |   Server   |
                  |  60.*.*.*  |
                   ------------
@@ -175,129 +42,7 @@ root@504d96ae69cc:/docker_files#
        (hosting a service    (wanting to access
          on port 4200)         Client A port 4200)
 </code></pre><p>| 服务端 | <code>socat - tcp-l:10000 tcp-l:4200</code>
-| 客户端 | <code>socat tcp4:60.*.*.*:10000 tcp4:localhost:4200</code></p>
-<h3 id="参考文档">参考文档</h3>
-<p><a href="/tools/socat">socat使用手册</a></p>
-<h2 id="0x02-lcxgo语言编写">0x02 lcx（go语言编写）</h2>
-<p>被控端192.168.10.2 ：</p>
-<p>lcx &lt;公网IP&gt; 123</p>
-<p>控制端 111.111.111.111：</p>
-<p>lcx 456 123 192.168.10.2 3389</p>
-<p>此时访问111.111.111.111的456就等于192.168.10.2:3389</p>
-<p><a href="http://www.secpulse.com/wp-content/uploads/2015/05/lcx._g.rar">Download</a>
-<a href="https://www.secpulse.com/archives/6341.html">相关文章</a></p>
-
-</div>
-<div class="container">
-    <script src="https://giscus.app/client.js"
-    data-repo="Rvn0xsy/rvn0xsy.github.io"
-    data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY="
-    data-category="General"
-    data-category-id="DIC_kwDOF-pTTM4CRDk_"
-    data-mapping="title"
-    data-strict="0"
-    data-reactions-enabled="1"
-    data-emit-metadata="0"
-    data-input-position="bottom"
-    data-theme="dark_tritanopia"
-    data-lang="zh-CN"
-    data-loading="lazy"
-    crossorigin="anonymous"
-    async>
-  </script>
-</div>
-<div class="container">
-    <section class="bio" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
-    <div class="bio__blurb">
-        <h2 class="site-h2">网络安全爱好者、安全工具开发者</h2>
-        <p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p>
-    </div>
-<div class="bio__avatar">
-    <img src="/avatar.jpeg" alt="Duncan McDougall and heir apparent">
-</div></section>
-</div>
-
-        </div>
-<footer class="site-footer">
-    <div class="container">
-        <div class="site-footer__col">
-        <h5>Get in touch</h5>
-        <p>
-            If you like my project or have some questions,feel free
-            to contact me</a>.
-        </p>
-        </div>
-        <div class="site-footer__col site-footer__col--links">
-        <h5>Me Elsewhere</h5>
-        <ul>
-        
-                <li>
-                    <a href="https://twitter.com/Rvn0xsy"><i class="fab fa-twitter"></i> Twitter</a>
-                    
-                </li>
-        
-                <li>
-                    <a href="mailto:rvn0xsy@gmail.com"><i class="fas fa-envelope"></i> E-mail</a>
-                    
-                </li>
-        
-                <li>
-                    <a href="https://github.com/Rvn0xsy"><i class="fab fa-github"></i> Github</a>
-                    
-                </li>
-        
-        </ul>
-        </div>
-        <div class="site-footer__col site-footer__col--links">
-        <h5>Meta Links</h5>
-        <ul>
-            
-                
-                
-                    <li class="">
-                        <a href="/projects/"><i class="fas fa-code"></i> Projects</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/links/"><i class="fas fa-link"></i> Links</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/post/"><i class="fa fa-file-alt"></i> Posts</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/index.xml"><i class="fa fa-rss-square"></i> Rss</a>
-                    </li>
-                
-                    <li class="">
-                        <a href="/tools/"><i class="fas fa-tools"></i> Tools</a>
-                    </li>
-                
-            
-        </ul>
-        </div>
-        <p class="site-footer__copyright">
-        © 倾旋 2021. All rights reserved.
-        </p>
-    </div>
-    </footer>
-
-
-
-<script src="https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js" integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin="anonymous"></script>
-<script>
-(function(){
-  let plantumlPrefix = "language-plantuml";
-  Array.prototype.forEach.call(document.querySelectorAll("[class^=" + plantumlPrefix + "]"), function(code){
-    let image = document.createElement("IMG");
-    image.loading = 'lazy'; 
-    image.src = 'http://www.plantuml.com/plantuml/svg/~1' + plantumlEncoder.encode(code.innerText);
-    code.parentNode.insertBefore(image, code);
-    code.style.display = 'none';
-  });
-})();
-</script>
-
-</body>
-</html>
+| 客户端 | <code>socat tcp4:60.*.*.*:10000 tcp4:localhost:4200</code></p><h3 id=参考文档>参考文档</h3><p><a href=/tools/socat>socat使用手册</a></p><h2 id=0x02-lcxgo语言编写>0x02 lcx（go语言编写）</h2><p>被控端192.168.10.2 ：</p><p>lcx &lt;公网IP> 123</p><p>控制端 111.111.111.111：</p><p>lcx 456 123 192.168.10.2 3389</p><p>此时访问111.111.111.111的456就等于192.168.10.2:3389</p><p><a href=http://www.secpulse.com/wp-content/uploads/2015/05/lcx._g.rar>Download</a>
+<a href=https://www.secpulse.com/archives/6341.html>相关文章</a></p></div><div class=container><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div><div class=container><section class=bio itemprop=author itemscope itemtype=http://schema.org/Person><div class=bio__blurb><h2 class=site-h2>网络安全爱好者、安全工具开发者</h2><p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p></div><div class=bio__avatar><img src=/avatar.jpeg alt="Duncan McDougall and heir apparent"></div></section></div></div><footer class=site-footer><div class=container><div class=site-footer__col><h5>Get in touch</h5><p>If you like my project or have some questions,feel free
+to contact me</a>.</p></div><div class="site-footer__col site-footer__col--links"><h5>Me Elsewhere</h5><ul><li><a href=https://twitter.com/Rvn0xsy><i class="fab fa-twitter"></i> Twitter</a></li><li><a href=mailto:rvn0xsy@gmail.com><i class="fas fa-envelope"></i> E-mail</a></li><li><a href=https://github.com/Rvn0xsy><i class="fab fa-github"></i> Github</a></li></ul></div><div class="site-footer__col site-footer__col--links"><h5>Meta Links</h5><ul><li><a href=/projects/><i class="fas fa-code"></i> Projects</a></li><li><a href=/links/><i class="fas fa-link"></i> Links</a></li><li><a href=/post/><i class="fa fa-file-alt"></i> Posts</a></li><li><a href=/index.xml><i class="fa fa-rss-square"></i> Rss</a></li><li><a href=/tools/><i class="fas fa-tools"></i> Tools</a></li></ul></div><p class=site-footer__copyright>© 倾旋 2021. All rights reserved.</p></div></footer><script src=https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin=anonymous></script>
+<script>(function(){let e="language-plantuml";Array.prototype.forEach.call(document.querySelectorAll("[class^="+e+"]"),function(e){let t=document.createElement("IMG");t.loading="lazy",t.src="http://www.plantuml.com/plantuml/svg/~1"+plantumlEncoder.encode(e.innerText),e.parentNode.insertBefore(t,e),e.style.display="none"})})()</script></body></html>
