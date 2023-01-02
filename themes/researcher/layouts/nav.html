@@ -8,3 +8,12 @@
         {{ end }}
     {{ end }}
 </ul>
+
+<script>
+    if(~navigator.userAgent.indexOf('Mobile')){
+       var nav_nodes = document.getElementsByClassName("index_nav");
+       for(var i = 0;i<nav_nodes.length;i++){
+            nav_nodes[i].style.display = "none";
+       }
+    }
+</script>
