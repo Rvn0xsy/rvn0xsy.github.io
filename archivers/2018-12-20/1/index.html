@@ -1,8 +1,8 @@
 <!doctype html><html lang><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>最近学习Windows编程总结 « 倾旋的博客</title><meta name=description content="倾旋的博客"><meta name=author content="倾旋"><link rel=stylesheet href=/css/Font-Awesome-5.15.3.all.min.css><link rel=stylesheet href=/sass/researcher.min.css><link rel=icon type=image/ico href=https://payloads.online/favicon.ico></head><body><input type=checkbox id=menu-toggle class=menu-toggle>
 <label tabindex=0 for=menu-toggle class=burger><span></span> <span></span> <span></span><div class=burger-text>Menu</div></label><nav class=main-nav><ul><li><a href=/projects/>Projects</a></li><li><a href=/links/>Links</a></li><li><a href=/post/>Posts</a></li><li><a href=/index.xml>Rss</a></li><li><a href=/tools/>Tools</a></li></ul></nav><nav><a href=/ class=all-posts-link>‹ All Posts</a></nav><div id=content><div class=container><h1>最近学习Windows编程总结</h1><p>总结一下最近学习Windows编程的知识点。</p><div class=toc-wrapper><div class=post-toc id=post-toc><aside><nav id=TableOfContents><ul><li><a href=#0x00-windows-字符编码>0x00 Windows 字符编码</a><ul><li><a href=#各个字符集的bom头>各个字符集的BOM头</a></li><li><a href=#windows字符数据类型>Windows字符数据类型</a></li></ul></li><li><a href=#0x01-windows进程创建>0x01 Windows进程创建</a><ul><li><a href=#进程执行的加载过程>进程执行的加载过程</a></li><li><a href=#创建进程>创建进程</a></li><li><a href=#线程与进程的关系>线程与进程的关系</a></li><li><a href=#线程操作函数>线程操作函数</a></li></ul></li><li><a href=#0x02-windows-文件操作>0x02 Windows 文件操作</a><ul><li><a href=#读写文件>读写文件</a></li><li><a href=#函数声明>函数声明</a></li></ul></li><li><a href=#0x03-windows-线程>0x03 Windows 线程</a><ul><li><a href=#等待线程执行完毕>等待线程执行完毕</a></li><li><a href=#等待多个线程执行完毕>等待多个线程执行完毕</a></li></ul></li></ul></nav></aside><a href=# id=toc-toggle></a></div></div><h2 id=0x00-windows-字符编码>0x00 Windows 字符编码</h2><p>目前Windows最常见的字符集：</p><ul><li>1.ASCII</li><li>2.Unicode</li><li>3.UTF-16</li><li>4.UTF-8</li></ul><p>Unicode是一个字符集，UTF-16是Unicode的存储实现，Windows中的Unicode默认是UTF-16存储方式。</p><p>Unicode：</p><ul><li>UTF-16：一个字符占用两个字节</li><li>UTF8-8：一个字符占用两个字节，一般用于网络传输</li></ul><h3 id=各个字符集的bom头>各个字符集的BOM头</h3><ul><li>UTF-8：EF BB BF</li><li>UTF-16LE：FF FE</li><li>UTF16BE：FE FF</li></ul><h3 id=windows字符数据类型>Windows字符数据类型</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>CHAR <span style=color:#f92672>-&gt;</span> <span style=color:#66d9ef>char</span>
 </span></span><span style=display:flex><span>PSTR <span style=color:#f92672>-&gt;</span> <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>
-</span></span><span style=display:flex><span>WCHAR <span style=color:#f92672>-&gt;</span> wchar_t
-</span></span><span style=display:flex><span>PWSTR <span style=color:#f92672>-&gt;</span> wchar_t <span style=color:#f92672>*</span>
+</span></span><span style=display:flex><span>WCHAR <span style=color:#f92672>-&gt;</span> <span style=color:#66d9ef>wchar_t</span>
+</span></span><span style=display:flex><span>PWSTR <span style=color:#f92672>-&gt;</span> <span style=color:#66d9ef>wchar_t</span> <span style=color:#f92672>*</span>
 </span></span><span style=display:flex><span>TCHAR <span style=color:#f92672>-&gt;</span> <span style=color:#960050;background-color:#1e0010>一个宏，当前是什么字符集，编译出来就是什么字符集</span>
 </span></span><span style=display:flex><span>PTSTR <span style=color:#f92672>-&gt;</span> TCHAR <span style=color:#f92672>*</span> (<span style=color:#960050;background-color:#1e0010>有利于跨平台</span>)
 </span></span></code></pre></div><p>开发中推荐使用“TEXT”宏与PTSTR类型的字符串指针。</p><h2 id=0x01-windows进程创建>0x01 Windows进程创建</h2><p>进程是一个程序正在运行的一个实例，它由一个内核对象和一个地址空间组成。</p><p>内核对象与地址空间都在4GB的虚拟内存中，内核占2GB高地址，低地址的2GB给程序的堆栈使用。</p><p>在Windows中，系统通过句柄管理进程中的资源，句柄存储在内核空间中的一个全局句柄表中，而每个进程也都有一个句柄表，这个句柄表是私有的。</p><p><strong>PID</strong> 是指的是全局句柄表的值。</p><h3 id=进程执行的加载过程>进程执行的加载过程</h3><ul><li>1.映射EXE</li><li>2.创建内核对象EPROCESS</li><li>3.映射系统DLL（ntdll.dll）</li><li>4.创建线程内核对象ETHREAD</li><li>5.系统启动线程、映射DLL（ntdll.LdrInitalizeThunk）、线程开始执行</li></ul><h3 id=创建进程>创建进程</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>BOOL <span style=color:#a6e22e>CreateProcess</span>
@@ -27,27 +27,27 @@
 </span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>()
 </span></span><span style=display:flex><span>{
 </span></span><span style=display:flex><span>	CHAR drives[<span style=color:#ae81ff>255</span>] <span style=color:#f92672>=</span> {<span style=color:#ae81ff>0</span>};
-</span></span><span style=display:flex><span>	ZeroMemory(drives, <span style=color:#ae81ff>255</span>);
-</span></span><span style=display:flex><span>	DWORD devLen <span style=color:#f92672>=</span> GetLogicalDriveStringsA(<span style=color:#ae81ff>254</span>, drives);
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>for</span> (size_t i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> <span style=color:#66d9ef>sizeof</span>(drives); i<span style=color:#f92672>++</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>ZeroMemory</span>(drives, <span style=color:#ae81ff>255</span>);
+</span></span><span style=display:flex><span>	DWORD devLen <span style=color:#f92672>=</span> <span style=color:#a6e22e>GetLogicalDriveStringsA</span>(<span style=color:#ae81ff>254</span>, drives);
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>size_t</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> <span style=color:#66d9ef>sizeof</span>(drives); i<span style=color:#f92672>++</span>)
 </span></span><span style=display:flex><span>	{
 </span></span><span style=display:flex><span>		TCHAR s <span style=color:#f92672>=</span> drives[i];
 </span></span><span style=display:flex><span>		<span style=color:#66d9ef>if</span> (s <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;\0&#39;</span>) {
 </span></span><span style=display:flex><span>			<span style=color:#66d9ef>continue</span>;
 </span></span><span style=display:flex><span>		}
-</span></span><span style=display:flex><span>		printf(<span style=color:#e6db74>&#34;%c</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, drives[i]);
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;%c</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, drives[i]);
 </span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	ZeroMemory(drives, <span style=color:#ae81ff>255</span>);
-</span></span><span style=display:flex><span>	HANDLE hVolume <span style=color:#f92672>=</span> FindFirstVolumeA(drives, <span style=color:#ae81ff>255</span>);
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>ZeroMemory</span>(drives, <span style=color:#ae81ff>255</span>);
+</span></span><span style=display:flex><span>	HANDLE hVolume <span style=color:#f92672>=</span> <span style=color:#a6e22e>FindFirstVolumeA</span>(drives, <span style=color:#ae81ff>255</span>);
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (INVALID_HANDLE_VALUE <span style=color:#f92672>==</span> hVolume) {
 </span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
 </span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>while</span> (FindNextVolumeA(hVolume, drives, <span style=color:#ae81ff>255</span>)) {
-</span></span><span style=display:flex><span>		printf(<span style=color:#e6db74>&#34;Volume : %s </span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,drives);
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>while</span> (<span style=color:#a6e22e>FindNextVolumeA</span>(hVolume, drives, <span style=color:#ae81ff>255</span>)) {
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Volume : %s </span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,drives);
 </span></span><span style=display:flex><span>	}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>	FindVolumeClose(hVolume);
-</span></span><span style=display:flex><span>	system(<span style=color:#e6db74>&#34;pause&#34;</span>);
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>FindVolumeClose</span>(hVolume);
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>system</span>(<span style=color:#e6db74>&#34;pause&#34;</span>);
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// ss
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>
@@ -63,7 +63,7 @@ DRIVE_FIXED -&gt; 3 驱动器有固定的媒体; 例如，硬盘驱动器或闪�
 DRIVE_REMOTE -&gt; 4 该驱动器是远程（网络）驱动器。
 DRIVE_CDROM -&gt; 5 该驱动器是CD-ROM驱动器。
 DRIVE_RAMDISK -&gt; 6 驱动器是RAM磁盘。
-</code></pre><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>GetVolumeInformation(
+</code></pre><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#a6e22e>GetVolumeInformation</span>(
 </span></span><span style=display:flex><span>  lpRootPathName: PChar;               {<span style=color:#960050;background-color:#1e0010>磁盘驱动器代码字符串</span>}
 </span></span><span style=display:flex><span>  lpVolumeNameBuffer: PChar;           {<span style=color:#960050;background-color:#1e0010>磁盘驱动器卷标名称</span>}
 </span></span><span style=display:flex><span>  nVolumeNameSize: DWORD;              {<span style=color:#960050;background-color:#1e0010>磁盘驱动器卷标名称长度</span>}
@@ -83,30 +83,30 @@ DRIVE_RAMDISK -&gt; 6 驱动器是RAM磁盘。
 </span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>()
 </span></span><span style=display:flex><span>{
 </span></span><span style=display:flex><span>	CHAR drives[<span style=color:#ae81ff>255</span>] <span style=color:#f92672>=</span> {<span style=color:#ae81ff>0</span>};
-</span></span><span style=display:flex><span>	ZeroMemory(drives, <span style=color:#ae81ff>255</span>);
-</span></span><span style=display:flex><span>	DWORD devLen <span style=color:#f92672>=</span> GetLogicalDriveStringsA(<span style=color:#ae81ff>254</span>, drives);
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>for</span> (size_t i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> <span style=color:#66d9ef>sizeof</span>(drives); i<span style=color:#f92672>++</span>)
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>ZeroMemory</span>(drives, <span style=color:#ae81ff>255</span>);
+</span></span><span style=display:flex><span>	DWORD devLen <span style=color:#f92672>=</span> <span style=color:#a6e22e>GetLogicalDriveStringsA</span>(<span style=color:#ae81ff>254</span>, drives);
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>for</span> (<span style=color:#66d9ef>size_t</span> i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> <span style=color:#66d9ef>sizeof</span>(drives); i<span style=color:#f92672>++</span>)
 </span></span><span style=display:flex><span>	{
 </span></span><span style=display:flex><span>		TCHAR s <span style=color:#f92672>=</span> drives[i];
 </span></span><span style=display:flex><span>		<span style=color:#66d9ef>if</span> (s <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;\0&#39;</span>) {
 </span></span><span style=display:flex><span>			<span style=color:#66d9ef>continue</span>;
 </span></span><span style=display:flex><span>		}
-</span></span><span style=display:flex><span>		printf(<span style=color:#e6db74>&#34;%c</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, drives[i]);
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;%c</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, drives[i]);
 </span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	ZeroMemory(drives, <span style=color:#ae81ff>255</span>);
-</span></span><span style=display:flex><span>	HANDLE hVolume <span style=color:#f92672>=</span> FindFirstVolumeA(drives, <span style=color:#ae81ff>255</span>);
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>ZeroMemory</span>(drives, <span style=color:#ae81ff>255</span>);
+</span></span><span style=display:flex><span>	HANDLE hVolume <span style=color:#f92672>=</span> <span style=color:#a6e22e>FindFirstVolumeA</span>(drives, <span style=color:#ae81ff>255</span>);
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (INVALID_HANDLE_VALUE <span style=color:#f92672>==</span> hVolume) {
 </span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
 </span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>while</span> (FindNextVolumeA(hVolume, drives, <span style=color:#ae81ff>255</span>)) {
-</span></span><span style=display:flex><span>		printf(<span style=color:#e6db74>&#34;Volume : %s </span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,drives);
+</span></span><span style=display:flex><span>	<span style=color:#66d9ef>while</span> (<span style=color:#a6e22e>FindNextVolumeA</span>(hVolume, drives, <span style=color:#ae81ff>255</span>)) {
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;Volume : %s </span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,drives);
 </span></span><span style=display:flex><span>		DWORD dwVolumeSerNumber;
 </span></span><span style=display:flex><span>		CHAR lpRootPathName[MAX_PATH];
 </span></span><span style=display:flex><span>		CHAR lpVolumName[MAX_PATH];
 </span></span><span style=display:flex><span>		CHAR szFileSystemNameBuffer[MAX_PATH];
 </span></span><span style=display:flex><span>		DWORD dwMaxLength;
 </span></span><span style=display:flex><span>		DWORD dwFileSystemFlags;
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>GetVolumeInformationA(
+</span></span><span style=display:flex><span>		<span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span><span style=color:#a6e22e>GetVolumeInformationA</span>(
 </span></span><span style=display:flex><span>			drives,
 </span></span><span style=display:flex><span>			lpVolumName,
 </span></span><span style=display:flex><span>			MAX_PATH,
@@ -117,10 +117,10 @@ DRIVE_RAMDISK -&gt; 6 驱动器是RAM磁盘。
 </span></span><span style=display:flex><span>			MAX_PATH)) {
 </span></span><span style=display:flex><span>			<span style=color:#66d9ef>return</span> FALSE;
 </span></span><span style=display:flex><span>		}
-</span></span><span style=display:flex><span>		printf(<span style=color:#e6db74>&#34;%s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, lpVolumName);
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>printf</span>(<span style=color:#e6db74>&#34;%s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, lpVolumName);
 </span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	FindVolumeClose(hVolume);
-</span></span><span style=display:flex><span>	system(<span style=color:#e6db74>&#34;pause&#34;</span>);
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>FindVolumeClose</span>(hVolume);
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>system</span>(<span style=color:#e6db74>&#34;pause&#34;</span>);
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></div><h3 id=读写文件>读写文件</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>HANDLE WINAPI <span style=color:#a6e22e>CreateFile</span>(
@@ -149,7 +149,7 @@ DRIVE_RAMDISK -&gt; 6 驱动器是RAM磁盘。
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>()
 </span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>	LPTSTR FileName <span style=color:#f92672>=</span> TEXT(<span style=color:#e6db74>&#34;c:</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Temp</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>1.txt&#34;</span>);
+</span></span><span style=display:flex><span>	LPTSTR FileName <span style=color:#f92672>=</span> <span style=color:#a6e22e>TEXT</span>(<span style=color:#e6db74>&#34;c:</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Temp</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>1.txt&#34;</span>);
 </span></span><span style=display:flex><span>	<span style=color:#75715e>/*
 </span></span></span><span style=display:flex><span><span style=color:#75715e>	
 </span></span></span><span style=display:flex><span><span style=color:#75715e>	if (DeleteFile(FileName)) {
@@ -168,26 +168,26 @@ DRIVE_RAMDISK -&gt; 6 驱动器是RAM磁盘。
 </span></span></span><span style=display:flex><span><span style=color:#75715e>		MessageBox(0, L&#34;MOVE成功！&#34;, L&#34;INFO&#34;, MB_OK);
 </span></span></span><span style=display:flex><span><span style=color:#75715e>	}
 </span></span></span><span style=display:flex><span><span style=color:#75715e>	*/</span>
-</span></span><span style=display:flex><span>	HANDLE hFile <span style=color:#f92672>=</span> CreateFile(TEXT(<span style=color:#e6db74>&#34;C:</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Temp</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>1.txt&#34;</span>),GENERIC_READ<span style=color:#f92672>|</span>GENERIC_WRITE,<span style=color:#ae81ff>0</span>,NULL,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
+</span></span><span style=display:flex><span>	HANDLE hFile <span style=color:#f92672>=</span> <span style=color:#a6e22e>CreateFile</span>(<span style=color:#a6e22e>TEXT</span>(<span style=color:#e6db74>&#34;C:</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Temp</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>1.txt&#34;</span>),GENERIC_READ<span style=color:#f92672>|</span>GENERIC_WRITE,<span style=color:#ae81ff>0</span>,NULL,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL);
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (hFile <span style=color:#f92672>==</span> INVALID_HANDLE_VALUE) {
-</span></span><span style=display:flex><span>		MessageBox(<span style=color:#ae81ff>0</span>, <span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;Error&#34;</span>, <span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;INFO&#34;</span>, MB_HELP);
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>MessageBox</span>(<span style=color:#ae81ff>0</span>, <span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;Error&#34;</span>, <span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;INFO&#34;</span>, MB_HELP);
 </span></span><span style=display:flex><span>	}
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>else</span> {
 </span></span><span style=display:flex><span>		CHAR Text[MAX_PATH];
-</span></span><span style=display:flex><span>		ZeroMemory(Text, MAX_PATH);
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>ZeroMemory</span>(Text, MAX_PATH);
 </span></span><span style=display:flex><span>		DWORD ReadLen;
-</span></span><span style=display:flex><span>		ReadFile(hFile, Text, MAX_PATH <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>, <span style=color:#f92672>&amp;</span>ReadLen, NULL);
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>ReadFile</span>(hFile, Text, MAX_PATH <span style=color:#f92672>-</span> <span style=color:#ae81ff>1</span>, <span style=color:#f92672>&amp;</span>ReadLen, NULL);
 </span></span><span style=display:flex><span>		std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;Length : &#34;</span> <span style=color:#f92672>&lt;&lt;</span> ReadLen <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34; Content :&#34;</span> <span style=color:#f92672>&lt;&lt;</span> Text <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>		DWORD WriteLen;
 </span></span><span style=display:flex><span>		CHAR content[] <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;Hello world !!!&#34;</span>;
-</span></span><span style=display:flex><span>		WriteFile(hFile, content, <span style=color:#66d9ef>sizeof</span>(content), <span style=color:#f92672>&amp;</span>WriteLen, FALSE);
+</span></span><span style=display:flex><span>		<span style=color:#a6e22e>WriteFile</span>(hFile, content, <span style=color:#66d9ef>sizeof</span>(content), <span style=color:#f92672>&amp;</span>WriteLen, FALSE);
 </span></span><span style=display:flex><span>	}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>	CloseHandle(hFile);
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>CloseHandle</span>(hFile);
 </span></span><span style=display:flex><span>	
-</span></span><span style=display:flex><span>	system(<span style=color:#e6db74>&#34;pause&#34;</span>);
+</span></span><span style=display:flex><span>	<span style=color:#a6e22e>system</span>(<span style=color:#e6db74>&#34;pause&#34;</span>);
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></div><h2 id=0x03-windows-线程>0x03 Windows 线程</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>HANDLE WINAPI <span style=color:#a6e22e>CreateThread</span>(
@@ -198,22 +198,22 @@ DRIVE_RAMDISK -&gt; 6 驱动器是RAM磁盘。
 </span></span><span style=display:flex><span>      _In_      DWORD                  dwCreationFlags,
 </span></span><span style=display:flex><span>      _Out_opt_ LPDWORD                lpThreadId
 </span></span><span style=display:flex><span>    );
-</span></span></code></pre></div><p>第一个参数 lpThreadAttributes 表示线程内核对象的安全属性，一般传入NULL表示使用默认设置。</p><p>第二个参数 dwStackSize 表示线程栈空间大小。传入0表示使用默认大小（1MB）。</p><p>第三个参数 lpStartAddress 表示新线程所执行的线程函数地址，多个线程可以使用同一个函数地址。</p><p>第四个参数 lpParameter 是传给线程函数的参数。</p><p>第五个参数 dwCreationFlags 指定额外的标志来控制线程的创建，为0表示线程创建之后立即就可以进行调度，如果为CREATE_SUSPENDED则表示线程创建后暂停运行，这样它就无法调度，直到调用ResumeThread()。</p><p>第六个参数 lpThreadId 将返回线程的ID号，传入NULL表示不需要返回该线程ID号。</p><ul><li>SuspendThread(HANDLE Thread); // 阻塞线程</li><li>ResumeThread(HANDLE Thread); // 启动线程</li></ul><p>线程可多次阻塞</p><h3 id=等待线程执行完毕>等待线程执行完毕</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>WaitForSingleObject(
+</span></span></code></pre></div><p>第一个参数 lpThreadAttributes 表示线程内核对象的安全属性，一般传入NULL表示使用默认设置。</p><p>第二个参数 dwStackSize 表示线程栈空间大小。传入0表示使用默认大小（1MB）。</p><p>第三个参数 lpStartAddress 表示新线程所执行的线程函数地址，多个线程可以使用同一个函数地址。</p><p>第四个参数 lpParameter 是传给线程函数的参数。</p><p>第五个参数 dwCreationFlags 指定额外的标志来控制线程的创建，为0表示线程创建之后立即就可以进行调度，如果为CREATE_SUSPENDED则表示线程创建后暂停运行，这样它就无法调度，直到调用ResumeThread()。</p><p>第六个参数 lpThreadId 将返回线程的ID号，传入NULL表示不需要返回该线程ID号。</p><ul><li>SuspendThread(HANDLE Thread); // 阻塞线程</li><li>ResumeThread(HANDLE Thread); // 启动线程</li></ul><p>线程可多次阻塞</p><h3 id=等待线程执行完毕>等待线程执行完毕</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#a6e22e>WaitForSingleObject</span>(
 </span></span><span style=display:flex><span>    _In_ HANDLE hHandle,
 </span></span><span style=display:flex><span>    _In_ DWORD dwMilliseconds <span style=color:#75715e>//等待时间 如果为INFINITE 则一直等待
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>    );
-</span></span></code></pre></div><h3 id=等待多个线程执行完毕>等待多个线程执行完毕</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span>WaitForMultipleObjects(
+</span></span></code></pre></div><h3 id=等待多个线程执行完毕>等待多个线程执行完毕</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#a6e22e>WaitForMultipleObjects</span>(
 </span></span><span style=display:flex><span>    _In_ DWORD nCount,
-</span></span><span style=display:flex><span>    _In_reads_(nCount) CONST HANDLE <span style=color:#f92672>*</span>lpHandles,
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>_In_reads_</span>(nCount) CONST HANDLE <span style=color:#f92672>*</span>lpHandles,
 </span></span><span style=display:flex><span>    _In_ BOOL bWaitAll,
 </span></span><span style=display:flex><span>    _In_ DWORD dwMilliseconds
 </span></span><span style=display:flex><span>    );
-</span></span><span style=display:flex><span>WaitForMultipleObjects(<span style=color:#ae81ff>2</span>, hThread, TRUE, INFINITE);
-</span></span><span style=display:flex><span>GetExitCodeThread(
+</span></span><span style=display:flex><span><span style=color:#a6e22e>WaitForMultipleObjects</span>(<span style=color:#ae81ff>2</span>, hThread, TRUE, INFINITE);
+</span></span><span style=display:flex><span><span style=color:#a6e22e>GetExitCodeThread</span>(
 </span></span><span style=display:flex><span>    _In_ HANDLE hThread,
 </span></span><span style=display:flex><span>    _Out_ LPDWORD lpExitCode
 </span></span><span style=display:flex><span>    );
-</span></span><span style=display:flex><span>GetExitCodeThread(hThread[<span style=color:#ae81ff>0</span>], <span style=color:#f92672>&amp;</span>ExitThreadCode);
-</span></span></code></pre></div></div><div class=container><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div><div class=container><section class=bio itemprop=author itemscope itemtype=http://schema.org/Person><div class=bio__blurb><h2 class=site-h2>网络安全爱好者、安全工具开发者</h2><p>现阶段在进行红队相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p></div><div class=bio__avatar><img src=/avatar.jpeg alt="Duncan McDougall and heir apparent"></div></section></div></div><footer class=site-footer><div class=container><div class=site-footer__col><h5>Get in touch</h5><p>If you like my project or have some questions,feel free
+</span></span><span style=display:flex><span><span style=color:#a6e22e>GetExitCodeThread</span>(hThread[<span style=color:#ae81ff>0</span>], <span style=color:#f92672>&amp;</span>ExitThreadCode);
+</span></span></code></pre></div></div><div class=container><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div><div class=container><section class=bio itemprop=author itemscope itemtype=http://schema.org/Person><div class=bio__blurb><h2 class=site-h2>网络安全爱好者、安全工具开发者</h2><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p></div><div class=bio__avatar><img src=/avatar.jpeg alt="Duncan McDougall and heir apparent"></div></section></div></div><footer class=site-footer><div class=container><div class=site-footer__col><h5>Get in touch</h5><p>If you like my project or have some questions,feel free
 to contact me</a>.</p></div><div class="site-footer__col site-footer__col--links"><h5>Me Elsewhere</h5><ul><li><a href=https://twitter.com/Rvn0xsy><i class="fab fa-twitter"></i> Twitter</a></li><li><a href=mailto:rvn0xsy@gmail.com><i class="fas fa-envelope"></i> E-mail</a></li><li><a href=https://github.com/Rvn0xsy><i class="fab fa-github"></i> Github</a></li></ul></div><div class="site-footer__col site-footer__col--links"><h5>Meta Links</h5><ul><li><a href=/projects/><i class="fas fa-code"></i> Projects</a></li><li><a href=/links/><i class="fas fa-link"></i> Links</a></li><li><a href=/post/><i class="fa fa-file-alt"></i> Posts</a></li><li><a href=/index.xml><i class="fa fa-rss-square"></i> Rss</a></li><li><a href=/tools/><i class="fas fa-tools"></i> Tools</a></li></ul></div><p class=site-footer__copyright>© 倾旋 2021. All rights reserved.</p></div></footer><script src=https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin=anonymous></script>
 <script>(function(){let e="language-plantuml";Array.prototype.forEach.call(document.querySelectorAll("[class^="+e+"]"),function(e){let t=document.createElement("IMG");t.loading="lazy",t.src="http://www.plantuml.com/plantuml/svg/~1"+plantumlEncoder.encode(e.innerText),e.parentNode.insertBefore(t,e),e.style.display="none"})})()</script></body></html>
