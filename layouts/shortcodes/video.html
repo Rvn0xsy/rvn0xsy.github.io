@@ -1,0 +1,25 @@
+{{- $bb_id := .Get "bb_id" | default (.Get 0) -}}
+{{- $yt_id := .Get "yt_id" | default (.Get 1) -}}
+{{- $container_id := print "video-" $bb_id $yt_id }}
+<div id="{{ $container_id }}" style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden;"></div>
+<script>
+  var r = new XMLHttpRequest();
+  r.addEventListener('load', function () {
+    container = document.getElementById('{{ $container_id }}')
+    data = JSON.parse(this.responseText)
+    bb_id = "{{ $bb_id }}"
+    yt_id = "{{ $yt_id }}"
+    if (data.country_code == "CN" || yt_id == 0 && bb_id != 0) {
+      container.innerHTML = '<iframe src="https://player.bilibili.com/player.html?aid=' + bb_id + '&amp;page=1" ' +
+        'style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allowfullscreen ' +
+        'title="Bilibili Video" ></iframe > '
+    } else if (yt_id != 0) {
+      container.innerHTML = '<iframe src="https://www.youtube.com/embed/' + yt_id + '"' +
+        'style="position:absolute;top:0;left:0;width:100%;height:100%; border:0;" ' +
+        'title="YouTube video player" frameborder="0" allow="accelerometer;autoplay;' +
+        'clipboard-write;encrypted-media;gyroscope;picture-in-picture;web-share"allowfullscreen></iframe>'
+    }
+  })
+  r.open("GET", "https://ipapi.co/json/")
+  r.send()
+</script>

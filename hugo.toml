@@ -1,0 +1,95 @@
+baseURL = "https://payloads.online/"
+languageCode = "zh-cn"
+title = "倾旋的博客"
+copyright = "倾旋 All rights reserved"
+theme = "ink-free"
+
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+  course = "courses"
+
+[params]
+  author = "倾旋"
+  email = "rvn0xsy@gmail.com"
+  avatar = "/avatar.jpeg"
+  description = "现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。"
+  subtitle = "现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。"
+  toc = "floating"
+  wpm = 250
+  maxTags = 7
+	mode = "dark"
+
+
+[menu]
+  [[menu.main]]
+    identifier = "home"
+    name = "首页"
+    url = "/"
+    weight = 1
+  [[menu.main]]
+    identifier = "posts"
+    name = "文章列表"
+    url = "/posts/"
+    weight = 2
+  [[menu.main]]
+    identifier = "tags"
+    name = "标签"
+    url = "/tags"
+    weight = 3
+  [[menu.main]]
+    identifier = "projects"
+    name = "开源项目"
+    url = "/projects"
+    weight = 4
+  [[menu.main]]
+    identifier = "about"
+    name = "关于我"
+    url = "/about"
+    weight = 5
+  [[menu.main]]
+    identifier = "links"
+    name = "友情链接"
+    url = "/links/"
+    weight = 6
+  [[menu.main]]
+    identifier = "message"
+    name = "留言"
+    url = "/message"
+    weight = 7
+  [[menu.main]]
+    identifier = "sponsor"
+    name = "赞助"
+    url = "/sponsor"
+    weight = 8
+
+[[params.social]]
+name = "Github"
+icon = "github"
+url = "https://github.com/rvn0xsy/"
+
+[[params.social]]
+name = "RSS"
+icon = "rss"
+url = "/index.xml"
+
+[[params.social]]
+name = "Wechat"
+icon = "message-circle"
+url = "/"
+
+[markup]
+  [markup.highlight]
+    codeFences = true
+    guessSyntax = true
+    hl_Lines = ""
+    lineNoStart = 1
+    lineNos = true
+    lineNumbersInTable = true
+    noClasses = true
+    tabWidth = 4
+
+  [markup.tableOfContents]
+    endLevel = 3
+    ordered = true
+    startLevel = 2 
