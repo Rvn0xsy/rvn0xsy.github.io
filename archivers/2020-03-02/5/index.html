@@ -1,44 +1,83 @@
-<!doctype html><html lang><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Cobalt Strike Aggressor Script （第二课） « 倾旋的博客</title><meta name=description content="倾旋的博客"><meta name=author content="倾旋"><link rel=stylesheet href=/css/Font-Awesome-5.15.3.all.min.css><link rel=stylesheet href=/sass/researcher.min.css><link rel=icon type=image/ico href=https://payloads.online/favicon.ico></head><body><input type=checkbox id=menu-toggle class=menu-toggle>
-<label tabindex=0 for=menu-toggle class=burger><span></span> <span></span> <span></span><div class=burger-text>Menu</div></label><nav class=main-nav><ul><li><a href=/projects/>Projects</a></li><li><a href=/links/>Links</a></li><li><a href=/post/>Posts</a></li><li><a href=/index.xml>Rss</a></li><li><a href=/tools/>Tools</a></li></ul></nav><nav><a href=/ class=all-posts-link>‹ All Posts</a></nav><div id=content><div class=container><h1>Cobalt Strike Aggressor Script （第二课）</h1><p>本节课带大家做一个Say-Hello的脚本来熟悉菜单的构建以及对话框的使用</p><div class=toc-wrapper><div class=post-toc id=post-toc><aside><nav id=TableOfContents><ul><li><a href=#基础菜单>基础菜单</a></li><li><a href=#日志函数>日志函数</a></li><li><a href=#对话框-输入>对话框-输入</a></li></ul></nav></aside><a href=# id=toc-toggle></a></div></div><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/928c40c2-4f5f-11ec-83fc-00d861bf4abb.png alt></p></p><h2 id=基础菜单>基础菜单</h2><p>以popup当做修饰符号的函数体是菜单，一般是Cobalt Strike的菜单栏；</p><p>先构建一个简单的菜单：</p><pre tabindex=0><code>popup event_say {
-        item(&#34;&amp;Say&#34;, { 
-           # 函数体
-        });
-        separator(); #分割线
-}
-</code></pre><p>一个菜单可以有多个item，也就是多个元素，元素中可以写动作代码，也可以写函数。</p><pre tabindex=0><code>popup event_say {
-        item(&#34;&amp;Say&#34;, { 
-            say();
-        });
-        separator();
-}
-</code></pre><p>紧接着还有一个重要的菜单函数：<code>menubar("Event-Say", "event_say");</code></p><p>第一个参数是菜单名称，第二个是函数名称，这个函数通过参数将菜单名称与函数名绑定起来。</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/92da6cd4-4f5f-11ec-9f1d-00d861bf4abb.png alt=2020-03-01-11-43-30></p></p><h2 id=日志函数>日志函数</h2><p>通过elog函数可以打印事件日志：</p><pre tabindex=0><code>elog(&#34;something ...&#34;);
-</code></pre><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/93151ca8-4f5f-11ec-8a98-00d861bf4abb.png alt=2020-03-01-11-43-38></p></p><p>我们可以封装一个函数，名为say：</p><pre tabindex=0><code>sub say {
-	elog(&#34;\c3Hello Everyone!&#34;);
-}
-</code></pre><p><code>\c</code>是Cobalt Strike的彩色样式开关，类似的还有其他颜色：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/937309da-4f5f-11ec-86b9-00d861bf4abb.png alt=2020-03-01-11-43-47></p></p><p>执行结果：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/93bef9bc-4f5f-11ec-b54d-00d861bf4abb.png alt=2020-03-01-11-43-53></p></p><h2 id=对话框-输入>对话框-输入</h2><pre tabindex=0><code>dialog(&#34;Hello&#34;, # 对话框标题-字符串 
-%(name =&gt; &#34;tom&#34;),  # 对话框输入项及默认值-hashes
-&amp;callback); # 对话框点击完成后的回调函数
-</code></pre><p>这里我实现了一个输入框，并将输入框的值通过elog打印出来：</p><pre tabindex=0><code>sub say {
-	elog(&#34;\c3Hello &#34;.$1.&#34;!&#34;); # 日志打印
-}
-
-menubar(&#34;Event-Say&#34;, &#34;event_say&#34;); # 注册菜单
-
-popup event_say {
-        item(&#34;&amp;Say&#34;, { 
-            dialog_show($dialog); # 展示对话框
-        });
-        separator(); # 分割线
-}
-
-
-sub callback {
-	say($3[&#39;name&#39;]); # $1 为 dialog的引用 $2 按钮的名称 $3 对话框输入的值，hashes类型
-}
-
-$dialog = dialog(&#34;Hello&#34;, %(name =&gt; &#34;tom&#34;), &amp;callback);
-drow_text($dialog, &#34;name&#34;, &#34;YourName:  &#34;);
-dbutton_action($dialog, &#34;Go&#34;);
-</code></pre><p>dialog的手册：https://cobaltstrike.com/aggressor-script/functions.html#dialog</p><p>当点击 菜单项时，弹出对话框：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/940884d8-4f5f-11ec-9437-00d861bf4abb.png alt=2020-03-01-11-44-03></p></p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9451dc00-4f5f-11ec-bcca-00d861bf4abb.png alt=2020-03-01-11-44-10></p></p></div><div class=container><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div><div class=container><section class=bio itemprop=author itemscope itemtype=http://schema.org/Person><div class=bio__blurb><h2 class=site-h2>网络安全爱好者、安全工具开发者</h2><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p></div><div class=bio__avatar><img src=/avatar.jpeg alt="Duncan McDougall and heir apparent"></div></section></div></div><footer class=site-footer><div class=container><div class=site-footer__col><h5>Get in touch</h5><p>If you like my project or have some questions,feel free
-to contact me</a>.</p></div><div class="site-footer__col site-footer__col--links"><h5>Me Elsewhere</h5><ul><li><a href=https://twitter.com/Rvn0xsy><i class="fab fa-twitter"></i> Twitter</a></li><li><a href=mailto:rvn0xsy@gmail.com><i class="fas fa-envelope"></i> E-mail</a></li><li><a href=https://github.com/Rvn0xsy><i class="fab fa-github"></i> Github</a></li></ul></div><div class="site-footer__col site-footer__col--links"><h5>Meta Links</h5><ul><li><a href=/projects/><i class="fas fa-code"></i> Projects</a></li><li><a href=/links/><i class="fas fa-link"></i> Links</a></li><li><a href=/post/><i class="fa fa-file-alt"></i> Posts</a></li><li><a href=/index.xml><i class="fa fa-rss-square"></i> Rss</a></li><li><a href=/tools/><i class="fas fa-tools"></i> Tools</a></li></ul></div><p class=site-footer__copyright>© 倾旋 2021. All rights reserved.</p></div></footer><script src=https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin=anonymous></script>
-<script>(function(){let e="language-plantuml";Array.prototype.forEach.call(document.querySelectorAll("[class^="+e+"]"),function(e){let t=document.createElement("IMG");t.loading="lazy",t.src="http://www.plantuml.com/plantuml/svg/~1"+plantumlEncoder.encode(e.innerText),e.parentNode.insertBefore(t,e),e.style.display="none"})})()</script></body></html>
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>Cobalt Strike Aggressor Script （第二课） - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1">
+<link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script></head><body><div class="container wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=post><div class=post-header><div class=meta><div class=date><span class=day>02</span>
+<span class=rest>Mar 2020</span></div></div><div class=matter><h1 class=title>Cobalt Strike Aggressor Script （第二课）</h1></div></div><p><img src=https://images.payloads.online/928c40c2-4f5f-11ec-83fc-00d861bf4abb.png alt></p><h2 id=基础菜单>基础菜单</h2><p>以popup当做修饰符号的函数体是菜单，一般是Cobalt Strike的菜单栏；</p><p>先构建一个简单的菜单：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>popup event_say {
+</span></span><span style=display:flex><span>        item(&#34;&amp;Say&#34;, { 
+</span></span><span style=display:flex><span>           # 函数体
+</span></span><span style=display:flex><span>        });
+</span></span><span style=display:flex><span>        separator(); #分割线
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p>一个菜单可以有多个item，也就是多个元素，元素中可以写动作代码，也可以写函数。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>popup event_say {
+</span></span><span style=display:flex><span>        item(&#34;&amp;Say&#34;, { 
+</span></span><span style=display:flex><span>            say();
+</span></span><span style=display:flex><span>        });
+</span></span><span style=display:flex><span>        separator();
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p>紧接着还有一个重要的菜单函数：<code>menubar("Event-Say", "event_say");</code></p><p>第一个参数是菜单名称，第二个是函数名称，这个函数通过参数将菜单名称与函数名绑定起来。</p><p><img src=https://images.payloads.online/92da6cd4-4f5f-11ec-9f1d-00d861bf4abb.png alt=2020-03-01-11-43-30></p><h2 id=日志函数>日志函数</h2><p>通过elog函数可以打印事件日志：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>elog(&#34;something ...&#34;);
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://images.payloads.online/93151ca8-4f5f-11ec-8a98-00d861bf4abb.png alt=2020-03-01-11-43-38></p><p>我们可以封装一个函数，名为say：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>sub say {
+</span></span><span style=display:flex><span>	elog(&#34;\c3Hello Everyone!&#34;);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p><code>\c</code>是Cobalt Strike的彩色样式开关，类似的还有其他颜色：</p><p><img src=https://images.payloads.online/937309da-4f5f-11ec-86b9-00d861bf4abb.png alt=2020-03-01-11-43-47></p><p>执行结果：</p><p><img src=https://images.payloads.online/93bef9bc-4f5f-11ec-b54d-00d861bf4abb.png alt=2020-03-01-11-43-53></p><h2 id=对话框-输入>对话框-输入</h2><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>dialog(&#34;Hello&#34;, # 对话框标题-字符串 
+</span></span><span style=display:flex><span>%(name =&gt; &#34;tom&#34;),  # 对话框输入项及默认值-hashes
+</span></span><span style=display:flex><span>&amp;callback); # 对话框点击完成后的回调函数
+</span></span></code></pre></td></tr></table></div></div><p>这里我实现了一个输入框，并将输入框的值通过elog打印出来：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>sub say {
+</span></span><span style=display:flex><span>	elog(&#34;\c3Hello &#34;.$1.&#34;!&#34;); # 日志打印
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>menubar(&#34;Event-Say&#34;, &#34;event_say&#34;); # 注册菜单
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>popup event_say {
+</span></span><span style=display:flex><span>        item(&#34;&amp;Say&#34;, { 
+</span></span><span style=display:flex><span>            dialog_show($dialog); # 展示对话框
+</span></span><span style=display:flex><span>        });
+</span></span><span style=display:flex><span>        separator(); # 分割线
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>sub callback {
+</span></span><span style=display:flex><span>	say($3[&#39;name&#39;]); # $1 为 dialog的引用 $2 按钮的名称 $3 对话框输入的值，hashes类型
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$dialog = dialog(&#34;Hello&#34;, %(name =&gt; &#34;tom&#34;), &amp;callback);
+</span></span><span style=display:flex><span>drow_text($dialog, &#34;name&#34;, &#34;YourName:  &#34;);
+</span></span><span style=display:flex><span>dbutton_action($dialog, &#34;Go&#34;);
+</span></span></code></pre></td></tr></table></div></div><p>dialog的手册：https://cobaltstrike.com/aggressor-script/functions.html#dialog</p><p>当点击 菜单项时，弹出对话框：</p><p><img src=https://images.payloads.online/940884d8-4f5f-11ec-9437-00d861bf4abb.png alt=2020-03-01-11-44-03></p><p><img src=https://images.payloads.online/9451dc00-4f5f-11ec-bcca-00d861bf4abb.png alt=2020-03-01-11-44-10></p><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div></div><div class="footer wrapper"><nav class=nav><div>2020 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script></body></html>

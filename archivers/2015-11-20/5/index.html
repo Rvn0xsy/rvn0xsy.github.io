@@ -1,86 +1,167 @@
-<!doctype html><html lang><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>华为交换机MUX-VLAN « 倾旋的博客</title><meta name=description content="倾旋的博客"><meta name=author content="倾旋"><link rel=stylesheet href=/css/Font-Awesome-5.15.3.all.min.css><link rel=stylesheet href=/sass/researcher.min.css><link rel=icon type=image/ico href=https://payloads.online/favicon.ico></head><body><input type=checkbox id=menu-toggle class=menu-toggle>
-<label tabindex=0 for=menu-toggle class=burger><span></span> <span></span> <span></span><div class=burger-text>Menu</div></label><nav class=main-nav><ul><li><a href=/projects/>Projects</a></li><li><a href=/links/>Links</a></li><li><a href=/post/>Posts</a></li><li><a href=/index.xml>Rss</a></li><li><a href=/tools/>Tools</a></li></ul></nav><nav><a href=/ class=all-posts-link>‹ All Posts</a></nav><div id=content><div class=container><h1>华为交换机MUX-VLAN</h1><p>本文记录一下华为交换机MUX-VLAN配置</p><div class=toc-wrapper><div class=post-toc id=post-toc><aside><nav id=TableOfContents></nav></aside><a href=# id=toc-toggle></a></div></div><p>本文记录一下华为交换机MUX-VLAN配置</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/d1b893a0-4f5e-11ec-b60d-00d861bf4abb.png alt="enter description here" title=0x11></p></p><pre tabindex=0><code>
-&lt;Huawei&gt;sys
-
-[Huawei]vlan batch 100 20 30 10
-
-提示：此操作可能耗时较长。请稍等…完成。
-
-[Huawei]port-group group-member e0/0/2 to e0/0/4
-
-[Huawei-port-group]port link-type access
-
-[Huawei-Ethernet0/0/2]port link-type access
-
-[Huawei-Ethernet0/0/3]port link-type access
-
-[Huawei-Ethernet0/0/4]port link-type access
-
-[Huawei-port-group]port default vlan 100
-
-[Huawei-Ethernet0/0/2]port default vlan 100
-
-[Huawei-Ethernet0/0/3]port default vlan 100
-
-[Huawei-Ethernet0/0/4]port default vlan 100
-
-[Huawei]port-group group-member e 0/0/5 to e0/0/6
-
-[Huawei-port-group]port link-type access
-
-[Huawei-Ethernet0/0/5]port link-type access
-
-[Huawei-Ethernet0/0/6]port link-type access
-
-[Huawei-port-group]port default vlan 10
-
-[Huawei-Ethernet0/0/5]port default vlan 10
-
-[Huawei-Ethernet0/0/6]port default vlan 10
-
-[Huawei-port-group]q
-
-[Huawei]int e0/0/20
-
-[Huawei-Ethernet0/0/20]port link-type access
-
-[Huawei-Ethernet0/0/20]port default vlan 20
-
-[Huawei-Ethernet0/0/20]int e0/0/1
-
-[Huawei-Ethernet0/0/1]port link-type access
-
-[Huawei-Ethernet0/0/1]port default vlan 30
-
-[Huawei-Ethernet0/0/1]q
-
-[Huawei]vlan 30
-
-[Huawei-vlan30]mux-vlan
-
-[Huawei-vlan30]subordinate group 10 20
-
-[Huawei-vlan30]subordinate separate 100
-
-[Huawei]port-group group-member e0/0/1 to e0/0/22
-
-[Huawei-port-group]port mux-vlan enable
-
-[Huawei-Ethernet0/0/1]port mux-vlan enable
-
-[Huawei-Ethernet0/0/2]port mux-vlan enable
-
-[Huawei-Ethernet0/0/3]port mux-vlan enable
-
-[Huawei-Ethernet0/0/4]port mux-vlan enable
-
-[Huawei-Ethernet0/0/5]port mux-vlan enable
-
-[Huawei-Ethernet0/0/6]port mux-vlan enable
-
-[Huawei-port-group]q
-
-&lt;Huawei&gt;save
-</code></pre><p>将把当前的配置保存到存储设备中。</p><p>是否继续？[Y/N]Y</p><p>正在将运行时的配置写入到存储设备0。</p><p>保存配置成功。</p><p>实验链接：http://pan.baidu.com/s/1jGFBAKI 密码：c9pe</p></div><div class=container><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div><div class=container><section class=bio itemprop=author itemscope itemtype=http://schema.org/Person><div class=bio__blurb><h2 class=site-h2>网络安全爱好者、安全工具开发者</h2><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p></div><div class=bio__avatar><img src=/avatar.jpeg alt="Duncan McDougall and heir apparent"></div></section></div></div><footer class=site-footer><div class=container><div class=site-footer__col><h5>Get in touch</h5><p>If you like my project or have some questions,feel free
-to contact me</a>.</p></div><div class="site-footer__col site-footer__col--links"><h5>Me Elsewhere</h5><ul><li><a href=https://twitter.com/Rvn0xsy><i class="fab fa-twitter"></i> Twitter</a></li><li><a href=mailto:rvn0xsy@gmail.com><i class="fas fa-envelope"></i> E-mail</a></li><li><a href=https://github.com/Rvn0xsy><i class="fab fa-github"></i> Github</a></li></ul></div><div class="site-footer__col site-footer__col--links"><h5>Meta Links</h5><ul><li><a href=/projects/><i class="fas fa-code"></i> Projects</a></li><li><a href=/links/><i class="fas fa-link"></i> Links</a></li><li><a href=/post/><i class="fa fa-file-alt"></i> Posts</a></li><li><a href=/index.xml><i class="fa fa-rss-square"></i> Rss</a></li><li><a href=/tools/><i class="fas fa-tools"></i> Tools</a></li></ul></div><p class=site-footer__copyright>© 倾旋 2021. All rights reserved.</p></div></footer><script src=https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin=anonymous></script>
-<script>(function(){let e="language-plantuml";Array.prototype.forEach.call(document.querySelectorAll("[class^="+e+"]"),function(e){let t=document.createElement("IMG");t.loading="lazy",t.src="http://www.plantuml.com/plantuml/svg/~1"+plantumlEncoder.encode(e.innerText),e.parentNode.insertBefore(t,e),e.style.display="none"})})()</script></body></html>
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>华为交换机MUX-VLAN - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1">
+<link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script></head><body><div class="container wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=post><div class=post-header><div class=meta><div class=date><span class=day>20</span>
+<span class=rest>Nov 2015</span></div></div><div class=matter><h1 class=title>华为交换机MUX-VLAN</h1></div></div><p>本文记录一下华为交换机MUX-VLAN配置</p><p><figure><img src=https://images.payloads.online/d1b893a0-4f5e-11ec-b60d-00d861bf4abb.png alt="enter description here" class=figcaption-img><figcaption>0x11</figcaption></figure></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">59
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">60
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">61
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">62
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">63
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">64
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">65
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">66
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">67
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">68
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">69
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">70
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">71
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">72
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">73
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">74
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">75
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">76
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">77
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">78
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">79
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">80
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">81
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">82
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>
+</span></span><span style=display:flex><span>&lt;Huawei&gt;sys
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei]vlan batch 100 20 30 10
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>提示：此操作可能耗时较长。请稍等…完成。
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei]port-group group-member e0/0/2 to e0/0/4
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-port-group]port link-type access
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/2]port link-type access
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/3]port link-type access
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/4]port link-type access
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-port-group]port default vlan 100
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/2]port default vlan 100
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/3]port default vlan 100
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/4]port default vlan 100
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei]port-group group-member e 0/0/5 to e0/0/6
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-port-group]port link-type access
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/5]port link-type access
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/6]port link-type access
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-port-group]port default vlan 10
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/5]port default vlan 10
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/6]port default vlan 10
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-port-group]q
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei]int e0/0/20
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/20]port link-type access
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/20]port default vlan 20
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/20]int e0/0/1
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/1]port link-type access
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/1]port default vlan 30
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/1]q
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei]vlan 30
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-vlan30]mux-vlan
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-vlan30]subordinate group 10 20
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-vlan30]subordinate separate 100
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei]port-group group-member e0/0/1 to e0/0/22
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-port-group]port mux-vlan enable
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/1]port mux-vlan enable
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/2]port mux-vlan enable
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/3]port mux-vlan enable
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/4]port mux-vlan enable
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/5]port mux-vlan enable
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-Ethernet0/0/6]port mux-vlan enable
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Huawei-port-group]q
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>&lt;Huawei&gt;save
+</span></span></code></pre></td></tr></table></div></div><p>将把当前的配置保存到存储设备中。</p><p>是否继续？[Y/N]Y</p><p>正在将运行时的配置写入到存储设备0。</p><p>保存配置成功。</p><p>实验链接：http://pan.baidu.com/s/1jGFBAKI 密码：c9pe</p><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div></div><div class="footer wrapper"><nav class=nav><div>2015 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script></body></html>

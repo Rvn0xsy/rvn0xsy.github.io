@@ -1,0 +1,104 @@
+body {
+  font-family: "Iowan Old Style", "Ovo", "Hoefler Text", Georgia, "Times New Roman", "TIBch", "Source Han Sans", "PingFangSC-Regular", "Hiragino Sans GB", "STHeiti", "Microsoft Yahei", "Droid Sans Fallback", "WenQuanYi Micro Hei", sans-serif;
+  letter-spacing: 1px;
+}
+
+
+html body {
+  background-color: #f5f5d8 !important;
+}
+
+html.dark body {
+  background-color: #282a35 !important;
+}
+
+
+blockquote {
+  margin-left: 0;
+}
+
+#TableOfContents ul {
+  list-style-position: unset;
+}
+
+.section-nav {
+  padding-left: 10px;
+  margin-left: 5px;
+}
+
+h1 {
+  font-size: 1.5em;
+}
+
+h2 {
+  font-size: 1.4em;
+}
+
+h3 {
+  font-size: 1.3em;
+}
+
+h4 {
+  font-size: 1.2em;
+}
+
+h5 {
+  font-size: 1.1em;
+}
+
+blockquote {
+  margin-top: 10px;
+  border: 1px solid #e2e3e6;
+  border-left: 5px solid #e2e3e6;
+  border-radius: 2%;
+  padding: 5px 10px;
+  font-style: normal;
+}
+
+.highlight {
+  border-radius: 0.2em; 
+}
+
+code {
+  font-size: 1.2em;
+  text-wrap: wrap; 
+  word-break: break-all;
+}
+
+table th {
+  background-color: #aaa;
+}
+
+html.dark table th {
+  background-color: #666;
+}
+
+table th, table tr {
+  border: 1px solid #eee;
+}
+
+.utterances {
+  max-width: 100%;
+}
+
+.tag-cloud a {
+  display: inline-block;
+  width: 150px;
+  color: black !important;
+  border: 1px solid #a0a0a0;
+  border-radius: 1% 2% 1% 2%;
+  padding: 5px;
+  margin-top: 10px;
+  font-size: 1.4rem !important;
+  text-align: center;
+}
+
+html.dark td pre code {
+  color: #fff !important;
+}
+
+.post .tags a {
+  color: inherit;
+  border: 1px solid #aaa;
+}
+

