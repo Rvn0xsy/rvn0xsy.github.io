@@ -1,0 +1,107 @@
+baseURL = "http://example.org/"
+languageCode = "en-us"
+title = "Ink-Free"
+theme = "ink-free"
+paginate = 5
+
+copyright = "© Copyright notice"
+# Demo only
+#ignoreErrors = ["error-missing-instagram-accesstoken"]
+
+[permalinks]
+  posts = "/:year/:month/:title"
+
+[params]
+	subtitle = "Crisp, minimal, privacy-conscious personal [blog theme for Hugo](https://github.com/chollinger93/ink-free)"
+
+	# Optional 64x64 avatar image.
+	#avatar = "https://image.freepik.com/free-vector/young-man-head-with-beard-avatar-character_24877-36786.jpg"
+
+	featherIconsCDN = false
+
+	# Site color - dark/light/auto
+	mode = "auto"
+
+	# Enable a table of contents:
+	# Either "static"/true, "floating", "both", or "none" (default: static)
+	# The floating TOC dissapears on mobile and adds 200px vertical space
+	toc = "both"
+	# Whether to truncate everything but H1/H2 headings if the last element in a TOC isn't visible. Enabled by default
+	enableTocTrunate = true
+
+	# Max tags
+	maxTags = 7
+
+	# Define words per minute to approximate reading time
+	wpm = 250
+
+	# Stupid footers :)
+	footers = [ 
+		"What Tiger King can teach us about x86 Assembly",
+		"10 Reasons why gcc SHOULD be re-written in JavaScript - You won't believe #8!"
+	]
+
+	# Github base url
+	github = "https://github.com/chollinger93/ink-free"
+
+	# For statistics, we can compare the total word count against a book of your choice
+	statisticsEnabled = true
+	referenceBookWords = 11500.0
+	referenceBook = "The Metamorphosis"
+	referenceAuthor = "Franz Kafka"
+
+# Nav.
+[[menu.main]]
+name = "Home"
+url = "/"
+weight = 1
+
+[[menu.main]]
+name = "All posts"
+url = "/posts"
+weight = 2
+
+[[menu.main]]
+name = "About"
+url = "/about"
+weight = 3
+
+[[menu.main]]
+name = "Tags & Stats"
+url = "/tags"
+weight = 4
+
+[[params.social]]
+name = "Github"
+icon = "github"
+url = "https://github.com/chollinger93/"
+
+[[params.social]]
+name = "Twitter"
+icon = "twitter"
+url = "https://twitter.com/chollinger93/"
+
+[[params.social]]
+name = "RSS"
+icon = "rss"
+url = "/index.xml"
+
+[taxonomies]
+   tag = "tags"
+
+[markup]
+  [markup.highlight]
+    codeFences = true
+    guessSyntax = false
+    hl_Lines = ""
+    lineNoStart = 1
+    lineNos = true
+    lineNumbersInTable = true
+    noClasses = true
+    style = "github"
+    tabWidth = 4
+
+  [markup.tableOfContents]
+    endLevel = 3
+    ordered = true
+    startLevel = 2 
