@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>代码审计 on 倾旋的博客</title><link>https://payloads.online/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/</link><description>Recent content in 代码审计 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Mon, 18 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/index.xml" rel="self" type="application/rss+xml"/><item><title>某安全数据交换系统的漏洞挖掘</title><link>https://payloads.online/archivers/2023-09-18/code-auditing/</link><pubDate>Mon, 18 Sep 2023 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2023-09-18/code-auditing/</guid><description>本文写于2022年，分享一下挖掘某安全数据交换系统漏洞的过程。
+基本信息：
+后台管理界面用户名密码：admin/nxg@LL99 操作系统：root / bo%Fn!71、uninxg / lx$zR9ce 配置网络 根据产品安装文档环境搭建完毕后，手动设置IP地址和DNS：
+手工修改 /etc/resolv.conf
+1 2 nameserver 114.114.114.114 nameserver 8.8.8.8 修改 /etc/NetworkManager/NetworkManager.conf 文件，在main部分添加 “dns=none” 选项：
+1 2 3 [main] #plugins=ifcfg-rh dns=none 网络IP地址配置文件在 /etc/sysconfig/network-scripts 文件夹下：
+我添加了两个网卡，其中一个用来供本机访问：
+/etc/sysconfig/network-scripts/ifcfg-eth1-1
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 HWADDR=00:0C:29:4B:16:B4 TYPE=Ethernet PROXY_METHOD=none BROWSER_ONLY=no BOOTPROTO=none IPADDR=192.168.117.100 GATEWAY=192.168.117.2 PREFIX=24 DNS1=114.114.114.114 DNS2=8.8.8.8 DEFROUTE=yes IPV4_FAILURE_FATAL=no IPV4_DNS_PRIORITY=100 IPV6INIT=no NAME=eth1 UUID=8a47e710-cadd-49b5-b9b7-33a324c4ab66 DEVICE=eth1 ONBOOT=no 观察启动命令行：</description></item></channel></rss>

@@ -1,0 +1,109 @@
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>需要保持的几个好习惯 - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1">
+<link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script></head><body><div class="container wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=post><div class=post-header><div class=meta><div class=date><span class=day>31</span>
+<span class=rest>Oct 2023</span></div></div><div class=matter><h1 class=title>需要保持的几个好习惯</h1></div></div><h3 id=使用带密码的私钥>使用带密码的私钥</h3><p>使用带密码的私钥能够确保公私钥文件被窃取后，依然无法使用。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># ssh-keygen 命令</span>
+</span></span><span style=display:flex><span>$ ssh-keygen -t rsa -f secret-key
+</span></span><span style=display:flex><span>Generating public/private rsa key pair.
+</span></span><span style=display:flex><span>Enter passphrase <span style=color:#f92672>(</span>empty <span style=color:#66d9ef>for</span> no passphrase<span style=color:#f92672>)</span>: <span style=color:#75715e># 输入密码</span>
+</span></span><span style=display:flex><span>Enter same passphrase again: <span style=color:#75715e># 输入密码</span>
+</span></span></code></pre></td></tr></table></div></div><p><img src=https://images.payloads.online/2024-07-29-fcceb13ae2e9e9954f3e168e822e583565003cf814c46b123015ed18723b01f8.png alt=0></p><h3 id=使用命令行提示工具-oh-my-zsh>使用命令行提示工具 oh-my-zsh</h3><p><a href=https://ohmyz.sh/>oh my zsh</a></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ sh -c <span style=color:#e6db74>&#34;</span><span style=color:#66d9ef>$(</span>curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh<span style=color:#66d9ef>)</span><span style=color:#e6db74>&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>$ vim .zshrc
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 我使用的插件</span>
+</span></span><span style=display:flex><span>plugins<span style=color:#f92672>=(</span>
+</span></span><span style=display:flex><span>git 
+</span></span><span style=display:flex><span>docker 
+</span></span><span style=display:flex><span>zsh-syntax-highlighting 
+</span></span><span style=display:flex><span>zsh-autosuggestions 
+</span></span><span style=display:flex><span>zsh-completions 
+</span></span><span style=display:flex><span>copyfil    
+</span></span><span style=display:flex><span>e emoji
+</span></span><span style=display:flex><span>extract
+</span></span><span style=display:flex><span>sudo
+</span></span><span style=display:flex><span><span style=color:#f92672>)</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=使用更好的替代命令>使用更好的替代命令</h3><p>在Linux命令行下，会经常使用系统命令进行工作，但是内置的命令功能很单一，需要做一些增强，我这里摘取部分配置：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># https://github.com/AmineZouitine/rmt.rs</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 删除文件备份</span>
+</span></span><span style=display:flex><span>alias rm<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;rmt&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># https://github.com/lsd-rs/lsd</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 查看文件列表高亮</span>
+</span></span><span style=display:flex><span>alias ls<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;lsd&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 使用pyenv管理Python环境</span>
+</span></span><span style=display:flex><span>eval <span style=color:#e6db74>&#34;</span><span style=color:#66d9ef>$(</span>pyenv init -<span style=color:#66d9ef>)</span><span style=color:#e6db74>&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 这里放一些零散的二进制文件工具</span>
+</span></span><span style=display:flex><span>export PATH<span style=color:#f92672>=</span>$HOME/.local/bin:$PATH
+</span></span><span style=display:flex><span><span style=color:#75715e># 这里放一些常用的管理系统的Bash脚本</span>
+</span></span><span style=display:flex><span>export PATH<span style=color:#f92672>=</span>$HOME/scripts:$PATH
+</span></span></code></pre></td></tr></table></div></div><h3 id=将后台程序变成服务>将后台程序变成服务</h3><p>后台程序就是那些没有界面，但是需要命令行运行的程序，这类程序我其实不太喜欢将他们单独运行在一个终端中，Linux\Windows\MacOS都有提供创建服务的功能，我这里举例Clash服务的管理：</p><p><img src=https://images.payloads.online/2024-07-29-6235a4a002d7db198ce53560655278dccec9d0ac72f41fc1139b18655b9e27e1.png alt=1></p><p>通过systemctl可以控制Clash服务的启动和暂停，在scripts目录中放置了操作iptables转发规则的脚本：</p><p><img src=https://images.payloads.online/2024-07-29-8a9b0f9c0ed11a124153ebe49adb20d43a471199f9992184ad7a8c705faff3be.png alt=2></p><p>MacOS可以通过创建，需要创建一个以<code>plist</code> 扩展名的XML文件：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=display:flex><span><span style=color:#75715e>&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>&lt;!DOCTYPE plist PUBLIC &#34;-//Apple//DTD PLIST 1.0//EN&#34;
+</span></span></span><span style=display:flex><span><span style=color:#75715e>          &#34;http://www.apple.com/DTDs/PropertyList-1.0.dtd&#34;&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;plist</span> <span style=color:#a6e22e>version=</span><span style=color:#e6db74>&#34;1.0&#34;</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;dict&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>&lt;key&gt;</span>Label<span style=color:#f92672>&lt;/key&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>&lt;string&gt;</span>com.clash.myservice<span style=color:#f92672>&lt;/string&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>&lt;key&gt;</span>Program<span style=color:#f92672>&lt;/key&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>&lt;string&gt;</span>/path/to/your/clash<span style=color:#f92672>&lt;/string&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>&lt;key&gt;</span>RunAtLoad<span style=color:#f92672>&lt;/key&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>&lt;true/&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>&lt;key&gt;</span>KeepAlive<span style=color:#f92672>&lt;/key&gt;</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>&lt;true/&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;/dict&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;/plist&gt;</span>
+</span></span></code></pre></td></tr></table></div></div><p>将 <code>clash.plist</code> 文件移动到MacOS的LaunchAgents目录中:</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>$ mv clash.plist ~/Library/LaunchAgents/
+</span></span><span style=display:flex><span>$ launchctl load ~/Library/LaunchAgents/clash.plist
+</span></span><span style=display:flex><span>$ launchctl enable gui/501/clash 
+</span></span><span style=display:flex><span>$ launchctl stop clash
+</span></span><span style=display:flex><span>$ launchctl start clash
+</span></span></code></pre></td></tr></table></div></div><h3 id=保持使用浏览器收藏夹的好习惯>保持使用浏览器收藏夹的好习惯</h3><p>大概在去年Chrome翻译服务被ban以后，开始使用Edge，在国内同步相对比较方便，因此做了一下迁移，目前使用起来感觉良好。</p><p><img src=https://images.payloads.online/2024-07-29-1f81d6fa776a8b86b4e02ce024cbb28dcdefe900c6443830328feac6a780ddba.png alt=3></p><h3 id=使用命令切换java环境版本>使用命令切换Java环境版本</h3><p>Arch Linux可以通过archlinux-java命令切换Java版本：</p><p><img src=https://images.payloads.online/2024-07-29-71fcbdba07b902f095b20a6332b1a571aeb1295b4486a48f2a52da25af8a00fe.png alt=4></p><p><a href=https://wiki.archlinux.org/title/Java>Java - ArchWiki</a></p><p><img src=https://images.payloads.online/2024-07-29-01444e4c4e92fdb6748737b8c0d5177aebe2f57e457dd87be68076cd6de7959e.png alt=5></p><h3 id=使用dohdot保护dns隐私>使用DoH/DoT保护DNS隐私</h3><p>DoH（DNS over HTTPS）是一种安全的DNS协议扩展，它通过使用HTTPS协议对DNS查询进行加密来保护DNS通信的隐私和安全性。</p><p>传统的DNS协议（DNS over UDP/TCP）在传输过程中是明文的，这意味着网络上的任何人都可以查看和截取DNS查询和响应的内容。这可能会导致个人隐私泄露、信息篡改和劫持等问题。</p><p>DoH通过将DNS流量封装在加密的HTTPS连接中来解决这些问题。它使用SSL/TLS协议对DNS查询和响应进行加密，确保数据的机密性和完整性。这使得DNS流量看起来和其他HTTPS流量一样，很难被识别和干扰。</p><p>由于我的Clash是开机自动启动的，本机的所有DNS流量都会转发到Clash，因此我只需要配置Clash的NameServer即可：</p><p><img src=https://images.payloads.online/2024-07-29-d488f58ebdaac0368a534fc55c70865d39e448f2a7f2d55637a8fd9b08710f21.png alt=6></p><p>在浏览器（Edge）层面可以直接设置：</p><p><img src=https://images.payloads.online/2024-07-29-79bdd18d44e81577d010e692288ef1b2f93a834236a9bcc0e2b3679e4dbf0937.png alt=7></p><p>手机层面也可以通过导入描述文件：</p><p><a href=https://github.com/paulmillr/encrypted-dns>https://github.com/paulmillr/encrypted-dns</a></p><p><img src=https://images.payloads.online/2024-07-29-1deb4b2d25f54747b13b3fdb35716180c042271b304fd01a3f1660b1e0d83baf.png alt=8></p><h3 id=常用todo工具>常用Todo工具</h3><p>有些时候想做一件事情（临时决定），但是当下没有时间，不能让想法只停留在想法上，我会使用Todo类的工具进行记录，iPhone/MacOS上都有一个名字叫“提醒”的软件，能够实现设备同步，但最早我是使用Microsoft To Do.</p><p><img src=https://images.payloads.online/2024-07-29-2e4c7870af36ee012db6bdb7045b44adfbd09aa3c1c53cb992efa3290bbc6728.png alt=9></p><h3 id=使用z-library收集书籍>使用Z-library收集书籍</h3><p><img src=https://images.payloads.online/2024-07-29-184b6f1b3f465021db9fdcdab816af6cd28e0208e00843465c8c7ae2d641bd3e.png alt=10></p><p>在学习比较体系的知识的时候，我往往会先搜索相关书籍，然后将书籍的电子版保存下来。Z-library是全球最大的线上图书馆了，陆陆续续我的书单也丰富了起来：</p><p><img src=https://images.payloads.online/2024-07-29-67f064441b79b618c4e817ca51c3be4826b6d04c4dc39c4b3aaf6a707c6527f5.png alt=11></p><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div></div><div class="footer wrapper"><nav class=nav><div>2024 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script></body></html>

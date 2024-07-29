@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Appveyor on 倾旋的博客</title><link>https://payloads.online/tags/appveyor/</link><description>Recent content in Appveyor on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Sun, 23 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/tags/appveyor/index.xml" rel="self" type="application/rss+xml"/><item><title>使用Appveyor构建VS项目-快速编译</title><link>https://payloads.online/archivers/2023-07-23/appveyor/</link><pubDate>Sun, 23 Jul 2023 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2023-07-23/appveyor/</guid><description>前言 Appveyor简介 我们为Windows开发人员提供持续集成工具。该服务是免费提供给开源项目使用的，我们为私有项目提供订阅服务，并在客户现场提供AppVeyor企业安装服务。
+迄今为止，已有超过50,000名开发人员使用了AppVeyor，并运行了超过1000万次构建。AppVeyor受到微软、谷歌、Facebook、Mozilla、Slack、GitHub等公司的信任。
+About | AppVeyor
+构建Github项目 AppVeyor提供了它特有的配置文件用于声明构建动作，开发者可以通过编写AppVeyor配置文件来控制程序的发布流程。
+这里只讨论没有AppVeyor配置文件的项目，以https://github.com/goldshtn/etrace为例，etrace是一个命令行工具，用于实时跟踪 ETW 事件和 处理现有的 .etl 录制文件。它的灵感来自Microsoft ELT工具。
+该项目没有AppVeyor配置文件，首先Fork这个项目到自己账户名下，然后访问https://www.appveyor.com/，以Github账户登录，并且授权读取此仓库。
+在Github这一栏可以看到授权的仓库，点击 +ADD 就可以进入项目的构建配置界面：
+由于这个项目是采用C#开发的，所以我们着重关注C#相关的配置：
+在Before build script中输入如下命令，会在开始编译之前去下载这个项目所依赖的库：
+1 nuget restore 在开发.NET应用程序时，通常会使用NuGet来管理项目所依赖的第三方库和组件。NuGet是.NET生态系统中最受欢迎的包管理器之一，它提供了一个中央存储库，开发人员可以从中获取各种软件包和库。
+&amp;ldquo;nuget restore&amp;quot;命令会读取项目文件（.csproj或.vbproj）中的依赖关系，并下载或还原所需的NuGet包，以确保项目可以成功编译和构建。这个命令通常在CI/CD（持续集成/持续交付）过程中使用，以确保在构建项目之前，所有的依赖关系都被正确地还原和安装。
+除此之外，还可以在环境配置中设置安装开发库的命令：
+最后一步就是设置二进制文件打包了，点击artifacts，可以配置要打包的路径，必须是相对路径，C#的程序一般会将二进制文件生成到bin目录下，所以我这里就写：etrace\bin
+保存后，回到项目页面，点击Start New Build就开始构建了：
+稍微等待一下，就可以看到构建好的程序了，直接下载就可以使用。
+使用AppVeyor构建Mimikatz Mimikatz是gentilkiwi使用C语言开发的Windows安全工具，该工具有着丰富的功能，能过从内存中提取明文密码，哈希，PIN码和kerberos票据、哈希传递等等，随着越来越多的黑客滥用此工具进行一些非法活动，因此gentilkiwi每发布一个Release，Release中的Mimikatz样本就会被标记为黑客工具，这对红队带来了一些小麻烦，通过AppVeyor我们可以自动化的做一些静态特征处理，然后自动构建产生新的工具。
+gentilkiwi已经在Mimikatz项目中内置了一个AppVeyor的配置文件，这个配置文件会随着项目改动自动触发AppVeyor的构建流程。
+我们要做的就是先Fork一份Mimikatz到自己的项目中，然后开始修改AppVeyor配置文件：
+这里我只是做了一个工作，就是将代码中的所有Mimikatz字符串替换为aabbcc，当然还可以做很多其它的替换操作。
+1 2 3 4 5 6 7 8 9 10 11 12 13 14 ls; Copy-Item C:\projects\mimikatz\mimikatz\mimikatz.ico C:\projects\mimikatz\mimikatz\aabbcc.ico; (Get-ChildItem -Path &amp;#34;.&amp;#34; -Recurse -File -Include *.h,*.c,*.vcxproj,*.rc) | ForEach-Object { $newFileName = $_.</description></item></channel></rss>

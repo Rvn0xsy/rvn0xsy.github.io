@@ -1,0 +1,319 @@
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>使用Coze平台对Github Star项目进行分析推送 - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1">
+<link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script></head><body><div class="container-wide wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=article-nav id=article-nav-id><div class=post><div class=post-header><div class=meta><div class=date><span class=day>04</span>
+<span class=rest>Jun 2024</span></div></div><div class=matter><h1 class=title>使用Coze平台对Github Star项目进行分析推送</h1></div></div><aside class="show-on-mobile toc" id=static-toc><header><h3>Contents</h3></header><nav id=TableOfContents><ol><li><a href=#编写访问github-api的插件>🔧编写访问Github API的插件</a></li><li><a href=#编写发送知识星球帖子的插件>📔编写发送知识星球帖子的插件</a></li><li><a href=#创建工作流>🔄创建工作流</a></li><li><a href=#创建一个面向用户的bot>🤖创建一个面向用户的Bot</a></li><li><a href=#设置自定义交互按钮>👍设置自定义交互按钮</a></li><li><a href=#总结>总结</a></li></ol></nav></aside><h1 id=实现思路>👾实现思路</h1><p>Coze有个版本，分别面向海外和国内，这里我使用海外版本</p><table><thead><tr><th>域名</th><th>模型</th><th>备注</th></tr></thead><tbody><tr><td>coze.com</td><td>GPT4o\GPT3.5\GPT4\Gemini 1.5 Pro..</td><td>海外魔法</td></tr><tr><td>coze.cn</td><td>字节云雀</td><td>国内</td></tr></tbody></table><p>这里不多介绍Coze平台的基本功能了，请移步官方文档：<a href="https://www.coze.com/docs/guides/welcome?_lang=zh">Coze - Coze 文档中心</a></p><p>整体实现思路如下：</p><ul><li>编写一个能够读取我自己Github Star项目的插件</li><li>编写一个能够向知识星球推送文字的插件</li><li>创建工作流，方便后续其他Bot调用</li><li>创建一个Bot，编写Prompt，导入上述插件进行调试</li><li>设置自定义交互的按钮来修改<code>变量</code>，增加易用性</li></ul><h2 id=编写访问github-api的插件>🔧编写访问Github API的插件</h2><p>为了实现能够将Github的Star项目输入给AI，首先需要编写一个插件，这个插件用于访问Github API接口：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#f92672>import</span> requests
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> os
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># 获取Github访问令牌</span>
+</span></span><span style=display:flex><span>GITHUB_TOKEN <span style=color:#f92672>=</span> os<span style=color:#f92672>.</span>getenv(<span style=color:#e6db74>&#39;GITHUB_TOKEN&#39;</span>)
+</span></span><span style=display:flex><span>headers <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#39;Authorization&#39;</span>: <span style=color:#e6db74>f</span><span style=color:#e6db74>&#39;token </span><span style=color:#e6db74>{</span>GITHUB_TOKEN<span style=color:#e6db74>}</span><span style=color:#e6db74>&#39;</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>get_starred_repos</span>(username):
+</span></span><span style=display:flex><span>    url <span style=color:#f92672>=</span> <span style=color:#e6db74>f</span><span style=color:#e6db74>&#39;https://api.github.com/users/</span><span style=color:#e6db74>{</span>username<span style=color:#e6db74>}</span><span style=color:#e6db74>/starred&#39;</span>
+</span></span><span style=display:flex><span>    response <span style=color:#f92672>=</span> requests<span style=color:#f92672>.</span>get(url, headers<span style=color:#f92672>=</span>headers)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> response<span style=color:#f92672>.</span>status_code <span style=color:#f92672>==</span> <span style=color:#ae81ff>200</span>:
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> response<span style=color:#f92672>.</span>json()
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>else</span>:
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> []
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>main</span>():
+</span></span><span style=display:flex><span>    username <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;your-github-username&#39;</span>
+</span></span><span style=display:flex><span>    starred_repos <span style=color:#f92672>=</span> get_starred_repos(username)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> repo <span style=color:#f92672>in</span> starred_repos:
+</span></span><span style=display:flex><span>        print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;项目名称: </span><span style=color:#e6db74>{</span>repo[<span style=color:#e6db74>&#39;name&#39;</span>]<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
+</span></span><span style=display:flex><span>        print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;项目描述: </span><span style=color:#e6db74>{</span>repo[<span style=color:#e6db74>&#39;description&#39;</span>]<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
+</span></span><span style=display:flex><span>        print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;项目地址: </span><span style=color:#e6db74>{</span>repo[<span style=color:#e6db74>&#39;html_url&#39;</span>]<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
+</span></span><span style=display:flex><span>        print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;Star数量: </span><span style=color:#e6db74>{</span>repo[<span style=color:#e6db74>&#39;stargazers_count&#39;</span>]<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
+</span></span><span style=display:flex><span>        print(<span style=color:#e6db74>&#39;---&#39;</span>)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>if</span> __name__ <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;__main__&#39;</span>:
+</span></span><span style=display:flex><span>    main()
+</span></span></code></pre></td></tr></table></div></div><p>以上是我用Prompt AI生成的示例代码，这个示例代码确实能直接拿来使用，但是还需要按照实际情况调整输入输出参数，在Coze平台中每一个插件都可以通过<code>Metadata</code>设定输入参数以及输入参数的数据类型，同样的也有输出参数以及输出参数的数据类型。</p><p><img src=https://images.payloads.online/2024-07-29-6fdee332ce723882c331e5a5463bd990939887a4657c25a921d24fa4ffce4874.png alt=0></p><p><img src=https://images.payloads.online/2024-07-29-0f3ce13bcc3fc802a54d4ff7bb2fce362649c257acaeaa6a2894427fff9c9b51.png alt=1></p><p>我在Metadata设定了这个插件输入、输出的数据格式，输入参数分别是：</p><table><thead><tr><th>参数名称</th><th>参数描述</th></tr></thead><tbody><tr><td>token</td><td>用于访问Github API接口的Access Token</td></tr><tr><td>limit</td><td>用于设定要取得多少个Star项目</td></tr></tbody></table><p>输出参数分别是：</p><table><thead><tr><th>参数名称</th><th>参数描述</th></tr></thead><tbody><tr><td>description</td><td>项目描述</td></tr><tr><td>url</td><td>项目链接</td></tr><tr><td>stargazers_count</td><td>项目Star数量</td></tr><tr><td>topics</td><td>项目主题</td></tr></tbody></table><p>但通过<code>requests</code> 访问API接口还是不够优雅，我找到了<code>PyGithub</code>这个库，对Github API封装很好，在插件依赖中直接引入了：</p><p><img src=https://images.payloads.online/2024-07-29-53f04ff44afb5a6b1d643b5bff8f5a73aace3df71f0bdd26e89b17de795bab04.png alt=2></p><p>最终的插件代码如下：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">59
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">60
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">61
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#f92672>from</span> runtime <span style=color:#f92672>import</span> Args
+</span></span><span style=display:flex><span><span style=color:#f92672>from</span> typings.GetGithubStarredRepos.GetGithubStarredRepos <span style=color:#f92672>import</span> Input, Output
+</span></span><span style=display:flex><span><span style=color:#e6db74>&#34;&#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Each file needs to export a function named `handler`. This function is the entrance to the Tool.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Parameters:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>args: parameters of the entry function.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>args.input - input parameters, you can get test input value by args.input.xxx.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>args.logger - logger instance used to print logs, injected by runtime.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Remember to fill in input/output in Metadata, it helps LLM to recognize and use tool.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Return:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>The return data of the function, which should match the declared output parameters.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>&#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>from</span> github <span style=color:#f92672>import</span> Github
+</span></span><span style=display:flex><span><span style=color:#75715e># https://pygithub.readthedocs.io/en/stable/introduction.html</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Authentication is defined via github.Auth</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>from</span> github <span style=color:#f92672>import</span> Auth
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>handler</span>(args: Args[Input])<span style=color:#f92672>-&gt;</span>Output:
+</span></span><span style=display:flex><span>    print(args<span style=color:#f92672>.</span>input<span style=color:#f92672>.</span>username)
+</span></span><span style=display:flex><span>    limit <span style=color:#f92672>=</span> args<span style=color:#f92672>.</span>input<span style=color:#f92672>.</span>limit
+</span></span><span style=display:flex><span>    token <span style=color:#f92672>=</span> args<span style=color:#f92672>.</span>input<span style=color:#f92672>.</span>token
+</span></span><span style=display:flex><span>    count <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e># using an access token</span>
+</span></span><span style=display:flex><span>    auth <span style=color:#f92672>=</span> Auth<span style=color:#f92672>.</span>Token(token)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e># First create a Github instance:</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e># Public Web Github</span>
+</span></span><span style=display:flex><span>    g <span style=color:#f92672>=</span> Github(auth<span style=color:#f92672>=</span>auth)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    repos  <span style=color:#f92672>=</span> list()
+</span></span><span style=display:flex><span>    <span style=color:#75715e># repo_info = {&#39;url&#39;:&#39;&#39;, &#39;description&#39;: &#39;&#39;, &#39;stargazers_count&#39;: 0, &#39;topics&#39;: &#39;&#39;}</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e># https://docs.github.com/zh/rest/activity/starring?apiVersion=2022-11-28#list-repositories-starred-by-the-authenticated-user--parameters</span>
+</span></span><span style=display:flex><span>    starred_repos <span style=color:#f92672>=</span> g<span style=color:#f92672>.</span>get_user()<span style=color:#f92672>.</span>get_starred()
+</span></span><span style=display:flex><span>    <span style=color:#75715e># Then play with your Github objects:</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> starred_repos <span style=color:#f92672>in</span> g<span style=color:#f92672>.</span>get_user()<span style=color:#f92672>.</span>get_starred():
+</span></span><span style=display:flex><span>        print(<span style=color:#e6db74>&#34;Got &gt; &#34;</span> <span style=color:#f92672>+</span> str(count))
+</span></span><span style=display:flex><span>        <span style=color:#75715e># repo_info[&#39;description&#39;] = starred_repos.description</span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e># repo_info[&#39;url&#39;] = starred_repos.owner.url</span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e># repo_info[&#39;stargazers_count&#39;] = starred_repos.stargazers_count</span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e># repo_info[&#39;topics&#39;] = &#34;,&#34;.join(starred_repos.topics)</span>
+</span></span><span style=display:flex><span>        repo_info <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;url&#39;</span>: starred_repos<span style=color:#f92672>.</span>owner<span style=color:#f92672>.</span>html_url,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;description&#39;</span>: starred_repos<span style=color:#f92672>.</span>description,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;stargazers_count&#39;</span>: starred_repos<span style=color:#f92672>.</span>stargazers_count,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;topics&#39;</span>: <span style=color:#e6db74>&#34;,&#34;</span><span style=color:#f92672>.</span>join(starred_repos<span style=color:#f92672>.</span>topics)
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>        repos<span style=color:#f92672>.</span>append(repo_info)
+</span></span><span style=display:flex><span>        args<span style=color:#f92672>.</span>logger<span style=color:#f92672>.</span>info(repo_info)
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 如果不限制，则读取全部</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> limit <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>:
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>continue</span>
+</span></span><span style=display:flex><span>        count <span style=color:#f92672>=</span> count <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> limit <span style=color:#f92672>==</span> count:
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>break</span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e># To close connections after use</span>
+</span></span><span style=display:flex><span>    g<span style=color:#f92672>.</span>close()
+</span></span><span style=display:flex><span>    args<span style=color:#f92672>.</span>logger<span style=color:#f92672>.</span>info(repos)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> {<span style=color:#e6db74>&#34;repos&#34;</span>: repos}
+</span></span></code></pre></td></tr></table></div></div><p>在Coze平台上可以直接对插件进行测试，在<code>Output Value</code>日志栏目中可以看到返回的数据结构：</p><p><img src=https://images.payloads.online/2024-07-29-7213688f5345b471cc944e24dafec68c0412a2b7d15f9652de2c27ccad4ea010.png alt=3></p><p>至此一个获取Github Star项目的插件就做好了。</p><h2 id=编写发送知识星球帖子的插件>📔编写发送知识星球帖子的插件</h2><p>由于知识星球没有提供API接口，因此我使用浏览器开发者工具查看了一下请求规律，编写了如下代码：</p><table><thead><tr><th>参数</th><th>参数说明</th></tr></thead><tbody><tr><td>cookie</td><td>知识星球Cookie</td></tr><tr><td>group_id</td><td>知识星球的ID</td></tr><tr><td>content</td><td>帖子内容</td></tr></tbody></table><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#f92672>from</span> runtime <span style=color:#f92672>import</span> Args
+</span></span><span style=display:flex><span><span style=color:#f92672>from</span> typings.send_topic.send_topic <span style=color:#f92672>import</span> Input, Output
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> requests
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> json
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>post_topics</span>(cookie, group_id, content):
+</span></span><span style=display:flex><span>    url <span style=color:#f92672>=</span> <span style=color:#e6db74>f</span><span style=color:#e6db74>&#39;https://api.zsxq.com/v2/groups/</span><span style=color:#e6db74>{</span>group_id<span style=color:#e6db74>}</span><span style=color:#e6db74>/topics&#39;</span>
+</span></span><span style=display:flex><span>    headers <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;Accept&#39;</span>: <span style=color:#e6db74>&#39;application/json, text/plain, */*&#39;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;Accept-Language&#39;</span>: <span style=color:#e6db74>&#39;zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6&#39;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;Content-Type&#39;</span>: <span style=color:#e6db74>&#39;application/json&#39;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;Cookie&#39;</span>: cookie,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;Dnt&#39;</span>: <span style=color:#e6db74>&#39;1&#39;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;Origin&#39;</span>: <span style=color:#e6db74>&#39;https://wx.zsxq.com&#39;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;Priority&#39;</span>: <span style=color:#e6db74>&#39;u=1, i&#39;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;Referer&#39;</span>: <span style=color:#e6db74>&#39;https://wx.zsxq.com/&#39;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;User-Agent&#39;</span>: <span style=color:#e6db74>&#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.0.0&#39;</span>,
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;X-Version&#39;</span>: <span style=color:#e6db74>&#39;2.57.0&#39;</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    data <span style=color:#f92672>=</span> {
+</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;req_data&#39;</span>: {
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;type&#39;</span>: <span style=color:#e6db74>&#39;topic&#39;</span>,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;text&#39;</span>: content,
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;image_ids&#39;</span>: [],
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;file_ids&#39;</span>: [],
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;mentioned_user_ids&#39;</span>: []
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    response <span style=color:#f92672>=</span> requests<span style=color:#f92672>.</span>post(url, headers<span style=color:#f92672>=</span>headers, json<span style=color:#f92672>=</span>data)
+</span></span><span style=display:flex><span>    response_json <span style=color:#f92672>=</span> response<span style=color:#f92672>.</span>json()
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> response_json
+</span></span><span style=display:flex><span><span style=color:#e6db74>&#34;&#34;&#34;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Each file needs to export a function named `handler`. This function is the entrance to the Tool.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Parameters:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>args: parameters of the entry function.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>args.input - input parameters, you can get test input value by args.input.xxx.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>args.logger - logger instance used to print logs, injected by runtime.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Remember to fill in input/output in Metadata, it helps LLM to recognize and use tool.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>Return:
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>The return data of the function, which should match the declared output parameters.
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>&#34;&#34;&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>handler</span>(args: Args[Input])<span style=color:#f92672>-&gt;</span>Output:
+</span></span><span style=display:flex><span>    cookie <span style=color:#f92672>=</span> args<span style=color:#f92672>.</span>input<span style=color:#f92672>.</span>cookie
+</span></span><span style=display:flex><span>    group_id <span style=color:#f92672>=</span> args<span style=color:#f92672>.</span>input<span style=color:#f92672>.</span>group_id
+</span></span><span style=display:flex><span>    content <span style=color:#f92672>=</span> args<span style=color:#f92672>.</span>input<span style=color:#f92672>.</span>content
+</span></span><span style=display:flex><span>    result <span style=color:#f92672>=</span> post_topics(cookie, group_id, content)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> {<span style=color:#e6db74>&#39;succeeded&#39;</span>: result[<span style=color:#e6db74>&#39;succeeded&#39;</span>]}
+</span></span></code></pre></td></tr></table></div></div><p>这个插件返回的比较简单，如果成功就返回True，失败就返回False。</p><p><img src=https://images.payloads.online/2024-07-29-1f40680babed6668b4e85f86bc3e2940ff58cc8143f5c38d145379da82f0c69a.png alt=4></p><h2 id=创建工作流>🔄创建工作流</h2><p>工作流支持通过可视化的方式，对插件、大语言模型、代码块等功能进行组合，从而实现复杂、稳定的业务流程编排，例如旅行规划、报告分析等。当目标任务场景包含较多的步骤，且对输出结果的准确性、格式有严格要求时，适合配置工作流来实现。</p><p>在工作流中可以引入多种模块：</p><table><thead><tr><th>节点名称</th><th>描述</th></tr></thead><tbody><tr><td>LLM</td><td>大语言模型节点，该节点支持选择不同的 AI 模型处理文本生成任务。</td></tr><tr><td>Code</td><td>代码节点。通过 IDE 编写代码处理输入参数，并返回输出值。</td></tr><tr><td>Knowledge</td><td>知识库节点。根据输入参数从关联知识库中召回数据，并返回。</td></tr><tr><td>Condition</td><td>if-else 逻辑节点。满足设置条件则运行 if 分支，否则运行 else 分支。</td></tr><tr><td>Variable</td><td>变量节点。用于读取和写入 Bot 中的变量。</td></tr><tr><td>Plugins</td><td>插件节点，能够调用Plugins Store中的所有插件</td></tr></tbody></table><p><img src=https://images.payloads.online/2024-07-29-d027efbf21fd1556b3ae2537cd57e13581df54dc2d29f2685a46a92d0b63fc2b.png alt=5></p><p>这里我以获取Github Star项目的工作流为例，首先每个Workflow都有一个起始节点和结束节点，结束节点可以设置返回值。</p><p>在整个工作流内，上一个节点的输入输出变量可以被下一个节点引用：</p><p><img src=https://images.payloads.online/2024-07-29-2e74aa53f726e9072f5f3a3fbe2789323bbaa57aa5c49c396f5b75a7deb0a5ec.png alt=6></p><ul><li>Batch processing : 可以并发执行，如果要处理一批线性的输入（例如数组），可以调用这个方式去执行。</li></ul><p><img src=https://images.payloads.online/2024-07-29-ba52e7c6fbc0e72f9cb4f50c90a6ff6620a1fba040eed297d0c01374f3e1ad70.png alt=7></p><h2 id=创建一个面向用户的bot>🤖创建一个面向用户的Bot</h2><p>Coze 利用大型语言模型极大地简化了 Bot 的搭建过程。 在充分利用大语言模型优势的同时，Coze 还支持用户通过知识库、工作流等功能来配置 Bot 如何响应用户查询，以保证 Bot 符合预期。</p><p>你可以使用 Coze 提供的以下功能，定制你的 AI Bot：</p><ul><li><strong>人设与提示词</strong></li></ul><p>设定 Bot 的身份及其目标和技能，例如产品问答助手、新闻播报员、翻译助理等等。Bot 的人设和提示词决定了 Bot 如何与你的用户进行互动。</p><ul><li><strong>插件</strong></li></ul><p>通过 API 连接集成各种平台和服务，扩展 Bot 能力。Coze 平台内置丰富的插件供你直接调用，你也可以创建自定义插件，将你所需要的 API 集成在 Coze 内作为插件来使用。</p><ul><li><strong>工作流</strong></li></ul><p>一种用于规划和实现复杂功能逻辑的工具。你可以通过拖拽不同的任务节点来设计复杂的多步骤任务，提升 Bot 处理复杂任务的效率。</p><ul><li><strong>记忆库</strong></li></ul><p>Coze 的记忆库功能可以保留和理解对话细节，并支持添加外部知识库给模型补充知识，使 Bot 与用户的互动更加有针对性和个性化。你可以通过以下方式来存储和管理外部知识。</p><ul><li><strong>知识库</strong>：支持上传本地或线上内容，然后将这些内容分割成知识分片，通过语义匹配给模型补充知识。</li><li><strong>变量</strong>：通过 key-value 的形式来记录变量值。例如记录用户的某一偏好。</li><li><strong>数据库</strong>：用来存储和管理结构化数据，并支持用户通过自然语言方式对数据库中的数据进行增删改查。</li><li><strong>多发布渠道</strong></li></ul><p>Coze 支持将搭建的 Bot 发布到各种社交应用中，让你的 Bot 服务更多的用户。</p><ul><li><p><strong>其他定制化功能</strong></p><ul><li><strong>定时任务</strong>：你可以为 Bot 添加定时任务，预定的时间条件下自动触发 Bot 向用户发送消息。</li><li><strong>开场白</strong>：设置 Bot 对话的开场语，让用户快速了解 Bot 的功能。例如 我是一个旅行助手 Bot，我能帮助你计划行程和查找旅行信息。</li><li><strong>用户问题建议</strong>：Bot 每次响应用户问题后，系统会根据上下文自动提供三个相关的问题建议给用户使用。</li><li><strong>音色</strong>：为 Bot 选择与用户交流使用的语言和语调。</li></ul><p><img src=https://images.payloads.online/2024-07-29-dbb8a6584306869175de70ac3071dd9895abd150073dfaf206ce4b6aa58a65a1.png alt=8></p></li></ul><hr><p>以上内容引用自：<a href="https://www.coze.com/docs/guides/function_overview?_lang=zh">Coze - Coze 文档中心</a></p><p>创建完插件、Workflow，就可以将Workflow导入到Bot中了，再写上Prompt就基本完成了。这里贴一下我的Prompt（写的比较烂，有很大优化空间）：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">8
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span># 角色
+</span></span><span style=display:flex><span>您是一位专精于整理和推送数据的AI助理。
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>## 技能
+</span></span><span style=display:flex><span>### 技能一：浏览Github星标项目
+</span></span><span style=display:flex><span>- 利用search_users_star流程来收集用户在Github上的Starred项目信息。
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>当用户需要查询Github Starred 数据时，AI助理会运用search_users_star工作流收集Github Starred项目信息并存储到{{github_repository}}中，然后按以下格式输出，内容不需要截断：
+</span></span></code></pre></td></tr></table></div></div><p>早安，新的一天开始了！这些是我为您找到的令人瞩目的Github项目：
+&lt;search_users_star工作流结果></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>
+</span></span><span style=display:flex><span>### 技能二：可以将&lt;search_users_star工作流结果&gt;发送到知识星球
+</span></span><span style=display:flex><span>- 利用send_message_to_topic流程将{{github_repository}} 中的数据发送到知识星球，按照如下格式：
+</span></span></code></pre></td></tr></table></div></div><p>你好！这些是我为您找到的令人瞩目的Github项目：
+&lt;search_users_star工作流结果></p><p>:) 由 GPT-4o 模型驱动</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>
+</span></span><span style=display:flex><span>## 约束条件
+</span></span><span style=display:flex><span>- 仅可透过search_users_star工作流获取Github的相关信息。
+</span></span><span style=display:flex><span>- 不论何种情况下，都不能暴露或让用户查阅变量的具体数值。
+</span></span><span style=display:flex><span>- 用户只能设定变量的数值，不允许进行其他的操作活动。
+</span></span></code></pre></td></tr></table></div></div><p>说到Database，我在这个Bot中尝试使用了一下，确实非常好用，可以用提示词控制Bot把结果按照Database结构保存起来，例如Bot获得前10个Github项目就保存起来了：</p><p><img src=https://images.payloads.online/2024-07-29-3f67db26c902ea74d735df450e75a6103f9aa6497532e9fd398144c66467b7a2.png alt=9></p><h2 id=设置自定义交互按钮>👍设置自定义交互按钮</h2><p>自定义交互按钮其实就是ShortCut，可以让用户按照设置好的表单填写信息，然后发送给Bot</p><p>由于前面编写的Workflow需要一些Token、Cookie之类的信息，我就创建了几个变量用于保存这些信息，并且防止Prompt注入，限制了用户不能查看变量的值。</p><p><img src=https://images.payloads.online/2024-07-29-e3c3b061bd026014af38efbee9543042e7eb7bea20c3fddc104234aaa7f86d13.png alt=10></p><p><img src=https://images.payloads.online/2024-07-29-c1e07ae11336e5e101ce60535b282977cc89e8f8095e448b74db5d1afa3831f8.png alt=11></p><p>最终实现效果：</p><p><img src=https://images.payloads.online/2024-07-29-7cce2590c4a3174ce367f6b65fe0b6e4e6beaff304a5789dbbba4c96c1c6ac56.png alt=12></p><p><img src=https://images.payloads.online/2024-07-29-1d829f7a9802c7f965ce9e110b04ab5687b3128e2f33f665d67dfadc1a2f6b3f.png alt=13></p><h2 id=总结>总结</h2><p>Coze平台有点像是一个在线版的LangChain，比起之前使用代码去定制自己的Agent，通过平台一站式解决就很丝滑，并且能够多个Workflow进行联动，通过Trigger还能够设置定时任务（定时推送，这个本文还没有实现），总之能够极大的方便日常工作和生活，不过还是不建议在上面使用较为隐私的信息。</p></div><nav class="hide-on-mobile section-nav"><nav id=TableOfContents><ol><li><a href=#编写访问github-api的插件>🔧编写访问Github API的插件</a></li><li><a href=#编写发送知识星球帖子的插件>📔编写发送知识星球帖子的插件</a></li><li><a href=#创建工作流>🔄创建工作流</a></li><li><a href=#创建一个面向用户的bot>🤖创建一个面向用户的Bot</a></li><li><a href=#设置自定义交互按钮>👍设置自定义交互按钮</a></li><li><a href=#总结>总结</a></li></ol></nav></nav></div><div class=post><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post></div></div><div class="footer wrapper"><nav class=nav><div>2024 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script><script>var enableTruncate=!0,filterDepth=!1;const MAX_DEPTH=9;window.addEventListener("DOMContentLoaded",()=>{const e=new IntersectionObserver(e=>{e.reverse().forEach(e=>{const n=e.target.getAttribute("id");if(e.intersectionRatio>0){var t=document.querySelectorAll(`nav li a[href="#${n}"]`);t!=null&&t.forEach(e=>{if(e!=null){var t=getDepth(e.parentElement);filterDepth&&t<=MAX_DEPTH&&(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))}else filterDepth||(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))})}})});document.querySelectorAll("h1[id],h2[id],h3[id],h4[id]").forEach(t=>{e.observe(t)})});function isVisible(e){if(!(e instanceof Element))return!1;const n=getComputedStyle(e);if(n.display==="none")return!1;if(n.visibility!=="visible")return!1;if(n.opacity<.1)return!1;if(e.offsetWidth+e.offsetHeight+e.getBoundingClientRect().height+e.getBoundingClientRect().width===0)return!1;const t={x:e.getBoundingClientRect().left+e.offsetWidth/2,y:e.getBoundingClientRect().top+e.offsetHeight/2};if(t.x<0)return!1;if(t.x>(document.documentElement.clientWidth||window.innerWidth))return!1;if(t.y<0)return!1;if(t.y>(document.documentElement.clientHeight||window.innerHeight))return!1;let s=document.elementFromPoint(t.x,t.y);do if(s===e)return!0;while(s=s.parentNode)return!1}function clearActiveStatesInTableOfContents(){document.querySelectorAll("nav li").forEach(e=>{e.classList.remove("active")})}function getDepth(e){for(var t=0;e!==null&&e.tagName.toLowerCase()!=="ul";)t++,e=e.parentElement;return t}function navItems(){var e=document.querySelectorAll("nav nav li a");return Array.from(e).filter(e=>e.href!=null&&e.hash.startsWith("#"))}function lasItemInNavBarVisible(){var e=navItems().slice(-1)[0];return isVisible(e)}document.addEventListener("DOMContentLoaded",function(){if(!enableTruncate)return;var e=navItems();console.log(e),lasItemInNavBarVisible()||(filterDepth=!0,e.forEach(function(e){var t=getDepth(e.parentElement);t>MAX_DEPTH&&e.parentElement.classList.add("depth-nested")}))})</script></body></html>

