@@ -1,49 +1,142 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>安全开发 on 倾旋的博客</title><link>https://payloads.online/categories/%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91/</link><description>Recent content in 安全开发 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Wed, 24 Apr 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91/index.xml" rel="self" type="application/rss+xml"/><item><title>Nmap扩展开发（一）</title><link>https://payloads.online/archivers/2019-04-24/1/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/1/</guid><description>0x00 前言 PS ：如果你不知道你是否需要学习这个技术，那么我可以先告诉你Nmap能够做什么：
-网络结构画像 漏洞扫描 漏洞利用 端口扫描 爬虫 信息搜集 &amp;hellip;. 我的分类不是很清晰，但是对于一个渗透测试人员、运维人员、甲、乙方的工程师都会需要它的定制化功能，例如：将扫描结果写到数据库？新的漏洞出了POC，客户需要立即进行漏洞扫描？
-导出扫描结果这个问题，Nmap官方做出如下回应：
-Nmap Network Scanning
-一个共同的愿望是将Nmap结果输出到数据库以便于查询和跟踪。这允许用户来自个人渗透测试仪 到国际企业存储他们的所有扫描结果并轻松比较它们。企业可能每天运行大型扫描，并为新打开的端口或可用计算机的邮件管理员安排查询。渗透测试人员可能会了解新漏洞并搜索受影响应用程序的所有旧扫描结果，以便他可以警告相关客户端。研究人员可以扫描数百万个IP地址，并将结果保存在数据库中，以便进行实时查询。
-虽然这些目标值得称赞，但Nmap不提供直接的数据库输出功能。我不仅有太多不同的数据库类型支持它们，而且用户的需求变化如此之大，以至于没有单一的数据库模式是合适的。企业，笔测试员和研究人员的需求都需要不同的表结构。
-而很多朋友大多都是使用Python来调用Nmap进行格式解析，这种方式无法预估扫描进度，不能进行状态交互，效率很差，如果我们需要一个实时进行独写、漏洞检测等定制化的操作，那么就可以跟我一起来学习如何写一个自己的Nmap脚本，这本书涵盖的知识比较多，会涉及安全、网络协议、编程技术这些相关知识，相信你能够收获很多。
-笔者写扩展脚本开发系列的初衷是让大家了解nmap这个优秀的开源工具的功能，解决一些定制化的扫描需求。
-在开始之前，需要读者具备：能够熟练使用Nmap进行端口扫描、了解Nmap目录结构、懂得常见的网络知识、Lua基础（如果需要的话，我会在后期铺垫）。
-0x02 Nmap扩展脚本分类 auth	处理身份验证 broadcast 网络广播 brute	暴力猜解 default	默认 discovery	服务发现 dos	拒绝服务 exploit	漏洞利用 external	外部扩展 fuzzer	模糊测试 intrusive	扫描可能造成不良后果 malware	检测后门 safe	扫描危害较小 version	版本识别 vuln 漏洞检测 0X03 Nmap扩展脚本铺垫 相信网上已经有很多文章去写如何使用扩展脚本了，这块我不准备过多的铺垫。
-主要介绍如下几点：
-Nmap扩展脚本用途 Nmap扩展脚本使用方法 如何查看Nmap扩展脚本的Usage（使用方法） 0X03 Nmap扩展脚本用途 Nmap扩展脚本能够帮助我们实现更多定制化的需求扫描、结果的处理、漏洞的检测、漏洞的利用等。在0x02中已经列出了扩展脚本的分类，根据说明我们能理解一个大概，这些分类代表了Nmap各个方面的能力。
-0x03 Nmap扩展脚本使用方法 在很早之前，我写过一篇科普文章，主要介绍了Nmap的脚本分类、使用方法，链接：
-http://zhuanlan.zhihu.com/p/26618074
-本章没有太多概念性的东西，希望读者能够边看边做。首先设定一个需求，我有一个需要搜集某个IP或某组IP所有开放HTTP服务的中间件信息。那么Nmap有一个脚本是可以直接满足我们需求的：
-http-server-header.nse
-扫描命令：nmap --script=http-server-header &amp;lt;TARGET&amp;gt;</description></item><item><title>Nmap扩展开发（三）</title><link>https://payloads.online/archivers/2019-04-24/3/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/3/</guid><description>0X01 扩展脚本对象-主机 在进行主机扫描的时候会执行hostrule这个函数，从以往的nmap扩展脚本代码中我们都可以发现在hostrule这个函数中做了一些针对host操作的动作。
-hostrule有一个参数，变量名叫host，我们可以把它理解为一个对象，在这里称之为对象是为了方便读者理解，在lua中实际它的数据类型是一个多维的table（表），具有很多属性。由于这些rule函数都是被动调用的，我们只能在函数内部对形参进行操作了。
-参考：https://nmap.org/book/nse-api.html
-通过上面这个表格我们能够清楚的了解到从host这个table中可以读取到哪些信息。
-为了让读者吸收，建立一个需求，请大家与我一起完成。
-需求：使用Nmap扫描获得所有主机的MAC地址
-由于Nmap没提供这个需求的解决方案，就需要我们自己来写一个扩展脚本了~
-还是拿之前的test.nse来改一下：
-1 2 3 4 5 6 7 8 9 10 11 12 13 local stdnse = require &amp;#34;stdnse&amp;#34; prerule=function() end hostrule=function(host) mac = host.mac_addr print(stdnse.format_mac(mac)) end portrule=function(host,port) end action=function() end postrule=function() end 通过host.mac_addr获取的mac地址是二进制编码的，我们要转换成字符串，需要引入stdnse这个扩展包，stdnse包中有一个format_mac函数，能够将host.mac_addr转换成字符串。
-执行效果如下：
-1 2 3 4 00:50:56:ec:95:48 00:50:56:f8:1e:b8 00:50:56:c0:00:08 00:0c:29:b4:48:d7 以上这些MAC地址就是当前内网中的所有主机了。
-0X02 扩展脚本对象-端口 端口相对于主机来说，属性较少，主要是针对端口状态、端口协议、端口服务、端口服务版本的一些描述。
-0X02 完成一个需求 还是老样子，假设一个需求，解决这个需求：
-需求：获取当前内网中开放HTTP服务的主机的MAC地址
-首先可以分析一下这个需求：
-条件：开放了HTTP服务 开放了HTTP服务的主机一般都会开放80/443 目的：获取MAC地址 需要引入stdnse包，调用format_mac函数
-如此一来思路清晰了许多，还是从test.nse改起：
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 local stdnse = require &amp;#34;stdnse&amp;#34; prerule=function() end hostrule=function(host) end portrule=function(host,port) if(port.</description></item><item><title>Nmap扩展开发（二）</title><link>https://payloads.online/archivers/2019-04-24/2/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/2/</guid><description>0x01 NSE引擎执行流程 Nmap的扩展脚本语言都基于lua来开发的，执行也是调用了内部封装的lua解释器。
-正常情况下，调用任何一个扩展脚本会首先执行nse_main.lua，该脚本主要做了以下几件事：
-加载一些Nmap的核心库（nselib文件夹中） 定义多线程函数 定义输出结果处理函数 读取、加载扩展脚本 定义扩展脚本函数接口 执行扩展脚本 …… 0x02 验证nse_main.lua最先执行 使用vim编辑器修改nse_main.lua
-vim /usr/share/nmap/nse_mai.lua
-在第一行添加：
-print(&amp;quot;[*] nse_main.lua first excute ... \n&amp;quot;)
-保存后，使用一个脚本观察效果：
-可以发现，在nmap启动后就会执行nse_main.lua中的代码。
-0x03 扩展脚本执行规则 在nse_main.lua的64行左右，定义了一些规则：
-1 2 3 4 5 6 7 -- Table of different supported rules. local NSE_SCRIPT_RULES = { prerule = &amp;#34;prerule&amp;#34;, hostrule = &amp;#34;hostrule&amp;#34;, portrule = &amp;#34;portrule&amp;#34;, postrule = &amp;#34;postrule&amp;#34;, }; 每一个规则代表了函数，由函数的返回值决定执行流程
-prerule 在扫描任何主机之前，prerule函数运行一次 hostrule 在扫描一个主机后运行一次 portrule 在扫描一个主机的端口后运行一次 postrule 在全部扫描完毕以后运行一次 也就是说，prerule和postrule是在开始和结束运行，并且只运行一次，hostrule是扫描一个主机就运行一次，有N个主机就会运行N次，portrule是扫描到一个端口就运行一次，有N个端口就运行N次。
-为了验证我得出的结论，写了一个测试脚本：
-vim /usr/share/nmap/scripts/test.</description></item><item><title>Nmap扩展开发（四）</title><link>https://payloads.online/archivers/2019-04-24/4/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/4/</guid><description>0x01 HTTP包的使用 一般情况下，我们扫描一些Web服务的同时需要进行渗透测试、安全评估、漏洞检测等操作，但是官方并未提供符合我们需求的脚本，这时候就要自己写脚本了。Nmap已经内置了HTTP包，不需要再进行下载和配置。
-0x02 基础概念铺垫 首先，先介绍两个表结构，为了方便我们后续的数据操作，让读者先熟悉两个东西：
-响应表 响应表中主要涵盖了：HTTP状态码、HTTP响应头、HTTP版本、HTTP原始响应头、Cookies、HTTP响应主体内容（body）等
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 | Response: | status: 200 | header: | content-length: 0 | allow: POST,OPTIONS,HEAD,GET | connection: close | content-type: text/html | server: Apache/2.4.29 (Debian) | date: Fri, 06 Jul 2018 07:02:13 GMT | ssl: false | body: | cookies: | | status-line: HTTP/1.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>安全开发 on 倾旋的博客</title><link>https://payloads.online/categories/%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91/</link><description>Recent content in 安全开发 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Wed, 24 Apr 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/%E5%AE%89%E5%85%A8%E5%BC%80%E5%8F%91/index.xml" rel="self" type="application/rss+xml"/><item><title>Nmap扩展开发（一）</title><link>https://payloads.online/archivers/2019-04-24/1/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/1/</guid><description>&lt;h2 id="0x00-前言">0x00 前言&lt;/h2>
+&lt;p>PS ：如果你不知道你是否需要学习这个技术，那么我可以先告诉你Nmap能够做什么：&lt;/p>
+&lt;ul>
+&lt;li>网络结构画像&lt;/li>
+&lt;li>漏洞扫描&lt;/li>
+&lt;li>漏洞利用&lt;/li>
+&lt;li>端口扫描&lt;/li>
+&lt;li>爬虫&lt;/li>
+&lt;li>信息搜集&lt;/li>
+&lt;li>&amp;hellip;.&lt;/li>
+&lt;/ul>
+&lt;p>我的分类不是很清晰，但是对于一个渗透测试人员、运维人员、甲、乙方的工程师都会需要它的定制化功能，例如：将扫描结果写到数据库？新的漏洞出了POC，客户需要立即进行漏洞扫描？&lt;/p>
+&lt;p>导出扫描结果这个问题，Nmap官方做出如下回应：&lt;/p>
+&lt;blockquote>
+&lt;p>&lt;a href="https://link.zhihu.com/?target=https%3A//nmap.org/book/output-formats-output-to-database.html">Nmap Network Scanning&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>一个共同的愿望是将Nmap结果输出到数据库以便于查询和跟踪。这允许用户来自个人渗透测试仪 到国际企业存储他们的所有扫描结果并轻松比较它们。企业可能每天运行大型扫描，并为新打开的端口或可用计算机的邮件管理员安排查询。渗透测试人员可能会了解新漏洞并搜索受影响应用程序的所有旧扫描结果，以便他可以警告相关客户端。研究人员可以扫描数百万个IP地址，并将结果保存在数据库中，以便进行实时查询。&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>虽然这些目标值得称赞，但Nmap不提供直接的数据库输出功能。我不仅有太多不同的数据库类型支持它们，而且用户的需求变化如此之大，以至于没有单一的数据库模式是合适的。企业，笔测试员和研究人员的需求都需要不同的表结构。&lt;/p>
+&lt;/blockquote>
+&lt;p>而很多朋友大多都是使用Python来调用Nmap进行格式解析，这种方式无法预估扫描进度，不能进行状态交互，效率很差，如果我们需要一个实时进行独写、漏洞检测等定制化的操作，那么就可以跟我一起来学习如何写一个自己的Nmap脚本，这本书涵盖的知识比较多，会涉及安全、网络协议、编程技术这些相关知识，相信你能够收获很多。&lt;/p>
+&lt;p>笔者写扩展脚本开发系列的初衷是让大家了解nmap这个优秀的开源工具的功能，解决一些定制化的扫描需求。&lt;/p>
+&lt;p>在开始之前，需要读者具备：能够熟练使用Nmap进行端口扫描、了解Nmap目录结构、懂得常见的网络知识、&lt;strong>Lua基础（如果需要的话，我会在后期铺垫）&lt;/strong>。&lt;/p>
+&lt;h2 id="0x02-nmap扩展脚本分类">0x02 Nmap扩展脚本分类&lt;/h2>
+&lt;ul>
+&lt;li>auth	处理身份验证&lt;/li>
+&lt;li>broadcast 网络广播&lt;/li>
+&lt;li>brute	暴力猜解&lt;/li>
+&lt;li>default	默认&lt;/li>
+&lt;li>discovery	服务发现&lt;/li>
+&lt;li>dos	拒绝服务&lt;/li>
+&lt;li>exploit	漏洞利用&lt;/li>
+&lt;li>external	外部扩展&lt;/li>
+&lt;li>fuzzer	模糊测试&lt;/li>
+&lt;li>intrusive	扫描可能造成不良后果&lt;/li>
+&lt;li>malware	检测后门&lt;/li>
+&lt;li>safe	扫描危害较小&lt;/li>
+&lt;li>version	版本识别&lt;/li>
+&lt;li>vuln 漏洞检测&lt;/li>
+&lt;/ul>
+&lt;h2 id="0x03-nmap扩展脚本铺垫">0X03 Nmap扩展脚本铺垫&lt;/h2>
+&lt;p>相信网上已经有很多文章去写如何使用扩展脚本了，这块我不准备过多的铺垫。&lt;/p></description></item><item><title>Nmap扩展开发（三）</title><link>https://payloads.online/archivers/2019-04-24/3/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/3/</guid><description>&lt;h2 id="0x01-扩展脚本对象-主机">0X01 扩展脚本对象-主机&lt;/h2>
+&lt;p>在进行主机扫描的时候会执行hostrule这个函数，从以往的nmap扩展脚本代码中我们都可以发现在hostrule这个函数中做了一些针对host操作的动作。&lt;/p>
+&lt;p>hostrule有一个参数，变量名叫host，我们可以把它理解为一个对象，在这里称之为对象是为了方便读者理解，在lua中实际它的数据类型是一个多维的table（表），具有很多属性。由于这些rule函数都是被动调用的，我们只能在函数内部对形参进行操作了。&lt;/p>
+&lt;p>参考：https://nmap.org/book/nse-api.html&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/6e7b0678-4f5f-11ec-bf1a-00d861bf4abb.png" alt="2019-04-24-10-02-11">
+
+&lt;/p>
+&lt;p>通过上面这个表格我们能够清楚的了解到从host这个table中可以读取到哪些信息。&lt;/p>
+&lt;p>为了让读者吸收，建立一个需求，请大家与我一起完成。&lt;/p>
+&lt;blockquote>
+&lt;p>需求：使用Nmap扫描获得所有主机的MAC地址&lt;/p>
+&lt;/blockquote>
+&lt;p>由于Nmap没提供这个需求的解决方案，就需要我们自己来写一个扩展脚本了~&lt;/p>
+&lt;p>还是拿之前的test.nse来改一下：&lt;/p>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>Nmap扩展开发（二）</title><link>https://payloads.online/archivers/2019-04-24/2/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/2/</guid><description>&lt;h2 id="0x01-nse引擎执行流程">0x01 NSE引擎执行流程&lt;/h2>
+&lt;p>Nmap的扩展脚本语言都基于lua来开发的，执行也是调用了内部封装的lua解释器。&lt;/p>
+&lt;p>正常情况下，调用任何一个扩展脚本会首先执行&lt;code>nse_main.lua&lt;/code>，该脚本主要做了以下几件事：&lt;/p>
+&lt;ul>
+&lt;li>加载一些Nmap的核心库（&lt;code>nselib&lt;/code>文件夹中）&lt;/li>
+&lt;li>定义多线程函数&lt;/li>
+&lt;li>定义输出结果处理函数&lt;/li>
+&lt;li>读取、加载扩展脚本&lt;/li>
+&lt;li>定义扩展脚本函数接口&lt;/li>
+&lt;li>执行扩展脚本&lt;/li>
+&lt;li>……&lt;/li>
+&lt;/ul>
+&lt;h2 id="0x02-验证nse_mainlua最先执行">0x02 验证nse_main.lua最先执行&lt;/h2>
+&lt;p>使用vim编辑器修改&lt;code>nse_main.lua&lt;/code>&lt;/p>
+&lt;p>&lt;code>vim /usr/share/nmap/nse_mai.lua&lt;/code>&lt;/p>
+&lt;p>在第一行添加：&lt;/p>
+&lt;p>&lt;code>print(&amp;quot;[*] nse_main.lua first excute ... \n&amp;quot;)&lt;/code>&lt;/p>
+&lt;p>保存后，使用一个脚本观察效果：&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/6d832994-4f5f-11ec-9c52-00d861bf4abb.png" alt="2019-04-24-09-57-34">
+
+&lt;/p>
+&lt;p>可以发现，在nmap启动后就会执行nse_main.lua中的代码。&lt;/p>
+&lt;h2 id="0x03-扩展脚本执行规则">0x03 扩展脚本执行规则&lt;/h2>
+&lt;p>在nse_main.lua的64行左右，定义了一些规则：&lt;/p>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>Nmap扩展开发（四）</title><link>https://payloads.online/archivers/2019-04-24/4/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/4/</guid><description>&lt;h2 id="0x01-http包的使用">0x01 HTTP包的使用&lt;/h2>
+&lt;p>一般情况下，我们扫描一些Web服务的同时需要进行渗透测试、安全评估、漏洞检测等操作，但是官方并未提供符合我们需求的脚本，这时候就要自己写脚本了。Nmap已经内置了HTTP包，不需要再进行下载和配置。&lt;/p>
+&lt;h2 id="0x02-基础概念铺垫">0x02 基础概念铺垫&lt;/h2>
+&lt;p>首先，先介绍两个表结构，为了方便我们后续的数据操作，让读者先熟悉两个东西：&lt;/p>
+&lt;ul>
+&lt;li>响应表&lt;/li>
+&lt;/ul>
+&lt;p>响应表中主要涵盖了：HTTP状态码、HTTP响应头、HTTP版本、HTTP原始响应头、Cookies、HTTP响应主体内容（body）等&lt;/p>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+&lt;/span>&lt;/code>&lt;/pr</description></item></channel></rss>

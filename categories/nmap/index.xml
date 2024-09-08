@@ -1,15 +1,40 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nmap on 倾旋的博客</title><link>https://payloads.online/categories/nmap/</link><description>Recent content in Nmap on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Fri, 27 Jul 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/nmap/index.xml" rel="self" type="application/rss+xml"/><item><title>Nmap扩展开发（一）</title><link>https://payloads.online/archivers/2018-07-27/1/</link><pubDate>Fri, 27 Jul 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-07-27/1/</guid><description>0x01 前言 本来是想写成一本书的，但是可能断断续续没有很好的产出，我只能以文章的形式分享出来了，希望我的研究成果能够给大家带来便利。—— 作者：倾旋
-PS ：如果你不知道你是否需要学习这个技术，那么我可以先告诉你Nmap能够做什么：
-网络结构画像 漏洞扫描 漏洞利用 端口扫描 爬虫 信息搜集 &amp;hellip;. 我的分类不是很清晰，但是对于一个渗透测试人员、运维人员、甲、乙方的工程师都会需要它的定制化功能，例如：将扫描结果写到数据库？新的漏洞出了POC，客户需要立即进行漏洞扫描？
-导出扫描结果这个问题，Nmap官方做出如下回应：
-Nmap Network Scanning
-一个共同的愿望是将Nmap结果输出到数据库以便于查询和跟踪。这允许用户来自个人渗透测试仪 到国际企业存储他们的所有扫描结果并轻松比较它们。企业可能每天运行大型扫描，并为新打开的端口或可用计算机的邮件管理员安排查询。渗透测试人员可能会了解新漏洞并搜索受影响应用程序的所有旧扫描结果，以便他可以警告相关客户端。研究人员可以扫描数百万个IP地址，并将结果保存在数据库中，以便进行实时查询。
-虽然这些目标值得称赞，但Nmap不提供直接的数据库输出功能。我不仅有太多不同的数据库类型支持它们，而且用户的需求变化如此之大，以至于没有单一的数据库模式是合适的。企业，笔测试员和研究人员的需求都需要不同的表结构。
-而很多朋友大多都是使用Python来调用Nmap进行格式解析，这种方式无法预估扫描进度，不能进行状态交互，效率很差，如果我们需要一个实时进行独写、漏洞检测等定制化的操作，那么就可以跟我一起来学习如何写一个自己的Nmap脚本，这本书涵盖的知识比较多，会涉及安全、网络协议、编程技术这些相关知识，相信你能够收获很多。
-笔者写扩展脚本开发系列的初衷是让大家了解nmap这个优秀的开源工具的功能，解决一些定制化的扫描需求。
-在开始之前，需要读者具备：能够熟练使用Nmap进行端口扫描、了解Nmap目录结构、懂得常见的网络知识、Lua基础（如果需要的话，我会在后期铺垫）。
-请将你的读后感或建议留言评论，不胜荣幸！
-0x02 Nmap扩展脚本分类 auth	处理身份验证 broadcast 网络广播 brute	暴力猜解 default	默认 discovery	服务发现 dos	拒绝服务 exploit	漏洞利用 external	外部扩展 fuzzer	模糊测试 intrusive	扫描可能造成不良后果 malware	检测后门 safe	扫描危害较小 version	版本识别 vuln 漏洞检测 0X03 Nmap扩展脚本铺垫 相信网上已经有很多文章去写如何使用扩展脚本了，这块我不准备过多的铺垫。
-主要介绍如下几点：
-Nmap扩展脚本用途 Nmap扩展脚本使用方法 如何查看Nmap扩展脚本的Usage（使用方法） 0X03 [1] Nmap扩展脚本用途&amp;gt; Nmap扩展脚本能够帮助我们实现更多定制化的需求扫描、结果的处理、漏洞的检测、漏洞的利用等。在0x02中已经列出了扩展脚本的分类，根据说明我们能理解一个大概，这些分类代表了Nmap各个方面的能力。
-0x03 [2] Nmap扩展脚本使用方法 在很早之前，我写过一篇科普文章，主要介绍了Nmap的脚本分类、使用方法，链接：http://zhuanlan.zhihu.com/p/26618074</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Nmap on 倾旋的博客</title><link>https://payloads.online/categories/nmap/</link><description>Recent content in Nmap on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Fri, 27 Jul 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/nmap/index.xml" rel="self" type="application/rss+xml"/><item><title>Nmap扩展开发（一）</title><link>https://payloads.online/archivers/2018-07-27/1/</link><pubDate>Fri, 27 Jul 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-07-27/1/</guid><description>&lt;h2 id="0x01-前言">0x01 前言&lt;/h2>
+&lt;p>本来是想写成一本书的，但是可能断断续续没有很好的产出，我只能以文章的形式分享出来了，希望我的研究成果能够给大家带来便利。—— 作者：倾旋&lt;/p>
+&lt;p>PS ：如果你不知道你是否需要学习这个技术，那么我可以先告诉你Nmap能够做什么：&lt;/p>
+&lt;ul>
+&lt;li>网络结构画像&lt;/li>
+&lt;li>漏洞扫描&lt;/li>
+&lt;li>漏洞利用&lt;/li>
+&lt;li>端口扫描&lt;/li>
+&lt;li>爬虫&lt;/li>
+&lt;li>信息搜集&lt;/li>
+&lt;li>&amp;hellip;.&lt;/li>
+&lt;/ul>
+&lt;p>我的分类不是很清晰，但是对于一个渗透测试人员、运维人员、甲、乙方的工程师都会需要它的定制化功能，例如：将扫描结果写到数据库？新的漏洞出了POC，客户需要立即进行漏洞扫描？&lt;/p>
+&lt;p>导出扫描结果这个问题，Nmap官方做出如下回应：&lt;/p>
+&lt;p>&lt;a href="https://nmap.org/book/output-formats-output-to-database.html">Nmap Network Scanning&lt;/a>&lt;/p>
+&lt;p>一个共同的愿望是将Nmap结果输出到数据库以便于查询和跟踪。这允许用户来自个人渗透测试仪 到国际企业存储他们的所有扫描结果并轻松比较它们。企业可能每天运行大型扫描，并为新打开的端口或可用计算机的邮件管理员安排查询。渗透测试人员可能会了解新漏洞并搜索受影响应用程序的所有旧扫描结果，以便他可以警告相关客户端。研究人员可以扫描数百万个IP地址，并将结果保存在数据库中，以便进行实时查询。&lt;/p>
+&lt;p>虽然这些目标值得称赞，但Nmap不提供直接的数据库输出功能。我不仅有太多不同的数据库类型支持它们，而且用户的需求变化如此之大，以至于没有单一的数据库模式是合适的。企业，笔测试员和研究人员的需求都需要不同的表结构。&lt;/p>
+&lt;p>而很多朋友大多都是使用Python来调用Nmap进行格式解析，这种方式无法预估扫描进度，不能进行状态交互，效率很差，如果我们需要一个实时进行独写、漏洞检测等定制化的操作，那么就可以跟我一起来学习如何写一个自己的Nmap脚本，这本书涵盖的知识比较多，会涉及安全、网络协议、编程技术这些相关知识，相信你能够收获很多。&lt;/p>
+&lt;p>笔者写扩展脚本开发系列的初衷是让大家了解nmap这个优秀的开源工具的功能，解决一些定制化的扫描需求。&lt;/p>
+&lt;p>在开始之前，需要读者具备：能够熟练使用Nmap进行端口扫描、了解Nmap目录结构、懂得常见的网络知识、Lua基础（如果需要的话，我会在后期铺垫）。&lt;/p>
+&lt;p>请将你的读后感或建议留言评论，不胜荣幸！&lt;/p>
+&lt;h2 id="0x02-nmap扩展脚本分类">0x02 Nmap扩展脚本分类&lt;/h2>
+&lt;ul>
+&lt;li>auth	处理身份验证&lt;/li>
+&lt;li>broadcast 网络广播&lt;/li>
+&lt;li>brute	暴力猜解&lt;/li>
+&lt;li>default	默认&lt;/li>
+&lt;li>discovery	服务发现&lt;/li>
+&lt;li>dos	拒绝服务&lt;/li>
+&lt;li>exploit	漏洞利用&lt;/li>
+&lt;li>external	外部扩展&lt;/li>
+&lt;li>fuzzer	模糊测试&lt;/li>
+&lt;li>intrusive	扫描可能造成不良后果&lt;/li>
+&lt;li>malware	检测后门&lt;/li>
+&lt;li>safe	扫描危害较小&lt;/li>
+&lt;li>version	版本识别&lt;/li>
+&lt;li>vuln 漏洞检测&lt;/li>
+&lt;/ul>
+&lt;h2 id="0x03-nmap扩展脚本铺垫">0X03 Nmap扩展脚本铺垫&lt;/h2>
+&lt;p>相信网上已经有很多文章去写如何使用扩展脚本了，这块我不准备过多的铺垫。&lt;/p></description></item></channel></rss>

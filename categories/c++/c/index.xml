@@ -1,31 +1,206 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>C++/C on 倾旋的博客</title><link>https://payloads.online/categories/c++/c/</link><description>Recent content in C++/C on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Fri, 21 Dec 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/c++/c/index.xml" rel="self" type="application/rss+xml"/><item><title>Windows - 内存管理</title><link>https://payloads.online/archivers/2018-12-21/1/</link><pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-12-21/1/</guid><description>0x00 Windows Heap 每个线程都有自己的堆栈，堆用于在内存中存储未知大小的数据，由堆管理器管理，而栈用于保存函数执行状态，存储局部变量。
-0x01 申请堆空间的步骤 - Heap API HeapCreate // 创建堆句柄（内核对象） GetProcessHeap // 获取一个堆句柄 GetProcessHeaps // 获取所有堆句柄 HeapAlloc // 申请堆空间 HeapReAlloc // 在HeapAlloc的基础上申请一块堆空间 HeapFree // 释放堆空间 HeapDestory // 销毁堆句柄 0x02 HeapCreate Example 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 // ConsoleApplication2.</description></item><item><title>Windows 文件映射</title><link>https://payloads.online/archivers/2018-12-20/windows-FileMapping/</link><pubDate>Thu, 20 Dec 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-12-20/windows-FileMapping/</guid><description>0x00 文件映射的原理 文件映射(Mapping)是一种能够将文件内容映射到进程的虚拟地址空间的技术。视图(view)是一个由映射句柄开辟的一块虚拟地址空间，用于存放文件内容，当文件被映射完成后，改写视图虚拟地址空间的内容就相当于更改文件内容。
-一般情况下，当代码运行完毕后，视图将会被自动写入文件中。
-0x01 文件映射的步骤 CreateFile()&amp;hellip; CreateFileMapping()&amp;hellip; MapViewofFile()&amp;hellip; FlushViewofFile()&amp;hellip; 首先需要创建一个文件句柄，然后再创建一个文件映射的Mapping内核对象，通过映射获得视图。
-0x02 文件映射简单代码 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 // ConsoleApplication2.cpp : 定义控制台应用程序的入口点。 // #include &amp;#34;stdafx.h&amp;#34; #include &amp;lt;iostream&amp;gt; #include &amp;lt;Windows.h&amp;gt; int _tmain() { // 内存映射 // CreateFile()... // CreateFileMapping()... // MapViewofFile()... // FlushViewofFile... HANDLE hFile = CreateFile(TEXT(&amp;#34;C:\\Temp\\99.</description></item><item><title>最近学习Windows编程总结</title><link>https://payloads.online/archivers/2018-12-20/1/</link><pubDate>Thu, 20 Dec 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-12-20/1/</guid><description>0x00 Windows 字符编码 目前Windows最常见的字符集：
-1.ASCII 2.Unicode 3.UTF-16 4.UTF-8 Unicode是一个字符集，UTF-16是Unicode的存储实现，Windows中的Unicode默认是UTF-16存储方式。
-Unicode：
-UTF-16：一个字符占用两个字节 UTF8-8：一个字符占用两个字节，一般用于网络传输 各个字符集的BOM头 UTF-8：EF BB BF UTF-16LE：FF FE UTF16BE：FE FF Windows字符数据类型 1 2 3 4 5 6 CHAR -&amp;gt; char PSTR -&amp;gt; char * WCHAR -&amp;gt; wchar_t PWSTR -&amp;gt; wchar_t * TCHAR -&amp;gt; 一个宏，当前是什么字符集，编译出来就是什么字符集 PTSTR -&amp;gt; TCHAR * (有利于跨平台) 开发中推荐使用“TEXT”宏与PTSTR类型的字符串指针。
-0x01 Windows进程创建 进程是一个程序正在运行的一个实例，它由一个内核对象和一个地址空间组成。
-内核对象与地址空间都在4GB的虚拟内存中，内核占2GB高地址，低地址的2GB给程序的堆栈使用。
-在Windows中，系统通过句柄管理进程中的资源，句柄存储在内核空间中的一个全局句柄表中，而每个进程也都有一个句柄表，这个句柄表是私有的。
-PID 是指的是全局句柄表的值。
-进程执行的加载过程 1.映射EXE 2.创建内核对象EPROCESS 3.映射系统DLL（ntdll.dll） 4.创建线程内核对象ETHREAD 5.系统启动线程、映射DLL（ntdll.LdrInitalizeThunk）、线程开始执行 创建进程 1 2 3 4 5 6 7 8 9 10 11 12 13 BOOL CreateProcess ( LPCTSTR lpApplicationName, LPTSTR lpCommandLine, LPSECURITY_ATTRIBUTES lpProcessAttributes, LPSECURITY_ATTRIBUTES lpThreadAttributes, BOOL bInheritHandles, DWORD dwCreationFlags, LPVOID lpEnvironment, LPCTSTR lpCurrentDirectory, LPSTARTUPINFO lpStartupInfo, LPPROCESS_INFORMATIONlpProcessInformation ); 线程与进程的关系 进程是一个程序正在运行的一个实例，它提供了一块存储代码的空间，在进程被创建时，系统也会给进程创建一个主线程（primary thread），主线程负责执行代码，一个进程没有线程是无法运行的。</description></item><item><title>使用C语言发送伪造源IP的UDP请求及DRDOS拒绝服务攻击原理剖析</title><link>https://payloads.online/archivers/2018-03-04/1/</link><pubDate>Sun, 04 Mar 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-03-04/1/</guid><description>0x01 什么是DRDOS DRDoS是英文“Distributed Reflection Denial of Service ”的缩写，中文意思是“分布式反射拒绝服务”。与DoS、DDoS不同，该方式靠的是发送大量带有被害者IP地址的数据包给攻击主机，然后攻击主机对IP地址源做出大量回应，形成拒绝服务攻击。
-0x02 DRDOS的攻击流程 DRDoS要完成一次反射放大攻击：
-1 攻击者，必须提前需要把攻击数据存放在所有的在线肉鸡或者反射服务器之上。 2 攻击者，必须伪造IP源头。发送海量伪造IP来源的请求。当然这里的IP就是受害者的IP地址。 3 反射服务器，必须可以反射数据，运行良好稳定。最好是请求数据少，返回数据成万倍增加。 0x03 DRDOS的特性 （如果没有理解UDP协议，请不要向下继续阅读……会越来越混乱）
-根据上述概念可以理解为，DRDOS需要一个能够伪造IP头的协议，这个协议最突出的就是UDP协议了。
-使用基于 TCP 协议的通信不可以对源 IP 地址进行伪造 使用基于 UDP 协议的通信可以对源 IP 地址进行伪造 TCP 不能伪造源 IP 地址是因为 TCP 协议中的三次握手的存在，如果源 IP 地址被修改，那么三次握手将无法达成。
-而 UDP 则不同，UDP 中不存在三次握手，那么发送端就只要发送数据即可，而接收端只要接收数据即可。所以，在 TCP 中不能对源 IP 地址进行伪造，而 UDP 中则可以。
-UDP协议不需要握手，直接发送接收，下面我来通过小故事来形象的描述UDP中的伪造IP头攻击：
-假设有三个用户，Allen、Jerry、Tom.
-Jerry与Tom一次正常的UDP请求 Jerry说：“我是Jerry，我的源端口是4787，我要向Tom的4478端口发送一个UDP报文”
-此时Tom的4478端口接收到一个UDP报文，需要回复内容，回复给谁呢，接下来需要根据报文中的IP头确定是谁发送的
-通过Jerry的话确定发送方是Jerry，而Jerry的端口是4787，那么Tom就会将数据传送给Jerry
-Tom说：“我是Tom，我的源端口是4478，根据刚才接收到的一句话中，确认了发送人是Jerry，我把数据传送给Jerry的4787端口”
-Allen进行一次RDOS攻击 Allen说：“我是Jerry，我的源端口是4787，我要向Tom的4478端口发送一个UDP报文”
-此时Tom接收到报文，根据上面这句话确定了发送人是Jerry，目的端口是4787
-Tom说：“我是Tom，我的源端口是4478，根据刚才接收到的一句话中，确认了发送人是Jerry，我把数据传送给Jerry的4787端口”
-这个过程当中，Jerry并没有参与通信，但是接到了一个从Tom那里发送过来的UDP数据报文
-0x04 编写一个伪造IP头的C语言程序 /usr/include/netinet/ip.h
-这里面定义了IP头
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 struct ip { #if __BYTE_ORDER == __LITTLE_ENDIAN unsigned int ip_hl:4;	/* header length */ unsigned int ip_v:4;	/* version */ #endif #if __BYTE_ORDER == __BIG_ENDIAN unsigned int ip_v:4;	/* version */ unsigned int ip_hl:4;	/* header length */ #endif uint8_t ip_tos;	/* type of service */ unsigned short ip_len;	/* total length */ unsigned short ip_id;	/* identification */ unsigned short ip_off;	/* fragment offset field */ #define	IP_RF 0x8000	/* reserved fragment flag */ #define	IP_DF 0x4000	/* dont fragment flag */ #define	IP_MF 0x2000	/* more fragments flag */ #define	IP_OFFMASK 0x1fff	/* mask for fragmenting bits */ uint8_t ip_ttl;	/* time to live */ uint8_t ip_p;	/* protocol */ unsigned short ip_sum;	/* checksum */ struct in_addr ip_src, ip_dst;	/* source and dest address */ }; /usr/include/netinet/udp.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>C++/C on 倾旋的博客</title><link>https://payloads.online/categories/c++/c/</link><description>Recent content in C++/C on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Fri, 21 Dec 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/c++/c/index.xml" rel="self" type="application/rss+xml"/><item><title>Windows - 内存管理</title><link>https://payloads.online/archivers/2018-12-21/1/</link><pubDate>Fri, 21 Dec 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-12-21/1/</guid><description>&lt;h2 id="0x00-windows-heap">0x00 Windows Heap&lt;/h2>
+&lt;p>每个线程都有自己的堆栈，堆用于在内存中存储未知大小的数据，由堆管理器管理，而栈用于保存函数执行状态，存储局部变量。&lt;/p>
+&lt;h2 id="0x01-申请堆空间的步骤---heap-api">0x01 申请堆空间的步骤 - Heap API&lt;/h2>
+&lt;ul>
+&lt;li>HeapCreate // 创建堆句柄（内核对象）&lt;/li>
+&lt;li>GetProcessHeap // 获取一个堆句柄&lt;/li>
+&lt;li>GetProcessHeaps // 获取所有堆句柄&lt;/li>
+&lt;li>HeapAlloc // 申请堆空间&lt;/li>
+&lt;li>HeapReAlloc // 在HeapAlloc的基础上申请一块堆空间&lt;/li>
+&lt;li>HeapFree // 释放堆空间&lt;/li>
+&lt;li>HeapDestory // 销毁堆句柄&lt;/li>
+&lt;/ul>
+&lt;h2 id="0x02-heapcreate-example">0x02 HeapCreate Example&lt;/h2>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">74
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">75
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">76
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">77
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">78
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">79
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">80
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">81
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">82
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">83
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">84
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">85
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">86
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">87
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">88
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">89
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">90
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">91
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">92
+&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>Windows 文件映射</title><link>https://payloads.online/archivers/2018-12-20/windows-FileMapping/</link><pubDate>Thu, 20 Dec 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-12-20/windows-FileMapping/</guid><description>&lt;h2 id="0x00-文件映射的原理">0x00 文件映射的原理&lt;/h2>
+&lt;p>文件映射(Mapping)是一种能够将文件内容映射到进程的虚拟地址空间的技术。视图(view)是一个由映射句柄开辟的一块虚拟地址空间，用于存放文件内容，当文件被映射完成后，改写视图虚拟地址空间的内容就相当于更改文件内容。&lt;/p>
+&lt;p>一般情况下，当代码运行完毕后，视图将会被自动写入文件中。&lt;/p>
+&lt;h2 id="0x01-文件映射的步骤">0x01 文件映射的步骤&lt;/h2>
+&lt;ul>
+&lt;li>CreateFile()&amp;hellip;&lt;/li>
+&lt;li>CreateFileMapping()&amp;hellip;&lt;/li>
+&lt;li>MapViewofFile()&amp;hellip;&lt;/li>
+&lt;li>FlushViewofFile()&amp;hellip;&lt;/li>
+&lt;/ul>
+&lt;p>首先需要创建一个文件句柄，然后再创建一个文件映射的Mapping内核对象，通过映射获得视图。&lt;/p>
+&lt;h2 id="0x02-文件映射简单代码">0x02 文件映射简单代码&lt;/h2>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
+&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>最近学习Windows编程总结</title><link>https://payloads.online/archivers/2018-12-20/1/</link><pubDate>Thu, 20 Dec 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-12-20/1/</guid><description>&lt;h2 id="0x00-windows-字符编码">0x00 Windows 字符编码&lt;/h2>
+&lt;p>目前Windows最常见的字符集：&lt;/p>
+&lt;ul>
+&lt;li>1.ASCII&lt;/li>
+&lt;li>2.Unicode&lt;/li>
+&lt;li>3.UTF-16&lt;/li>
+&lt;li>4.UTF-8&lt;/li>
+&lt;/ul>
+&lt;p>Unicode是一个字符集，UTF-16是Unicode的存储实现，Windows中的Unicode默认是UTF-16存储方式。&lt;/p>
+&lt;p>Unicode：&lt;/p>
+&lt;ul>
+&lt;li>UTF-16：一个字符占用两个字节&lt;/li>
+&lt;li>UTF8-8：一个字符占用两个字节，一般用于网络传输&lt;/li>
+&lt;/ul>
+&lt;h3 id="各个字符集的bom头">各个字符集的BOM头&lt;/h3>
+&lt;ul>
+&lt;li>UTF-8：EF BB BF&lt;/li>
+&lt;li>UTF-16LE：FF FE&lt;/li>
+&lt;li>UTF16BE：FE FF&lt;/li>
+&lt;/ul>
+&lt;h3 id="windows字符数据类型">Windows字符数据类型&lt;/h3>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>使用C语言发送伪造源IP的UDP请求及DRDOS拒绝服务攻击原理剖析</title><link>https://payloads.online/archivers/2018-03-04/1/</link><pubDate>Sun, 04 Mar 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-03-04/1/</guid><description>&lt;h2 id="0x01-什么是drdos">0x01 什么是DRDOS&lt;/h2>
+&lt;p>DRDoS是英文“Distributed Reflection Denial of Service ”的缩写，中文意思是“分布式反射拒绝服务”。与DoS、DDoS不同，该方式靠的是发送大量带有被害者IP地址的数据包给攻击主机，然后攻击主机对IP地址源做出大量回应，形成拒绝服务攻击。&lt;/p>
+&lt;h2 id="0x02-drdos的攻击流程">0x02 DRDOS的攻击流程&lt;/h2>
+&lt;p>DRDoS要完成一次反射放大攻击：&lt;/p>
+&lt;ul>
+&lt;li>1 攻击者，必须提前需要把攻击数据存放在所有的在线肉鸡或者反射服务器之上。&lt;/li>
+&lt;li>2 攻击者，必须伪造IP源头。发送海量伪造IP来源的请求。当然这里的IP就是受害者的IP地址。&lt;/li>
+&lt;li>3 反射服务器，必须可以反射数据，运行良好稳定。最好是请求数据少，返回数据成万倍增加。&lt;/li>
+&lt;/ul>
+&lt;h2 id="0x03-drdos的特性">0x03 DRDOS的特性&lt;/h2>
+&lt;p>（如果没有理解UDP协议，请不要向下继续阅读……会越来越混乱）&lt;/p>
+&lt;p>根据上述概念可以理解为，DRDOS需要一个能够伪造IP头的协议，这个协议最突出的就是UDP协议了。&lt;/p>
+&lt;ol>
+&lt;li>使用基于 TCP 协议的通信不可以对源 IP 地址进行伪造&lt;/li>
+&lt;li>使用基于 UDP 协议的通信可以对源 IP 地址进行伪造&lt;/li>
+&lt;/ol>
+&lt;p>TCP 不能伪造源 IP 地址是因为 TCP 协议中的三次握手的存在，如果源 IP 地址被修改，那么三次握手将无法达成。&lt;/p>
+&lt;p>而 UDP 则不同，UDP 中不存在三次握手，那么发送端就只要发送数据即可，而接收端只要接收数据即可。所以，在 TCP 中不能对源 IP 地址进行伪造，而 UDP 中则可以。&lt;/p>
+&lt;p>UDP协议不需要握手，直接发送接收，下面我来通过小故事来形象的描述UDP中的伪造IP头攻击：&lt;/p>
+&lt;blockquote>
+&lt;p>假设有三个用户，Allen、Jerry、Tom.&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="jerry与tom一次正常的udp请求">Jerry与Tom一次正常的UDP请求&lt;/h3>
+&lt;p>&lt;code>Jerry说：&lt;/code>“我是Jerry，我的源端口是4787，我要向Tom的4478端口发送一个UDP报文”&lt;/p></description></item></channel></rss>

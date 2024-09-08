@@ -1,5 +1,27 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Windows编程技术 on 倾旋的博客</title><link>https://payloads.online/categories/windows%E7%BC%96%E7%A8%8B%E6%8A%80%E6%9C%AF/</link><description>Recent content in Windows编程技术 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Wed, 02 Oct 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/windows%E7%BC%96%E7%A8%8B%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml"/><item><title>DllMain与rundll32详解</title><link>https://payloads.online/archivers/2019-10-02/1/</link><pubDate>Wed, 02 Oct 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-10-02/1/</guid><description>0x00 DllMain 对于动态链接库，DllMain是一个可选的入口函数。
-程序调用DLL中的导出函数的流程 程序调用Windows API LoadLibrary 操作系统寻找LoadLibrary所加载的DLL文件 操作系统将DLL文件加载至目标程序进程的内存空间 程序自动调用DllMain函数 程序调用DLL中导出函数 如果DLL被多次LoadLibrary，那么DllMain只执行一次，引用基数+1。
-DllMain的原型 1 2 3 4 5 BOOL WINAPI DllMain( _In_ HINSTANCE hinstDLL, // 指向自身的句柄 _In_ DWORD fdwReason, // 调用原因 _In_ LPVOID lpvReserved // 隐式加载和显式加载 ); 0x01 DllMain调用原因 其中fdwReason用来表示Dll被调用的状态，一共分为四种：
-DLL_PROCESS_ATTACH 被进程加载 DLL_PROCESS_DETACH 被进程释放 DLL_THREAD_ATTACH 被线程加载 DLL_THREAD_DETACH 被线程释放 在DllMain中通常为了捕获DLL被调用的方式来进行某些动作：
-1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 BOOL APIENTRY DllMain( HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved) { switch (ul_reason_for_call) { case DLL_PROCESS_ATTACH: printf(&amp;#34;\nprocess attach of dll&amp;#34;); break; case DLL_THREAD_ATTACH: printf(&amp;#34;\nthread attach of dll&amp;#34;); break; case DLL_THREAD_DETACH: printf(&amp;#34;\nthread detach of dll&amp;#34;); break; case DLL_PROCESS_DETACH: printf(&amp;#34;\nprocess detach of dll&amp;#34;); break; } return TRUE; } 0x02 那些用于测试DLL劫持的DllMain POC https://cxsecurity.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Windows编程技术 on 倾旋的博客</title><link>https://payloads.online/categories/windows%E7%BC%96%E7%A8%8B%E6%8A%80%E6%9C%AF/</link><description>Recent content in Windows编程技术 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Wed, 02 Oct 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/windows%E7%BC%96%E7%A8%8B%E6%8A%80%E6%9C%AF/index.xml" rel="self" type="application/rss+xml"/><item><title>DllMain与rundll32详解</title><link>https://payloads.online/archivers/2019-10-02/1/</link><pubDate>Wed, 02 Oct 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-10-02/1/</guid><description>&lt;h2 id="0x00-dllmain">0x00 DllMain&lt;/h2>
+&lt;p>对于动态链接库，DllMain是一个&lt;strong>可选的&lt;/strong>入口函数。&lt;/p>
+&lt;h3 id="程序调用dll中的导出函数的流程">程序调用DLL中的导出函数的流程&lt;/h3>
+&lt;ul>
+&lt;li>程序调用Windows API &lt;code>LoadLibrary&lt;/code>&lt;/li>
+&lt;li>操作系统寻找LoadLibrary所加载的DLL文件&lt;/li>
+&lt;li>操作系统将DLL文件加载至目标程序进程的内存空间&lt;/li>
+&lt;li>程序自动调用&lt;code>DllMain&lt;/code>函数&lt;/li>
+&lt;li>程序调用DLL中导出函数&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>如果DLL被多次&lt;code>LoadLibrary&lt;/code>，那么&lt;code>DllMain&lt;/code>只执行一次，引用基数+1。&lt;/strong>&lt;/p>
+&lt;h3 id="dllmain的原型">DllMain的原型&lt;/h3>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-c++" data-lang="c++">&lt;span style="display:flex;">&lt;span>BOOL WINAPI &lt;span style="color:#a6e22e">DllMain&lt;/span>(
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> _In_ HINSTANCE hinstDLL, &lt;span style="color:#75715e">// 指向自身的句柄
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> _In_ DWORD fdwReason, &lt;span style="color:#75715e">// 调用原因
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> _In_ LPVOID lpvReserved &lt;span style="color:#75715e">// 隐式加载和显式加载
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>);
+&lt;/span>&lt;/span>&lt;/code>&lt;/pr</description></item></channel></rss>

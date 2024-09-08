@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>AI相关 on 倾旋的博客</title><link>https://payloads.online/tags/ai%E7%9B%B8%E5%85%B3/</link><description>Recent content in AI相关 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Sun, 08 Sep 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/tags/ai%E7%9B%B8%E5%85%B3/index.xml" rel="self" type="application/rss+xml"/><item><title>使用AI提取历年漏洞Fofa查询语句</title><link>https://payloads.online/archivers/2024-09-08/extract-vuln-search-queries/</link><pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2024-09-08/extract-vuln-search-queries/</guid><description>&lt;h2 id="前言">前言&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Rust on 倾旋的博客</title><link>https://payloads.online/tags/rust/</link><description>Recent content in Rust on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Sun, 08 Sep 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/tags/rust/index.xml" rel="self" type="application/rss+xml"/><item><title>使用AI提取历年漏洞Fofa查询语句</title><link>https://payloads.online/archivers/2024-09-08/extract-vuln-search-queries/</link><pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2024-09-08/extract-vuln-search-queries/</guid><description>&lt;h2 id="前言">前言&lt;/h2>
 &lt;p>近期使用Rust开发了一个基于流水线的AI助手，名字叫&lt;code>Qpipe&lt;/code>，本文将演示我如何使用它来提取历年所有漏洞相关资产的查询语句。&lt;/p>
 &lt;p>开源链接：&lt;a href="https://github.com/Rvn0xsy/Qpipe">https://github.com/Rvn0xsy/Qpipe&lt;/a>&lt;/p>
 &lt;p>最近智谱开放了国内首个&lt;a href="https://open.bigmodel.cn/dev/api#glm-4">大模型免费API接口&lt;/a>，我就想着能否用它做一点事情，第一个想到的是把这两年披露的漏洞做一个梳理，就先从网络空间搜索引擎的语法开始。&lt;/p>
@@ -24,31 +24,4 @@
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> -d, --debug 
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> -h, --help Print help
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> -V, --version Print version
-&lt;/span>&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>使用Coze平台对Github Star项目进行分析推送</title><link>https://payloads.online/archivers/2024-06-04/coze-ai/</link><pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2024-06-04/coze-ai/</guid><description>&lt;!-- raw HTML omitted -->
-&lt;!-- raw HTML omitted -->
-&lt;!-- raw HTML omitted -->
-&lt;!-- raw HTML omitted -->
-&lt;h1 id="实现思路">👾实现思路&lt;/h1>
-&lt;p>Coze有个版本，分别面向海外和国内，这里我使用海外版本&lt;/p>
-&lt;table>
- &lt;thead>
- &lt;tr>
- &lt;th style="text-align: left">域名&lt;/th>
- &lt;th style="text-align: left">模型&lt;/th>
- &lt;th style="text-align: left">备注&lt;/th>
- &lt;/tr>
- &lt;/thead>
- &lt;tbody>
- &lt;tr>
- &lt;td style="text-align: left">coze.com&lt;/td>
- &lt;td style="text-align: left">GPT4o\GPT3.5\GPT4\Gemini 1.5 Pro..&lt;/td>
- &lt;td style="text-align: left">海外魔法&lt;/td>
- &lt;/tr>
- &lt;tr>
- &lt;td style="text-align: left">coze.cn&lt;/td>
- &lt;td style="text-align: left">字节云雀&lt;/td>
- &lt;td style="text-align: left">国内&lt;/td>
- &lt;/tr>
- &lt;/tbody>
-&lt;/table>
-&lt;p>这里不多介绍Coze平台的基本功能了，请移步官方文档：&lt;a href="https://www.coze.com/docs/guides/welcome?_lang=zh">Coze - Coze 文档中心&lt;/a>&lt;/p></description></item></channel></rss>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pr</description></item></channel></rss>

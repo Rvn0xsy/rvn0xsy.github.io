@@ -1,3 +1,74 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Useful-Software on 倾旋的博客</title><link>https://payloads.online/tags/useful-software/</link><description>Recent content in Useful-Software on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Wed, 19 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/tags/useful-software/index.xml" rel="self" type="application/rss+xml"/><item><title>常用软件记录</title><link>https://payloads.online/archivers/2023-07-19/useful-software/</link><pubDate>Wed, 19 Jul 2023 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2023-07-19/useful-software/</guid><description>操作系统-[镜像] Windows: MSDN-ItellYou \ ✨LTSC 系统比较纯净 推荐使用LTSC版本的操作系统，系统比较纯净，但需要激活
-Linux: Arch Linux / Ubuntu 比较推荐直接去一些软件源上下载，这里举例清华源
-操作系统工具-[Linux] 文档处理：WPS Office、Mousepad 输入法：Fctix5 … https://github.com/Rvn0xsy/pacman-pkg 软件中心 腾讯软件中心 无广告和捆绑 软件分析 CFF Explorer PE文件解析 IDA 二进制文件分析 Dnspy C#程序反汇编分析 X64Dbg Windows二进制文件分析 浏览器插件 ✨TamperMonkey 油猴插件 ✨AdGuard 拦截广告 ✨Proxy SwitchyOmega 代理切换 ✨Bitwarden 密码管理器 ✨Wappalyzer 分析网站所使用的组件 影视资源 BT之家：btbtt15[.]com 樱花动漫：yinghuadongman[.]me 操作系统工具-[Windows] 备忘录：✨Notion 聊天工具：微信、Slack、✨飞书 电子邮件：Foxmail 文档处理：Microsoft Office、wps 密码管理：✨Bitwarden 浏览器：Google Chrome、✨Microsoft Edge 视频会议：✨腾讯会议 Microsoft To Do待办提醒：✨To Do 文件查找搜索：Everything 抓包分析：Wireshark \ ✨[镜像]Wireshark 镜像下载较快 \ Burpsuite 代码编辑器：VSCode[加速下载]改变官网地址主地址为: vscode.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Useful-Software on 倾旋的博客</title><link>https://payloads.online/tags/useful-software/</link><description>Recent content in Useful-Software on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Wed, 19 Jul 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/tags/useful-software/index.xml" rel="self" type="application/rss+xml"/><item><title>常用软件记录</title><link>https://payloads.online/archivers/2023-07-19/useful-software/</link><pubDate>Wed, 19 Jul 2023 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2023-07-19/useful-software/</guid><description>&lt;!-- raw HTML omitted -->
+&lt;!-- raw HTML omitted -->
+&lt;h3 id="操作系统-镜像">操作系统-[镜像]&lt;/h3>
+&lt;ul>
+&lt;li>Windows: &lt;a href="https://msdn.itellyou.cn/">MSDN-ItellYou&lt;/a> \ ✨&lt;a href="http://www.microsoft.com/en-us/evalcenter/download-windows-10-enterprise">LTSC&lt;/a> 系统比较纯净&lt;/li>
+&lt;/ul>
+&lt;blockquote>
+&lt;p>推荐使用LTSC版本的操作系统，系统比较纯净，但需要激活&lt;/p>
+&lt;/blockquote>
+&lt;ul>
+&lt;li>Linux: &lt;a href="https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/2023.07.01/">Arch Linux&lt;/a> / &lt;a href="https://mirrors.tuna.tsinghua.edu.cn/ubuntu-cdimage/releases/23.04/release/">Ubuntu&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;blockquote>
+&lt;p>比较推荐直接去一些软件源上下载，这里举例清华源&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="操作系统工具-linux">操作系统工具-[Linux]&lt;/h3>
+&lt;ul>
+&lt;li>文档处理：&lt;a href="https://wiki.archlinux.org/title/WPS_Office">WPS Office&lt;/a>、&lt;a href="https://archlinux.org/packages/extra/x86_64/mousepad/">Mousepad&lt;/a>&lt;/li>
+&lt;li>输入法：Fctix5&lt;/li>
+&lt;li>… &lt;a href="https://github.com/Rvn0xsy/pacman-pkg">https://github.com/Rvn0xsy/pacman-pkg&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h3 id="软件中心">软件中心&lt;/h3>
+&lt;ul>
+&lt;li>&lt;a href="https://pc.qq.com/">腾讯软件中心&lt;/a> &lt;em>无广告和捆绑&lt;/em>&lt;/li>
+&lt;/ul>
+&lt;h3 id="软件分析">软件分析&lt;/h3>
+&lt;ul>
+&lt;li>&lt;a href="https://ntcore.com/?page_id=388">CFF Explorer&lt;/a> &lt;em>PE文件解析&lt;/em>&lt;/li>
+&lt;li>&lt;a href="https://www.ida.org/">IDA&lt;/a> &lt;em>二进制文件分析&lt;/em>&lt;/li>
+&lt;li>&lt;a href="https://github.com/dnSpy/dnSpy">Dnspy&lt;/a> &lt;em>C#程序反汇编分析&lt;/em>&lt;/li>
+&lt;li>&lt;a href="https://x64dbg.com/">X64Dbg&lt;/a> &lt;em>Windows二进制文件分析&lt;/em>&lt;/li>
+&lt;/ul>
+&lt;h3 id="浏览器插件">浏览器插件&lt;/h3>
+&lt;ul>
+&lt;li>✨&lt;a href="https://www.tampermonkey.net/">TamperMonkey&lt;/a> &lt;em>油猴插件&lt;/em>&lt;/li>
+&lt;li>✨&lt;a href="https://adguard.com/zh_cn/download-extension/edge.html">AdGuard&lt;/a> &lt;em>拦截广告&lt;/em>&lt;/li>
+&lt;li>✨&lt;a href="https://microsoftedge.microsoft.com/addons/detail/fdbloeknjpnloaggplaobopplkdhnikc">Proxy SwitchyOmega&lt;/a> &lt;em>代理切换&lt;/em>&lt;/li>
+&lt;li>✨&lt;a href="https://bitwarden.com/">Bitwarden&lt;/a> &lt;em>密码管理器&lt;/em>&lt;/li>
+&lt;li>✨&lt;a href="https://www.wappalyzer.com/apps/?utm_source=popup&amp;amp;utm_medium=extension&amp;amp;utm_campaign=wappalyzer">Wappalyzer&lt;/a> &lt;em>分析网站所使用的组件&lt;/em>&lt;/li>
+&lt;/ul>
+&lt;h3 id="影视资源">影视资源&lt;/h3>
+&lt;ul>
+&lt;li>BT之家：btbtt15[.]com&lt;/li>
+&lt;li>樱花动漫：yinghuadongman[.]me&lt;/li>
+&lt;/ul>
+&lt;h3 id="操作系统工具-windows">操作系统工具-[Windows]&lt;/h3>
+&lt;ul>
+&lt;li>备忘录：✨&lt;a href="https://www.notion.so/">Notion&lt;/a>&lt;/li>
+&lt;li>聊天工具：&lt;a href="https://weixin.qq.com/">微信&lt;/a>、&lt;a href="https://slack.com/">Slack&lt;/a>、✨&lt;a href="https://www.feishu.cn/">飞书&lt;/a>&lt;/li>
+&lt;li>电子邮件：&lt;a href="https://www.foxmail.com/">Foxmail&lt;/a>&lt;/li>
+&lt;li>文档处理：&lt;a href="https://www.office.com/?omkt=zh-CN">Microsoft Office&lt;/a>、&lt;a href="https://www.wps.cn/">wps&lt;/a>&lt;/li>
+&lt;li>密码管理：✨&lt;a href="https://bitwarden.com/">Bitwarden&lt;/a>&lt;/li>
+&lt;li>浏览器：&lt;a href="https://www.google.com/chrome/">Google Chrome&lt;/a>、✨&lt;a href="https://www.microsoft.com/en-us/edge">Microsoft Edge&lt;/a>&lt;/li>
+&lt;li>视频会议：✨&lt;a href="https://meeting.tencent.com/">腾讯会议&lt;/a>&lt;/li>
+&lt;li>Microsoft To Do待办提醒：✨&lt;a href="https://todo.microsoft.com/zh-cn/">To Do&lt;/a>&lt;/li>
+&lt;li>文件查找搜索：&lt;a href="https://www.voidtools.com/zh-cn/">Everything&lt;/a>&lt;/li>
+&lt;li>抓包分析：&lt;a href="https://www.wireshark.org/">Wireshark&lt;/a> \ ✨&lt;a href="https://mirrors.tuna.tsinghua.edu.cn/wireshark/win64/">[镜像]Wireshark&lt;/a> 镜像下载较快 \ &lt;a href="https://portswigger.net/burp/releases#professional">Burpsuite&lt;/a>&lt;/li>
+&lt;li>代码编辑器：&lt;a href="https://code.visualstudio.com/">VSCode&lt;/a>[加速下载]改变官网地址主地址为: &lt;a href="http://vscode.cdn.azure.cn/">vscode.cdn.azure.cn&lt;/a>&lt;/li>
+&lt;li>文件解压缩：&lt;a href="https://www.7-zip.org/">7zip&lt;/a>&lt;/li>
+&lt;li>屏幕录制：&lt;a href="https://obsproject.com/">OBS Studio&lt;/a>&lt;/li>
+&lt;li>Git: &lt;a href="https://git-scm.com/download/win">Git For Windows&lt;/a> / &lt;a href="https://pc.qq.com/detail/13/detail_22693.html">[加速]Git For Windows&lt;/a>&lt;/li>
+&lt;li>虚拟化：Docker\VMWare\VirtualBox&lt;/li>
+&lt;li>脚本环境：&lt;a href="https://adoptopenjdk.net/">Java&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h3 id="网页工具">网页工具&lt;/h3>
+&lt;ul>
+&lt;li>编码解码：&lt;a href="https://gchq.github.io/CyberChef/">CyberChef&lt;/a>&lt;/li>
+&lt;li>正则表达式:&lt;a href="https://regex101.com">Regex101&lt;/a>&lt;/li>
+&lt;li>✨腾讯杂项在线工具：&lt;a href="https://tool.browser.qq.com/">杂项工具箱&lt;/a>&lt;/li>
+&lt;li>免费DNS-SSRF服务：&lt;a href="http://sslip.io/">sslip.io&lt;/a>&lt;/li>
+&lt;li>壁纸网站：&lt;a href="https://bing.wdbyte.com/">Bing壁纸库&lt;/a>&lt;/li>
+&lt;li>IP地址查询：&lt;a href="https://www.ifconfig.me/">ifconfig.me&lt;/a>&lt;/li>
+&lt;li>BT种子转换:cn[.]torrentkitty[.]best&lt;/li>
+&lt;/ul></description></item></channel></rss>

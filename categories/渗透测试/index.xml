@@ -1,5 +1,26 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>渗透测试 on 倾旋的博客</title><link>https://payloads.online/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/</link><description>Recent content in 渗透测试 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Wed, 15 Aug 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/index.xml" rel="self" type="application/rss+xml"/><item><title>Microsoft DirectX SDK June 2010 Xact3.exe DLL Hijacking复现</title><link>https://payloads.online/archivers/2018-08-15/1/</link><pubDate>Wed, 15 Aug 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-08-15/1/</guid><description>0x00 前言 Microsoft DirectX SDK (June 2010) Xact3.exe https://www.microsoft.com/en-us/download/details.aspx?id=6812
-目前微软官方已经废弃该SDK，所以我只能本着学习的心态去复现。
-通过参考网上的漏洞披露，我决定复现一下。 这个和之前QQ拼音输入法6.0最新版DLL劫持 - 可利用于提权的思路差不多。
-0x01 复现过程 首先，漏洞披露详情如下：
-1 2 3 4 5 6 7 Exploit/POC ============= 1) create DLL 32bit DLL named &amp;#34;xbdm.dll&amp;#34; and place on a remote share 2) create an empty file with a &amp;#34;.xap&amp;#34; extension on the same share, this will open using &amp;#34;Xact3.exe&amp;#34; as its default 3) open the the .xap file from the Network share then BOOM!</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>渗透测试 on 倾旋的博客</title><link>https://payloads.online/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/</link><description>Recent content in 渗透测试 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Wed, 15 Aug 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/index.xml" rel="self" type="application/rss+xml"/><item><title>Microsoft DirectX SDK June 2010 Xact3.exe DLL Hijacking复现</title><link>https://payloads.online/archivers/2018-08-15/1/</link><pubDate>Wed, 15 Aug 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-08-15/1/</guid><description>&lt;h2 id="0x00-前言">0x00 前言&lt;/h2>
+&lt;p>Microsoft DirectX SDK (June 2010) Xact3.exe
+&lt;a href="https://www.microsoft.com/en-us/download/details.aspx?id=6812">https://www.microsoft.com/en-us/download/details.aspx?id=6812&lt;/a>&lt;/p>
+&lt;p>目前微软官方已经废弃该SDK，所以我只能本着学习的心态去复现。&lt;/p>
+&lt;p>通过参考网上的漏洞披露，我决定复现一下。 这个和之前&lt;a href="http://payloads.online/archivers/2018-06-09/1">QQ拼音输入法6.0最新版DLL劫持 - 可利用于提权&lt;/a>的思路差不多。&lt;/p>
+&lt;h2 id="0x01-复现过程">0x01 复现过程&lt;/h2>
+&lt;p>首先，漏洞披露详情如下：&lt;/p>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>Exploit/POC
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>=============
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>1) create DLL 32bit DLL named &amp;#34;xbdm.dll&amp;#34; and place on a remote share
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>2) create an empty file with a &amp;#34;.xap&amp;#34; extension on the same share, this will open using &amp;#34;Xact3.exe&amp;#34; as its default
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>3) open the the .xap file from the Network share then BOOM!
+&lt;/span>&lt;/span>&lt;/code>&lt;/pr</description></item></channel></rss>
