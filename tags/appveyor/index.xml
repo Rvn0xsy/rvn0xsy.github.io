@@ -23,4 +23,44 @@
 &lt;p>
  &lt;img src="https://images.payloads.online/2024-07-29-0901705e6c5f3cc7db29338176b4c9558f1e87bf3a5e092df44706d38ae89b61.png" alt="2">
 
-&lt;/p></description></item></channel></rss>
+&lt;/p>
+&lt;p>由于这个项目是采用C#开发的，所以我们着重关注C#相关的配置：&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/2024-07-29-1b7abdb53043453e086a25620f4411330f445299864c87d91beb53bc87a47890.png" alt="3">
+
+&lt;/p>
+&lt;p>在Before build script中输入如下命令，会在开始编译之前去下载这个项目所依赖的库：&lt;/p>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>nuget restore
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;!-- raw HTML omitted -->
+&lt;p>在开发.NET应用程序时，通常会使用NuGet来管理项目所依赖的第三方库和组件。NuGet是.NET生态系统中最受欢迎的包管理器之一，它提供了一个中央存储库，开发人员可以从中获取各种软件包和库。&lt;/p>
+&lt;p>&amp;ldquo;nuget restore&amp;quot;命令会读取项目文件（.csproj或.vbproj）中的依赖关系，并下载或还原所需的NuGet包，以确保项目可以成功编译和构建。这个命令通常在CI/CD（持续集成/持续交付）过程中使用，以确保在构建项目之前，所有的依赖关系都被正确地还原和安装。&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;p>除此之外，还可以在环境配置中设置安装开发库的命令：&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/2024-07-29-d2dbacd81fcf3c3ae4c2d9dad8dbfaafff18b18a138d0b6d46d966c00c66e23c.png" alt="4">
+
+&lt;/p>
+&lt;p>最后一步就是设置二进制文件打包了，点击artifacts，可以配置要打包的路径，必须是相对路径，C#的程序一般会将二进制文件生成到bin目录下，所以我这里就写：etrace\bin&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/2024-07-29-250ee79944bc86c985221b13aee115fb153e56ca50d88d16799a3eebb3d29c44.png" alt="5">
+
+&lt;/p>
+&lt;p>保存后，回到项目页面，点击Start New Build就开始构建了：&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/2024-07-29-51d2f8ad59c102c96729da44ee8c88a28706eefb90c6a52e00e4ae94c055db8b.png" alt="6">
+
+&lt;/p>
+&lt;p>稍微等待一下，就可以看到构建好的程序了，直接下载就可以使用。&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/2024-07-29-71e3d69c746a01016da0b57aa98abcd4de9029ce06eec2f5ef3127062e78cb7d.png" alt="7">
+
+&lt;/p>
+&lt;h2 id="使用appveyor构建mimikatz">使用AppVeyor构建Mimikatz&lt;/h2>
+&lt;p>Mimikatz是&lt;a href="https://github.com/gentilkiwi">gentilkiwi&lt;/a>使用C语言开发的Windows安全工具，该工具有着丰富的功能，能过从内存中提取明文密码，哈希，PIN码和kerberos票据、哈希传递等等，随着越来越多的黑客滥用此工具进行一些非法活动，因此&lt;a href="https://github.com/gentilkiwi">gentilkiwi&lt;/a>每发布一个Release，Release中的Mimikatz样本就会被标记为黑客工具，这对红队带来了一些小麻烦，通过AppVeyor我们可以自动化的做一些静态特征处理，然后自动构建产生新的工具。&lt;/p></description></item></channel></rss>

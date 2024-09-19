@@ -61,7 +61,36 @@
 &lt;p>2017/08/26
 倾旋&lt;/p>
 &lt;p>&lt;a href="https://mp.weixin.qq.com/s/IzCJk69RYL_IrTFVaP2n1A">&amp;gt;&amp;gt;原文&lt;/a>&lt;/p>
-&lt;p>现在公众号已经废除、一叶知安已经解散，不会再去创作了，这篇文章意味着我接受了失败的结果，吸取教训，慢慢成长。&lt;/p></description></item><item><title>应急响应 近期总结</title><link>https://payloads.online/archivers/2018-12-06/1/</link><pubDate>Wed, 05 Dec 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-12-06/1/</guid><description>&lt;h2 id="0x00-应急响应">0x00 应急响应&lt;/h2>
+&lt;p>现在公众号已经废除、一叶知安已经解散，不会再去创作了，这篇文章意味着我接受了失败的结果，吸取教训，慢慢成长。&lt;/p>
+&lt;p>写上面这篇文章的时候是从南京落魄的逃离至杭州刚刚安定下来的时候，在此谢谢霖的照顾。&lt;/p>
+&lt;p>后续找了一份比较清闲的安全服务乙方工作，待遇还可以，但是团队是刚组建起来，需要很大精力投入建设，正是因为闲，我又把C/C++这类学习成本比较高的语言拾起来……至今我觉得我的选择是对的。&lt;/p>
+&lt;p>同时也给我的“前渗透框架”项目奠定了基础，锻炼了我的能力，使我在安全领域拥有了更多的方向。&lt;/p>
+&lt;p>参加沙龙的时候，有幸结识了我的前辈 - &lt;strong>GUO&lt;/strong>，在聊到职业现状时，他建议我去更大的平台（奇虎/360企业安全集团），我非常认同前辈的说法——“人不能一直活在舒适区”。&lt;/p>
+&lt;p>当时只是简单聊聊，内心是对自己很不满意的，认为360是一个具有品牌力量的公司，能进入的绝非平庸之辈，我这样的可能面试都过不了，学历不高、能力不强，极度不自信。&lt;/p>
+&lt;p>正是这种极度不自信催促了我学习上进的心，然后开始将渗透做深，与ShadowTeam里的师傅们交流。&lt;/p>
+&lt;p>在2017年最后一次与GUO对话的时候，我说了一句：“我一定会自信的走进去（360）”&lt;/p>
+&lt;h1 id="2018">2018&lt;/h1>
+&lt;p>过完年，杭州的天气依旧有些冷，决定做几个漂亮的渗透案例，到时候给自己的简历加分……&lt;/p>
+&lt;p>花了一个月的时间，产出了两篇文章：&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://payloads.online/archivers/2017-12-28/1">针对国内一大厂的后渗透 - 持续&lt;/a>&lt;/li>
+&lt;li>&lt;a href="https://payloads.online/archivers/2018-01-30/1">针对某跨国企业的一次渗透测试-持续&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>分别都拿到域控作为结束，我将文章脱敏后发出来，跨国企业的安全部负责人在安全圈看到了这个文章，通过邮箱取得联系，最后我决定删除文章，当时圈里都传遍了，&lt;strong>朋友圈现在还有聊天记录&lt;/strong>。&lt;/p>
+&lt;p>的确这种做法是不对的，厂商也差点报警处理，还好没有太大影响，并且我也给了修复建议，碰到了好人，运气好。&lt;/p>
+&lt;p>三四月份，天气开始热起来了，我已经写好简历，按照流程面试完后，准备奔赴上海找房……&lt;/p>
+&lt;h2 id="四月向魔都宣告---我来了">四月向魔都宣告 - 我来了&lt;/h2>
+&lt;p>完成了一个梦想，真好，转眼间逝去的两年，我不断成长，感受人情冷暖、接纳新鲜事物，至今已学会如何照顾自己，让生活更具有色彩，人生更加无憾。&lt;/p>
+&lt;p>谢谢我的朋友们给我的支持！&lt;/p>
+&lt;p>&lt;a href="https://payloads.online/archivers/2018-04-20/1">&amp;gt;&amp;gt;原文&lt;/a>&lt;/p>
+&lt;p>于是在八月份写了一篇总结：&lt;/p>
+&lt;h3 id="入职">入职&lt;/h3>
+&lt;p>在炎热的四月底，我背着双肩包，顶着一头乱发来到上海，傍晚下了高铁，想到公司附近转转，赶上了团队的技术分享，晚上喝了很多酒，印象最深的还是那烧烤、啤酒、热情的人。&lt;/p>
+&lt;h3 id="工作">工作&lt;/h3>
+&lt;p>慢慢的接触到了很多大牛，都很低调，从开始的渗透测试转向新型安全服务，偏向产品的路线，在接触产品的过程中也学到了不少；&lt;/p>
+&lt;p>有应急响应、代码审计、流量分析、渗透测试等，技术的广度提升了很多，也看到了技术变现有更多的可能，唯一就是我要不断的创新、发散自己的思维。&lt;/p>
+&lt;h3 id="近况">近况&lt;/h3>
+&lt;p>最近没有规划近期目标，让我觉得有点小焦虑，很多东西都可以一步一步来的，准备养成一个写日记的习惯。&lt;/p></description></item><item><title>应急响应 近期总结</title><link>https://payloads.online/archivers/2018-12-06/1/</link><pubDate>Wed, 05 Dec 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-12-06/1/</guid><description>&lt;h2 id="0x00-应急响应">0x00 应急响应&lt;/h2>
 &lt;p>简介：“应急响应”对应的英文是“Incident Response”或“Emergency Response”等，通常是指一个组织为了应对各种意外事件的发生所做的准备以及在事件发生后所采取的措施。 &amp;ndash; Baidu&lt;/p>
 &lt;h2 id="0x01-应急响应类型">0x01 应急响应类型&lt;/h2>
 &lt;p>目前接触的那么多应急，基本上都是以下事件类型：&lt;/p>
@@ -99,7 +128,20 @@
 &lt;p>一般情况下，这类情况都是未安装杀毒软件或杀毒软件病毒库太老。&lt;/p>
 &lt;p>横向移动的手段与&lt;strong>0x03&lt;/strong>很相近。&lt;/p>
 &lt;blockquote>
-&lt;p>IOC（Indicator of Compromise）入侵指标，目前可以理解为是一种威胁参考数据。&lt;/p></description></item><item><title>近期的生活</title><link>https://payloads.online/archivers/2018-08-03/2/</link><pubDate>Fri, 03 Aug 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-08-03/2/</guid><description>&lt;h2 id="0x01-入职">0x01 入职&lt;/h2>
+&lt;p>IOC（Indicator of Compromise）入侵指标，目前可以理解为是一种威胁参考数据。&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="0x05-应急响应---数据丢失">0x05 应急响应 - 数据丢失&lt;/h2>
+&lt;p>这种是处理起来比较棘手的事件了，需要画大量的时间分析日志，确定数据丢失的方式。&lt;/p>
+&lt;p>首先需要网络日志和主机日志，从数据服务器反向跟踪：&lt;strong>“我被谁访问，谁对我做了什么”&lt;/strong>&lt;/p>
+&lt;h2 id="0x06-应急响应---网页篡改">0x06 应急响应 - 网页篡改&lt;/h2>
+&lt;p>分两种情况：&lt;/p>
+&lt;ul>
+&lt;li>自动化批量攻击&lt;/li>
+&lt;li>定向入侵&lt;/li>
+&lt;/ul>
+&lt;p>首先需要保留HTTP服务器日志，第一种情况就要判断HTTP服务器上是否有脆弱的Web应用，例如：远程代码执行、文件上传漏洞。第二种情况就要从网页篡改后第一发现的时间作为开始日志审计工作的启动时间。&lt;/p>
+&lt;h2 id="0x07-应急响应---流量异常">0x07 应急响应 - 流量异常&lt;/h2>
+&lt;p>这种情况一般是服务器被僵尸网络木马控制了，要么就是UDP服务对外 —— DRDOS这类也有可能。&lt;/p></description></item><item><title>近期的生活</title><link>https://payloads.online/archivers/2018-08-03/2/</link><pubDate>Fri, 03 Aug 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-08-03/2/</guid><description>&lt;h2 id="0x01-入职">0x01 入职&lt;/h2>
 &lt;p>在炎热的四月底，我背着双肩包，顶着一头乱发来到上海，傍晚下了高铁，想到公司附近转转，赶上了团队的技术分享，晚上喝了很多酒，印象最深的还是那烧烤、啤酒、热情的人。&lt;/p>
 &lt;h2 id="0x02-工作">0x02 工作&lt;/h2>
 &lt;p>慢慢的接触到了很多大牛，都很低调，从开始的渗透测试转向新型安全服务，偏向产品的路线，在接触产品的过程中也学到了不少；&lt;/p>
@@ -146,4 +188,157 @@
 &lt;p>
  &lt;img src="https://images.payloads.online/f86feb1a-4f5e-11ec-ba81-00d861bf4abb.jpg" alt="我的早饭">
 
-&lt;/p></description></item></channel></rss>
+&lt;/p>
+&lt;p>起来的比较晚哈哈，当然没啥好吃的了，就只能喝点粥和牛奶……&lt;/p>
+&lt;h2 id="古城你好">古城，你好&lt;/h2>
+&lt;p>走在人少的古城小道，别具诗意，哈哈&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/f4de9b54-4f5e-11ec-ad35-00d861bf4abb.jpg" alt="古城小道">
+
+&lt;/p>
+&lt;p>还有随处可见的其他客栈，基本上都会在门口立着一个牌子 —— “今日有房”&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/f55b9596-4f5e-11ec-8eba-00d861bf4abb.jpg" alt="大花猫">
+
+&lt;/p>
+&lt;p>如果这家客栈是在城市之中，恐怕路过的人都会拍几张，但是在丽江，这太普通了！&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/f5b6ec66-4f5e-11ec-a244-00d861bf4abb.jpg" alt="少数民族">
+
+&lt;/p>
+&lt;p>热情的少数民族，一对情侣，这里的人们对于爱情可是有着别样的看法，若两个人不能在一起、或者是结婚，那就选择殉情，去“玉龙第三国”，就在玉龙雪山脚下，我稍后会介绍&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/f8da85ec-4f5e-11ec-8f49-00d861bf4abb.jpg" alt="古城大道">
+
+
+
+ &lt;img src="https://images.payloads.online/f9d347ae-4f5e-11ec-ade8-00d861bf4abb.jpg" alt="古城小道">
+
+&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/fb627c98-4f5e-11ec-8aba-00d861bf4abb.jpg" alt="古城小道">
+
+&lt;/p>
+&lt;p>这里万里无云，墙壁上雕刻着这些民族独有的象形文字。&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/fa4ac2a2-4f5e-11ec-9d7f-00d861bf4abb.jpg" alt="美食街">
+
+&lt;/p>
+&lt;p>古城的美食街，我在这里吃了一碗米线，不如前面小店里的…… 可能是他们做惯了快餐 = =&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/fc16a736-4f5e-11ec-8311-00d861bf4abb.jpg" alt="美食街">
+
+&lt;/p>
+&lt;p>密室逃脱都有，这里的商业发展很完善，支持微信、支付宝付款&lt;/p>
+&lt;h2 id="美食">美食&lt;/h2>
+&lt;p>
+ &lt;img src="https://images.payloads.online/f660c39e-4f5e-11ec-8a3d-00d861bf4abb.jpg" alt="土鸡米线">
+
+&lt;/p>
+&lt;p>到了下午，饥饿感袭来，赶紧去寻找云南特色美食，米线当然是少不了的了。&lt;/p>
+&lt;p>我们选了一家比较大的米线店，虽然这种店随处可见，但是隐隐感觉这的味道绝对不差。&lt;/p>
+&lt;h2 id="古城的夜晚狂欢">古城的夜晚狂欢&lt;/h2>
+&lt;p>吃完饭就回去躺了一会，比较累就没有去逛&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/f6e2ef4a-4f5e-11ec-9af8-00d861bf4abb.jpg" alt="古城的晚上">
+
+&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/f75a8f6e-4f5e-11ec-8530-00d861bf4abb.jpg" alt="古城的晚上">
+
+&lt;/p>
+&lt;p>到了晚上，开始狂欢！ 公司组织了一个小活动，去酒吧喝酒 —— “水泊梁山”&lt;/p>
+&lt;p>晚上人比较多，开着导航都容易走错，小道大道错综复杂。&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/faccde18-4f5e-11ec-a0de-00d861bf4abb.jpg" alt="水泊梁山">
+
+&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/fb1a42f2-4f5e-11ec-9229-00d861bf4abb.jpg" alt="水泊梁山">
+
+&lt;/p>
+&lt;p>在这里有一种“午夜销魂酒”，我喝了不少，还有“飞花雪月”~~ 手中拿着酒壶，就像是古代里的侠客 ~ 哈哈&lt;/p>
+&lt;p>最后的最后我还是喝多了，回到客栈就吐了 2333 然后躺倒，一觉睡到第二天早上&lt;/p>
+&lt;h2 id="最美老板娘">最美老板娘&lt;/h2>
+&lt;p>第一晚跟着同事去看了这个抖音网红&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/fbcd3420-4f5e-11ec-8a82-00d861bf4abb.jpg" alt="最美老板娘">
+
+&lt;/p>
+&lt;p>她是卖民鼓的，演奏的很好听~&lt;/p>
+&lt;h2 id="登上玉龙雪山的前奏">登上玉龙雪山的前奏&lt;/h2>
+&lt;p>玉龙雪山为云南省丽江市境内雪山群，地处东经100°4′2″～100°16′30″、北纬27°3′2″～27°18′57″之间，在丽江北面约15千米处，全长75千米，是北半球最近赤道终年积雪的山脉，隔江西与中甸雪山、东与绵绵山相并列，北自三江口，向南延伸到北纬27°，如扇面向古城展开。全山的13座山峰由南向北纵向排列，主峰扇子陡最高处海拔5596米，终年积雪，发育有亚欧大陆距离赤道最近的温带海洋性冰川。&lt;/p>
+&lt;p>早上很早就起来了，因为索道需要排队，我们排到了中午，天气很好。&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/fc5e09be-4f5e-11ec-b0e6-00d861bf4abb.jpg" alt="坐车去玉龙雪山脚下">
+
+&lt;/p>
+&lt;p>坐车去玉龙雪山脚下。&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/fcbe89e2-4f5e-11ec-bd8d-00d861bf4abb.jpg" alt="购买氧气罐">
+
+&lt;/p>
+&lt;p>由于玉龙雪山海拔比较高，高到穿透了云层，登山的时候氧气稀薄，必须购买一个氧气罐，补充氧气，一罐大概60元。&lt;/p>
+&lt;p>PS:购买氧气罐必须要去专业的供氧中心，以防买到“压缩空气”&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/fd326c5e-4f5e-11ec-aa52-00d861bf4abb.jpg" alt="供氧中心">
+
+&lt;/p>
+&lt;p>到达玉龙雪山脚下&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/fd93daa2-4f5e-11ec-a44d-00d861bf4abb.jpg" alt="到达雪山脚下">
+
+&lt;/p>
+&lt;p>云雾缭绕的上面就是玉龙雪山、路上导游也介绍了玉龙雪山相关的景色以及乘坐索道的注意事项，还有玉龙雪山的特色（国家保护动物、植物、药材）&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/fde9efc8-4f5e-11ec-9bad-00d861bf4abb.jpg" alt="安检">
+
+&lt;/p>
+&lt;p>进入玉龙雪山需要乘坐一段时间大巴车，到达乘坐索道的地点，首先需要安检、刷身份证来验票，整个旅游的景点都是只需要刷身份证就可以了，非常方便。&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/fe4af73c-4f5e-11ec-a062-00d861bf4abb.jpg" alt="下车">
+
+&lt;/p>
+&lt;p>下车后看到路边有一些积雪、气温开始下降，大家去的话一定要带厚衣服。&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/feb3a386-4f5e-11ec-b777-00d861bf4abb.jpg" alt="索道">
+
+&lt;/p>
+&lt;p>开始排队、进行索道安检，期间看到索道上的缆车通过钢缆送上云端，不经感叹人类的智慧力量，那可是5000多米的海拔，通过电力就可以把人送上去。&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/ff1451c2-4f5e-11ec-a591-00d861bf4abb.jpg" alt="海拔说明">
+
+&lt;/p>
+&lt;p>在过了安检后，我路过了一个展览牌，里面标识了每一个海拔点。&lt;/p>
+&lt;p>通过缆车将人送到4506米的海拔高度，然后再通过楼梯，爬上4680的海拔高度。我一开始是想登上5596米的，但是只能上到4680&amp;hellip;.
+后面你会看到我的狼狈、怎么说也是年轻的小伙，爬一百多米就不行了。&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/ff7b1646-4f5e-11ec-bb2a-00d861bf4abb.jpg" alt="缆车启动">
+
+&lt;/p>
+&lt;p>缆车开始驶离起点，直冲云霄~&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/ffe55998-4f5e-11ec-972e-00d861bf4abb.jpg" alt="缆车上的景色">
+
+&lt;/p>
+&lt;p>在缆车上可以看到山上的植被，好像大多是松树，还有常年不化的积雪。&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/018445b6-4f5f-11ec-a2c8-00d861bf4abb.jpg" alt="开始冲破云层">
+
+
+
+ &lt;img src="https://images.payloads.online/005a2c82-4f5f-11ec-b895-00d861bf4abb.jpg" alt="开始冲破云层">
+
+&lt;/p>
+&lt;p>开始冲破云层&lt;/p>
+&lt;h2 id="天上的景色">天上的景色&lt;/h2>
+&lt;p>
+ &lt;img src="https://images.payloads.online/00b6f160-4f5f-11ec-95b4-00d861bf4abb.jpg" alt="天上的景色">
+
+&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/011ecc9a-4f5f-11ec-82ea-00d861bf4abb.jpg" alt="天上的景色">
+
+&lt;/p>
+&lt;h2 id="着陆后">着陆后&lt;/h2>
+&lt;p>下了缆车，看到许多人，然后我的嘴唇开始泛白、头有点晕，感觉开始吸氧，向楼梯走去，绝对不能倒在起点啊 哈哈&lt;/p></description></item></channel></rss>

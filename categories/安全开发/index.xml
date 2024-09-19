@@ -41,7 +41,21 @@
 &lt;li>vuln 漏洞检测&lt;/li>
 &lt;/ul>
 &lt;h2 id="0x03-nmap扩展脚本铺垫">0X03 Nmap扩展脚本铺垫&lt;/h2>
-&lt;p>相信网上已经有很多文章去写如何使用扩展脚本了，这块我不准备过多的铺垫。&lt;/p></description></item><item><title>Nmap扩展开发（三）</title><link>https://payloads.online/archivers/2019-04-24/3/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/3/</guid><description>&lt;h2 id="0x01-扩展脚本对象-主机">0X01 扩展脚本对象-主机&lt;/h2>
+&lt;p>相信网上已经有很多文章去写如何使用扩展脚本了，这块我不准备过多的铺垫。&lt;/p>
+&lt;p>主要介绍如下几点：&lt;/p>
+&lt;ul>
+&lt;li>Nmap扩展脚本用途&lt;/li>
+&lt;li>Nmap扩展脚本使用方法&lt;/li>
+&lt;li>如何查看Nmap扩展脚本的Usage（使用方法）&lt;/li>
+&lt;/ul>
+&lt;h3 id="0x03-nmap扩展脚本用途">0X03 Nmap扩展脚本用途&lt;/h3>
+&lt;p>Nmap扩展脚本能够帮助我们实现更多定制化的需求扫描、结果的处理、漏洞的检测、漏洞的利用等。在0x02中已经列出了扩展脚本的分类，根据说明我们能理解一个大概，这些分类代表了Nmap各个方面的能力。&lt;/p>
+&lt;h3 id="0x03-nmap扩展脚本使用方法">0x03 Nmap扩展脚本使用方法&lt;/h3>
+&lt;p>在很早之前，我写过一篇科普文章，主要介绍了Nmap的脚本分类、使用方法，链接：&lt;/p>
+&lt;p>&lt;a href="http://zhuanlan.zhihu.com/p/26618074">http://zhuanlan.zhihu.com/p/26618074&lt;/a>&lt;/p>
+&lt;p>本章没有太多概念性的东西，希望读者能够边看边做。首先设定一个需求，我有一个需要搜集某个IP或某组IP所有开放HTTP服务的中间件信息。那么Nmap有一个脚本是可以直接满足我们需求的：&lt;/p>
+&lt;p>&lt;code>http-server-header.nse&lt;/code>&lt;/p>
+&lt;p>扫描命令：&lt;code>nmap --script=http-server-header &amp;lt;TARGET&amp;gt;&lt;/code>&lt;/p></description></item><item><title>Nmap扩展开发（三）</title><link>https://payloads.online/archivers/2019-04-24/3/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/3/</guid><description>&lt;h2 id="0x01-扩展脚本对象-主机">0X01 扩展脚本对象-主机&lt;/h2>
 &lt;p>在进行主机扫描的时候会执行hostrule这个函数，从以往的nmap扩展脚本代码中我们都可以发现在hostrule这个函数中做了一些针对host操作的动作。&lt;/p>
 &lt;p>hostrule有一个参数，变量名叫host，我们可以把它理解为一个对象，在这里称之为对象是为了方便读者理解，在lua中实际它的数据类型是一个多维的table（表），具有很多属性。由于这些rule函数都是被动调用的，我们只能在函数内部对形参进行操作了。&lt;/p>
 &lt;p>参考：https://nmap.org/book/nse-api.html&lt;/p>
@@ -71,7 +85,24 @@
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>Nmap扩展开发（二）</title><link>https://payloads.online/archivers/2019-04-24/2/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/2/</guid><description>&lt;h2 id="0x01-nse引擎执行流程">0x01 NSE引擎执行流程&lt;/h2>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-lua" data-lang="lua">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">local&lt;/span> stdnse &lt;span style="color:#f92672">=&lt;/span> require &lt;span style="color:#e6db74">&amp;#34;stdnse&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>prerule&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>hostrule&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>(host)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	mac &lt;span style="color:#f92672">=&lt;/span> host.mac_addr
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> print(stdnse.format_mac(mac))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>portrule&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>(host,port)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>action&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>postrule&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>通过host.mac_addr获取的mac地址是二进制编码的，我们要转换成字符串，需要引入stdnse这个扩展包，stdnse包中有一个format_mac函数，能够将host.mac_addr转换成字符串。&lt;/p></description></item><item><title>Nmap扩展开发（二）</title><link>https://payloads.online/archivers/2019-04-24/2/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/2/</guid><description>&lt;h2 id="0x01-nse引擎执行流程">0x01 NSE引擎执行流程&lt;/h2>
 &lt;p>Nmap的扩展脚本语言都基于lua来开发的，执行也是调用了内部封装的lua解释器。&lt;/p>
 &lt;p>正常情况下，调用任何一个扩展脚本会首先执行&lt;code>nse_main.lua&lt;/code>，该脚本主要做了以下几件事：&lt;/p>
 &lt;ul>
@@ -105,7 +136,18 @@
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
-&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>Nmap扩展开发（四）</title><link>https://payloads.online/archivers/2019-04-24/4/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/4/</guid><description>&lt;h2 id="0x01-http包的使用">0x01 HTTP包的使用&lt;/h2>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-lua" data-lang="lua">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">-- Table of different supported rules.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">local&lt;/span> NSE_SCRIPT_RULES &lt;span style="color:#f92672">=&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> prerule &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;prerule&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> hostrule &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;hostrule&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> portrule &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;portrule&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> postrule &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;postrule&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>};
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>每一个规则代表了函数，由函数的返回值决定执行流程&lt;/p></description></item><item><title>Nmap扩展开发（四）</title><link>https://payloads.online/archivers/2019-04-24/4/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/4/</guid><description>&lt;h2 id="0x01-http包的使用">0x01 HTTP包的使用&lt;/h2>
 &lt;p>一般情况下，我们扫描一些Web服务的同时需要进行渗透测试、安全评估、漏洞检测等操作，但是官方并未提供符合我们需求的脚本，这时候就要自己写脚本了。Nmap已经内置了HTTP包，不需要再进行下载和配置。&lt;/p>
 &lt;h2 id="0x02-基础概念铺垫">0x02 基础概念铺垫&lt;/h2>
 &lt;p>首先，先介绍两个表结构，为了方便我们后续的数据操作，让读者先熟悉两个东西：&lt;/p>
@@ -139,4 +181,35 @@
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-&lt;/span>&lt;/code>&lt;/pr</description></item></channel></rss>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>| Response: 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| status: 200
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| header: 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| content-length: 0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| allow: POST,OPTIONS,HEAD,GET
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| connection: close
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| content-type: text/html
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| server: Apache/2.4.29 (Debian)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| date: Fri, 06 Jul 2018 07:02:13 GMT
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| ssl: false
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| body: 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| cookies: 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| status-line: HTTP/1.1 200 OK\x0D
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| rawheader: 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Date: Fri, 06 Jul 2018 07:02:13 GMT
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Server: Apache/2.4.29 (Debian)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Allow: POST,OPTIONS,HEAD,GET
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Content-Length: 0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Connection: close
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Content-Type: text/html
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ version: 1.1
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>Options表&lt;/li>
+&lt;/ul>
+&lt;p>Options表主要用于设置HTTP请求时的超时时间、Cookie、请求头、HTTP认证、页面缓存、地址类型（IPV4/IPV6）、是否验证重定向&lt;/p></description></item></channel></rss>

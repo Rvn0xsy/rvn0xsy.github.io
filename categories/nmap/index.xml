@@ -37,4 +37,14 @@
 &lt;li>vuln 漏洞检测&lt;/li>
 &lt;/ul>
 &lt;h2 id="0x03-nmap扩展脚本铺垫">0X03 Nmap扩展脚本铺垫&lt;/h2>
-&lt;p>相信网上已经有很多文章去写如何使用扩展脚本了，这块我不准备过多的铺垫。&lt;/p></description></item></channel></rss>
+&lt;p>相信网上已经有很多文章去写如何使用扩展脚本了，这块我不准备过多的铺垫。&lt;/p>
+&lt;p>主要介绍如下几点：&lt;/p>
+&lt;ul>
+&lt;li>Nmap扩展脚本用途&lt;/li>
+&lt;li>Nmap扩展脚本使用方法&lt;/li>
+&lt;li>如何查看Nmap扩展脚本的Usage（使用方法）&lt;/li>
+&lt;/ul>
+&lt;h3 id="0x03-1-nmap扩展脚本用途">0X03 [1] Nmap扩展脚本用途&amp;gt;&lt;/h3>
+&lt;p>Nmap扩展脚本能够帮助我们实现更多定制化的需求扫描、结果的处理、漏洞的检测、漏洞的利用等。在0x02中已经列出了扩展脚本的分类，根据说明我们能理解一个大概，这些分类代表了Nmap各个方面的能力。&lt;/p>
+&lt;h3 id="0x03-2-nmap扩展脚本使用方法">0x03 [2] Nmap扩展脚本使用方法&lt;/h3>
+&lt;p>在很早之前，我写过一篇科普文章，主要介绍了Nmap的脚本分类、使用方法，链接：http://zhuanlan.zhihu.com/p/26618074&lt;/p></description></item></channel></rss>

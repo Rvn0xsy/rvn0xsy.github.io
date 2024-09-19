@@ -30,7 +30,43 @@
 &lt;p>那么我们来看看它到底是什么？&lt;/p>
 &lt;h3 id="套接字的地址结构">套接字的地址结构&lt;/h3>
 &lt;p>刚才百科告诉我们，套接字用（IP地址：端口号）表示。&lt;/p>
-&lt;p>那么在网络编程中如何告诉计算机，什么是端口，什么是端口号呢？&lt;/p></description></item><item><title>渗透测试中使用Ubuntu的一些小技巧</title><link>https://payloads.online/archivers/2018-03-18/1/</link><pubDate>Sun, 18 Mar 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-03-18/1/</guid><description>&lt;h2 id="0x00-前言">0x00 前言&lt;/h2>
+&lt;p>那么在网络编程中如何告诉计算机，什么是端口，什么是端口号呢？&lt;/p>
+&lt;p>于是出现了被计算机界公认的结构体，这个结构体保存在系统的标准库中：&lt;/p>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-c" data-lang="c">&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#include&lt;/span> &lt;span style="color:#75715e">&amp;lt;arpa/inet.h&amp;gt;&lt;/span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">struct&lt;/span> sockaddr_in
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">__SOCKADDR_COMMON&lt;/span> (sin_);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">in_port_t&lt;/span> sin_port;			&lt;span style="color:#75715e">/* Port number. */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">struct&lt;/span> in_addr sin_addr;		&lt;span style="color:#75715e">/* Internet address. */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">/* Pad to size of `struct sockaddr&amp;#39;. */&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">unsigned&lt;/span> &lt;span style="color:#66d9ef">char&lt;/span> sin_zero[&lt;span style="color:#66d9ef">sizeof&lt;/span> (&lt;span style="color:#66d9ef">struct&lt;/span> sockaddr) &lt;span style="color:#f92672">-&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>			 __SOCKADDR_COMMON_SIZE &lt;span style="color:#f92672">-&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>			 &lt;span style="color:#66d9ef">sizeof&lt;/span> (&lt;span style="color:#66d9ef">in_port_t&lt;/span>) &lt;span style="color:#f92672">-&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>			 &lt;span style="color:#66d9ef">sizeof&lt;/span> (&lt;span style="color:#66d9ef">struct&lt;/span> in_addr)];
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> };
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>看起来还是比较复杂的，但是用起来一点都不复杂。&lt;/p></description></item><item><title>渗透测试中使用Ubuntu的一些小技巧</title><link>https://payloads.online/archivers/2018-03-18/1/</link><pubDate>Sun, 18 Mar 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-03-18/1/</guid><description>&lt;h2 id="0x00-前言">0x00 前言&lt;/h2>
 &lt;p>由于学习C、C++我喜欢在Linux平台，首选了Ubuntu这个发新版，目前已经做得很不错了，但是平常使用的时候会发现一些比较麻烦的事情。&lt;/p>
 &lt;p>本文就把一些技巧分享、记录下来。&lt;/p>
 &lt;p>操作系统版本：Ubuntu 17.10&lt;/p>
@@ -57,4 +93,7 @@
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>deb http://security.ubuntu.com/ubuntu artful-security main restricted
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>deb http://security.ubuntu.com/ubuntu artful-security universe
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>deb http://security.ubuntu.com/ubuntu artful-security multiverse
-&lt;/span>&lt;/span>&lt;/code>&lt;/pr</description></item></channel></rss>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="0x01-右键">0x01 右键&lt;/h2>
+&lt;p>&lt;code>nautilus-actions&lt;/code> 是一个提供用户自定义鼠标右键菜单的软件。&lt;/p></description></item></channel></rss>

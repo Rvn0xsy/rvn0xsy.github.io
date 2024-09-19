@@ -75,7 +75,77 @@
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
-&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>华为MSTP协议</title><link>https://payloads.online/archivers/2015-11-20/6/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/6/</guid><description>&lt;p>本文记录一下华为MSTP协议配置&lt;/p>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router5:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router&amp;gt;en
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router#conf t
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config)#int FastEthernet 0/1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 172.16.1.1 255.255.255.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#exit
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config)#int se
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config)#int serial 1/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 172.16.2.1 255.255.255.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#int f0/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 192.168.1.1 255.255.255.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#exit
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config)#route rip
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#version 2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 192.168.1.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 172.16.2.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 172.16.1.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router7:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router&amp;gt;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router&amp;gt;en
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router#conf t
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config)#int f0/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 172.16.1.2 255.255.255.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#int s1/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 172.16.2.2 255.255.255.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#int f0/1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 172.16.3.1 255.255.255.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#int s1/1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 172.16.4.1 255.255.255.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#exit
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config)#route rip
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#version 2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 172.16.1.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 172.16.2.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 172.16.3.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 172.16.4.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router9:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router&amp;gt;en
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router#conf t
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config)#int f0/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 172.16.3.2 255.255.255.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#int s1/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 172.16.4.2 255.255.255.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#int f0/1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 192.168.2.1 255.255.255.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#exit
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config)#route rip
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#version 2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 172.16.3.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 172.16.4.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 192.168.2.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>通信测试：&lt;/p></description></item><item><title>华为MSTP协议</title><link>https://payloads.online/archivers/2015-11-20/6/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/6/</guid><description>&lt;p>本文记录一下华为MSTP协议配置&lt;/p>
 &lt;ul>
 &lt;li>
 &lt;p>1.创建四个VLAN在四个交换机上,分别是 10 20 30 40。&lt;/p>
@@ -112,7 +182,28 @@
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;Huawei&amp;gt;sys
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]vlan batch 10 20 30 40
-&lt;/span>&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>华为交换机MUX-VLAN</title><link>https://payloads.online/archivers/2015-11-20/5/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/5/</guid><description>&lt;p>本文记录一下华为交换机MUX-VLAN配置&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="0x02-分别设置trunk链路">0x02 分别设置trunk链路&lt;/h2>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]port-group group-member e 0/0/1 to e 0/0/2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port link-type trunk
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port trunk allow-pass vlan all
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>说明：在每个交换机都要创建四个VLAN、并且都设置trunk链路&lt;/p></description></item><item><title>华为交换机MUX-VLAN</title><link>https://payloads.online/archivers/2015-11-20/5/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/5/</guid><description>&lt;p>本文记录一下华为交换机MUX-VLAN配置&lt;/p>
 &lt;p>
  &lt;figure>
  &lt;img src="https://images.payloads.online/d1b893a0-4f5e-11ec-b60d-00d861bf4abb.png" alt="enter description here" class="figcaption-img">
@@ -204,7 +295,93 @@
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">80
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">81
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">82
-&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>华为交换机Telnet远程登录</title><link>https://payloads.online/archivers/2015-11-20/1/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/1/</guid><description>&lt;p>本文记录一下华为交换机Telnet远程登录的简单配置&lt;/p>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;Huawei&amp;gt;sys
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]vlan batch 100 20 30 10
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>提示：此操作可能耗时较长。请稍等…完成。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]port-group group-member e0/0/2 to e0/0/4
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port link-type access
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/2]port link-type access
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/3]port link-type access
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/4]port link-type access
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port default vlan 100
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/2]port default vlan 100
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/3]port default vlan 100
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/4]port default vlan 100
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]port-group group-member e 0/0/5 to e0/0/6
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port link-type access
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/5]port link-type access
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/6]port link-type access
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port default vlan 10
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/5]port default vlan 10
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/6]port default vlan 10
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]q
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]int e0/0/20
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/20]port link-type access
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/20]port default vlan 20
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/20]int e0/0/1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/1]port link-type access
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/1]port default vlan 30
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/1]q
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]vlan 30
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-vlan30]mux-vlan
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-vlan30]subordinate group 10 20
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-vlan30]subordinate separate 100
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]port-group group-member e0/0/1 to e0/0/22
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port mux-vlan enable
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/1]port mux-vlan enable
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/2]port mux-vlan enable
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/3]port mux-vlan enable
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/4]port mux-vlan enable
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/5]port mux-vlan enable
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/6]port mux-vlan enable
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]q
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;Huawei&amp;gt;save
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>将把当前的配置保存到存储设备中。&lt;/p></description></item><item><title>华为交换机Telnet远程登录</title><link>https://payloads.online/archivers/2015-11-20/1/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/1/</guid><description>&lt;p>本文记录一下华为交换机Telnet远程登录的简单配置&lt;/p>
 &lt;p>
  &lt;figure>
  &lt;img src="https://images.payloads.online/d05697e6-4f5e-11ec-a083-00d861bf4abb.png" alt="enter description here" class="figcaption-img">
@@ -236,7 +413,32 @@
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>华为交换机VLAN聚合实例</title><link>https://payloads.online/archivers/2015-11-20/4/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/4/</guid><description>&lt;p>本文记录一下华为交换机VLAN聚合实例配置&lt;/p>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;Huawei&amp;gt;sys
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]user-interface vty 0 4
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-ui-vty0-4]authentication-mode aaa
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-ui-vty0-4]q
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-aaa]local-user admin password simple?123456
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-aaa]local-user admin privilege? level 3
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-aaa]local-user admin service-type telnet
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-aaa]q
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]int vlan 1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Vlanif1]ip address 192.168.1.1 24
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>路由器：&lt;/p></description></item><item><title>华为交换机VLAN聚合实例</title><link>https://payloads.online/archivers/2015-11-20/4/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/4/</guid><description>&lt;p>本文记录一下华为交换机VLAN聚合实例配置&lt;/p>
 &lt;ul>
 &lt;li>创建VLAN聚合的VLAN&lt;/li>
 &lt;li>设置VLAN聚合所需要的trunk链路&lt;/li>
@@ -278,7 +480,23 @@
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>华为路由OSPF被动接口配置</title><link>https://payloads.online/archivers/2015-11-20/3/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/3/</guid><description>&lt;p>本文记录一下华为路由OSPF被动接口配置&lt;/p>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]int g0/0/1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-GigabitEthernet0/0/1]port link-type trunk
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-GigabitEthernet0/0/1]port trunk allow-pass vlan 10 20
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]port-group group-member e0/0/1 e0/0/2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port link-type trunk
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port trunk allow-pass vlan 10 20
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>注：Trunk链路不需要allow Vlan聚合的vlan&lt;/p></description></item><item><title>华为路由OSPF被动接口配置</title><link>https://payloads.online/archivers/2015-11-20/3/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/3/</guid><description>&lt;p>本文记录一下华为路由OSPF被动接口配置&lt;/p>
 &lt;p>拓扑图：&lt;/p>
 &lt;p>
  &lt;figure>
@@ -325,4 +543,43 @@
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
-&lt;/span>&lt;/code>&lt;/pr</description></item></channel></rss>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;Huawei&amp;gt;sys
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Enter system view, return user view with Ctrl+Z.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]sysname AR1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1]int G0/0/0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-GigabitEthernet0/0/0]ip add 192.168.4.1 24
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-GigabitEthernet0/0/0]int G0/0/1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-GigabitEthernet0/0/1]ip add 192.168.6.1 24
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-GigabitEthernet0/0/1]int G0/0/2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-GigabitEthernet0/0/2]ip add 192.168.5.1 24
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-GigabitEthernet0/0/2]q
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1]ospf
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-ospf-1]area 0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-ospf-1-area-0.0.0.0]network 192.168.4.0 0.0.0.255
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-ospf-1-area-0.0.0.0]network 192.168.5.0 0.0.0.255
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-ospf-1-area-0.0.0.0]network 192.168.6.0 0.0.0.255
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-ospf-1-area-0.0.0.0]q
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-ospf-1]silent-interface G0/0/0
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>AR2配置命令：&lt;/p></description></item></channel></rss>

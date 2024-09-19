@@ -23,4 +23,6 @@
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>2) create an empty file with a &amp;#34;.xap&amp;#34; extension on the same share, this will open using &amp;#34;Xact3.exe&amp;#34; as its default
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>3) open the the .xap file from the Network share then BOOM!
-&lt;/span>&lt;/span>&lt;/code>&lt;/pr</description></item></channel></rss>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>一共两步，第一步是创建两个文件，分别是&lt;code>.xap&lt;/code>文件和&lt;code>xbdm.dll&lt;/code>。&lt;/p></description></item></channel></rss>

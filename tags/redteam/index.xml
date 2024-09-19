@@ -27,4 +27,37 @@
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-&lt;/span>&lt;/code>&lt;/pr</description></item></channel></rss>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>python -c &lt;span style="color:#e6db74">&amp;#39;import pty;pty.spawn(&amp;#34;/bin/sh&amp;#34;)&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># or&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>unset HISTORY HISTFILE HISTSAVE HISTZONE HISTORY HISTLOG; 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export HISTFILE&lt;span style="color:#f92672">=&lt;/span>/dev/null; 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export HISTSIZE&lt;span style="color:#f92672">=&lt;/span>0;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export HISTFILESIZE&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">0&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>操作合规：非必要情况下，不修改任何服务器用户密码&lt;/li>
+&lt;li>操作合规：非必要情况下，不使用破坏性较强的Exploit或者工具&lt;/li>
+&lt;li>操作合规：非必要情况下，不要对内网进行大规模探测 例如不要/8&lt;/li>
+&lt;li>操作合规：非必要情况下，切勿上来就进行扫描探测，先应对当前主机做详细的信息搜集和分析&lt;/li>
+&lt;li>工具存放：工具统一存放在隐藏目录下，文件名称命名为服务进程（tomcat/nginx）等，有AV/EDR情况，工具应先本地测试免杀之后，再落地到目标服务器，最好有多个平替工具&lt;/li>
+&lt;/ul>
+&lt;h2 id="反溯源注意事项">反溯源注意事项&lt;/h2>
+&lt;ul>
+&lt;li>外网攻击时：尽量使用虚拟机进行渗透，并且测试时不提交包含个人特征信息的手机号码、QQ、微信、其他信息，最好日常工作的浏览器和渗透攻击的浏览器用两个。一般我会创建攻击机的虚拟机快照，项目结束恢复初始状态，干干净净。&lt;/li>
+&lt;li>内网攻击时：攻击结束必须进行痕迹清理，及时删除自用软件，如Webshell、免杀上线马、0day工具、扫描工具、自研工具，甚至包含系统日志。&lt;/li>
+&lt;li>短线社工钓鱼：尽量避开技术人员，从非技术人员入手，钓鱼信息为非实名信息&lt;/li>
+&lt;li>短线社工钓鱼：远程获取的可执行文件，谨慎点击(尤其是VPN客户端，谨防蜜罐)，可以上传各类沙箱进行检测，同时运行可以采用虚拟机的方式。&lt;/li>
+&lt;li>在开源社区获得系统或工具源代码后，谨慎打开，防止IDE的编译、加载、调试选项内藏上线命令。&lt;/li>
+&lt;/ul>
+&lt;h2 id="职业操守">职业操守&lt;/h2>
+&lt;ul>
+&lt;li>禁止下载、更改业务数据（企业数据），修改业务系统密码（如路由器、Web站点后台、VPN）降低业务影响。&lt;/li>
+&lt;li>禁止使用会造成不良后果的攻击方式（如DDOS攻击）。&lt;/li>
+&lt;li>测试结束后删除Webshell等恶意文件或记住固定存放位置。&lt;/li>
+&lt;li>禁止使用境外跳板机、VPN。&lt;/li>
+&lt;li>使用统一攻击资源与授权攻击工具。&lt;/li>
+&lt;li>对项目、行动内容在公开场合进行保密，不产生任何舆论影响。&lt;/li>
+&lt;/ul></description></item></channel></rss>

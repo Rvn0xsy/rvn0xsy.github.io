@@ -20,7 +20,34 @@
 &lt;p>这个是从evi1cg师傅那里看到的，smtp2go主要是相当于邮件托管，可以分发子账户进行发送。&lt;/p>
 &lt;p>地址：https://support.smtp2go.com/hc/en-gb&lt;/p>
 &lt;p>（邮箱注册）普通账户可以免费发1000封邮件。&lt;/p>
-&lt;p>分配好账户后，可以通过swaks进行登录发送邮件：&lt;/p></description></item><item><title>解决Mac OS挂载NTFS格式硬盘无法读写</title><link>https://payloads.online/archivers/2018-10-30/1/</link><pubDate>Tue, 30 Oct 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-10-30/1/</guid><description>&lt;h2 id="查看分区">查看分区&lt;/h2>
+&lt;p>分配好账户后，可以通过swaks进行登录发送邮件：&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/750c7a8a-4f5f-11ec-889d-00d861bf4abb.png" alt="2019-05-09-14-28-50">
+
+&lt;/p>
+&lt;h2 id="0x02-swaks发送邮件">0x02 swaks发送邮件&lt;/h2>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>swaks --to rvn0xsy@gmail.com --from admin@qq.com --ehlo gmail.com --body hello --server mail.smtp2go.com -p &lt;span style="color:#ae81ff">2525&lt;/span> -au &amp;lt;USER&amp;gt; -ap &amp;lt;PASS&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>但是上面这个邮件无法绕过SPF。&lt;/p>
+&lt;h2 id="0x03-spf验证原理">0x03 SPF验证原理&lt;/h2>
+&lt;p>如果mail.smtp2go.com是我的邮件服务器，那么gmail服务器收到的源IP也肯定是mail.smtp2go.com的IP。&lt;/p>
+&lt;p>gmail会校验邮件发送者的IP是否存在于smtp.from的域名spf配置列表里。&lt;/p>
+&lt;p>而上面这条命令：&lt;/p>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>swaks --to rvn0xsy@gmail.com --from admin@qq.com --ehlo gmail.com --body hello --server mail.smtp2go.com -p &lt;span style="color:#ae81ff">2525&lt;/span> -au &amp;lt;USER&amp;gt; -ap &amp;lt;PASS&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>smtp.from就是admin@qq.com，和mail.smtp2go.com的IP肯定不同，所以SPF校验失败，而校验失败的邮件，会有很高的几率被扔到垃圾邮件中。&lt;/p></description></item><item><title>解决Mac OS挂载NTFS格式硬盘无法读写</title><link>https://payloads.online/archivers/2018-10-30/1/</link><pubDate>Tue, 30 Oct 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-10-30/1/</guid><description>&lt;h2 id="查看分区">查看分区&lt;/h2>
 &lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 &lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
 &lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
@@ -44,7 +71,32 @@
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>Python virtualenv</title><link>https://payloads.online/archivers/2018-08-16/1/</link><pubDate>Thu, 16 Aug 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-08-16/1/</guid><description>&lt;h2 id="0x00-virtualenv-简介">0x00 virtualenv 简介&lt;/h2>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>rvn0xsy@Rvn0xsy ~/&amp;gt; diskutil list
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/dev/disk0 &lt;span style="color:#f92672">(&lt;/span>internal&lt;span style="color:#f92672">)&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#: TYPE NAME SIZE IDENTIFIER&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0: GUID_partition_scheme 500.3 GB disk0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 1: EFI EFI 314.6 MB disk0s1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 2: Apple_APFS Container disk1 500.0 GB disk0s2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/dev/disk1 &lt;span style="color:#f92672">(&lt;/span>synthesized&lt;span style="color:#f92672">)&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#: TYPE NAME SIZE IDENTIFIER&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0: APFS Container Scheme - +500.0 GB disk1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Physical Store disk0s2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 1: APFS Volume Macintosh HD 209.0 GB disk1s1
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 2: APFS Volume Preboot 25.1 MB disk1s2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 3: APFS Volume Recovery 515.8 MB disk1s3
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 4: APFS Volume VM 3.2 GB disk1s4
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/dev/disk2 &lt;span style="color:#f92672">(&lt;/span>external, physical&lt;span style="color:#f92672">)&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">#: TYPE NAME SIZE IDENTIFIER&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> 0: disk *2.0 TB disk2
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>rvn0xsy@Rvn0xsy ~/&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>那个&lt;code>/dev/disk2&lt;/code>是我的硬盘&lt;/p></description></item><item><title>Python virtualenv</title><link>https://payloads.online/archivers/2018-08-16/1/</link><pubDate>Thu, 16 Aug 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-08-16/1/</guid><description>&lt;h2 id="0x00-virtualenv-简介">0x00 virtualenv 简介&lt;/h2>
 &lt;p>virtualenv 用来建立一个虚拟的python环境，为了解决Python各种库的冲突问题。&lt;/p>
 &lt;h2 id="0x01-virtualenv-安装">0x01 virtualenv 安装&lt;/h2>
 &lt;h3 id="通用安装方法">通用安装方法&lt;/h3>
@@ -65,4 +117,112 @@
 &lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
 &lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>apt-get upgrade &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> apt-get update
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>apt-get install virtualenv
-&lt;/span>&lt;/span>&lt;/code>&lt;/pr</description></item></channel></rss>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="0x02-virtualenv-使用">0x02 virtualenv 使用&lt;/h2>
+&lt;h3 id="帮助信息">帮助信息&lt;/h3>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>~$ virtualenv -h
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Usage: virtualenv &lt;span style="color:#f92672">[&lt;/span>OPTIONS&lt;span style="color:#f92672">]&lt;/span> DEST_DIR
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Options:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> --version 显示程序的版本号并退出
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> -h, --help 显示程序的帮助信息并退出
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> -v, --verbose 增强输出
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> -q, --quiet 减少输出
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> -p PYTHON_EXE, --python&lt;span style="color:#f92672">=&lt;/span>PYTHON_EXE Python的可执行路径&lt;span style="color:#f92672">(&lt;/span>/usr/bin/python&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> --clear 清除安装的库
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> --no-site-packages 给出一个干净的环境，不包含系统已安装的库
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> --system-site-packages 包含系统库
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> --always-copy 始终复制文件而不是符号链接。
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> --relocatable 使一个现有的virtualenv环境这会修复脚本并生成所有.pth文件
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> --no-setuptools 不要在新的virtualenv中安装setuptools
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> --no-pip 不要在新的virtualenv中安装pip
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> --no-wheel 不要在新的virtualenv中安装wheel
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> --extra-search-dir&lt;span style="color:#f92672">=&lt;/span>DIR 在DIR中寻找setuptools/pip
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> --download 从PyPI下载预安装的软件包
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> --no-download, --never-download 不要从PyPI下载预安装的软件包
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> --prompt&lt;span style="color:#f92672">=&lt;/span>PROMPT 为此环境提供备用提示前缀
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> --setuptools 已废弃
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> --distribute 已废弃
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> --unzip-setuptools 已废弃
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="查看当前版本">查看当前版本&lt;/h3>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>~$ virtualenv --version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>16.0.0
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="配置一个新的环境">配置一个新的环境&lt;/h3>
+&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
+&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
+&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>~$ which python &lt;span style="color:#75715e"># 查看Python路径&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/usr/bin/python
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>~$ virtualenv --no-site-packages -p /usr/bin/python MyNewEnv &lt;span style="color:#75715e"># 创建环境目录&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Running virtualenv with interpreter /usr/bin/python
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>New python executable in /home/liyingzhe/MyNewEnv/bin/python
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Installing setuptools, pip, wheel...done.
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>~$ ls MyNewEnv/ &lt;span style="color:#75715e"># 查看环境目录&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>bin include lib local pip-selfcheck.json
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>~$ source MyNewEnv/bin/activate &lt;span style="color:#75715e"># 将环境生效&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">(&lt;/span>MyNewEnv&lt;span style="color:#f92672">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">(&lt;/span>MyNewEnv&lt;span style="color:#f92672">)&lt;/span> ~$ pip list &lt;span style="color:#75715e"># 查看已安装的库&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Package Version
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>---------- -------
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>pip 18.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>setuptools 40.0.0
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>wheel 0.31.1
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>此时我们可以安装一些新的库&lt;/p></description></item></channel></rss>

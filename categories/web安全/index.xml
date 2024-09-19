@@ -23,7 +23,31 @@
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>xssValidator</title><link>https://payloads.online/archivers/2018-10-19/1/</link><pubDate>Fri, 19 Oct 2018 00:00:44 +0000</pubDate><guid>https://payloads.online/archivers/2018-10-19/1/</guid><description>&lt;h2 id="0x00-前言">0x00 前言&lt;/h2>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-xml" data-lang="xml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;UTF-8&amp;#34;?&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">&amp;lt;configuration&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;system.webServer&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;handlers&lt;/span> &lt;span style="color:#a6e22e">accessPolicy=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Read, Script, Write&amp;#34;&lt;/span>&lt;span style="color:#f92672">&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;add&lt;/span> &lt;span style="color:#a6e22e">name=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;web_config&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">path=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;*.jpa&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">verb=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;*&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">modules=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;IsapiModule&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">scriptProcessor=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;%windir%\system32\inetsrv\asp.dll&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">resourceType=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Unspecified&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">requireAccess=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Write&amp;#34;&lt;/span> &lt;span style="color:#a6e22e">preCondition=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;bitness64&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;/handlers&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;security&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;requestFiltering&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;fileExtensions&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;remove&lt;/span> &lt;span style="color:#a6e22e">fileExtension=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;.jpa&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;/fileExtensions&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;hiddenSegments&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;remove&lt;/span> &lt;span style="color:#a6e22e">segment=&lt;/span>&lt;span style="color:#e6db74">&amp;#34;web.config&amp;#34;&lt;/span> &lt;span style="color:#f92672">/&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;/hiddenSegments&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;/requestFiltering&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;/security&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;/system.webServer&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#f92672">&amp;lt;appSettings&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">&amp;lt;/appSettings&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">&amp;lt;/configuration&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>上传完成web.config到Web目录下后，可以再上传&lt;code>*.jpa&lt;/code>的扩展名文件达到执行任意代码的目的。&lt;/p></description></item><item><title>xssValidator</title><link>https://payloads.online/archivers/2018-10-19/1/</link><pubDate>Fri, 19 Oct 2018 00:00:44 +0000</pubDate><guid>https://payloads.online/archivers/2018-10-19/1/</guid><description>&lt;h2 id="0x00-前言">0x00 前言&lt;/h2>
 &lt;p>xss Validator是一个Burp商店的一个高分插件，该插件依赖于&lt;a href="http://phantomjs.org">phantomjs&lt;/a>项目以及Burp的Intruder模块。&lt;/p>
 &lt;h2 id="0x01-安装">0x01 安装&lt;/h2>
 &lt;h3 id="安装插件">安装插件&lt;/h3>
@@ -44,7 +68,29 @@
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>CTF - 美眉的手机号</title><link>https://payloads.online/archivers/2017-11-14/1/</link><pubDate>Tue, 14 Nov 2017 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2017-11-14/1/</guid><description>&lt;h2 id="0x00-前言">0x00 前言&lt;/h2>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-sh" data-lang="sh">&lt;span style="display:flex;">&lt;span>rvn0xsy@Rvn0xsy ~/G/p/bin&amp;gt; pwd
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>/Users/rvn0xsy/GitProject/phantomjs-2.1.1-macosx/bin
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>rvn0xsy@Rvn0xsy ~/G/p/bin&amp;gt; ls
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>phantomjs xss.js
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>rvn0xsy@Rvn0xsy ~/G/p/bin&amp;gt; ./phantomjs xss.js &lt;span style="color:#75715e"># 启动监听&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>这时回到Burp的xss Validator插件页面：&lt;/p>
+&lt;p>
+ &lt;img src="https://images.payloads.online/339905be-4f5f-11ec-bdc6-00d861bf4abb.png" alt="">
+
+&lt;/p>
+&lt;p>其中：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>Grep Phrase&lt;/code>是XSS执行成功后，能够解析出的字符串，支持自定义。&lt;/li>
+&lt;li>&lt;code>Javascript function&lt;/code>是验证函数，会被解析的时候调用。&lt;/li>
+&lt;li>&lt;code>Javascript event handlers&lt;/code>是监听事件。&lt;/li>
+&lt;li>&lt;code>Payloads&lt;/code>是测试XSS的模板，必须包含&lt;code>{JAVASCRIPT}&lt;/code>，否则无法判断状态&lt;/li>
+&lt;/ul>
+&lt;h2 id="0x03-测试演示">0x03 测试演示&lt;/h2>
+&lt;!-- raw HTML omitted --></description></item><item><title>CTF - 美眉的手机号</title><link>https://payloads.online/archivers/2017-11-14/1/</link><pubDate>Tue, 14 Nov 2017 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2017-11-14/1/</guid><description>&lt;h2 id="0x00-前言">0x00 前言&lt;/h2>
 &lt;p>十一月十一号，在北科大参加了一场CTF，也是第一次投身真正的比赛&lt;/p>
 &lt;p>个人感觉，CTF并不是一种学习方式，但是绝对可以考验你的技术深度，这次去北京，确实感受到了那种极客精神，不管题目难或易，都有可圈可点之处，我将他们看作一道道关卡，将自己掌握的知识不断融合，去开辟新的思路，我很享受这个过程，其中，主要做了两道比较深刻的题目，在这里拿出来与大家分享，由于当时场地不允许连接外网，不能查阅资料，更获取不到服务器上的题目源代码，我只能回忆题目中的逻辑，通过PHP将它实现，略有改动。&lt;/p>
 &lt;p>我自己还原的源代码可以在这里看到：&lt;code>https://github.com/Rvn0xsy/ctf_get_phone&lt;/code>&lt;/p>
@@ -108,7 +154,46 @@
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
-&lt;/span>&lt;/code>&lt;/pr</description></item><item><title>Tomcat 开启 https支持</title><link>https://payloads.online/archivers/2017-08-21/1/</link><pubDate>Mon, 21 Aug 2017 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2017-08-21/1/</guid><description>&lt;h2 id="0x00-配置keystore">0x00 配置keystore&lt;/h2>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-javascript" data-lang="javascript">&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">$&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;#register&amp;#34;&lt;/span>).&lt;span style="color:#a6e22e">bind&lt;/span>(&lt;span style="color:#e6db74">&amp;#39;click&amp;#39;&lt;/span>,&lt;span style="color:#66d9ef">function&lt;/span>(){
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">usernameObj&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">$&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;#username&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">passwordObj&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">$&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;#password&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">phoneObj&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">$&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;#phone&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">usernameVal&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">usernameObj&lt;/span>.&lt;span style="color:#a6e22e">val&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">passwordVal&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">passwordObj&lt;/span>.&lt;span style="color:#a6e22e">val&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">phoneVal&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">phoneObj&lt;/span>.&lt;span style="color:#a6e22e">val&lt;/span>();
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span>(&lt;span style="color:#a6e22e">usernameVal&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#a6e22e">usernameVal&lt;/span>.&lt;span style="color:#a6e22e">length&lt;/span> &lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#ae81ff">4&lt;/span>){
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">alert&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;Username is empty or short!&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span>(&lt;span style="color:#a6e22e">passwordVal&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#a6e22e">passwordVal&lt;/span>.&lt;span style="color:#a6e22e">length&lt;/span> &lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#ae81ff">4&lt;/span>){
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">alert&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;Password is empty or short!&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span>(&lt;span style="color:#a6e22e">phoneVal&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;&amp;#34;&lt;/span> &lt;span style="color:#f92672">&amp;amp;&amp;amp;&lt;/span> &lt;span style="color:#a6e22e">phoneVal&lt;/span>.&lt;span style="color:#a6e22e">length&lt;/span> &lt;span style="color:#f92672">&amp;lt;&lt;/span> &lt;span style="color:#ae81ff">11&lt;/span>){
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">alert&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;Phone is empty or short!&amp;#34;&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">$&lt;/span>.&lt;span style="color:#a6e22e">post&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;/ctf/api.php?method=register&amp;#34;&lt;/span>,{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;username&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span>&lt;span style="color:#a6e22e">usernameVal&lt;/span>,&lt;span style="color:#e6db74">&amp;#34;password&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span>&lt;span style="color:#a6e22e">passwordVal&lt;/span>,&lt;span style="color:#e6db74">&amp;#34;phone&amp;#34;&lt;/span>&lt;span style="color:#f92672">:&lt;/span>&lt;span style="color:#a6e22e">phoneVal&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> },&lt;span style="color:#66d9ef">function&lt;/span>(&lt;span style="color:#a6e22e">data&lt;/span>,&lt;span style="color:#a6e22e">status&lt;/span>){
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">obj&lt;/span> &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#a6e22e">jQuery&lt;/span>.&lt;span style="color:#a6e22e">parseJSON&lt;/span>(&lt;span style="color:#a6e22e">data&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">console&lt;/span>.&lt;span style="color:#a6e22e">log&lt;/span>(&lt;span style="color:#a6e22e">obj&lt;/span>.&lt;span style="color:#a6e22e">status&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span>(&lt;span style="color:#a6e22e">obj&lt;/span>.&lt;span style="color:#a6e22e">status&lt;/span>){
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">alert&lt;/span>(&lt;span style="color:#a6e22e">obj&lt;/span>.&lt;span style="color:#a6e22e">data&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> window.&lt;span style="color:#a6e22e">location&lt;/span>.&lt;span style="color:#a6e22e">href&lt;/span>&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;/ctf/index.php&amp;#39;&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">true&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }&lt;span style="color:#66d9ef">else&lt;/span>{
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">alert&lt;/span>(&lt;span style="color:#e6db74">&amp;#34;Error :&amp;#34;&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#a6e22e">obj&lt;/span>.&lt;span style="color:#a6e22e">data&lt;/span>);
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">false&lt;/span>;
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> })
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> });
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>上面是绑定的点击事件，提交到&lt;code>/ctf/api.php?method=register&lt;/code>&lt;/p></description></item><item><title>Tomcat 开启 https支持</title><link>https://payloads.online/archivers/2017-08-21/1/</link><pubDate>Mon, 21 Aug 2017 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2017-08-21/1/</guid><description>&lt;h2 id="0x00-配置keystore">0x00 配置keystore&lt;/h2>
 &lt;p>要使用ssl connector，必须先创建一个keystore。他包含了服务器中被客户端用于验证服务器的数字证书。一旦客户端接受了这个证书，客户端就可以使用public key去加密他们要发送的数据。而服务器，拥有一个private key，作为唯一解密数据的密钥。&lt;/p>
 &lt;p>进入JDK环境的bin目录，调用keytool来完成我们的证书生成：&lt;/p>
 &lt;p>&lt;code>keytool -genkey -alias tomcat -keyalg RSA&lt;/code>&lt;/p>
@@ -135,4 +220,17 @@
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
 &lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
-&lt;/span>&lt;/code>&lt;/pr</description></item></channel></rss>
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
+&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-xml" data-lang="xml">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&amp;lt;!--
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"> &amp;lt;Connector port=&amp;#34;8443&amp;#34; protocol=&amp;#34;HTTP/1.1&amp;#34; SSLEnabled=&amp;#34;true&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"> maxThreads=&amp;#34;150&amp;#34; scheme=&amp;#34;https&amp;#34; secure=&amp;#34;true&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"> clientAuth=&amp;#34;false&amp;#34; sslProtocol=&amp;#34;TLS&amp;#34; /&amp;gt;
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">
+&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"> --&amp;gt;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>改成：&lt;/p></description></item></channel></rss>
