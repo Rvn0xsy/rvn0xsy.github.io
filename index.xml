@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>倾旋的博客</title><link>https://payloads.online/</link><description>Recent content feedId:41657948800783360+userId:55921294356951040 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Sun, 08 Sep 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/index.xml" rel="self" type="application/rss+xml"/><item><title>使用AI提取历年漏洞Fofa查询语句</title><link>https://payloads.online/archivers/2024-09-08/extract-vuln-search-queries/</link><pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2024-09-08/extract-vuln-search-queries/</guid><description>&lt;h2 id="前言">前言&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>倾旋的博客</title><link>https://payloads.online/</link><description>Recent content on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Sun, 08 Sep 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/index.xml" rel="self" type="application/rss+xml"/><item><title>使用AI提取历年漏洞Fofa查询语句</title><link>https://payloads.online/archivers/2024-09-08/extract-vuln-search-queries/</link><pubDate>Sun, 08 Sep 2024 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2024-09-08/extract-vuln-search-queries/</guid><description>&lt;h2 id="前言">前言&lt;/h2>
 &lt;p>近期使用Rust开发了一个基于流水线的AI助手，名字叫&lt;code>Qpipe&lt;/code>，本文将演示我如何使用它来提取历年所有漏洞相关资产的查询语句。&lt;/p>
 &lt;p>开源链接：&lt;a href="https://github.com/Rvn0xsy/Qpipe">https://github.com/Rvn0xsy/Qpipe&lt;/a>&lt;/p>
 &lt;p>最近智谱开放了国内首个&lt;a href="https://open.bigmodel.cn/dev/api#glm-4">大模型免费API接口&lt;/a>，我就想着能否用它做一点事情，第一个想到的是把这两年披露的漏洞做一个梳理，就先从网络空间搜索引擎的语法开始。&lt;/p>
@@ -8458,4 +8458,4 @@ Ping命令都不让用，限制很死。&lt;/p>
 &lt;p>
  &lt;img src="https://images.payloads.online/sponsor.jpg" alt="">
 
-&lt;/p></description></item></channel><follow_challenge><feedId>41657948800783360</feedId><userId>55921294356951040</userId></follow_challenge></rss>
+&lt;/p></description></item></channel></rss>
