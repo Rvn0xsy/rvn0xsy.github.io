@@ -182,7 +182,7 @@ APNIC的RDAP数据库保存在`https://rdap.apnic.net/`上面，我们继续在�
 - IP地址段：223.0.0.0 - 223.1.255.255
 - 企业公司：Beijing Beilong Yunhai Network Data Technology Corporation
 
-当然，我们可以查询到的信息不止这么多，使用whois查询工具也可以查询，基本上原理和我们刚刚手动完成的动作相同：
+当然，我们可以查询到的信息不止这么多，使用whois查询工具也可以查询，数据基本上我们刚刚手动完成查询的相同：
 
 ```bash
 ╭─arch@archlinux ~
