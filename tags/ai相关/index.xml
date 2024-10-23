@@ -35,21 +35,21 @@
 &lt;table>
  &lt;thead>
  &lt;tr>
- &lt;th style="text-align: left">域名&lt;/th>
- &lt;th style="text-align: left">模型&lt;/th>
- &lt;th style="text-align: left">备注&lt;/th>
+ &lt;th>域名&lt;/th>
+ &lt;th>模型&lt;/th>
+ &lt;th>备注&lt;/th>
  &lt;/tr>
  &lt;/thead>
  &lt;tbody>
  &lt;tr>
- &lt;td style="text-align: left">coze.com&lt;/td>
- &lt;td style="text-align: left">GPT4o\GPT3.5\GPT4\Gemini 1.5 Pro..&lt;/td>
- &lt;td style="text-align: left">海外魔法&lt;/td>
+ &lt;td>coze.com&lt;/td>
+ &lt;td>GPT4o\GPT3.5\GPT4\Gemini 1.5 Pro..&lt;/td>
+ &lt;td>海外魔法&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">coze.cn&lt;/td>
- &lt;td style="text-align: left">字节云雀&lt;/td>
- &lt;td style="text-align: left">国内&lt;/td>
+ &lt;td>coze.cn&lt;/td>
+ &lt;td>字节云雀&lt;/td>
+ &lt;td>国内&lt;/td>
  &lt;/tr>
  &lt;/tbody>
 &lt;/table>

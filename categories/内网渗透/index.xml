@@ -192,34 +192,34 @@
 &lt;table>
  &lt;thead>
  &lt;tr>
- &lt;th style="text-align: left">名称&lt;/th>
- &lt;th style="text-align: left">作用&lt;/th>
+ &lt;th>名称&lt;/th>
+ &lt;th>作用&lt;/th>
  &lt;/tr>
  &lt;/thead>
  &lt;tbody>
  &lt;tr>
- &lt;td style="text-align: left">HKEY_CLASSES_ROOT&lt;/td>
- &lt;td style="text-align: left">用于存储一些文档类型、类、类的关联属性。&lt;/td>
+ &lt;td>HKEY_CLASSES_ROOT&lt;/td>
+ &lt;td>用于存储一些文档类型、类、类的关联属性。&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">HKEY_CURRENT_CONFIG&lt;/td>
- &lt;td style="text-align: left">用户存储有关本地计算机系统的当前硬件配置文件信息。&lt;/td>
+ &lt;td>HKEY_CURRENT_CONFIG&lt;/td>
+ &lt;td>用户存储有关本地计算机系统的当前硬件配置文件信息。&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">HKEY_CURRENT_USER&lt;/td>
- &lt;td style="text-align: left">用于存储当前用户配置项。&lt;/td>
+ &lt;td>HKEY_CURRENT_USER&lt;/td>
+ &lt;td>用于存储当前用户配置项。&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">HKEY_CURRENT_USER_LOCAL_SETTINGS&lt;/td>
- &lt;td style="text-align: left">用于存储当前用户对计算机的配置项。&lt;/td>
+ &lt;td>HKEY_CURRENT_USER_LOCAL_SETTINGS&lt;/td>
+ &lt;td>用于存储当前用户对计算机的配置项。&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">HKEY_LOCAL_MACHINE&lt;/td>
- &lt;td style="text-align: left">用于存储当前用户物理状态。&lt;/td>
+ &lt;td>HKEY_LOCAL_MACHINE&lt;/td>
+ &lt;td>用于存储当前用户物理状态。&lt;/td>
  &lt;/tr>
  &lt;tr>
- &lt;td style="text-align: left">HKEY_USERS&lt;/td>
- &lt;td style="text-align: left">用于存储新用户的默认配置项。&lt;/td>
+ &lt;td>HKEY_USERS&lt;/td>
+ &lt;td>用于存储新用户的默认配置项。&lt;/td>
  &lt;/tr>
  &lt;/tbody>
 &lt;/table>
