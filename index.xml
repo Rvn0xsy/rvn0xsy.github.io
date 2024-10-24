@@ -12,11 +12,13 @@
 &lt;p>RDAP 是基于RESTful的Web服务，因此错误代码、用户标识、身份认证和访问控制可以通过HTTP协议进行提供，我们可以使用简单的Curl工具访问RDAP数据，而RDAP数据分别由区域互联网注册管理机构分别管理，如果要访问中国的网络分配资源，我们需要查找到对应的服务器。&lt;/p>
 &lt;blockquote>
 &lt;p>现在世界上有五个正在运作的区域互联网注册管理机构：&lt;/p>
-&lt;p>美洲互联网号码注册管理机构（American Registry for Internet Numbers，ARIN）
-欧洲IP网络资源协调中心
-亚太网络信息中心（Asia-Pacific Network Information Centre，APNIC）
-拉丁美洲及加勒比地区互联网地址注册管理机构（Latin American and Caribbean Internet Address Registry，LACNIC）
-非洲网络信息中心（African Network Information Centre，AfriNIC）&lt;/p>
+&lt;ul>
+&lt;li>美洲互联网号码注册管理机构（American Registry for Internet Numbers，ARIN）&lt;/li>
+&lt;li>欧洲IP网络资源协调中心&lt;/li>
+&lt;li>亚太网络信息中心（Asia-Pacific Network Information Centre，APNIC）&lt;/li>
+&lt;li>拉丁美洲及加勒比地区互联网地址注册管理机构（Latin American and Caribbean Internet Address Registry，LACNIC）&lt;/li>
+&lt;li>非洲网络信息中心（African Network Information Centre，AfriNIC）&lt;/li>
+&lt;/ul>
 &lt;p>下文中简称 “信息中心”。&lt;/p>
 &lt;/blockquote>
 &lt;p>了解完毕所有的前置知识后，我们可以开始查询全球的IPv4地址分配情况：&lt;/p>
