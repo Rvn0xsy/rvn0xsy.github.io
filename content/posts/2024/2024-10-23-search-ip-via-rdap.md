@@ -33,11 +33,11 @@ RDAP 是基于RESTful的Web服务，因此错误代码、用户标识、身份�
 > 现在世界上有五个正在运作的区域互联网注册管理机构：
 > 
 > 
-> 美洲互联网号码注册管理机构（American Registry for Internet Numbers，ARIN）
-> 欧洲IP网络资源协调中心
-> 亚太网络信息中心（Asia-Pacific Network Information Centre，APNIC）
-> 拉丁美洲及加勒比地区互联网地址注册管理机构（Latin American and Caribbean Internet Address Registry，LACNIC）
-> 非洲网络信息中心（African Network Information Centre，AfriNIC）
+> - 美洲互联网号码注册管理机构（American Registry for Internet Numbers，ARIN）
+> - 欧洲IP网络资源协调中心
+> - 亚太网络信息中心（Asia-Pacific Network Information Centre，APNIC）
+> - 拉丁美洲及加勒比地区互联网地址注册管理机构（Latin American and Caribbean Internet Address Registry，LACNIC）
+> - 非洲网络信息中心（African Network Information Centre，AfriNIC）
 > 
 > 下文中简称 “信息中心”。
 > 
