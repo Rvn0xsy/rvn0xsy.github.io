@@ -17,7 +17,7 @@ tags: useful-software
 
 > 推荐使用LTSC版本的操作系统，系统比较纯净，但需要激活
 > 
-- Linux: [Arch Linux](https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/2023.07.01/) / [Ubuntu](https://mirrors.tuna.tsinghua.edu.cn/ubuntu-cdimage/releases/23.04/release/)
+- Linux: [Arch Linux](https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/2023.07.01/) / [Ubuntu](https://mirrors.tuna.tsinghua.edu.cn/ubuntu-cdimage/releases/24.10/release/)
 
 > 比较推荐直接去一些软件源上下载，这里举例清华源
 > 
@@ -80,4 +80,6 @@ tags: useful-software
 - 免费DNS-SSRF服务：[sslip.io](http://sslip.io/)
 - 壁纸网站：[Bing壁纸库](https://bing.wdbyte.com/)
 - IP地址查询：[ifconfig.me](https://www.ifconfig.me/)
+- YAML 工具:[YAMLine](https://yamline.com/)
+- SQL 工具:[SQLable](https://sqlable.com/)
 - BT种子转换:cn[.]torrentkitty[.]best
