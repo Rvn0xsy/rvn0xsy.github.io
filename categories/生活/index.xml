@@ -128,8 +128,7 @@
 &lt;p>一般情况下，这类情况都是未安装杀毒软件或杀毒软件病毒库太老。&lt;/p>
 &lt;p>横向移动的手段与&lt;strong>0x03&lt;/strong>很相近。&lt;/p>
 &lt;blockquote>
-&lt;p>IOC（Indicator of Compromise）入侵指标，目前可以理解为是一种威胁参考数据。&lt;/p>
-&lt;/blockquote>
+&lt;p>IOC（Indicator of Compromise）入侵指标，目前可以理解为是一种威胁参考数据。&lt;/p>&lt;/blockquote>
 &lt;h2 id="0x05-应急响应---数据丢失">0x05 应急响应 - 数据丢失&lt;/h2>
 &lt;p>这种是处理起来比较棘手的事件了，需要画大量的时间分析日志，确定数据丢失的方式。&lt;/p>
 &lt;p>首先需要网络日志和主机日志，从数据服务器反向跟踪：&lt;strong>“我被谁访问，谁对我做了什么”&lt;/strong>&lt;/p>

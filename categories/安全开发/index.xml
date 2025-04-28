@@ -12,14 +12,11 @@
 &lt;p>我的分类不是很清晰，但是对于一个渗透测试人员、运维人员、甲、乙方的工程师都会需要它的定制化功能，例如：将扫描结果写到数据库？新的漏洞出了POC，客户需要立即进行漏洞扫描？&lt;/p>
 &lt;p>导出扫描结果这个问题，Nmap官方做出如下回应：&lt;/p>
 &lt;blockquote>
-&lt;p>&lt;a href="https://link.zhihu.com/?target=https%3A//nmap.org/book/output-formats-output-to-database.html">Nmap Network Scanning&lt;/a>&lt;/p>
-&lt;/blockquote>
+&lt;p>&lt;a href="https://link.zhihu.com/?target=https%3A//nmap.org/book/output-formats-output-to-database.html">Nmap Network Scanning&lt;/a>&lt;/p>&lt;/blockquote>
 &lt;blockquote>
-&lt;p>一个共同的愿望是将Nmap结果输出到数据库以便于查询和跟踪。这允许用户来自个人渗透测试仪 到国际企业存储他们的所有扫描结果并轻松比较它们。企业可能每天运行大型扫描，并为新打开的端口或可用计算机的邮件管理员安排查询。渗透测试人员可能会了解新漏洞并搜索受影响应用程序的所有旧扫描结果，以便他可以警告相关客户端。研究人员可以扫描数百万个IP地址，并将结果保存在数据库中，以便进行实时查询。&lt;/p>
-&lt;/blockquote>
+&lt;p>一个共同的愿望是将Nmap结果输出到数据库以便于查询和跟踪。这允许用户来自个人渗透测试仪 到国际企业存储他们的所有扫描结果并轻松比较它们。企业可能每天运行大型扫描，并为新打开的端口或可用计算机的邮件管理员安排查询。渗透测试人员可能会了解新漏洞并搜索受影响应用程序的所有旧扫描结果，以便他可以警告相关客户端。研究人员可以扫描数百万个IP地址，并将结果保存在数据库中，以便进行实时查询。&lt;/p>&lt;/blockquote>
 &lt;blockquote>
-&lt;p>虽然这些目标值得称赞，但Nmap不提供直接的数据库输出功能。我不仅有太多不同的数据库类型支持它们，而且用户的需求变化如此之大，以至于没有单一的数据库模式是合适的。企业，笔测试员和研究人员的需求都需要不同的表结构。&lt;/p>
-&lt;/blockquote>
+&lt;p>虽然这些目标值得称赞，但Nmap不提供直接的数据库输出功能。我不仅有太多不同的数据库类型支持它们，而且用户的需求变化如此之大，以至于没有单一的数据库模式是合适的。企业，笔测试员和研究人员的需求都需要不同的表结构。&lt;/p>&lt;/blockquote>
 &lt;p>而很多朋友大多都是使用Python来调用Nmap进行格式解析，这种方式无法预估扫描进度，不能进行状态交互，效率很差，如果我们需要一个实时进行独写、漏洞检测等定制化的操作，那么就可以跟我一起来学习如何写一个自己的Nmap脚本，这本书涵盖的知识比较多，会涉及安全、网络协议、编程技术这些相关知识，相信你能够收获很多。&lt;/p>
 &lt;p>笔者写扩展脚本开发系列的初衷是让大家了解nmap这个优秀的开源工具的功能，解决一些定制化的扫描需求。&lt;/p>
 &lt;p>在开始之前，需要读者具备：能够熟练使用Nmap进行端口扫描、了解Nmap目录结构、懂得常见的网络知识、&lt;strong>Lua基础（如果需要的话，我会在后期铺垫）&lt;/strong>。&lt;/p>
@@ -53,9 +50,7 @@
 &lt;h3 id="0x03-nmap扩展脚本使用方法">0x03 Nmap扩展脚本使用方法&lt;/h3>
 &lt;p>在很早之前，我写过一篇科普文章，主要介绍了Nmap的脚本分类、使用方法，链接：&lt;/p>
 &lt;p>&lt;a href="http://zhuanlan.zhihu.com/p/26618074">http://zhuanlan.zhihu.com/p/26618074&lt;/a>&lt;/p>
-&lt;p>本章没有太多概念性的东西，希望读者能够边看边做。首先设定一个需求，我有一个需要搜集某个IP或某组IP所有开放HTTP服务的中间件信息。那么Nmap有一个脚本是可以直接满足我们需求的：&lt;/p>
-&lt;p>&lt;code>http-server-header.nse&lt;/code>&lt;/p>
-&lt;p>扫描命令：&lt;code>nmap --script=http-server-header &amp;lt;TARGET&amp;gt;&lt;/code>&lt;/p></description></item><item><title>Nmap扩展开发（三）</title><link>https://payloads.online/archivers/2019-04-24/3/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/3/</guid><description>&lt;h2 id="0x01-扩展脚本对象-主机">0X01 扩展脚本对象-主机&lt;/h2>
+&lt;p>本章没有太多概念性的东西，希望读者能够边看边做。首先设定一个需求，我有一个需要搜集某个IP或某组IP所有开放HTTP服务的中间件信息。那么Nmap有一个脚本是可以直接满足我们需求的：&lt;/p></description></item><item><title>Nmap扩展开发（三）</title><link>https://payloads.online/archivers/2019-04-24/3/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/3/</guid><description>&lt;h2 id="0x01-扩展脚本对象-主机">0X01 扩展脚本对象-主机&lt;/h2>
 &lt;p>在进行主机扫描的时候会执行hostrule这个函数，从以往的nmap扩展脚本代码中我们都可以发现在hostrule这个函数中做了一些针对host操作的动作。&lt;/p>
 &lt;p>hostrule有一个参数，变量名叫host，我们可以把它理解为一个对象，在这里称之为对象是为了方便读者理解，在lua中实际它的数据类型是一个多维的table（表），具有很多属性。由于这些rule函数都是被动调用的，我们只能在函数内部对形参进行操作了。&lt;/p>
 &lt;p>参考：https://nmap.org/book/nse-api.html&lt;/p>
@@ -66,8 +61,7 @@
 &lt;p>通过上面这个表格我们能够清楚的了解到从host这个table中可以读取到哪些信息。&lt;/p>
 &lt;p>为了让读者吸收，建立一个需求，请大家与我一起完成。&lt;/p>
 &lt;blockquote>
-&lt;p>需求：使用Nmap扫描获得所有主机的MAC地址&lt;/p>
-&lt;/blockquote>
+&lt;p>需求：使用Nmap扫描获得所有主机的MAC地址&lt;/p>&lt;/blockquote>
 &lt;p>由于Nmap没提供这个需求的解决方案，就需要我们自己来写一个扩展脚本了~&lt;/p>
 &lt;p>还是拿之前的test.nse来改一下：&lt;/p>
 &lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">

@@ -5,14 +5,12 @@
 &lt;li>Windows: &lt;a href="https://msdn.itellyou.cn/">MSDN-ItellYou&lt;/a> \ ✨&lt;a href="http://www.microsoft.com/en-us/evalcenter/download-windows-10-enterprise">LTSC&lt;/a> 系统比较纯净&lt;/li>
 &lt;/ul>
 &lt;blockquote>
-&lt;p>推荐使用LTSC版本的操作系统，系统比较纯净，但需要激活&lt;/p>
-&lt;/blockquote>
+&lt;p>推荐使用LTSC版本的操作系统，系统比较纯净，但需要激活&lt;/p>&lt;/blockquote>
 &lt;ul>
 &lt;li>Linux: &lt;a href="https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/2023.07.01/">Arch Linux&lt;/a> / &lt;a href="https://mirrors.tuna.tsinghua.edu.cn/ubuntu-cdimage/releases/23.04/release/">Ubuntu&lt;/a>&lt;/li>
 &lt;/ul>
 &lt;blockquote>
-&lt;p>比较推荐直接去一些软件源上下载，这里举例清华源&lt;/p>
-&lt;/blockquote>
+&lt;p>比较推荐直接去一些软件源上下载，这里举例清华源&lt;/p>&lt;/blockquote>
 &lt;h3 id="操作系统工具-linux">操作系统工具-[Linux]&lt;/h3>
 &lt;ul>
 &lt;li>文档处理：&lt;a href="https://wiki.archlinux.org/title/WPS_Office">WPS Office&lt;/a>、&lt;a href="https://archlinux.org/packages/extra/x86_64/mousepad/">Mousepad&lt;/a>&lt;/li>

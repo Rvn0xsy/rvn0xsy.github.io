@@ -1,0 +1,26 @@
+/* 简化版FontAwesome基本图标 */
+.fas {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  display: inline-block;
+  font-style: normal;
+  font-variant: normal;
+  text-rendering: auto;
+  line-height: 1;
+}
+
+.fa-book-reader:before {
+  content: "📚";
+}
+
+.fa-clock:before {
+  content: "⏱️";
+}
+
+.fa-tag:before {
+  content: "🏷️";
+}
+
+.fa-calendar:before {
+  content: "📅";
+}

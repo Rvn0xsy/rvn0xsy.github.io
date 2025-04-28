@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>内网渗透 on 倾旋的博客</title><link>https://payloads.online/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/</link><description>Recent content in 内网渗透 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Sat, 30 Mar 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/index.xml" rel="self" type="application/rss+xml"/><item><title>OWASP - 吉林沙龙《后渗透与邮件安全》 议题解读</title><link>https://payloads.online/archivers/2019-03-30/2/</link><pubDate>Sat, 30 Mar 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-03-30/2/</guid><description>&lt;blockquote>
-&lt;p>在线地址：&lt;a href="https://www.bilibili.com/video/av51712186/">https://www.bilibili.com/video/av51712186/&lt;/a>&lt;/p>
-&lt;/blockquote>
+&lt;p>在线地址：&lt;a href="https://www.bilibili.com/video/av51712186/">https://www.bilibili.com/video/av51712186/&lt;/a>&lt;/p>&lt;/blockquote>
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="0x00-前言">0x00 前言&lt;/h2>
 &lt;p>本文的研究与收获，话费了我近一个季度的时间去掌握，写下这篇文章的意义就在于给自己一个总结，另外，由衷感谢我的前辈给予我的指导，一言一行影响着我。&lt;/p>
@@ -109,8 +108,7 @@
 &lt;h2 id="0x03-总结">0x03 总结&lt;/h2>
 &lt;p>UAC、DLL劫持、COM劫持的问题肯定还会有很多、但是以前的轮子到现在拿起来用基本上都会被行为拦截，这就需要掌握原理去自己探索、创造。&lt;/p>
 &lt;p>系统镜像：&lt;code>ed2k://|file|cn_windows_server_2019_x64_dvd_4de40f33.iso|5086887936|7DCDDD6B0C60A0D019B6A93D8F2B6D31|/&lt;/code>&lt;/p></description></item><item><title>DLL Hijacking &amp; COM Hijacking ByPass UAC - 议题解读</title><link>https://payloads.online/archivers/2018-12-22/1/</link><pubDate>Sat, 22 Dec 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-12-22/1/</guid><description>&lt;blockquote>
-&lt;p>在线地址：&lt;a href="https://www.bilibili.com/video/av51718274/">https://www.bilibili.com/video/av51718274/&lt;/a>&lt;/p>
-&lt;/blockquote>
+&lt;p>在线地址：&lt;a href="https://www.bilibili.com/video/av51718274/">https://www.bilibili.com/video/av51718274/&lt;/a>&lt;/p>&lt;/blockquote>
 &lt;!-- raw HTML omitted -->
 &lt;h2 id="0x00-前言">0x00 前言&lt;/h2>
 &lt;p>

@@ -503,8 +503,7 @@
 &lt;p>而 UDP 则不同，UDP 中不存在三次握手，那么发送端就只要发送数据即可，而接收端只要接收数据即可。所以，在 TCP 中不能对源 IP 地址进行伪造，而 UDP 中则可以。&lt;/p>
 &lt;p>UDP协议不需要握手，直接发送接收，下面我来通过小故事来形象的描述UDP中的伪造IP头攻击：&lt;/p>
 &lt;blockquote>
-&lt;p>假设有三个用户，Allen、Jerry、Tom.&lt;/p>
-&lt;/blockquote>
+&lt;p>假设有三个用户，Allen、Jerry、Tom.&lt;/p>&lt;/blockquote>
 &lt;h3 id="jerry与tom一次正常的udp请求">Jerry与Tom一次正常的UDP请求&lt;/h3>
 &lt;p>&lt;code>Jerry说：&lt;/code>“我是Jerry，我的源端口是4787，我要向Tom的4478端口发送一个UDP报文”&lt;/p>
 &lt;p>此时Tom的4478端口接收到一个UDP报文，需要回复内容，回复给谁呢，接下来需要根据报文中的IP头确定是谁发送的&lt;/p>
@@ -517,8 +516,7 @@
 &lt;p>这个过程当中，Jerry并没有参与通信，但是接到了一个从Tom那里发送过来的UDP数据报文&lt;/p>
 &lt;h2 id="0x04-编写一个伪造ip头的c语言程序">0x04 编写一个伪造IP头的C语言程序&lt;/h2>
 &lt;blockquote>
-&lt;p>/usr/include/netinet/ip.h&lt;/p>
-&lt;/blockquote>
+&lt;p>/usr/include/netinet/ip.h&lt;/p>&lt;/blockquote>
 &lt;p>这里面定义了IP头&lt;/p>
 &lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
 &lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">

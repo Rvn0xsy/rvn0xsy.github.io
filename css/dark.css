@@ -76,7 +76,7 @@ html.dark .header .site-description .scheme-toggle a svg {
 }
 
 html.dark td pre code {
-  color: #333;
+  color: #f7f7f7; /* color: #333; */
 }
 
 html.dark code:not(pre *)  {

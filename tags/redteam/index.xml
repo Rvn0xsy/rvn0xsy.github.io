@@ -19,8 +19,7 @@
 &lt;li>拉丁美洲及加勒比地区互联网地址注册管理机构（Latin American and Caribbean Internet Address Registry，LACNIC）&lt;/li>
 &lt;li>非洲网络信息中心（African Network Information Centre，AfriNIC）&lt;/li>
 &lt;/ul>
-&lt;p>下文中简称 “信息中心”。&lt;/p>
-&lt;/blockquote>
+&lt;p>下文中简称 “信息中心”。&lt;/p>&lt;/blockquote>
 &lt;p>了解完毕所有的前置知识后，我们可以开始查询全球的IPv4地址分配情况：&lt;/p>
 &lt;p>&lt;a href="https://data.iana.org/rdap/ipv4.json">https://data.iana.org/rdap/ipv4.json&lt;/a>&lt;/p>
 &lt;p>这个网址是IANA互联网分配号码权威机构的数据网址，上面显示了全球的IPv4在不同信息中心的分配情况，我在中国解析后的地址是属于ICANN的，可见应该是做了一些网络优化。&lt;/p>
