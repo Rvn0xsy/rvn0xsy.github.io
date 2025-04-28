@@ -21,28 +21,25 @@
 							</div>
 						</div>
 						<div class="matter">
-							<h4 class="title small">
+								<h3 class="title">
 								<a href="{{ .RelPermalink }}">{{.Title}}{{ if .Draft }}<sup
 										class="draft-label">DRAFT</sup>{{ end }}</a>
-							</h4>
-							{{ $wordCountNoCode := replaceRE `(?s)<div class="highlight">.*?</div>` "" .Content |
-							countwords }}
-							<h4 class="title small smaller">
-								{{ $wordCountNoCode | lang.FormatNumberCustom 0 }} words, ~{{ div $wordCountNoCode
-								.Site.Params.wpm
-								}} min read
-							</h4>
-							<h4 class="title small smaller">
+							</h3>
+							<div class="post-meta">
+								<span class="reading-stats">
+									{{ $wordCountNoCode := replaceRE `(?s)<div class="highlight">.*?</div>` "" .Content | countwords }}
+									<i class="fas fa-book-reader"></i> {{ $wordCountNoCode | lang.FormatNumberCustom 0 }} words 
+									• <i class="fas fa-clock"></i> ~{{ div $wordCountNoCode .Site.Params.wpm }} min
+								</span>
 								{{ if gt .Params.tags 0 }}
 								<ul class="tags flat">
 									{{ $tagUrl := "/tags/"}}
 									{{ range first .Site.Params.maxTags .Params.tags }}
-									<li class="tag-li"><a href="{{ $tagUrl | relLangURL }}{{ . | urlize }}">{{ .
-											}}</a></li>
+									<li class="tag-li"><a href="{{ $tagUrl | relLangURL }}{{ . | urlize }}">{{ . }}</a></li>
 									{{ end }}
 								</ul>
 								{{ end }}
-							</h4>
+							</div>
 							<span class="description">
 								{{ if isset .Params "description" }}
 								{{ .Description }}
