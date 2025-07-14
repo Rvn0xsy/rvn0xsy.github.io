@@ -207,4 +207,6 @@ set "command=%CD%\%injecter% %pid% %CD%\%dll_name%"
 %command%
 ```
 
+**注意：被注入的DLL文件路径必须是绝对路径才可以注入成功**
+
 最后的最后，致谢 @Akkuman
