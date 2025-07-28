@@ -2,17 +2,19 @@ baseURL = "https://payloads.online/"
 languageCode = "zh-cn"
 title = "倾旋的博客"
 copyright = "倾旋 All rights reserved"
-theme = "ink-free"
-
-[taxonomies]
-  tag = "tags"
-  category = "categories"
-  course = "courses"
+author = "倾旋"
+# theme = "ink-free"
+theme = "hugo-paper"
+test = "Hello"
+# [taxonomies]
+#   tag = "tags"
+#   category = "categories"
+#   course = "courses"
 
 [params]
-  author = "倾旋"
   email = "rvn0xsy@gmail.com"
   avatar = "/avatar.jpeg"
+  author = "倾旋"
   description = "现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。"
   subtitle = "现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。"
   toc = "floating"
@@ -20,6 +22,14 @@ theme = "ink-free"
   maxTags = 7
 	mode = "dark"
 
+[params.giscus]
+  repo = 'Rvn0xsy/rvn0xsy.github.io'                 # see https://giscus.app for more details
+  repoId = 'MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY='
+  category = 'General'
+  categoryId = 'DIC_kwDOF-pTTM4CRDk_'
+  mapping = 'title'
+  theme = 'light'
+  lang = 'zh-CN'
 
 [menu]
   [[menu.main]]
@@ -78,18 +88,45 @@ name = "Wechat"
 icon = "message-circle"
 url = "/"
 
-[markup]
-  [markup.highlight]
-    codeFences = true
-    guessSyntax = true
-    hl_Lines = ""
-    lineNoStart = 1
-    lineNos = true
-    lineNumbersInTable = true
-    noClasses = true
-    tabWidth = 4
+[[params.social]]
+name = "Github"
+icon = "github"
+url = "https://github.com/rvn0xsy/"
 
-  [markup.tableOfContents]
-    endLevel = 3
-    ordered = true
-    startLevel = 2 
+[[params.social]]
+name = "RSS"
+icon = "rss"
+url = "/index.xml"
+
+
+
+[privacy]
+  [privacy.vimeo]
+    disabled = false
+    simple = true
+
+  [privacy.x]
+    disabled = false
+    enableDNT = true
+    simple = true
+
+  [privacy.instagram]
+    disabled = false
+    simple = true
+
+  [privacy.youtube]
+    disabled = false
+    privacyEnhanced = true
+
+[services]
+
+[services.instagram]
+  disableInlineCSS = true
+
+[services.x]
+  disableInlineCSS = true
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true

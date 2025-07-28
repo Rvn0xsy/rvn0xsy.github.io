@@ -1,7 +1,0 @@
-{{- $name := .Get "name" | default (.Get 0) -}}
-{{- $width := .Get "width" | default (.Get 1) -}}
-{{- $height := .Get "height" | default (.Get 2) -}}
-{{ if not (eq $name "") }}
-<image src="https://cdn.jsdelivr.net/gh/poloxue/images@{{- $name -}}" {{ if not (eq $width "" )}} width="{{- $width -}}"
-  {{ end }} {{ if not (eq $height "" )}} height="{{- $height -}}" {{ end }} />
-{{ end }}

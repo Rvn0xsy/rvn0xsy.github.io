@@ -3,7 +3,7 @@ title: "记录一下配置Clash透明代理"
 date: 2023-08-07
 description: 日常办公和上网需要挂不同的代理，切换起来有点麻烦，所以记录一下配置Clash透明代理的流水账
 url: /archivers/2023-08-07/clash-config
-tags: clash
+tags: [clash]
 ---
 
 <aside>

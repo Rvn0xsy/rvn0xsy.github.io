@@ -1,3 +1,0 @@
-{{ $path := .Get 0 }}
-{{ $content := readFile (print "static/" $path) | safeHTML }}
-{{ $content }}
