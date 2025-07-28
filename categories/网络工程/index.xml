@@ -1,151 +1,73 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>网络工程 on 倾旋的博客</title><link>https://payloads.online/categories/%E7%BD%91%E7%BB%9C%E5%B7%A5%E7%A8%8B/</link><description>Recent content in 网络工程 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Fri, 16 Mar 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/%E7%BD%91%E7%BB%9C%E5%B7%A5%E7%A8%8B/index.xml" rel="self" type="application/rss+xml"/><item><title>华为RIP协议</title><link>https://payloads.online/archivers/2015-11-20/2/</link><pubDate>Fri, 16 Mar 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/2/</guid><description>&lt;p>本文记录一下华为RIP协议的简单配置&lt;/p></description></item><item><title>思科路由</title><link>https://payloads.online/archivers/2015-11-23/1/</link><pubDate>Mon, 23 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-23/1/</guid><description>&lt;p>本文介绍一下思科设备的简单配置&lt;/p>
-&lt;p>
- &lt;figure>
- &lt;img src="https://images.payloads.online/d2ecd43e-4f5e-11ec-b24b-00d861bf4abb.png" alt="enter description here" class="figcaption-img">
- &lt;figcaption>0x01&lt;/figcaption>
- &lt;/figure>
-
-&lt;/p>
+&lt;p>&lt;img src="https://images.payloads.online/d2ecd43e-4f5e-11ec-b24b-00d861bf4abb.png" alt="enter description here" title="0x01">&lt;/p>
 &lt;h2 id="0x01-思科rip">0x01 思科RIP&lt;/h2>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router5:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router&amp;gt;en
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router#conf t
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config)#int FastEthernet 0/1
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 172.16.1.1 255.255.255.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#exit
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config)#int se
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config)#int serial 1/0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 172.16.2.1 255.255.255.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#int f0/0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 192.168.1.1 255.255.255.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#exit
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config)#route rip
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#version 2
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 192.168.1.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 172.16.2.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 172.16.1.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router7:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router&amp;gt;
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router&amp;gt;en
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router#conf t
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config)#int f0/0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 172.16.1.2 255.255.255.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#int s1/0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 172.16.2.2 255.255.255.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#int f0/1
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 172.16.3.1 255.255.255.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#int s1/1
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 172.16.4.1 255.255.255.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#exit
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config)#route rip
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#version 2
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 172.16.1.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 172.16.2.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 172.16.3.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 172.16.4.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router9:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router&amp;gt;en
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router#conf t
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config)#int f0/0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 172.16.3.2 255.255.255.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#int s1/0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 172.16.4.2 255.255.255.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#int f0/1
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#no shutdown
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#ip add 192.168.2.1 255.255.255.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-if)#exit
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config)#route rip
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#version 2
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 172.16.3.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 172.16.4.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#network 192.168.2.0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Router(config-router)#
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>通信测试：&lt;/p></description></item><item><title>华为MSTP协议</title><link>https://payloads.online/archivers/2015-11-20/6/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/6/</guid><description>&lt;p>本文记录一下华为MSTP协议配置&lt;/p>
+&lt;pre tabindex="0">&lt;code>
+Router5:
+Router&amp;gt;en
+Router#conf t
+Router(config)#int FastEthernet 0/1
+Router(config-if)#no shutdown
+Router(config-if)#ip add 172.16.1.1 255.255.255.0
+Router(config-if)#no shutdown
+Router(config-if)#exit
+Router(config)#int se
+Router(config)#int serial 1/0
+Router(config-if)#no shutdown
+Router(config-if)#ip add 172.16.2.1 255.255.255.0
+Router(config-if)#int f0/0
+Router(config-if)#no shutdown
+Router(config-if)#ip add 192.168.1.1 255.255.255.0
+Router(config-if)#exit
+Router(config)#route rip
+Router(config-router)#version 2
+Router(config-router)#network 192.168.1.0
+Router(config-router)#network 172.16.2.0
+Router(config-router)#network 172.16.1.0
+Router(config-router)#
+Router7:
+Router&amp;gt;
+Router&amp;gt;en
+Router#conf t
+Router(config)#int f0/0
+Router(config-if)#no shutdown
+Router(config-if)#ip add 172.16.1.2 255.255.255.0
+Router(config-if)#int s1/0
+Router(config-if)#no shutdown
+Router(config-if)#ip add 172.16.2.2 255.255.255.0
+Router(config-if)#int f0/1
+Router(config-if)#no shutdown
+Router(config-if)#ip add 172.16.3.1 255.255.255.0
+Router(config-if)#int s1/1
+Router(config-if)#no shutdown
+Router(config-if)#ip add 172.16.4.1 255.255.255.0
+Router(config-if)#exit
+Router(config)#route rip
+Router(config-router)#version 2
+Router(config-router)#network 172.16.1.0
+Router(config-router)#network 172.16.2.0
+Router(config-router)#network 172.16.3.0
+Router(config-router)#network 172.16.4.0
+Router(config-router)#
+Router9:
+Router&amp;gt;en
+Router#conf t
+Router(config)#int f0/0
+Router(config-if)#no shutdown
+Router(config-if)#ip add 172.16.3.2 255.255.255.0
+Router(config-if)#int s1/0
+Router(config-if)#no shutdown
+Router(config-if)#ip add 172.16.4.2 255.255.255.0
+Router(config-if)#int f0/1
+Router(config-if)#no shutdown
+Router(config-if)#ip add 192.168.2.1 255.255.255.0
+Router(config-if)#exit
+Router(config)#route rip
+Router(config-router)#version 2
+Router(config-router)#network 172.16.3.0
+Router(config-router)#network 172.16.4.0
+Router(config-router)#network 192.168.2.0
+Router(config-router)#
+&lt;/code>&lt;/pre>&lt;p>通信测试：&lt;/p></description></item><item><title>华为MSTP协议</title><link>https://payloads.online/archivers/2015-11-20/6/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/6/</guid><description>&lt;p>本文记录一下华为MSTP协议配置&lt;/p>
 &lt;ul>
 &lt;li>
 &lt;p>1.创建四个VLAN在四个交换机上,分别是 10 20 30 40。&lt;/p>
@@ -170,275 +92,162 @@
 &lt;/li>
 &lt;/ul>
 &lt;h2 id="0x01-创建四个vlan">0x01 创建四个VLAN&lt;/h2>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;Huawei&amp;gt;sys
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]vlan batch 10 20 30 40
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h2 id="0x02-分别设置trunk链路">0x02 分别设置trunk链路&lt;/h2>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]port-group group-member e 0/0/1 to e 0/0/2
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port link-type trunk
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port trunk allow-pass vlan all
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>说明：在每个交换机都要创建四个VLAN、并且都设置trunk链路&lt;/p></description></item><item><title>华为交换机MUX-VLAN</title><link>https://payloads.online/archivers/2015-11-20/5/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/5/</guid><description>&lt;p>本文记录一下华为交换机MUX-VLAN配置&lt;/p>
-&lt;p>
- &lt;figure>
- &lt;img src="https://images.payloads.online/d1b893a0-4f5e-11ec-b60d-00d861bf4abb.png" alt="enter description here" class="figcaption-img">
- &lt;figcaption>0x11&lt;/figcaption>
- &lt;/figure>
+&lt;pre tabindex="0">&lt;code>
+&amp;lt;Huawei&amp;gt;sys
 
-&lt;/p>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">36
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">37
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">38
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">39
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">40
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">41
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">42
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">43
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">44
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">45
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">46
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">47
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">48
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">49
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">50
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">51
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">52
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">53
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">54
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">55
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">56
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">57
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">58
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">59
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">60
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">61
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">62
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">63
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">64
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">65
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">66
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">67
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">68
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">69
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">70
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">71
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">72
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">73
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">74
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">75
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">76
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">77
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">78
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">79
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">80
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">81
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">82
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;Huawei&amp;gt;sys
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]vlan batch 100 20 30 10
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>提示：此操作可能耗时较长。请稍等…完成。
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]port-group group-member e0/0/2 to e0/0/4
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port link-type access
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/2]port link-type access
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/3]port link-type access
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/4]port link-type access
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port default vlan 100
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/2]port default vlan 100
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/3]port default vlan 100
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/4]port default vlan 100
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]port-group group-member e 0/0/5 to e0/0/6
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port link-type access
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/5]port link-type access
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/6]port link-type access
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port default vlan 10
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/5]port default vlan 10
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/6]port default vlan 10
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]q
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]int e0/0/20
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/20]port link-type access
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/20]port default vlan 20
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/20]int e0/0/1
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/1]port link-type access
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/1]port default vlan 30
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/1]q
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]vlan 30
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-vlan30]mux-vlan
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-vlan30]subordinate group 10 20
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-vlan30]subordinate separate 100
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]port-group group-member e0/0/1 to e0/0/22
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port mux-vlan enable
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/1]port mux-vlan enable
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/2]port mux-vlan enable
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/3]port mux-vlan enable
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/4]port mux-vlan enable
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/5]port mux-vlan enable
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Ethernet0/0/6]port mux-vlan enable
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]q
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;Huawei&amp;gt;save
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>将把当前的配置保存到存储设备中。&lt;/p></description></item><item><title>华为交换机Telnet远程登录</title><link>https://payloads.online/archivers/2015-11-20/1/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/1/</guid><description>&lt;p>本文记录一下华为交换机Telnet远程登录的简单配置&lt;/p>
-&lt;p>
- &lt;figure>
- &lt;img src="https://images.payloads.online/d05697e6-4f5e-11ec-a083-00d861bf4abb.png" alt="enter description here" class="figcaption-img">
- &lt;figcaption>0x05&lt;/figcaption>
- &lt;/figure>
+[Huawei]vlan batch 10 20 30 40
+&lt;/code>&lt;/pre>&lt;h2 id="0x02-分别设置trunk链路">0x02 分别设置trunk链路&lt;/h2>
+&lt;pre tabindex="0">&lt;code>
+[Huawei]port-group group-member e 0/0/1 to e 0/0/2
 
-&lt;/p>
+[Huawei-port-group]port link-type trunk
+
+[Huawei-port-group]port trunk allow-pass vlan all
+&lt;/code>&lt;/pre>&lt;p>说明：在每个交换机都要创建四个VLAN、并且都设置trunk链路&lt;/p>
+&lt;h2 id="0x03-进入stp配置视图">0x03 进入STP配置视图&lt;/h2>
+&lt;pre tabindex="0">&lt;code>
+[Huawei]stp region-configuration
+&lt;/code>&lt;/pre>&lt;h2 id="0x04-创建域名以及修订级别">0x04 创建域名以及修订级别&lt;/h2>
+&lt;pre tabindex="0">&lt;code>
+[Huawei-mst-region]region-name xinhua
+
+[Huawei-mst-region]revision-level 1
+&lt;/code>&lt;/pre>&lt;h2 id="0x05-创建两个实例分别加入vlan">0x05 创建两个实例分别加入vlan&lt;/h2>
+&lt;pre tabindex="0">&lt;code>
+[Huawei-mst-region]instance 1 vlan 10 20
+
+[Huawei-mst-region]instance 2 vlan 30 40
+&lt;/code>&lt;/pre>&lt;h2 id="0x06-激活实例">0x06 激活实例&lt;/h2>
+&lt;pre tabindex="0">&lt;code>
+[Huawei-mst-region]active region-configuration
+&lt;/code>&lt;/pre>&lt;h2 id="0x07-设置实例的优先级别指定实例根桥">0x07 设置实例的优先级别、指定实例根桥&lt;/h2>
+&lt;p>首先查看一下LSW3：&lt;/p>
+&lt;p>&lt;img src="https://images.payloads.online/d0ac8340-4f5e-11ec-9dfc-00d861bf4abb.png" alt="enter description here" title="0x13">&lt;/p></description></item><item><title>华为交换机MUX-VLAN</title><link>https://payloads.online/archivers/2015-11-20/5/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/5/</guid><description>&lt;p>本文记录一下华为交换机MUX-VLAN配置&lt;/p>
+&lt;p>&lt;img src="https://images.payloads.online/d1b893a0-4f5e-11ec-b60d-00d861bf4abb.png" alt="enter description here" title="0x11">&lt;/p>
+&lt;pre tabindex="0">&lt;code>
+&amp;lt;Huawei&amp;gt;sys
+
+[Huawei]vlan batch 100 20 30 10
+
+提示：此操作可能耗时较长。请稍等…完成。
+
+[Huawei]port-group group-member e0/0/2 to e0/0/4
+
+[Huawei-port-group]port link-type access
+
+[Huawei-Ethernet0/0/2]port link-type access
+
+[Huawei-Ethernet0/0/3]port link-type access
+
+[Huawei-Ethernet0/0/4]port link-type access
+
+[Huawei-port-group]port default vlan 100
+
+[Huawei-Ethernet0/0/2]port default vlan 100
+
+[Huawei-Ethernet0/0/3]port default vlan 100
+
+[Huawei-Ethernet0/0/4]port default vlan 100
+
+[Huawei]port-group group-member e 0/0/5 to e0/0/6
+
+[Huawei-port-group]port link-type access
+
+[Huawei-Ethernet0/0/5]port link-type access
+
+[Huawei-Ethernet0/0/6]port link-type access
+
+[Huawei-port-group]port default vlan 10
+
+[Huawei-Ethernet0/0/5]port default vlan 10
+
+[Huawei-Ethernet0/0/6]port default vlan 10
+
+[Huawei-port-group]q
+
+[Huawei]int e0/0/20
+
+[Huawei-Ethernet0/0/20]port link-type access
+
+[Huawei-Ethernet0/0/20]port default vlan 20
+
+[Huawei-Ethernet0/0/20]int e0/0/1
+
+[Huawei-Ethernet0/0/1]port link-type access
+
+[Huawei-Ethernet0/0/1]port default vlan 30
+
+[Huawei-Ethernet0/0/1]q
+
+[Huawei]vlan 30
+
+[Huawei-vlan30]mux-vlan
+
+[Huawei-vlan30]subordinate group 10 20
+
+[Huawei-vlan30]subordinate separate 100
+
+[Huawei]port-group group-member e0/0/1 to e0/0/22
+
+[Huawei-port-group]port mux-vlan enable
+
+[Huawei-Ethernet0/0/1]port mux-vlan enable
+
+[Huawei-Ethernet0/0/2]port mux-vlan enable
+
+[Huawei-Ethernet0/0/3]port mux-vlan enable
+
+[Huawei-Ethernet0/0/4]port mux-vlan enable
+
+[Huawei-Ethernet0/0/5]port mux-vlan enable
+
+[Huawei-Ethernet0/0/6]port mux-vlan enable
+
+[Huawei-port-group]q
+
+&amp;lt;Huawei&amp;gt;save
+&lt;/code>&lt;/pre>&lt;p>将把当前的配置保存到存储设备中。&lt;/p></description></item><item><title>华为交换机Telnet远程登录</title><link>https://payloads.online/archivers/2015-11-20/1/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/1/</guid><description>&lt;p>本文记录一下华为交换机Telnet远程登录的简单配置&lt;/p>
+&lt;p>&lt;img src="https://images.payloads.online/d05697e6-4f5e-11ec-a083-00d861bf4abb.png" alt="enter description here" title="0x05">&lt;/p>
 &lt;p>交换机：&lt;/p>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;Huawei&amp;gt;sys
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]user-interface vty 0 4
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-ui-vty0-4]authentication-mode aaa
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-ui-vty0-4]q
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-aaa]local-user admin password simple?123456
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-aaa]local-user admin privilege? level 3
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-aaa]local-user admin service-type telnet
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-aaa]q
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]int vlan 1
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-Vlanif1]ip address 192.168.1.1 24
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>路由器：&lt;/p></description></item><item><title>华为交换机VLAN聚合实例</title><link>https://payloads.online/archivers/2015-11-20/4/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/4/</guid><description>&lt;p>本文记录一下华为交换机VLAN聚合实例配置&lt;/p>
+&lt;pre tabindex="0">&lt;code>
+
+&amp;lt;Huawei&amp;gt;sys
+
+[Huawei]user-interface vty 0 4
+
+[Huawei-ui-vty0-4]authentication-mode aaa
+
+[Huawei-ui-vty0-4]q
+
+[Huawei-aaa]local-user admin password simple?123456
+
+[Huawei-aaa]local-user admin privilege? level 3
+
+[Huawei-aaa]local-user admin service-type telnet
+
+[Huawei-aaa]q
+
+[Huawei]int vlan 1
+
+[Huawei-Vlanif1]ip address 192.168.1.1 24
+&lt;/code>&lt;/pre>&lt;p>路由器：&lt;/p>
+&lt;pre tabindex="0">&lt;code>
+&amp;lt;Huawei&amp;gt;sys
+
+[Huawei]int G 0/0/0
+
+[Huawei-GigabitEthernet0/0/0]ip add
+
+[Huawei-GigabitEthernet0/0/0]ip address 192.168.1.2 24
+
+&amp;lt;Huawei&amp;gt;telnet 192.168.1.1
+
+Press CTRL_] to quit telnet mode
+
+Trying 192.168.1.1 …
+
+Connected to 192.168.1.1 …
+&lt;/code>&lt;/pre></description></item><item><title>华为交换机VLAN聚合实例</title><link>https://payloads.online/archivers/2015-11-20/4/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/4/</guid><description>&lt;p>本文记录一下华为交换机VLAN聚合实例配置&lt;/p>
 &lt;ul>
 &lt;li>创建VLAN聚合的VLAN&lt;/li>
 &lt;li>设置VLAN聚合所需要的trunk链路&lt;/li>
@@ -450,136 +259,123 @@
 &lt;li>测试&lt;/li>
 &lt;/ul>
 &lt;h2 id="0x01-创建vlan聚合的vlan">0x01 创建VLAN聚合的VLAN&lt;/h2>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;Huawei&amp;gt;sys
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]vlan batch 10 20 30
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>注：vlan的个数必须相同&lt;/p>
-&lt;h2 id="0x02-设置vlan聚合所需要的trunk链路">0x02 设置VLAN聚合所需要的trunk链路&lt;/h2>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]int g0/0/1
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-GigabitEthernet0/0/1]port link-type trunk
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-GigabitEthernet0/0/1]port trunk allow-pass vlan 10 20
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]port-group group-member e0/0/1 e0/0/2
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port link-type trunk
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei-port-group]port trunk allow-pass vlan 10 20
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>注：Trunk链路不需要allow Vlan聚合的vlan&lt;/p></description></item><item><title>华为路由OSPF被动接口配置</title><link>https://payloads.online/archivers/2015-11-20/3/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/3/</guid><description>&lt;p>本文记录一下华为路由OSPF被动接口配置&lt;/p>
-&lt;p>拓扑图：&lt;/p>
-&lt;p>
- &lt;figure>
- &lt;img src="https://images.payloads.online/d20c0e40-4f5e-11ec-97c7-00d861bf4abb.png" alt="enter description here" class="figcaption-img">
- &lt;figcaption>0x08&lt;/figcaption>
- &lt;/figure>
+&lt;pre tabindex="0">&lt;code>
+&amp;lt;Huawei&amp;gt;sys
 
-&lt;/p>
+[Huawei]vlan batch 10 20 30
+&lt;/code>&lt;/pre>&lt;p>注：vlan的个数必须相同&lt;/p>
+&lt;h2 id="0x02-设置vlan聚合所需要的trunk链路">0x02 设置VLAN聚合所需要的trunk链路&lt;/h2>
+&lt;pre tabindex="0">&lt;code>
+[Huawei]int g0/0/1
+
+[Huawei-GigabitEthernet0/0/1]port link-type trunk
+
+[Huawei-GigabitEthernet0/0/1]port trunk allow-pass vlan 10 20
+
+[Huawei]port-group group-member e0/0/1 e0/0/2
+
+[Huawei-port-group]port link-type trunk
+
+[Huawei-port-group]port trunk allow-pass vlan 10 20
+&lt;/code>&lt;/pre>&lt;p>注：Trunk链路不需要allow Vlan聚合的vlan&lt;/p>
+&lt;h2 id="0x03-划分vlan">0x03 划分VLAN&lt;/h2>
+&lt;pre tabindex="0">&lt;code>
+[Huawei-GigabitEthernet0/0/1]int g0/0/2
+
+[Huawei-GigabitEthernet0/0/2]port link-type access
+
+[Huawei-GigabitEthernet0/0/2]port default vlan 10
+
+[Huawei-GigabitEthernet0/0/2]int g0/0/3
+
+[Huawei-GigabitEthernet0/0/3]port link-type access
+
+[Huawei-GigabitEthernet0/0/3]port default vlan 20
+&lt;/code>&lt;/pre>&lt;h2 id="0x04-配置三层交换机的vlan聚合">0x04 配置三层交换机的VLAN聚合&lt;/h2>
+&lt;pre tabindex="0">&lt;code>
+
+[Huawei]vlan 30
+
+[Huawei-vlan30]aggregate-vlan
+
+[Huawei-vlan30]access-vlan 10 20
+
+[Huawei-Vlanif30]ip address 192.168.0.100 16
+
+[Huawei-Vlanif30]arp-proxy inner-sub-vlan-proxy enable
+&lt;/code>&lt;/pre>&lt;p>剩下的5~7步省略&lt;/p></description></item><item><title>华为路由OSPF被动接口配置</title><link>https://payloads.online/archivers/2015-11-20/3/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/3/</guid><description>&lt;p>本文记录一下华为路由OSPF被动接口配置&lt;/p>
+&lt;p>拓扑图：&lt;/p>
+&lt;p>&lt;img src="https://images.payloads.online/d20c0e40-4f5e-11ec-97c7-00d861bf4abb.png" alt="enter description here" title="0x08">&lt;/p>
 &lt;p>AR1配置命令：&lt;/p>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">30
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">31
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">32
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">33
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">34
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">35
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&amp;lt;Huawei&amp;gt;sys
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Enter system view, return user view with Ctrl+Z.
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[Huawei]sysname AR1
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1]int G0/0/0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-GigabitEthernet0/0/0]ip add 192.168.4.1 24
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-GigabitEthernet0/0/0]int G0/0/1
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-GigabitEthernet0/0/1]ip add 192.168.6.1 24
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-GigabitEthernet0/0/1]int G0/0/2
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-GigabitEthernet0/0/2]ip add 192.168.5.1 24
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-GigabitEthernet0/0/2]q
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1]ospf
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-ospf-1]area 0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-ospf-1-area-0.0.0.0]network 192.168.4.0 0.0.0.255
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-ospf-1-area-0.0.0.0]network 192.168.5.0 0.0.0.255
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-ospf-1-area-0.0.0.0]network 192.168.6.0 0.0.0.255
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-ospf-1-area-0.0.0.0]q
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[AR1-ospf-1]silent-interface G0/0/0
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>AR2配置命令：&lt;/p></description></item></channel></rss>
+&lt;pre tabindex="0">&lt;code>
+
+&amp;lt;Huawei&amp;gt;sys
+
+Enter system view, return user view with Ctrl+Z.
+
+[Huawei]sysname AR1
+
+[AR1]int G0/0/0
+
+[AR1-GigabitEthernet0/0/0]ip add 192.168.4.1 24
+
+[AR1-GigabitEthernet0/0/0]int G0/0/1
+
+[AR1-GigabitEthernet0/0/1]ip add 192.168.6.1 24
+
+[AR1-GigabitEthernet0/0/1]int G0/0/2
+
+[AR1-GigabitEthernet0/0/2]ip add 192.168.5.1 24
+
+[AR1-GigabitEthernet0/0/2]q
+
+[AR1]ospf
+
+[AR1-ospf-1]area 0
+
+[AR1-ospf-1-area-0.0.0.0]network 192.168.4.0 0.0.0.255
+
+[AR1-ospf-1-area-0.0.0.0]network 192.168.5.0 0.0.0.255
+
+[AR1-ospf-1-area-0.0.0.0]network 192.168.6.0 0.0.0.255
+
+[AR1-ospf-1-area-0.0.0.0]q
+
+[AR1-ospf-1]silent-interface G0/0/0
+&lt;/code>&lt;/pre>&lt;p>AR2配置命令：&lt;/p>
+&lt;pre tabindex="0">&lt;code>
+
+&amp;lt;Huawei&amp;gt;sys
+
+Enter system view, return user view with Ctrl+Z.
+
+[Huawei]sysname AR2
+
+[AR2]int G0/0/0
+
+[AR2-GigabitEthernet0/0/0]ip add 192.168.6.2 24
+
+[AR2-GigabitEthernet0/0/0]int G0/0/1
+
+[AR2-GigabitEthernet0/0/1]ip add 192.168.3.1 24
+
+[AR2-GigabitEthernet0/0/1]int G0/0/2
+
+[AR2-GigabitEthernet0/0/2]ip add 192.168.2.1 24
+
+[AR2-GigabitEthernet0/0/2]q
+
+[AR2]ospf
+
+[AR2-ospf-1]area 0
+
+[AR2-ospf-1-area-0.0.0.0]network 192.168.3.0 0.0.0.255
+
+[AR2-ospf-1-area-0.0.0.0]network 192.168.6.0 0.0.0.255
+
+[AR2-ospf-1-area-0.0.0.0]network 192.168.2.0 0.0.0.255
+
+[AR2-ospf-1-area-0.0.0.0]q
+
+[AR2-ospf-1]silent-interface G0/0/1
+&lt;/code>&lt;/pre>&lt;p>AR3配置命令：&lt;/p></description></item></channel></rss>

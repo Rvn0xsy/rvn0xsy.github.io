@@ -1,34 +1,67 @@
-<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>Nmap扩展开发（二） - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"><link rel=stylesheet href=/css/fontawesome.css></head><body><div class="container wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=post><div class=post-header><div class=meta><div class=date><span class=day>24</span>
-<span class=rest>Apr 2019</span></div></div><div class=matter><h1 class=title>Nmap扩展开发（二）</h1></div></div><h2 id=0x01-nse引擎执行流程>0x01 NSE引擎执行流程</h2><p>Nmap的扩展脚本语言都基于lua来开发的，执行也是调用了内部封装的lua解释器。</p><p>正常情况下，调用任何一个扩展脚本会首先执行<code>nse_main.lua</code>，该脚本主要做了以下几件事：</p><ul><li>加载一些Nmap的核心库（<code>nselib</code>文件夹中）</li><li>定义多线程函数</li><li>定义输出结果处理函数</li><li>读取、加载扩展脚本</li><li>定义扩展脚本函数接口</li><li>执行扩展脚本</li><li>……</li></ul><h2 id=0x02-验证nse_mainlua最先执行>0x02 验证nse_main.lua最先执行</h2><p>使用vim编辑器修改<code>nse_main.lua</code></p><p><code>vim /usr/share/nmap/nse_mai.lua</code></p><p>在第一行添加：</p><p><code>print("[*] nse_main.lua first excute ... \n")</code></p><p>保存后，使用一个脚本观察效果：</p><p><img src=https://images.payloads.online/6d832994-4f5f-11ec-9c52-00d861bf4abb.png alt=2019-04-24-09-57-34></p><p>可以发现，在nmap启动后就会执行nse_main.lua中的代码。</p><h2 id=0x03-扩展脚本执行规则>0x03 扩展脚本执行规则</h2><p>在nse_main.lua的64行左右，定义了一些规则：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#75715e>-- Table of different supported rules.</span>
+<!doctype html><html class="not-ready lg:text-base" style=--bg:#faf8f1 lang=zh-cn dir=ltr><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Nmap扩展开发（二） - 倾旋的博客</title><meta name=theme-color><meta name=description content='0x01 NSE引擎执行流程
+Nmap的扩展脚本语言都基于lua来开发的，执行也是调用了内部封装的lua解释器。
+正常情况下，调用任何一个扩展脚本会首先执行nse_main.lua，该脚本主要做了以下几件事：
+
+加载一些Nmap的核心库（nselib文件夹中）
+定义多线程函数
+定义输出结果处理函数
+读取、加载扩展脚本
+定义扩展脚本函数接口
+执行扩展脚本
+……
+
+0x02 验证nse_main.lua最先执行
+使用vim编辑器修改nse_main.lua
+vim /usr/share/nmap/nse_mai.lua
+在第一行添加：
+print("[*] nse_main.lua first excute ... \n")
+保存后，使用一个脚本观察效果：
+
+可以发现，在nmap启动后就会执行nse_main.lua中的代码。
+0x03 扩展脚本执行规则
+在nse_main.lua的64行左右，定义了一些规则：
+-- Table of different supported rules.
+local NSE_SCRIPT_RULES = {
+  prerule = "prerule",
+  hostrule = "hostrule",
+  portrule = "portrule",
+  postrule = "postrule",
+};
+每一个规则代表了函数，由函数的返回值决定执行流程
+
+prerule 在扫描任何主机之前，prerule函数运行一次
+hostrule 在扫描一个主机后运行一次
+portrule 在扫描一个主机的端口后运行一次
+postrule 在全部扫描完毕以后运行一次
+
+也就是说，prerule和postrule是在开始和结束运行，并且只运行一次，hostrule是扫描一个主机就运行一次，有N个主机就会运行N次，portrule是扫描到一个端口就运行一次，有N个端口就运行N次。
+为了验证我得出的结论，写了一个测试脚本：
+vim /usr/share/nmap/scripts/test.nse
+内容如下：
+prerule=function()
+	print("prerule()")
+end
+hostrule=function(host)
+	print("hostrule()")
+end
+portrule=function(host,port)
+	print("portrule()")
+end
+action=function()
+	print("action()")
+end
+postrule=function()
+	print("postrule()")
+end
+使用nmap扫描一个主机调用这个脚本看看执行效果：'><meta name=author content="倾旋的博客"><link rel="preload stylesheet" as=style href=https://payloads.online/main.min.css><link rel=preload as=image href=https://payloads.online/theme.png><link rel=preload as=image href=/avatar.jpeg><script defer src=https://payloads.online/highlight.min.js onload=hljs.initHighlightingOnLoad()></script><link rel=icon href=https://payloads.online/favicon.ico><link rel=apple-touch-icon href=https://payloads.online/apple-touch-icon.png><meta name=generator content="Hugo 0.148.2"><meta itemprop=name content="Nmap扩展开发（二）"><meta itemprop=description content="本来是想写成一本书的，但是可能断断续续没有很好的产出，我只能以文章的形式分享出来了，希望我的研究成果能够给大家带来便利。—— 作者：倾旋"><meta itemprop=datePublished content="2019-04-24T00:00:00+00:00"><meta itemprop=dateModified content="2019-04-24T00:00:00+00:00"><meta itemprop=wordCount content="111"><meta itemprop=keywords content="安全开发"><meta property="og:url" content="https://payloads.online/archivers/2019-04-24/2/"><meta property="og:site_name" content="倾旋的博客"><meta property="og:title" content="Nmap扩展开发（二）"><meta property="og:description" content="本来是想写成一本书的，但是可能断断续续没有很好的产出，我只能以文章的形式分享出来了，希望我的研究成果能够给大家带来便利。—— 作者：倾旋"><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-04-24T00:00:00+00:00"><meta property="article:modified_time" content="2019-04-24T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Nmap扩展开发（二）"><meta name=twitter:description content="本来是想写成一本书的，但是可能断断续续没有很好的产出，我只能以文章的形式分享出来了，希望我的研究成果能够给大家带来便利。—— 作者：倾旋"><link rel=canonical href=https://payloads.online/archivers/2019-04-24/2/></head><body class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"><header class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"><div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto"><a class="-translate-y-[1px] text-2xl font-medium" href=https://payloads.online/>倾旋的博客</a><div class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf8f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/>首页</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/posts/>文章列表</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/tags>标签</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/projects>开源项目</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/about>关于我</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/links/>友情链接</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/message>留言</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/sponsor>赞助</a></nav></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">Nmap扩展开发（二）</h1><div class="text-xs antialiased opacity-60"><time>Apr 24, 2019</time><span class=mx-1>&#183;</span>
+<span>倾旋</span></div></header><section><h2 id=0x01-nse引擎执行流程>0x01 NSE引擎执行流程</h2><p>Nmap的扩展脚本语言都基于lua来开发的，执行也是调用了内部封装的lua解释器。</p><p>正常情况下，调用任何一个扩展脚本会首先执行<code>nse_main.lua</code>，该脚本主要做了以下几件事：</p><ul><li>加载一些Nmap的核心库（<code>nselib</code>文件夹中）</li><li>定义多线程函数</li><li>定义输出结果处理函数</li><li>读取、加载扩展脚本</li><li>定义扩展脚本函数接口</li><li>执行扩展脚本</li><li>……</li></ul><h2 id=0x02-验证nse_mainlua最先执行>0x02 验证nse_main.lua最先执行</h2><p>使用vim编辑器修改<code>nse_main.lua</code></p><p><code>vim /usr/share/nmap/nse_mai.lua</code></p><p>在第一行添加：</p><p><code>print("[*] nse_main.lua first excute ... \n")</code></p><p>保存后，使用一个脚本观察效果：</p><p><img src=https://images.payloads.online/6d832994-4f5f-11ec-9c52-00d861bf4abb.png alt=2019-04-24-09-57-34></p><p>可以发现，在nmap启动后就会执行nse_main.lua中的代码。</p><h2 id=0x03-扩展脚本执行规则>0x03 扩展脚本执行规则</h2><p>在nse_main.lua的64行左右，定义了一些规则：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#75715e>-- Table of different supported rules.</span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>local</span> NSE_SCRIPT_RULES <span style=color:#f92672>=</span> {
 </span></span><span style=display:flex><span>  prerule <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;prerule&#34;</span>,
 </span></span><span style=display:flex><span>  hostrule <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;hostrule&#34;</span>,
 </span></span><span style=display:flex><span>  portrule <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;portrule&#34;</span>,
 </span></span><span style=display:flex><span>  postrule <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;postrule&#34;</span>,
 </span></span><span style=display:flex><span>};
-</span></span></code></pre></td></tr></table></div></div><p>每一个规则代表了函数，由函数的返回值决定执行流程</p><ul><li>prerule 在扫描任何主机之前，prerule函数运行一次</li><li>hostrule 在扫描一个主机后运行一次</li><li>portrule 在扫描一个主机的端口后运行一次</li><li>postrule 在全部扫描完毕以后运行一次</li></ul><p>也就是说，prerule和postrule是在开始和结束运行，并且只运行一次，hostrule是扫描一个主机就运行一次，有N个主机就会运行N次，portrule是扫描到一个端口就运行一次，有N个端口就运行N次。</p><p>为了验证我得出的结论，写了一个测试脚本：</p><p><code>vim /usr/share/nmap/scripts/test.nse</code></p><p>内容如下：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span>prerule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
+</span></span></code></pre></div><p>每一个规则代表了函数，由函数的返回值决定执行流程</p><ul><li>prerule 在扫描任何主机之前，prerule函数运行一次</li><li>hostrule 在扫描一个主机后运行一次</li><li>portrule 在扫描一个主机的端口后运行一次</li><li>postrule 在全部扫描完毕以后运行一次</li></ul><p>也就是说，prerule和postrule是在开始和结束运行，并且只运行一次，hostrule是扫描一个主机就运行一次，有N个主机就会运行N次，portrule是扫描到一个端口就运行一次，有N个端口就运行N次。</p><p>为了验证我得出的结论，写了一个测试脚本：</p><p><code>vim /usr/share/nmap/scripts/test.nse</code></p><p>内容如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span>prerule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span>	print(<span style=color:#e6db74>&#34;prerule()&#34;</span>)
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span>hostrule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>(host)
@@ -43,21 +76,7 @@
 </span></span><span style=display:flex><span>postrule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span>	print(<span style=color:#e6db74>&#34;postrule()&#34;</span>)
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
-</span></span></code></pre></td></tr></table></div></div><p>使用nmap扫描一个主机调用这个脚本看看执行效果：</p><p><img src=https://images.payloads.online/6deab500-4f5f-11ec-980d-00d861bf4abb.png alt=2019-04-24-09-59-40></p><p>至此我们就清楚了扩展脚本的执行流程，后续我们将会慢慢细化其中的知识点。</p><h2 id=0x04-扩展脚本action函数>0x04 扩展脚本—action函数</h2><p>在前面一小节的代码中，我们发现了action这个函数，它的主要作用是用于在portrule或hostrule返回true之后自动执行的函数。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> stdnse <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;stdnse&#34;</span>
+</span></span></code></pre></div><p>使用nmap扫描一个主机调用这个脚本看看执行效果：</p><p><img src=https://images.payloads.online/6deab500-4f5f-11ec-980d-00d861bf4abb.png alt=2019-04-24-09-59-40></p><p>至此我们就清楚了扩展脚本的执行流程，后续我们将会慢慢细化其中的知识点。</p><h2 id=0x04-扩展脚本action函数>0x04 扩展脚本—action函数</h2><p>在前面一小节的代码中，我们发现了action这个函数，它的主要作用是用于在portrule或hostrule返回true之后自动执行的函数。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> stdnse <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;stdnse&#34;</span>
 </span></span><span style=display:flex><span>prerule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span>hostrule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>(host)
@@ -71,4 +90,4 @@
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span>postrule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
-</span></span></code></pre></td></tr></table></div></div><p>我本机开启了一个80端口，但是action执行了两次：</p><p><img src=https://images.payloads.online/6e23d7b8-4f5f-11ec-bb71-00d861bf4abb.png alt=2019-04-24-10-00-22></p><p>第一次是hostrule返回true而调用的，第二次是由portrule函数扫描到80端口返回true而调用的。</p><p>下一章：扩展脚本-主机、端口对象</p><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=light_protanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div></div><div class="footer wrapper"><nav class=nav><div>2024 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script></body></html>
+</span></span></code></pre></div><p>我本机开启了一个80端口，但是action执行了两次：</p><p><img src=https://images.payloads.online/6e23d7b8-4f5f-11ec-bb71-00d861bf4abb.png alt=2019-04-24-10-00-22></p><p>第一次是hostrule返回true而调用的，第二次是由portrule函数扫描到80端口返回true而调用的。</p><p>下一章：扩展脚本-主机、端口对象</p></section><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/archivers/2019-04-24/3/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Nmap扩展开发（三）</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2019-04-24/4/><span>Nmap扩展开发（四）</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a>️</footer></body></html>

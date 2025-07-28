@@ -4,32 +4,95 @@
 &lt;p>最近智谱开放了国内首个&lt;a href="https://open.bigmodel.cn/dev/api#glm-4">大模型免费API接口&lt;/a>，我就想着能否用它做一点事情，第一个想到的是把这两年披露的漏洞做一个梳理，就先从网络空间搜索引擎的语法开始。&lt;/p>
 &lt;p>在特殊时期、特殊渠道被披露的漏洞一般都会有[Markdown]格式的文档来描述漏洞涉及的资产(查询语句)，并且附带了PoC的HTTP数据包，因此唯一需要做的就是把文档喂给AI,让AI提取结构化的查询语句。&lt;/p>
 &lt;h2 id="ai-prompt">AI Prompt&lt;/h2>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">8
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>$ Qpipe -h
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Usage: Qpipe [OPTIONS]
+&lt;pre tabindex="0">&lt;code>$ Qpipe -h
+Usage: Qpipe [OPTIONS]
+
+Options:
+ -c, --config &amp;lt;FILE&amp;gt; Sets a custom config file
+ -d, --debug 
+ -h, --help Print help
+ -V, --version Print version
+&lt;/code>&lt;/pre>&lt;p>先将Qpipe下载到本地，然后编写特定的配置文件：&lt;/p>
+&lt;pre tabindex="0">&lt;code>model: &amp;#34;glm-4-flash&amp;#34;
+api_key: &amp;#34;API_KEY&amp;#34;
+url: &amp;#34;https://open.bigmodel.cn/api/paas/v4/chat/completions&amp;#34;
+server: &amp;#34;127.0.0.1:3000&amp;#34;
+
+process_group:
+ - name: &amp;#34;document_search&amp;#34;
+ cron: &amp;#34;now&amp;#34;
+ prompt: &amp;gt;
+ 你现在是一个数据提取专家，请在我提供的文档上下文中找出 `Fofa/fofa` 下方的语句, 并总结一个漏洞标题。
+ 按照如下格式输出：
+ 
+ &amp;lt;Title&amp;gt;漏洞标题&amp;lt;/Title&amp;gt;,&amp;lt;Fofa&amp;gt;语句&amp;lt;/Fofa&amp;gt;
+
+ stream: &amp;#34;/path/to/script.py&amp;#34;
+&lt;/code>&lt;/pre>&lt;h2 id="编写交互stream">编写交互Stream&lt;/h2>
+&lt;p>&lt;code>Stream&lt;/code>其实就是和&lt;code>Qpipe&lt;/code>进行通信的脚本，主要处理任务的逻辑都在这个脚本中，原理上就是通过&lt;code>Qpipe&lt;/code>定时启动脚本，&lt;code>Qpipe&lt;/code>会在后台启动一个http服务用来接收数据发送给AI接口，当前只支持智谱。&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#!/usr/bin/env python3&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> os
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> requests
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> pandas &lt;span style="color:#66d9ef">as&lt;/span> pd
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Options:
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> -c, --config &amp;lt;FILE&amp;gt; Sets a custom config file
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> -d, --debug 
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> -h, --help Print help
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> -V, --version Print version
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>先将Qpipe下载到本地，然后编写特定的配置文件：&lt;/p></description></item><item><title>使用Coze平台对Github Star项目进行分析推送</title><link>https://payloads.online/archivers/2024-06-04/coze-ai/</link><pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2024-06-04/coze-ai/</guid><description>&lt;!-- raw HTML omitted -->
-&lt;!-- raw HTML omitted -->
-&lt;!-- raw HTML omitted -->
-&lt;!-- raw HTML omitted -->
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>URL &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;http://127.0.0.1:3000&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>GROUP_NAME &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;document_search&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">send_msg&lt;/span>(msg: str) &lt;span style="color:#f92672">-&amp;gt;&lt;/span> str:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> response &lt;span style="color:#f92672">=&lt;/span> requests&lt;span style="color:#f92672">.&lt;/span>post(&lt;span style="color:#e6db74">f&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">{&lt;/span>URL&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{&lt;/span>GROUP_NAME&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>, data&lt;span style="color:#f92672">=&lt;/span>msg)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># print(response.text)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> response&lt;span style="color:#f92672">.&lt;/span>headers[&lt;span style="color:#e6db74">&amp;#39;Process-ID&amp;#39;&lt;/span>]
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">get_msg&lt;/span>(process_id: str) &lt;span style="color:#f92672">-&amp;gt;&lt;/span> str:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> headers &lt;span style="color:#f92672">=&lt;/span> {&lt;span style="color:#e6db74">&amp;#39;Process-ID&amp;#39;&lt;/span>: process_id}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> response &lt;span style="color:#f92672">=&lt;/span> requests&lt;span style="color:#f92672">.&lt;/span>get(&lt;span style="color:#e6db74">f&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">{&lt;/span>URL&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">/&lt;/span>&lt;span style="color:#e6db74">{&lt;/span>GROUP_NAME&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>, headers&lt;span style="color:#f92672">=&lt;/span>headers)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e"># print(response.text)&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> response&lt;span style="color:#f92672">.&lt;/span>text
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">list_files&lt;/span>(path: str) &lt;span style="color:#f92672">-&amp;gt;&lt;/span> list:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> files &lt;span style="color:#f92672">=&lt;/span> []
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> md &lt;span style="color:#f92672">in&lt;/span> os&lt;span style="color:#f92672">.&lt;/span>listdir(path):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> md&lt;span style="color:#f92672">.&lt;/span>endswith(&lt;span style="color:#e6db74">&amp;#39;.md&amp;#39;&lt;/span>):
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> files&lt;span style="color:#f92672">.&lt;/span>append(md)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> files
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">def&lt;/span> &lt;span style="color:#a6e22e">get_query&lt;/span>(file_path: str) &lt;span style="color:#f92672">-&amp;gt;&lt;/span> list:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">with&lt;/span> open(file_path, &lt;span style="color:#e6db74">&amp;#39;r&amp;#39;&lt;/span>, encoding&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;utf-8&amp;#39;&lt;/span>) &lt;span style="color:#66d9ef">as&lt;/span> file:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> content &lt;span style="color:#f92672">=&lt;/span> file&lt;span style="color:#f92672">.&lt;/span>read()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#e6db74">&amp;#39;fofa&amp;#39;&lt;/span> &lt;span style="color:#f92672">not&lt;/span> &lt;span style="color:#f92672">in&lt;/span> content&lt;span style="color:#f92672">.&lt;/span>lower():
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> []
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> process_id &lt;span style="color:#f92672">=&lt;/span> send_msg(str(content))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#f92672">=&lt;/span> get_msg(process_id)&lt;span style="color:#f92672">.&lt;/span>split(&lt;span style="color:#e6db74">&amp;#39;,&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> result
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> __name__ &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#34;__main__&amp;#34;&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> path &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/path/to/Poc/Markdown&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> md_files &lt;span style="color:#f92672">=&lt;/span> list_files(path)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> query_list &lt;span style="color:#f92672">=&lt;/span> []
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> filename &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#39;/tmp/output.csv&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fp &lt;span style="color:#f92672">=&lt;/span> open(filename, &lt;span style="color:#e6db74">&amp;#39;w&amp;#39;&lt;/span>, newline&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;&amp;#39;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> f &lt;span style="color:#f92672">in&lt;/span> md_files:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> result &lt;span style="color:#f92672">=&lt;/span> get_query(file_path&lt;span style="color:#f92672">=&lt;/span>os&lt;span style="color:#f92672">.&lt;/span>path&lt;span style="color:#f92672">.&lt;/span>join(path, f))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> len(result) &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">continue&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">try&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> print(&lt;span style="color:#e6db74">f&lt;/span>&lt;span style="color:#e6db74">&amp;#34;Query for &lt;/span>&lt;span style="color:#e6db74">{&lt;/span>f&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74"> -&amp;gt; &lt;/span>&lt;span style="color:#e6db74">{&lt;/span>result[&lt;span style="color:#ae81ff">0&lt;/span>]&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">: &lt;/span>&lt;span style="color:#e6db74">{&lt;/span>result[&lt;span style="color:#ae81ff">1&lt;/span>]&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fp&lt;span style="color:#f92672">.&lt;/span>write(&lt;span style="color:#e6db74">f&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#e6db74">{&lt;/span>result[&lt;span style="color:#ae81ff">0&lt;/span>]&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#e6db74">,&lt;/span>&lt;span style="color:#e6db74">{&lt;/span>result[&lt;span style="color:#ae81ff">1&lt;/span>]&lt;span style="color:#e6db74">}&lt;/span>&lt;span style="color:#ae81ff">\n&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fp&lt;span style="color:#f92672">.&lt;/span>flush()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">except&lt;/span>:
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">continue&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> fp&lt;span style="color:#f92672">.&lt;/span>close()
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>由于我不是很擅长编写&lt;code>Prompt&lt;/code>得到的结果不是非常理想，有时候AI提取生成的结果还是会出现意外内容：&lt;/p></description></item><item><title>使用Coze平台对Github Star项目进行分析推送</title><link>https://payloads.online/archivers/2024-06-04/coze-ai/</link><pubDate>Tue, 04 Jun 2024 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2024-06-04/coze-ai/</guid><description>&lt;aside>
+👾 Coze 是新一代一站式 AI Bot 开发平台。无论你是否有编程基础，都可以在 Coze 平台上快速搭建基于 AI 模型的各类问答 Bot，从解决简单的问答到处理复杂逻辑的对话。并且，你可以将搭建的 Bot 发布到各类社交平台和通讯软件上，与这些平台/软件上的用户互动。
+&lt;aside>
+💡 在这篇文章中，我将介绍如何使用Coze平台开发一个Bot来读取Github Star项目，并输出分析结果。
+&lt;/aside>
+&lt;/aside>
 &lt;h1 id="实现思路">👾实现思路&lt;/h1>
 &lt;p>Coze有个版本，分别面向海外和国内，这里我使用海外版本&lt;/p>
 &lt;table>
@@ -64,40 +127,7 @@
 &lt;/ul>
 &lt;h2 id="编写访问github-api的插件">🔧编写访问Github API的插件&lt;/h2>
 &lt;p>为了实现能够将Github的Star项目输入给AI，首先需要编写一个插件，这个插件用于访问Github API接口：&lt;/p>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">25
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">26
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">27
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">28
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">29
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> requests
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-python" data-lang="python">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> requests
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">import&lt;/span> os
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 获取Github访问令牌&lt;/span>
@@ -126,6 +156,4 @@
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">if&lt;/span> __name__ &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#e6db74">&amp;#39;__main__&amp;#39;&lt;/span>:
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> main()
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>以上是我用Prompt AI生成的示例代码，这个示例代码确实能直接拿来使用，但是还需要按照实际情况调整输入输出参数，在Coze平台中每一个插件都可以通过&lt;code>Metadata&lt;/code>设定输入参数以及输入参数的数据类型，同样的也有输出参数以及输出参数的数据类型。&lt;/p></description></item></channel></rss>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>以上是我用Prompt AI生成的示例代码，这个示例代码确实能直接拿来使用，但是还需要按照实际情况调整输入输出参数，在Coze平台中每一个插件都可以通过&lt;code>Metadata&lt;/code>设定输入参数以及输入参数的数据类型，同样的也有输出参数以及输出参数的数据类型。&lt;/p></description></item></channel></rss>

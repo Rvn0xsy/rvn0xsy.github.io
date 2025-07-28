@@ -1,64 +1,90 @@
-<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>利用RDAP数据确定资产边界 - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"><link rel=stylesheet href=/css/fontawesome.css></head><body><div class="container-wide wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=article-nav id=article-nav-id><div class=post><div class=post-header><div class=meta><div class=date><span class=day>23</span>
-<span class=rest>Oct 2024</span></div></div><div class=matter><h1 class=title>利用RDAP数据确定资产边界</h1></div></div><aside class="show-on-mobile toc" id=static-toc><header><h3>Contents</h3></header><nav id=TableOfContents><ol><li><a href=#前言>前言</a></li><li><a href=#什么是注册数据访问协议>什么是注册数据访问协议？</a></li><li><a href=#iana---互联网分配号码权威机构>IANA - 互联网分配号码权威机构</a></li><li><a href=#通过rdap数据获取国家组织分配的ip范围>通过RDAP数据获取国家/组织分配的IP范围</a></li><li><a href=#总结>总结</a></li></ol></nav></aside><h2 id=前言>前言</h2><p>在传统的渗透测试初始阶段，我们通常依赖域名备案信息、企业工商信息和网络空间测绘数据来确定资产归属。然而，这些方法可能存在信息不完整或过时的问题。本文将介绍一种创新的方法来精确界定资产范围：利用注册数据访问协议（RDAP）。</p><p>RDAP作为Whois协议的现代化替代品，提供了更全面、准确和实时的域名注册信息。通过RDAP，我们可以获取域名持有者、管理员联系方式、注册和到期日期等关键信息，从而更有效地识别和验证目标资产。此外，RDAP的结构化数据格式便于自动化处理，能够显著提高资产梳理的效率。</p><p>在接下来的章节中，我们将深入探讨如何利用RDAP数据进行资产边界确定，包括查询技巧、数据解析方法以及与其他信息源的交叉验证策略。通过掌握这种新方法，安全专业人员可以更全面、准确地评估目标环境，为后续的渗透测试工作奠定坚实基础。</p><h2 id=什么是注册数据访问协议>什么是注册数据访问协议？</h2><p>注册数据访问协议（RDAP）是一种用于访问互联网域名注册数据的协议。RDAP提供了一种比传统的Whois协议更安全和结构化的方式来查询域名、IP地址和自治系统号码的信息。它支持认证和授权、国际化以及标准化的数据格式，旨在解决Whois协议中的许多限制和缺陷。</p><p>注册数据访问协议（RDAP）的发展始于2011年，由互联网工程任务组（IETF）负责制定。RDAP的目标是取代传统的Whois协议，解决其在安全性、隐私保护、数据格式标准化等方面的不足。2015年，IETF正式发布了RDAP的相关标准文档，使其成为互联网域名注册数据访问的现代化协议。</p><h2 id=iana---互联网分配号码权威机构>IANA - 互联网分配号码权威机构</h2><p>在探讨RDAP协议之前，我们必须提及IANA（Internet Assigned Numbers Authority，互联网分配号码权威机构）。IANA是互联网的基石之一，负责全球互联网的唯一标识符分配和协调工作。它的核心职能包括管理DNS根区域、分配IP地址和自治系统编号，以及注册互联网协议的相关参数。作为一个关键的技术组织，IANA确保了互联网的稳定性和互通性，让全球的用户和信息得以顺畅连接。</p><p>中国与IANA的关系主要体现在中国作为全球互联网的重要组成部分，积极参与全球互联网的治理和技术发展。中国通过其国家域名注册机构CNNIC（China Internet Network Information Center）参与IANA的相关工作，负责中国国家顶级域名.cn的注册和管理，以及IP地址资源的分配与管理，其他国家也是类似的情况。2016年，IANA的管理权从美国政府正式移交给了全球互联网社群，这一过程中，中国作为多利益相关方之一，参与了相关的讨论和决策，因此我们可以通过IANA公开的信息获取到不同国家分配的IP地址范围。</p><h2 id=通过rdap数据获取国家组织分配的ip范围>通过RDAP数据获取国家/组织分配的IP范围</h2><p>RDAP 是基于RESTful的Web服务，因此错误代码、用户标识、身份认证和访问控制可以通过HTTP协议进行提供，我们可以使用简单的Curl工具访问RDAP数据，而RDAP数据分别由区域互联网注册管理机构分别管理，如果要访问中国的网络分配资源，我们需要查找到对应的服务器。</p><blockquote><p>现在世界上有五个正在运作的区域互联网注册管理机构：</p><ul><li>美洲互联网号码注册管理机构（American Registry for Internet Numbers，ARIN）</li><li>欧洲IP网络资源协调中心</li><li>亚太网络信息中心（Asia-Pacific Network Information Centre，APNIC）</li><li>拉丁美洲及加勒比地区互联网地址注册管理机构（Latin American and Caribbean Internet Address Registry，LACNIC）</li><li>非洲网络信息中心（African Network Information Centre，AfriNIC）</li></ul><p>下文中简称 “信息中心”。</p></blockquote><p>了解完毕所有的前置知识后，我们可以开始查询全球的IPv4地址分配情况：</p><p><a href=https://data.iana.org/rdap/ipv4.json>https://data.iana.org/rdap/ipv4.json</a></p><p>这个网址是IANA互联网分配号码权威机构的数据网址，上面显示了全球的IPv4在不同信息中心的分配情况，我在中国解析后的地址是属于ICANN的，可见应该是做了一些网络优化。</p><p>在响应的Json结构中，我们可以先关注一下APNIC的数据，这部分指的是亚太信息中心管理的IP资源，而中国区域就属于这部分：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">59
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-jsx data-lang=jsx><span style=display:flex><span>.....
+<!doctype html><html class="not-ready lg:text-base" style=--bg:#faf8f1 lang=zh-cn dir=ltr><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>利用RDAP数据确定资产边界 - 倾旋的博客</title><meta name=theme-color><meta name=description content='前言
+在传统的渗透测试初始阶段，我们通常依赖域名备案信息、企业工商信息和网络空间测绘数据来确定资产归属。然而，这些方法可能存在信息不完整或过时的问题。本文将介绍一种创新的方法来精确界定资产范围：利用注册数据访问协议（RDAP）。
+RDAP作为Whois协议的现代化替代品，提供了更全面、准确和实时的域名注册信息。通过RDAP，我们可以获取域名持有者、管理员联系方式、注册和到期日期等关键信息，从而更有效地识别和验证目标资产。此外，RDAP的结构化数据格式便于自动化处理，能够显著提高资产梳理的效率。
+在接下来的章节中，我们将深入探讨如何利用RDAP数据进行资产边界确定，包括查询技巧、数据解析方法以及与其他信息源的交叉验证策略。通过掌握这种新方法，安全专业人员可以更全面、准确地评估目标环境，为后续的渗透测试工作奠定坚实基础。
+什么是注册数据访问协议？
+注册数据访问协议（RDAP）是一种用于访问互联网域名注册数据的协议。RDAP提供了一种比传统的Whois协议更安全和结构化的方式来查询域名、IP地址和自治系统号码的信息。它支持认证和授权、国际化以及标准化的数据格式，旨在解决Whois协议中的许多限制和缺陷。
+注册数据访问协议（RDAP）的发展始于2011年，由互联网工程任务组（IETF）负责制定。RDAP的目标是取代传统的Whois协议，解决其在安全性、隐私保护、数据格式标准化等方面的不足。2015年，IETF正式发布了RDAP的相关标准文档，使其成为互联网域名注册数据访问的现代化协议。
+IANA - 互联网分配号码权威机构
+在探讨RDAP协议之前，我们必须提及IANA（Internet Assigned Numbers Authority，互联网分配号码权威机构）。IANA是互联网的基石之一，负责全球互联网的唯一标识符分配和协调工作。它的核心职能包括管理DNS根区域、分配IP地址和自治系统编号，以及注册互联网协议的相关参数。作为一个关键的技术组织，IANA确保了互联网的稳定性和互通性，让全球的用户和信息得以顺畅连接。
+中国与IANA的关系主要体现在中国作为全球互联网的重要组成部分，积极参与全球互联网的治理和技术发展。中国通过其国家域名注册机构CNNIC（China Internet Network Information Center）参与IANA的相关工作，负责中国国家顶级域名.cn的注册和管理，以及IP地址资源的分配与管理，其他国家也是类似的情况。2016年，IANA的管理权从美国政府正式移交给了全球互联网社群，这一过程中，中国作为多利益相关方之一，参与了相关的讨论和决策，因此我们可以通过IANA公开的信息获取到不同国家分配的IP地址范围。
+通过RDAP数据获取国家/组织分配的IP范围
+RDAP 是基于RESTful的Web服务，因此错误代码、用户标识、身份认证和访问控制可以通过HTTP协议进行提供，我们可以使用简单的Curl工具访问RDAP数据，而RDAP数据分别由区域互联网注册管理机构分别管理，如果要访问中国的网络分配资源，我们需要查找到对应的服务器。
+
+现在世界上有五个正在运作的区域互联网注册管理机构：
+
+美洲互联网号码注册管理机构（American Registry for Internet Numbers，ARIN）
+欧洲IP网络资源协调中心
+亚太网络信息中心（Asia-Pacific Network Information Centre，APNIC）
+拉丁美洲及加勒比地区互联网地址注册管理机构（Latin American and Caribbean Internet Address Registry，LACNIC）
+非洲网络信息中心（African Network Information Centre，AfriNIC）
+
+下文中简称 “信息中心”。
+了解完毕所有的前置知识后，我们可以开始查询全球的IPv4地址分配情况：
+https://data.iana.org/rdap/ipv4.json
+这个网址是IANA互联网分配号码权威机构的数据网址，上面显示了全球的IPv4在不同信息中心的分配情况，我在中国解析后的地址是属于ICANN的，可见应该是做了一些网络优化。
+在响应的Json结构中，我们可以先关注一下APNIC的数据，这部分指的是亚太信息中心管理的IP资源，而中国区域就属于这部分：
+.....
+[
+                "1.0.0.0/8",
+                "14.0.0.0/8",
+                "27.0.0.0/8",
+                "36.0.0.0/8",
+                "39.0.0.0/8",
+                "42.0.0.0/8",
+                "43.0.0.0/8",
+                "49.0.0.0/8",
+                "58.0.0.0/8",
+                "59.0.0.0/8",
+                "60.0.0.0/8",
+                "61.0.0.0/8",
+                "101.0.0.0/8",
+                "103.0.0.0/8",
+                "106.0.0.0/8",
+                "110.0.0.0/8",
+                "111.0.0.0/8",
+                "112.0.0.0/8",
+                "113.0.0.0/8",
+                "114.0.0.0/8",
+                "115.0.0.0/8",
+                "116.0.0.0/8",
+                "117.0.0.0/8",
+                "118.0.0.0/8",
+                "119.0.0.0/8",
+                "120.0.0.0/8",
+                "121.0.0.0/8",
+                "122.0.0.0/8",
+                "123.0.0.0/8",
+                "124.0.0.0/8",
+                "125.0.0.0/8",
+                "126.0.0.0/8",
+                "133.0.0.0/8",
+                "150.0.0.0/8",
+                "153.0.0.0/8",
+                "163.0.0.0/8",
+                "171.0.0.0/8",
+                "175.0.0.0/8",
+                "180.0.0.0/8",
+                "182.0.0.0/8",
+                "183.0.0.0/8",
+                "202.0.0.0/8",
+                "203.0.0.0/8",
+                "210.0.0.0/8",
+                "211.0.0.0/8",
+                "218.0.0.0/8",
+                "219.0.0.0/8",
+                "220.0.0.0/8",
+                "221.0.0.0/8",
+                "222.0.0.0/8",
+                "223.0.0.0/8"
+            ],
+      [
+          "https://rdap.apnic.net/"
+      ]
+]
+....
+APNIC的RDAP数据库保存在https://rdap.apnic.net/上面，我们继续在这个网址后面增加上面的IP地址段，则会得到这些IP被分配的信息：'><meta name=author content="倾旋的博客"><link rel="preload stylesheet" as=style href=https://payloads.online/main.min.css><link rel=preload as=image href=https://payloads.online/theme.png><link rel=preload as=image href=/avatar.jpeg><script defer src=https://payloads.online/highlight.min.js onload=hljs.initHighlightingOnLoad()></script><link rel=icon href=https://payloads.online/favicon.ico><link rel=apple-touch-icon href=https://payloads.online/apple-touch-icon.png><meta name=generator content="Hugo 0.148.2"><meta itemprop=name content="利用RDAP数据确定资产边界"><meta itemprop=description content="在传统的渗透测试初始阶段，我们通常依赖域名备案信息、企业工商信息和网络空间测绘数据来确定资产归属。然而，这些方法可能存在信息不完整或过时的问题。本文将介绍一种创新的方法来精确界定资产范围：利用注册数据访问协议（RDAP）。"><meta itemprop=datePublished content="2024-10-23T00:00:00+00:00"><meta itemprop=dateModified content="2024-10-23T00:00:00+00:00"><meta itemprop=wordCount content="385"><meta itemprop=keywords content="Redteam"><meta property="og:url" content="https://payloads.online/archivers/2024-10-23/search-ip-via-rdap/"><meta property="og:site_name" content="倾旋的博客"><meta property="og:title" content="利用RDAP数据确定资产边界"><meta property="og:description" content="在传统的渗透测试初始阶段，我们通常依赖域名备案信息、企业工商信息和网络空间测绘数据来确定资产归属。然而，这些方法可能存在信息不完整或过时的问题。本文将介绍一种创新的方法来精确界定资产范围：利用注册数据访问协议（RDAP）。"><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2024-10-23T00:00:00+00:00"><meta property="article:modified_time" content="2024-10-23T00:00:00+00:00"><meta property="article:tag" content="Redteam"><meta name=twitter:card content="summary"><meta name=twitter:title content="利用RDAP数据确定资产边界"><meta name=twitter:description content="在传统的渗透测试初始阶段，我们通常依赖域名备案信息、企业工商信息和网络空间测绘数据来确定资产归属。然而，这些方法可能存在信息不完整或过时的问题。本文将介绍一种创新的方法来精确界定资产范围：利用注册数据访问协议（RDAP）。"><link rel=canonical href=https://payloads.online/archivers/2024-10-23/search-ip-via-rdap/></head><body class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"><header class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"><div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto"><a class="-translate-y-[1px] text-2xl font-medium" href=https://payloads.online/>倾旋的博客</a><div class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf8f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/>首页</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/posts/>文章列表</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/tags>标签</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/projects>开源项目</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/about>关于我</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/links/>友情链接</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/message>留言</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/sponsor>赞助</a></nav></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">利用RDAP数据确定资产边界</h1><div class="text-xs antialiased opacity-60"><time>Oct 23, 2024</time><span class=mx-1>&#183;</span>
+<span>倾旋</span></div></header><section><h2 id=前言>前言</h2><p>在传统的渗透测试初始阶段，我们通常依赖域名备案信息、企业工商信息和网络空间测绘数据来确定资产归属。然而，这些方法可能存在信息不完整或过时的问题。本文将介绍一种创新的方法来精确界定资产范围：利用注册数据访问协议（RDAP）。</p><p>RDAP作为Whois协议的现代化替代品，提供了更全面、准确和实时的域名注册信息。通过RDAP，我们可以获取域名持有者、管理员联系方式、注册和到期日期等关键信息，从而更有效地识别和验证目标资产。此外，RDAP的结构化数据格式便于自动化处理，能够显著提高资产梳理的效率。</p><p>在接下来的章节中，我们将深入探讨如何利用RDAP数据进行资产边界确定，包括查询技巧、数据解析方法以及与其他信息源的交叉验证策略。通过掌握这种新方法，安全专业人员可以更全面、准确地评估目标环境，为后续的渗透测试工作奠定坚实基础。</p><h2 id=什么是注册数据访问协议>什么是注册数据访问协议？</h2><p>注册数据访问协议（RDAP）是一种用于访问互联网域名注册数据的协议。RDAP提供了一种比传统的Whois协议更安全和结构化的方式来查询域名、IP地址和自治系统号码的信息。它支持认证和授权、国际化以及标准化的数据格式，旨在解决Whois协议中的许多限制和缺陷。</p><p>注册数据访问协议（RDAP）的发展始于2011年，由互联网工程任务组（IETF）负责制定。RDAP的目标是取代传统的Whois协议，解决其在安全性、隐私保护、数据格式标准化等方面的不足。2015年，IETF正式发布了RDAP的相关标准文档，使其成为互联网域名注册数据访问的现代化协议。</p><h2 id=iana---互联网分配号码权威机构>IANA - 互联网分配号码权威机构</h2><p>在探讨RDAP协议之前，我们必须提及IANA（Internet Assigned Numbers Authority，互联网分配号码权威机构）。IANA是互联网的基石之一，负责全球互联网的唯一标识符分配和协调工作。它的核心职能包括管理DNS根区域、分配IP地址和自治系统编号，以及注册互联网协议的相关参数。作为一个关键的技术组织，IANA确保了互联网的稳定性和互通性，让全球的用户和信息得以顺畅连接。</p><p>中国与IANA的关系主要体现在中国作为全球互联网的重要组成部分，积极参与全球互联网的治理和技术发展。中国通过其国家域名注册机构CNNIC（China Internet Network Information Center）参与IANA的相关工作，负责中国国家顶级域名.cn的注册和管理，以及IP地址资源的分配与管理，其他国家也是类似的情况。2016年，IANA的管理权从美国政府正式移交给了全球互联网社群，这一过程中，中国作为多利益相关方之一，参与了相关的讨论和决策，因此我们可以通过IANA公开的信息获取到不同国家分配的IP地址范围。</p><h2 id=通过rdap数据获取国家组织分配的ip范围>通过RDAP数据获取国家/组织分配的IP范围</h2><p>RDAP 是基于RESTful的Web服务，因此错误代码、用户标识、身份认证和访问控制可以通过HTTP协议进行提供，我们可以使用简单的Curl工具访问RDAP数据，而RDAP数据分别由区域互联网注册管理机构分别管理，如果要访问中国的网络分配资源，我们需要查找到对应的服务器。</p><blockquote><p>现在世界上有五个正在运作的区域互联网注册管理机构：</p><ul><li>美洲互联网号码注册管理机构（American Registry for Internet Numbers，ARIN）</li><li>欧洲IP网络资源协调中心</li><li>亚太网络信息中心（Asia-Pacific Network Information Centre，APNIC）</li><li>拉丁美洲及加勒比地区互联网地址注册管理机构（Latin American and Caribbean Internet Address Registry，LACNIC）</li><li>非洲网络信息中心（African Network Information Centre，AfriNIC）</li></ul><p>下文中简称 “信息中心”。</p></blockquote><p>了解完毕所有的前置知识后，我们可以开始查询全球的IPv4地址分配情况：</p><p><a href=https://data.iana.org/rdap/ipv4.json>https://data.iana.org/rdap/ipv4.json</a></p><p>这个网址是IANA互联网分配号码权威机构的数据网址，上面显示了全球的IPv4在不同信息中心的分配情况，我在中国解析后的地址是属于ICANN的，可见应该是做了一些网络优化。</p><p>在响应的Json结构中，我们可以先关注一下APNIC的数据，这部分指的是亚太信息中心管理的IP资源，而中国区域就属于这部分：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-jsx data-lang=jsx><span style=display:flex><span>.....
 </span></span><span style=display:flex><span>[
 </span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;1.0.0.0/8&#34;</span>,
 </span></span><span style=display:flex><span>                <span style=color:#e6db74>&#34;14.0.0.0/8&#34;</span>,
@@ -117,65 +143,7 @@
 </span></span><span style=display:flex><span>      ]
 </span></span><span style=display:flex><span>]
 </span></span><span style=display:flex><span>....
-</span></span></code></pre></td></tr></table></div></div><p>APNIC的RDAP数据库保存在<code>https://rdap.apnic.net/</code>上面，我们继续在这个网址后面增加上面的IP地址段，则会得到这些IP被分配的信息：</p><p>例如查询：223.0.0.0 ⇒ <a href=https://rdap.apnic.net/ip/223.0.0.0>https://rdap.apnic.net/ip/223.0.0.0</a></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-jsx data-lang=jsx><span style=display:flex><span>....
+</span></span></code></pre></div><p>APNIC的RDAP数据库保存在<code>https://rdap.apnic.net/</code>上面，我们继续在这个网址后面增加上面的IP地址段，则会得到这些IP被分配的信息：</p><p>例如查询：223.0.0.0 ⇒ <a href=https://rdap.apnic.net/ip/223.0.0.0>https://rdap.apnic.net/ip/223.0.0.0</a></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-jsx data-lang=jsx><span style=display:flex><span>....
 </span></span><span style=display:flex><span><span style=color:#e6db74>&#34;remarks&#34;</span><span style=color:#f92672>:</span> [
 </span></span><span style=display:flex><span>        {
 </span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;description&#34;</span><span style=color:#f92672>:</span> [
@@ -233,56 +201,7 @@
 </span></span><span style=display:flex><span>                }
 </span></span><span style=display:flex><span>            ]
 </span></span><span style=display:flex><span> ....
-</span></span></code></pre></td></tr></table></div></div><p>看到这里我们就可以很清晰的解读了：</p><ul><li>IP地址段：223.0.0.0 - 223.1.255.255</li><li>企业公司：Beijing Beilong Yunhai Network Data Technology Corporation</li></ul><p>当然，我们可以查询到的信息不止这么多，使用whois查询工具也可以查询，数据基本上我们刚刚手动完成查询的相同：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>╭─arch@archlinux ~
+</span></span></code></pre></div><p>看到这里我们就可以很清晰的解读了：</p><ul><li>IP地址段：223.0.0.0 - 223.1.255.255</li><li>企业公司：Beijing Beilong Yunhai Network Data Technology Corporation</li></ul><p>当然，我们可以查询到的信息不止这么多，使用whois查询工具也可以查询，数据基本上我们刚刚手动完成查询的相同：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>╭─arch@archlinux ~
 </span></span><span style=display:flex><span>╰─$ whois 223.0.0.1
 </span></span><span style=display:flex><span>% <span style=color:#f92672>[</span>whois.apnic.net<span style=color:#f92672>]</span>
 </span></span><span style=display:flex><span>% Whois data copyright terms    http://www.apnic.net/db/dbcopyright.html
@@ -331,4 +250,4 @@
 </span></span><span style=display:flex><span>source:         APNIC
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>% This query was served by the APNIC Whois Service version 1.88.25 <span style=color:#f92672>(</span>WHOIS-AU2<span style=color:#f92672>)</span>
-</span></span></code></pre></td></tr></table></div></div><p>如果你阅读到这里，相信你已经可以理解国内的一些IP地址查询网站是如何做的了: <a href="https://tool.chinaz.com/ipwhois?q=223.0.0.0">站长工具</a></p><p>但为什么域名有些时候无法查询？我经过查询维基百科，里面写了这一段：RDAP协议已注册的名称资源的RDAP数据库在与ICANN达成协议后进行维护。DNS资源要慢得多，因为ICANN下的注册管理机构数量庞大。此外，随着 GDPR 在2018年5月开始实施，WHOIS和RDAP导致的个人信息泄露问题进一步放缓了应用速度。所以我们通常试图使用whois查询域名，获取到的信息有限。</p><p>补充一点，在APNIC下属的网站上，也提供了可视化的查询：</p><p><a href=https://netox.apnic.net/apnic-at-a-glance/223.0.0.0/15>APNIC-NETOX</a></p><h2 id=总结>总结</h2><p>在这篇文章中，介绍了一种利用注册数据访问协议（RDAP）来精确确定资产边界的方法。RDAP是Whois协议的现代化替代品，提供了更全面和实时的域名注册信息，可以帮助安全专业人员更有效地识别和验证目标资产。文章详细探讨了RDAP的功能、其与IANA和区域互联网注册管理机构的关系，以及如何通过RDAP数据获取国家或组织分配的IP地址范围。通过RDAP，用户可以更精确地确定资产归属，为后续的渗透测试工作奠定基础。我们还可以通过将RDAP获取的IP地址范围，输入到网络空间测绘引擎中，来查找更多边缘资产，对于做资产测绘、漏洞挖掘都有很大帮助，我在写这篇文章之前，尝试搜索了一些规模较大的企业，可以找到很多通常思路搜集不到的IP地址边缘资产和业务系统。</p></div><nav class="hide-on-mobile section-nav"><nav id=TableOfContents><ol><li><a href=#前言>前言</a></li><li><a href=#什么是注册数据访问协议>什么是注册数据访问协议？</a></li><li><a href=#iana---互联网分配号码权威机构>IANA - 互联网分配号码权威机构</a></li><li><a href=#通过rdap数据获取国家组织分配的ip范围>通过RDAP数据获取国家/组织分配的IP范围</a></li><li><a href=#总结>总结</a></li></ol></nav></nav></div><div class=post><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post></div></div><div class="footer wrapper"><nav class=nav><div>2024 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script><script>var enableTruncate=!0,filterDepth=!1;const MAX_DEPTH=9;window.addEventListener("DOMContentLoaded",()=>{const e=new IntersectionObserver(e=>{e.reverse().forEach(e=>{const n=e.target.getAttribute("id");if(e.intersectionRatio>0){var t=document.querySelectorAll(`nav li a[href="#${n}"]`);t!=null&&t.forEach(e=>{if(e!=null){var t=getDepth(e.parentElement);filterDepth&&t<=MAX_DEPTH&&(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))}else filterDepth||(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))})}})});document.querySelectorAll("h1[id],h2[id],h3[id],h4[id]").forEach(t=>{e.observe(t)})});function isVisible(e){if(!(e instanceof Element))return!1;const n=getComputedStyle(e);if(n.display==="none")return!1;if(n.visibility!=="visible")return!1;if(n.opacity<.1)return!1;if(e.offsetWidth+e.offsetHeight+e.getBoundingClientRect().height+e.getBoundingClientRect().width===0)return!1;const t={x:e.getBoundingClientRect().left+e.offsetWidth/2,y:e.getBoundingClientRect().top+e.offsetHeight/2};if(t.x<0)return!1;if(t.x>(document.documentElement.clientWidth||window.innerWidth))return!1;if(t.y<0)return!1;if(t.y>(document.documentElement.clientHeight||window.innerHeight))return!1;let s=document.elementFromPoint(t.x,t.y);do if(s===e)return!0;while(s=s.parentNode)return!1}function clearActiveStatesInTableOfContents(){document.querySelectorAll("nav li").forEach(e=>{e.classList.remove("active")})}function getDepth(e){for(var t=0;e!==null&&e.tagName.toLowerCase()!=="ul";)t++,e=e.parentElement;return t}function navItems(){var e=document.querySelectorAll("nav nav li a");return Array.from(e).filter(e=>e.href!=null&&e.hash.startsWith("#"))}function lasItemInNavBarVisible(){var e=navItems().slice(-1)[0];return isVisible(e)}document.addEventListener("DOMContentLoaded",function(){if(!enableTruncate)return;var e=navItems();console.log(e),lasItemInNavBarVisible()||(filterDepth=!0,e.forEach(function(e){var t=getDepth(e.parentElement);t>MAX_DEPTH&&e.parentElement.classList.add("depth-nested")}))})</script></body></html>
+</span></span></code></pre></div><p>如果你阅读到这里，相信你已经可以理解国内的一些IP地址查询网站是如何做的了: <a href="https://tool.chinaz.com/ipwhois?q=223.0.0.0">站长工具</a></p><p>但为什么域名有些时候无法查询？我经过查询维基百科，里面写了这一段：RDAP协议已注册的名称资源的RDAP数据库在与ICANN达成协议后进行维护。DNS资源要慢得多，因为ICANN下的注册管理机构数量庞大。此外，随着 GDPR 在2018年5月开始实施，WHOIS和RDAP导致的个人信息泄露问题进一步放缓了应用速度。所以我们通常试图使用whois查询域名，获取到的信息有限。</p><p>补充一点，在APNIC下属的网站上，也提供了可视化的查询：</p><p><a href=https://netox.apnic.net/apnic-at-a-glance/223.0.0.0/15>APNIC-NETOX</a></p><h2 id=总结>总结</h2><p>在这篇文章中，介绍了一种利用注册数据访问协议（RDAP）来精确确定资产边界的方法。RDAP是Whois协议的现代化替代品，提供了更全面和实时的域名注册信息，可以帮助安全专业人员更有效地识别和验证目标资产。文章详细探讨了RDAP的功能、其与IANA和区域互联网注册管理机构的关系，以及如何通过RDAP数据获取国家或组织分配的IP地址范围。通过RDAP，用户可以更精确地确定资产归属，为后续的渗透测试工作奠定基础。我们还可以通过将RDAP获取的IP地址范围，输入到网络空间测绘引擎中，来查找更多边缘资产，对于做资产测绘、漏洞挖掘都有很大帮助，我在写这篇文章之前，尝试搜索了一些规模较大的企业，可以找到很多通常思路搜集不到的IP地址边缘资产和业务系统。</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]" href=https://payloads.online/tags/redteam>redteam</a></footer><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/archivers/2024-12-30/year-end-summary/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>2024，持续向内探索的一年</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2024-09-08/extract-vuln-search-queries/><span>使用AI提取历年漏洞Fofa查询语句</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a>️</footer></body></html>

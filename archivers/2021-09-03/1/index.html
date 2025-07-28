@@ -1,176 +1,134 @@
-<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>MASM中VirtualProtect函数的分析 - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"><link rel=stylesheet href=/css/fontawesome.css></head><body><div class="container-wide wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=article-nav id=article-nav-id><div class=post><div class=post-header><div class=meta><div class=date><span class=day>03</span>
-<span class=rest>Sep 2021</span></div></div><div class=matter><h1 class=title>MASM中VirtualProtect函数的分析</h1></div></div><aside class="show-on-mobile toc" id=static-toc><header><h3>Contents</h3></header><nav id=TableOfContents><ol><li><a href=#0x00-调用约定>0x00 调用约定</a></li><li><a href=#0x01-栈与调用约定的关系>0x01 栈与调用约定的关系</a></li><li><a href=#0x02-使用汇编调用win32-api>0x02 使用汇编调用Win32 API</a><ol><li><a href=#安装低版本msvc工具集版本>安装低版本MSVC工具集版本</a></li><li><a href=#masm-invoke>MASM INVOKE</a></li></ol></li><li><a href=#0x03-自定义函数分析调用过程>0x03 自定义函数分析调用过程</a></li><li><a href=#0x04-结论>0x04 结论</a></li></ol></nav></aside><h2 id=0x00-调用约定>0x00 调用约定</h2><p><a href="https://docs.microsoft.com/en-us/cpp/cpp/stdcall?view=msvc-160">__stdcall</a>关键字用于约定调用Win32 API函数的参数入栈顺序，它的入栈顺序是由右向左，一般C/C++语言代码中没有声明调用约定的话，默认就是<code>__stdcall</code>调用约定。</p><p>C++中如果要声明函数的调用约定，可以通过以下格式：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C++ data-lang=C++><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#66d9ef>__stdcall</span> CMyClass<span style=color:#f92672>::</span>mymethod() { 
+<!doctype html><html class="not-ready lg:text-base" style=--bg:#faf8f1 lang=zh-cn dir=ltr><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>MASM中VirtualProtect函数的分析 - 倾旋的博客</title><meta name=theme-color><meta name=description content='0x00 调用约定
+__stdcall关键字用于约定调用Win32 API函数的参数入栈顺序，它的入栈顺序是由右向左，一般C/C++语言代码中没有声明调用约定的话，默认就是__stdcall调用约定。
+C++中如果要声明函数的调用约定，可以通过以下格式：
+void __stdcall CMyClass::mymethod() { 
+    return; 
+}
+0x01 栈与调用约定的关系
+提到栈，这已经是计算机知识体系里面老生常谈的技术了，并且互联网上已经有大量的文章去讲解栈的工作机制。
+下面说说我对栈的理解：
+
+函数调用离不开栈
+栈用于完整保留调用前CPU的状态值，堆用于保留临时变量，实现了在函数体内部共享内存
+栈溢出一般是由于局部变量填满了栈的空间，没有及时释放，导致溢出，比如递归stack overflow
+栈遵循先入后出的原则
+&mldr;..
+
+写一段汇编：
+push 10h ; 代表第 1 个参数
+push 20h ; 代表第 2 个参数
+pop eax ; eax = 20h
+pop ebx ; ebx = 10h
+栈遵循先入后出的原则，栈顶ESP是低地址，栈底EBP是高地址。
+0x02 使用汇编调用Win32 API
+环境：Visual Studio 2019 （MSVC工具集版本14.26以下）
+MSVC工具集版本14.26以下才能够编译MASM正常调用Win32 API的代码，这里我使用的是14.21.27702。
+
+安装低版本MSVC工具集版本
+打开Visual Studio Installer，点击修改：
+
+红框内的工具集版本都支持正常编译。
+MASM INVOKE
+32位模式中，可以用Microsoft的INVOKE、PROTO 和扩展 PROC 伪指令新建多模块程序。与更加传统的CALL和EXTERN相比，它们的主要优势在于：能够将INVOKE传递的参数列表与PROC声明的相应列表进行匹配。
+INVOKE方便了我们将参数与官方文档的API的参数顺序进行对应，例如在MASM汇编中调用MessageBox函数：
+.686
+.model flat, stdcall
+include windows.inc
+includelib user32.lib
+includelib kernel32.lib
+.data
+title db "Hello,World",0
+buf db "Message....",0
+.code
+start:
+INVOKE MessageBox, NULL, addr buf, addr title, MB_OK
+end stat
+如果要转为纯汇编的方式，就要手动压栈了：'><meta name=author content="倾旋的博客"><link rel="preload stylesheet" as=style href=https://payloads.online/main.min.css><link rel=preload as=image href=https://payloads.online/theme.png><link rel=preload as=image href=/avatar.jpeg><script defer src=https://payloads.online/highlight.min.js onload=hljs.initHighlightingOnLoad()></script><link rel=icon href=https://payloads.online/favicon.ico><link rel=apple-touch-icon href=https://payloads.online/apple-touch-icon.png><meta name=generator content="Hugo 0.148.2"><meta itemprop=name content="MASM中VirtualProtect函数的分析"><meta itemprop=description content="最近在巩固汇编知识，写汇编的过程中遇到一个比较奇怪的点，然后开始了一段分析..."><meta itemprop=datePublished content="2021-09-03T10:10:08+08:00"><meta itemprop=dateModified content="2021-09-03T10:10:08+08:00"><meta itemprop=wordCount content="391"><meta property="og:url" content="https://payloads.online/archivers/2021-09-03/1/"><meta property="og:site_name" content="倾旋的博客"><meta property="og:title" content="MASM中VirtualProtect函数的分析"><meta property="og:description" content="最近在巩固汇编知识，写汇编的过程中遇到一个比较奇怪的点，然后开始了一段分析..."><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-09-03T10:10:08+08:00"><meta property="article:modified_time" content="2021-09-03T10:10:08+08:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="MASM中VirtualProtect函数的分析"><meta name=twitter:description content="最近在巩固汇编知识，写汇编的过程中遇到一个比较奇怪的点，然后开始了一段分析..."><link rel=canonical href=https://payloads.online/archivers/2021-09-03/1/></head><body class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"><header class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"><div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto"><a class="-translate-y-[1px] text-2xl font-medium" href=https://payloads.online/>倾旋的博客</a><div class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf8f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/>首页</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/posts/>文章列表</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/tags>标签</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/projects>开源项目</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/about>关于我</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/links/>友情链接</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/message>留言</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/sponsor>赞助</a></nav></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">MASM中VirtualProtect函数的分析</h1><div class="text-xs antialiased opacity-60"><time>Sep 3, 2021</time><span class=mx-1>&#183;</span>
+<span>倾旋</span></div></header><section><h2 id=0x00-调用约定>0x00 调用约定</h2><p><a href="https://docs.microsoft.com/en-us/cpp/cpp/stdcall?view=msvc-160">__stdcall</a>关键字用于约定调用Win32 API函数的参数入栈顺序，它的入栈顺序是由右向左，一般C/C++语言代码中没有声明调用约定的话，默认就是<code>__stdcall</code>调用约定。</p><p>C++中如果要声明函数的调用约定，可以通过以下格式：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C++ data-lang=C++><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#66d9ef>__stdcall</span> CMyClass<span style=color:#f92672>::</span>mymethod() { 
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span>; 
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><h2 id=0x01-栈与调用约定的关系>0x01 栈与调用约定的关系</h2><p>提到栈，这已经是计算机知识体系里面老生常谈的技术了，并且互联网上已经有大量的文章去讲解栈的工作机制。</p><p>下面说说我对栈的理解：</p><ul><li>函数调用离不开栈</li><li>栈用于完整保留调用前CPU的状态值，堆用于保留临时变量，实现了在函数体内部共享内存</li><li>栈溢出一般是由于局部变量填满了栈的空间，没有及时释放，导致溢出，比如递归<code>stack overflow</code></li><li>栈遵循先入后出的原则</li><li>&mldr;..</li></ul><p>写一段汇编：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>push 10h ; 代表第 1 个参数
-</span></span><span style=display:flex><span>push 20h ; 代表第 2 个参数
-</span></span><span style=display:flex><span>pop eax ; eax = 20h
-</span></span><span style=display:flex><span>pop ebx ; ebx = 10h
-</span></span></code></pre></td></tr></table></div></div><p>栈遵循先入后出的原则，栈顶ESP是低地址，栈底EBP是高地址。</p><h2 id=0x02-使用汇编调用win32-api>0x02 使用汇编调用Win32 API</h2><p>环境：Visual Studio 2019 （MSVC工具集版本14.26以下）</p><p>MSVC工具集版本14.26以下才能够编译MASM正常调用Win32 API的代码，这里我使用的是<code>14.21.27702</code>。</p><p><img src=https://images.payloads.online/b987e190-4f5f-11ec-a263-00d861bf4abb.png alt=2021-09-03-11-12-09></p><h3 id=安装低版本msvc工具集版本>安装低版本MSVC工具集版本</h3><p>打开Visual Studio Installer，点击<code>修改</code>：</p><p><img src=https://images.payloads.online/b9d216d4-4f5f-11ec-821a-00d861bf4abb.png alt=2021-09-03-11-14-46></p><p>红框内的工具集版本都支持正常编译。</p><h3 id=masm-invoke>MASM INVOKE</h3><p>32位模式中，可以用Microsoft的INVOKE、PROTO 和扩展 PROC 伪指令新建多模块程序。与更加传统的CALL和EXTERN相比，它们的主要优势在于：能够将INVOKE传递的参数列表与PROC声明的相应列表进行匹配。</p><p>INVOKE方便了我们将参数与官方文档的API的参数顺序进行对应，例如在MASM汇编中调用MessageBox函数：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>.686
-</span></span><span style=display:flex><span>.model flat, stdcall
-</span></span><span style=display:flex><span>include windows.inc
-</span></span><span style=display:flex><span>includelib user32.lib
-</span></span><span style=display:flex><span>includelib kernel32.lib
-</span></span><span style=display:flex><span>.data
-</span></span><span style=display:flex><span>title db &#34;Hello,World&#34;,0
-</span></span><span style=display:flex><span>buf db &#34;Message....&#34;,0
-</span></span><span style=display:flex><span>.code
-</span></span><span style=display:flex><span>start:
-</span></span><span style=display:flex><span>INVOKE MessageBox, NULL, addr buf, addr title, MB_OK
-</span></span><span style=display:flex><span>end stat
-</span></span></code></pre></td></tr></table></div></div><p>如果要转为纯汇编的方式，就要手动压栈了：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>.686
-</span></span><span style=display:flex><span>.model flat, stdcall
-</span></span><span style=display:flex><span>include windows.inc
-</span></span><span style=display:flex><span>includelib user32.lib
-</span></span><span style=display:flex><span>includelib kernel32.lib
-</span></span><span style=display:flex><span>.data
-</span></span><span style=display:flex><span>title db &#34;Hello,World&#34;,0
-</span></span><span style=display:flex><span>buf db &#34;Message....&#34;,0
-</span></span><span style=display:flex><span>.code
-</span></span><span style=display:flex><span>start:
-</span></span><span style=display:flex><span>push MB_OK
-</span></span><span style=display:flex><span>push addr title
-</span></span><span style=display:flex><span>push addr buf
-</span></span><span style=display:flex><span>push NULL
-</span></span><span style=display:flex><span>call MessageBox
-</span></span><span style=display:flex><span>end start
-</span></span></code></pre></td></tr></table></div></div><h2 id=0x03-自定义函数分析调用过程>0x03 自定义函数分析调用过程</h2><p>实现功能：将某块内存设置为可执行属性</p><p>涉及Windows API：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C++ data-lang=C++><span style=display:flex><span>BOOL <span style=color:#a6e22e>VirtualProtect</span>(  
+</span></span></code></pre></div><h2 id=0x01-栈与调用约定的关系>0x01 栈与调用约定的关系</h2><p>提到栈，这已经是计算机知识体系里面老生常谈的技术了，并且互联网上已经有大量的文章去讲解栈的工作机制。</p><p>下面说说我对栈的理解：</p><ul><li>函数调用离不开栈</li><li>栈用于完整保留调用前CPU的状态值，堆用于保留临时变量，实现了在函数体内部共享内存</li><li>栈溢出一般是由于局部变量填满了栈的空间，没有及时释放，导致溢出，比如递归<code>stack overflow</code></li><li>栈遵循先入后出的原则</li><li>&mldr;..</li></ul><p>写一段汇编：</p><pre tabindex=0><code>push 10h ; 代表第 1 个参数
+push 20h ; 代表第 2 个参数
+pop eax ; eax = 20h
+pop ebx ; ebx = 10h
+</code></pre><p>栈遵循先入后出的原则，栈顶ESP是低地址，栈底EBP是高地址。</p><h2 id=0x02-使用汇编调用win32-api>0x02 使用汇编调用Win32 API</h2><p>环境：Visual Studio 2019 （MSVC工具集版本14.26以下）</p><p>MSVC工具集版本14.26以下才能够编译MASM正常调用Win32 API的代码，这里我使用的是<code>14.21.27702</code>。</p><p><img src=https://images.payloads.online/b987e190-4f5f-11ec-a263-00d861bf4abb.png alt=2021-09-03-11-12-09></p><h3 id=安装低版本msvc工具集版本>安装低版本MSVC工具集版本</h3><p>打开Visual Studio Installer，点击<code>修改</code>：</p><p><img src=https://images.payloads.online/b9d216d4-4f5f-11ec-821a-00d861bf4abb.png alt=2021-09-03-11-14-46></p><p>红框内的工具集版本都支持正常编译。</p><h3 id=masm-invoke>MASM INVOKE</h3><p>32位模式中，可以用Microsoft的INVOKE、PROTO 和扩展 PROC 伪指令新建多模块程序。与更加传统的CALL和EXTERN相比，它们的主要优势在于：能够将INVOKE传递的参数列表与PROC声明的相应列表进行匹配。</p><p>INVOKE方便了我们将参数与官方文档的API的参数顺序进行对应，例如在MASM汇编中调用MessageBox函数：</p><pre tabindex=0><code class=language-assembly data-lang=assembly>.686
+.model flat, stdcall
+include windows.inc
+includelib user32.lib
+includelib kernel32.lib
+.data
+title db &#34;Hello,World&#34;,0
+buf db &#34;Message....&#34;,0
+.code
+start:
+INVOKE MessageBox, NULL, addr buf, addr title, MB_OK
+end stat
+</code></pre><p>如果要转为纯汇编的方式，就要手动压栈了：</p><pre tabindex=0><code class=language-assembly data-lang=assembly>.686
+.model flat, stdcall
+include windows.inc
+includelib user32.lib
+includelib kernel32.lib
+.data
+title db &#34;Hello,World&#34;,0
+buf db &#34;Message....&#34;,0
+.code
+start:
+push MB_OK
+push addr title
+push addr buf
+push NULL
+call MessageBox
+end start
+</code></pre><h2 id=0x03-自定义函数分析调用过程>0x03 自定义函数分析调用过程</h2><p>实现功能：将某块内存设置为可执行属性</p><p>涉及Windows API：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C++ data-lang=C++><span style=display:flex><span>BOOL <span style=color:#a6e22e>VirtualProtect</span>(  
 </span></span><span style=display:flex><span>  LPVOID lpAddress,  
 </span></span><span style=display:flex><span>  DWORD dwSize,  
 </span></span><span style=display:flex><span>  DWORD flNewProtect,  
 </span></span><span style=display:flex><span>  PDWORD lpflOldProtect  
 </span></span><span style=display:flex><span>);
-</span></span></code></pre></td></tr></table></div></div><p>部分汇编代码：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>; edx = lpflOldProtect
-</span></span><span style=display:flex><span>; eax = lpAddress
-</span></span><span style=display:flex><span>; ebx = dwSize
-</span></span><span style=display:flex><span>AddExecutePage PROC
-</span></span><span style=display:flex><span>    push ebp
-</span></span><span style=display:flex><span>    mov ebp,esp
-</span></span><span style=display:flex><span>    sub esp,4
-</span></span><span style=display:flex><span>    push eax ; 
-</span></span><span style=display:flex><span>    lea edx,dword ptr ds:[ebp-4]
-</span></span><span style=display:flex><span>    invoke VirtualProtect,ebx,eax,PAGE_EXECUTE,edx
-</span></span><span style=display:flex><span>    pop eax
-</span></span><span style=display:flex><span>    add esp,4
-</span></span><span style=display:flex><span>    mov esp,ebp
-</span></span><span style=display:flex><span>    pop ebp
-</span></span><span style=display:flex><span>    ret
-</span></span><span style=display:flex><span>AddExecutePage ENDP
-</span></span></code></pre></td></tr></table></div></div><p><code>AddExecutePage</code>是我自己在项目中定义个一个过程，其中寄存器的状态值已经给出，经过调试我发现INVOKE调用VirtualProtect的参数传递顺序和Windows API文档存在差异，就是<code>dwSize</code>与<code>lpAddress</code>的顺序不一样。</p><p>按常理来讲，最先入栈的数据是函数最右边的参数，入栈顺序是：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>push lpflOldProtect
-</span></span><span style=display:flex><span>push flNewProtect
-</span></span><span style=display:flex><span>push dwSize
-</span></span><span style=display:flex><span>push lpAddress
-</span></span><span style=display:flex><span>call VirtualProtect
-</span></span></code></pre></td></tr></table></div></div><p>但事实情况是：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>push lpflOldProtect
-</span></span><span style=display:flex><span>push flNewProtect
-</span></span><span style=display:flex><span>push lpAddress
-</span></span><span style=display:flex><span>push dwSize
-</span></span><span style=display:flex><span>call VirtualProtect
-</span></span></code></pre></td></tr></table></div></div><p>调试一下看看情况</p><p><img src=https://images.payloads.online/ba185cb6-4f5f-11ec-840c-00d861bf4abb.png alt=2021-09-03-12-32-02></p><p>此时<code>EAX = 0x00170000</code>指向了要改变属性的内存地址，但第一个<code>push eax</code>并不是开始给<code>VirtualProtect</code>传递参数，而是从<code>call</code>往上数四个<code>push</code>指令，这些<code>push</code>的数据才是<code>VirtualProtect</code>的参数。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>00E6102B   | 8D55 FC         | lea edx,dword ptr ss:[ebp-4]                   |
-</span></span><span style=display:flex><span>00E6102E   | 52              | push edx                                       |
-</span></span><span style=display:flex><span>00E6102F   | 6A 10           | push 10                                        |
-</span></span><span style=display:flex><span>00E61031   | 50              | push eax                                       |
-</span></span><span style=display:flex><span>00E61032   | 53              | push ebx                                       |
-</span></span><span style=display:flex><span>00E61033   | E8 E6FFFFFF     | call &lt;JMP.&amp;VirtualProtect&gt;                     |
-</span></span></code></pre></td></tr></table></div></div><p><code>lea edx,dword ptr ss:[ebp-4]</code>代表把ebp-4的地址复制给edx，<code>EBP=0014F830</code>，<code>0014F830-4=0014F82C</code>，那么<code>edx=0014F82C</code>，下一句<code>push edx</code>作为<code>VirtualProtect</code>的第一个参数<code>lpflOldProtect</code>传递进去。</p><p>注：<code>lpflOldProtect</code>的数据类型是<code>PDWORD</code>，也就是DWORD的指针，传指针而非传递值。</p><p><img src=https://images.payloads.online/ba5c7144-4f5f-11ec-bd4b-00d861bf4abb.png alt=2021-09-03-12-37-46></p><p>第二个<code>push 10</code>，代表了<code>flNewProtect</code>，0x10代表了<a href=https://docs.microsoft.com/en-us/windows/win32/memory/memory-protection-constants>内存属性常量</a><code>PAGE_EXECUTE</code>。</p><p><img src=https://images.payloads.online/baa642f6-4f5f-11ec-ba52-00d861bf4abb.png alt=常见的内存属性常量></p><p>第三个<code>push eax</code>，代表了<code>lpAddress</code>，指向要改变的内存地址。</p><p>第四个<code>push ebx</code>，代表了<code>dwSize</code>，ebx的值是<code>000000C1</code>，说明要改变内存属性的内存大小是0xC1个字节。</p><p>其中，第三个push和第四个push的顺序按照函数声明的格式是先传递大小，后传递内存地址的，经过分析，我发现必须先传递内存地址后传递大小才能正常执行。</p><p>继续跟入后，发现会通过VirtualProtect调用VirtualProtectEx。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>75CC22C0   | 8BEC            | mov ebp,esp                                    |
-</span></span><span style=display:flex><span>75CC22C2   | FF75 14         | push dword ptr ss:[ebp+14]                     |
-</span></span><span style=display:flex><span>75CC22C5   | FF75 10         | push dword ptr ss:[ebp+10]                     |
-</span></span><span style=display:flex><span>75CC22C8   | FF75 0C         | push dword ptr ss:[ebp+C]                      |
-</span></span><span style=display:flex><span>75CC22CB   | FF75 08         | push dword ptr ss:[ebp+8]                      |
-</span></span><span style=display:flex><span>75CC22CE   | 6A FF           | push FFFFFFFF                                  |
-</span></span><span style=display:flex><span>75CC22D0   | E8 09000000     | call &lt;kernelbase.VirtualProtectEx&gt;             |
-</span></span></code></pre></td></tr></table></div></div><p><img src=https://images.payloads.online/bb0ad55e-4f5f-11ec-927a-00d861bf4abb.png alt=2021-09-03-12-49-31></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C++ data-lang=C++><span style=display:flex><span>BOOL <span style=color:#a6e22e>VirtualProtectEx</span>(
+</span></span></code></pre></div><p>部分汇编代码：</p><pre tabindex=0><code class=language-assembly data-lang=assembly>; edx = lpflOldProtect
+; eax = lpAddress
+; ebx = dwSize
+AddExecutePage PROC
+    push ebp
+    mov ebp,esp
+    sub esp,4
+    push eax ; 
+    lea edx,dword ptr ds:[ebp-4]
+    invoke VirtualProtect,ebx,eax,PAGE_EXECUTE,edx
+    pop eax
+    add esp,4
+    mov esp,ebp
+    pop ebp
+    ret
+AddExecutePage ENDP
+</code></pre><p><code>AddExecutePage</code>是我自己在项目中定义个一个过程，其中寄存器的状态值已经给出，经过调试我发现INVOKE调用VirtualProtect的参数传递顺序和Windows API文档存在差异，就是<code>dwSize</code>与<code>lpAddress</code>的顺序不一样。</p><p>按常理来讲，最先入栈的数据是函数最右边的参数，入栈顺序是：</p><pre tabindex=0><code class=language-assembly data-lang=assembly>push lpflOldProtect
+push flNewProtect
+push dwSize
+push lpAddress
+call VirtualProtect
+</code></pre><p>但事实情况是：</p><pre tabindex=0><code class=language-assembly data-lang=assembly>push lpflOldProtect
+push flNewProtect
+push lpAddress
+push dwSize
+call VirtualProtect
+</code></pre><p>调试一下看看情况</p><p><img src=https://images.payloads.online/ba185cb6-4f5f-11ec-840c-00d861bf4abb.png alt=2021-09-03-12-32-02></p><p>此时<code>EAX = 0x00170000</code>指向了要改变属性的内存地址，但第一个<code>push eax</code>并不是开始给<code>VirtualProtect</code>传递参数，而是从<code>call</code>往上数四个<code>push</code>指令，这些<code>push</code>的数据才是<code>VirtualProtect</code>的参数。</p><pre tabindex=0><code class=language-assembly data-lang=assembly>00E6102B   | 8D55 FC         | lea edx,dword ptr ss:[ebp-4]                   |
+00E6102E   | 52              | push edx                                       |
+00E6102F   | 6A 10           | push 10                                        |
+00E61031   | 50              | push eax                                       |
+00E61032   | 53              | push ebx                                       |
+00E61033   | E8 E6FFFFFF     | call &lt;JMP.&amp;VirtualProtect&gt;                     |
+</code></pre><p><code>lea edx,dword ptr ss:[ebp-4]</code>代表把ebp-4的地址复制给edx，<code>EBP=0014F830</code>，<code>0014F830-4=0014F82C</code>，那么<code>edx=0014F82C</code>，下一句<code>push edx</code>作为<code>VirtualProtect</code>的第一个参数<code>lpflOldProtect</code>传递进去。</p><p>注：<code>lpflOldProtect</code>的数据类型是<code>PDWORD</code>，也就是DWORD的指针，传指针而非传递值。</p><p><img src=https://images.payloads.online/ba5c7144-4f5f-11ec-bd4b-00d861bf4abb.png alt=2021-09-03-12-37-46></p><p>第二个<code>push 10</code>，代表了<code>flNewProtect</code>，0x10代表了<a href=https://docs.microsoft.com/en-us/windows/win32/memory/memory-protection-constants>内存属性常量</a><code>PAGE_EXECUTE</code>。</p><p><img src=https://images.payloads.online/baa642f6-4f5f-11ec-ba52-00d861bf4abb.png alt=常见的内存属性常量></p><p>第三个<code>push eax</code>，代表了<code>lpAddress</code>，指向要改变的内存地址。</p><p>第四个<code>push ebx</code>，代表了<code>dwSize</code>，ebx的值是<code>000000C1</code>，说明要改变内存属性的内存大小是0xC1个字节。</p><p>其中，第三个push和第四个push的顺序按照函数声明的格式是先传递大小，后传递内存地址的，经过分析，我发现必须先传递内存地址后传递大小才能正常执行。</p><p>继续跟入后，发现会通过VirtualProtect调用VirtualProtectEx。</p><pre tabindex=0><code class=language-assembly data-lang=assembly>75CC22C0   | 8BEC            | mov ebp,esp                                    |
+75CC22C2   | FF75 14         | push dword ptr ss:[ebp+14]                     |
+75CC22C5   | FF75 10         | push dword ptr ss:[ebp+10]                     |
+75CC22C8   | FF75 0C         | push dword ptr ss:[ebp+C]                      |
+75CC22CB   | FF75 08         | push dword ptr ss:[ebp+8]                      |
+75CC22CE   | 6A FF           | push FFFFFFFF                                  |
+75CC22D0   | E8 09000000     | call &lt;kernelbase.VirtualProtectEx&gt;             |
+</code></pre><p><img src=https://images.payloads.online/bb0ad55e-4f5f-11ec-927a-00d861bf4abb.png alt=2021-09-03-12-49-31></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-C++ data-lang=C++><span style=display:flex><span>BOOL <span style=color:#a6e22e>VirtualProtectEx</span>(
 </span></span><span style=display:flex><span>  HANDLE hProcess,
 </span></span><span style=display:flex><span>  LPVOID lpAddress,
 </span></span><span style=display:flex><span>  SIZE_T dwSize,
 </span></span><span style=display:flex><span>  DWORD  flNewProtect,
 </span></span><span style=display:flex><span>  PDWORD lpflOldProtect
 </span></span><span style=display:flex><span>);
-</span></span></code></pre></td></tr></table></div></div><p>按照函数声明，从右向左对应入栈值：</p><ul><li><code>lpflOldProtect -> 0x14F820</code></li><li><code>flNewProtect -> 0x10</code></li><li><code>dwSize -> 0x170000</code></li><li><code>lpAddress -> 0xC1</code></li><li><code>hProcess -> FFFFFFFF</code></li></ul><p>这个时候发现<code>VirtualProtectEx</code>的顺序也有问题，理想情况下应该是：</p><ul><li><code>lpflOldProtect -> 0x14F820</code></li><li><code>flNewProtect -> 0x10</code></li><li><code>dwSize -> 0xC1</code></li><li><code>lpAddress -> 0x170000</code></li><li><code>hProcess -> FFFFFFFF</code></li></ul><h2 id=0x04-结论>0x04 结论</h2><p>测试通过Windows 10、Windows 7以后，我最终的解决办法还是要把<code>dwSize</code>和<code>lpAddress</code>的入栈顺序进行调换，发现程序可以正常运行。</p></div><nav class="hide-on-mobile section-nav"><nav id=TableOfContents><ol><li><a href=#0x00-调用约定>0x00 调用约定</a></li><li><a href=#0x01-栈与调用约定的关系>0x01 栈与调用约定的关系</a></li><li><a href=#0x02-使用汇编调用win32-api>0x02 使用汇编调用Win32 API</a><ol><li><a href=#安装低版本msvc工具集版本>安装低版本MSVC工具集版本</a></li><li><a href=#masm-invoke>MASM INVOKE</a></li></ol></li><li><a href=#0x03-自定义函数分析调用过程>0x03 自定义函数分析调用过程</a></li><li><a href=#0x04-结论>0x04 结论</a></li></ol></nav></nav></div><div class=post><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post></div></div><div class="footer wrapper"><nav class=nav><div>2024 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script><script>var enableTruncate=!0,filterDepth=!1;const MAX_DEPTH=9;window.addEventListener("DOMContentLoaded",()=>{const e=new IntersectionObserver(e=>{e.reverse().forEach(e=>{const n=e.target.getAttribute("id");if(e.intersectionRatio>0){var t=document.querySelectorAll(`nav li a[href="#${n}"]`);t!=null&&t.forEach(e=>{if(e!=null){var t=getDepth(e.parentElement);filterDepth&&t<=MAX_DEPTH&&(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))}else filterDepth||(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))})}})});document.querySelectorAll("h1[id],h2[id],h3[id],h4[id]").forEach(t=>{e.observe(t)})});function isVisible(e){if(!(e instanceof Element))return!1;const n=getComputedStyle(e);if(n.display==="none")return!1;if(n.visibility!=="visible")return!1;if(n.opacity<.1)return!1;if(e.offsetWidth+e.offsetHeight+e.getBoundingClientRect().height+e.getBoundingClientRect().width===0)return!1;const t={x:e.getBoundingClientRect().left+e.offsetWidth/2,y:e.getBoundingClientRect().top+e.offsetHeight/2};if(t.x<0)return!1;if(t.x>(document.documentElement.clientWidth||window.innerWidth))return!1;if(t.y<0)return!1;if(t.y>(document.documentElement.clientHeight||window.innerHeight))return!1;let s=document.elementFromPoint(t.x,t.y);do if(s===e)return!0;while(s=s.parentNode)return!1}function clearActiveStatesInTableOfContents(){document.querySelectorAll("nav li").forEach(e=>{e.classList.remove("active")})}function getDepth(e){for(var t=0;e!==null&&e.tagName.toLowerCase()!=="ul";)t++,e=e.parentElement;return t}function navItems(){var e=document.querySelectorAll("nav nav li a");return Array.from(e).filter(e=>e.href!=null&&e.hash.startsWith("#"))}function lasItemInNavBarVisible(){var e=navItems().slice(-1)[0];return isVisible(e)}document.addEventListener("DOMContentLoaded",function(){if(!enableTruncate)return;var e=navItems();console.log(e),lasItemInNavBarVisible()||(filterDepth=!0,e.forEach(function(e){var t=getDepth(e.parentElement);t>MAX_DEPTH&&e.parentElement.classList.add("depth-nested")}))})</script></body></html>
+</span></span></code></pre></div><p>按照函数声明，从右向左对应入栈值：</p><ul><li><code>lpflOldProtect -> 0x14F820</code></li><li><code>flNewProtect -> 0x10</code></li><li><code>dwSize -> 0x170000</code></li><li><code>lpAddress -> 0xC1</code></li><li><code>hProcess -> FFFFFFFF</code></li></ul><p>这个时候发现<code>VirtualProtectEx</code>的顺序也有问题，理想情况下应该是：</p><ul><li><code>lpflOldProtect -> 0x14F820</code></li><li><code>flNewProtect -> 0x10</code></li><li><code>dwSize -> 0xC1</code></li><li><code>lpAddress -> 0x170000</code></li><li><code>hProcess -> FFFFFFFF</code></li></ul><h2 id=0x04-结论>0x04 结论</h2><p>测试通过Windows 10、Windows 7以后，我最终的解决办法还是要把<code>dwSize</code>和<code>lpAddress</code>的入栈顺序进行调换，发现程序可以正常运行。</p></section><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/archivers/2021-09-13/1/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>BeingDebugged反调试技巧</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2021-08-30/2/><span>博客更新了</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a>️</footer></body></html>

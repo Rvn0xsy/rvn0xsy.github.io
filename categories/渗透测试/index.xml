@@ -5,24 +5,18 @@
 &lt;p>通过参考网上的漏洞披露，我决定复现一下。 这个和之前&lt;a href="http://payloads.online/archivers/2018-06-09/1">QQ拼音输入法6.0最新版DLL劫持 - 可利用于提权&lt;/a>的思路差不多。&lt;/p>
 &lt;h2 id="0x01-复现过程">0x01 复现过程&lt;/h2>
 &lt;p>首先，漏洞披露详情如下：&lt;/p>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>Exploit/POC
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>=============
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>1) create DLL 32bit DLL named &amp;#34;xbdm.dll&amp;#34; and place on a remote share
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>2) create an empty file with a &amp;#34;.xap&amp;#34; extension on the same share, this will open using &amp;#34;Xact3.exe&amp;#34; as its default
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>3) open the the .xap file from the Network share then BOOM!
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>一共两步，第一步是创建两个文件，分别是&lt;code>.xap&lt;/code>文件和&lt;code>xbdm.dll&lt;/code>。&lt;/p></description></item></channel></rss>
+&lt;pre tabindex="0">&lt;code>Exploit/POC
+=============
+1) create DLL 32bit DLL named &amp;#34;xbdm.dll&amp;#34; and place on a remote share
+
+2) create an empty file with a &amp;#34;.xap&amp;#34; extension on the same share, this will open using &amp;#34;Xact3.exe&amp;#34; as its default
+
+3) open the the .xap file from the Network share then BOOM!
+&lt;/code>&lt;/pre>&lt;p>一共两步，第一步是创建两个文件，分别是&lt;code>.xap&lt;/code>文件和&lt;code>xbdm.dll&lt;/code>。&lt;/p>
+&lt;p>然后使用&lt;code>Xact3.exe&lt;/code>打开，应用程序将会调用&lt;code>xbdm.dll&lt;/code>。&lt;/p>
+&lt;p>&lt;code>Xact3.exe&lt;/code>默认路径：&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Utilities\bin\x86&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;h3 id="原理">原理&lt;/h3>
+&lt;p>Windows操作系统通过“DLL路径搜索目录顺序”和“KnownDLLs注册表项”的机制来确定应用程序所要调用的DLL的路径，之后，应用程序就将DLL载入了自己的内存空间，执行相应的函数功能。&lt;/p></description></item></channel></rss>

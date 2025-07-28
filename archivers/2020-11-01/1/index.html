@@ -1,167 +1,113 @@
-<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>Web正向代理的思考 - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"><link rel=stylesheet href=/css/fontawesome.css></head><body><div class="container-wide wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=article-nav id=article-nav-id><div class=post><div class=post-header><div class=meta><div class=date><span class=day>01</span>
-<span class=rest>Nov 2020</span></div></div><div class=matter><h1 class=title>Web正向代理的思考</h1></div></div><aside class="show-on-mobile toc" id=static-toc><header><h3>Contents</h3></header><nav id=TableOfContents><ol><li><a href=#0x01-背景假设>0x01 背景假设</a></li><li><a href=#0x02-尝试理解目标网络架构>0x02 尝试理解目标网络架构</a></li><li><a href=#0x03-利用nat规则实现内网漫游>0x03 利用NAT规则实现内网漫游</a><ol><li><a href=#如何利用>如何利用？</a></li></ol></li><li><a href=#0x04-总结>0x04 总结</a></li></ol></nav></aside><h2 id=0x01-背景假设>0x01 背景假设</h2><p>获取Webshell后，但是机器不出网（DNS、TCP、UDP）等常规端口都进行了尝试。</p><p>不出网的解释：内部的Webshell服务器无法连接互联网。</p><p>尝试过的方案有：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>title 出网探测方式
-</span></span><span style=display:flex><span>state TCP {
-</span></span><span style=display:flex><span>WindowsHttp : certutil -f -split -urlcache http://domain/com
-</span></span><span style=display:flex><span>LinuxHttp: wget &lt;URL&gt;
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>state UDP{
-</span></span><span style=display:flex><span>DNS : nslookup domain.com
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>state ICMP{
-</span></span><span style=display:flex><span>    ICMP: ping domain.com
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><p>那么，一般我们会尝试：</p><ul><li><a href=https://github.com/sensepost/reGeorg>reGeorg</a></li><li><a href=https://github.com/L-codes/Neo-reGeorg>Neo-reGeorg</a></li><li><a href=https://github.com/sensepost/reDuh>reDuh</a></li><li><a href=https://github.com/blackarrowsec/pivotnacci>pivotnacci</a></li><li>&mldr;</li></ul><p>这种类型的工具往往都有一个特性：通过脚本帮助我们把HTTP协议转换成Socks，由于HTTP协议无状态，因此需要发送大量数据包。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">8
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-gdscript3 data-lang=gdscript3><span style=display:flex><span>title <span style=color:#960050;background-color:#1e0010>脚本代理</span>
-</span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>浏览器</span>  <span style=color:#f92672>-&gt;</span> <span style=color:#960050;background-color:#1e0010>本地</span>Socks代理服务 : <span style=color:#960050;background-color:#1e0010>（</span><span style=color:#ae81ff>1</span><span style=color:#960050;background-color:#1e0010>）连接</span>
-</span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>本地</span>Socks代理服务 <span style=color:#f92672>&lt;--&gt;</span> <span style=color:#960050;background-color:#1e0010>本地</span>HTTP客户端: <span style=color:#960050;background-color:#1e0010>（</span><span style=color:#ae81ff>2</span><span style=color:#960050;background-color:#1e0010>）转换协议</span>
-</span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>本地</span>HTTP客户端 <span style=color:#f92672>-&gt;</span> Web服务器脚本: <span style=color:#960050;background-color:#1e0010>（</span><span style=color:#ae81ff>3</span><span style=color:#960050;background-color:#1e0010>）不断请求</span>
-</span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>本地</span>HTTP客户端 <span style=color:#f92672>&lt;--</span> Web服务器脚本: <span style=color:#960050;background-color:#1e0010>（</span><span style=color:#ae81ff>4</span><span style=color:#960050;background-color:#1e0010>）发送响应</span>
-</span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>本地</span>Socks代理服务<span style=color:#f92672>&lt;--&gt;</span> <span style=color:#960050;background-color:#1e0010>本地</span>HTTP客户端: <span style=color:#960050;background-color:#1e0010>（</span><span style=color:#ae81ff>5</span><span style=color:#960050;background-color:#1e0010>）协议转换</span>
-</span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>本地</span>Socks代理服务 <span style=color:#f92672>--&gt;</span> <span style=color:#960050;background-color:#1e0010>浏览器</span>: <span style=color:#960050;background-color:#1e0010>（</span><span style=color:#ae81ff>6</span><span style=color:#960050;background-color:#1e0010>）发送数据</span>
-</span></span><span style=display:flex><span>note right: <span style=color:#960050;background-color:#1e0010>倾旋的博客</span>:https:<span style=color:#f92672>//</span>payloads<span style=color:#f92672>.</span>online
-</span></span></code></pre></td></tr></table></div></div><p>但是这个场景以上方案都使用起来都不能给出一个很好的效果，因为网络延迟、系统卡顿等等问题，想要传递工具到服务器上变得困难。</p><h2 id=0x02-尝试理解目标网络架构>0x02 尝试理解目标网络架构</h2><p>这里我画了一个简单的架构图：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-gdscript3 data-lang=gdscript3><span style=display:flex><span>title <span style=color:#960050;background-color:#1e0010>目标网络架构</span>
-</span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>浏览器</span>  <span style=color:#f92672>-&gt;</span> <span style=color:#960050;background-color:#1e0010>防火墙</span> : <span style=color:#960050;background-color:#1e0010>（</span><span style=color:#ae81ff>1</span><span style=color:#960050;background-color:#1e0010>）连接</span> <span style=color:#ae81ff>8080</span> <span style=color:#960050;background-color:#1e0010>端口</span>
-</span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>防火墙</span> <span style=color:#f92672>&lt;-&gt;</span> <span style=color:#960050;background-color:#1e0010>内网</span>Web服务器: <span style=color:#960050;background-color:#1e0010>（</span><span style=color:#ae81ff>2</span><span style=color:#960050;background-color:#1e0010>）</span>NAT转发8080端口
-</span></span><span style=display:flex><span><span style=color:#960050;background-color:#1e0010>防火墙</span> <span style=color:#f92672>-&gt;</span> <span style=color:#960050;background-color:#1e0010>浏览器</span>: <span style=color:#960050;background-color:#1e0010>（</span><span style=color:#ae81ff>3</span><span style=color:#960050;background-color:#1e0010>）将结果数据转发</span>
-</span></span><span style=display:flex><span>note right: <span style=color:#960050;background-color:#1e0010>倾旋的博客</span>:https:<span style=color:#f92672>//</span>payloads<span style=color:#f92672>.</span>online
-</span></span></code></pre></td></tr></table></div></div><p>类似这种场景在企业种非常的常见，网络管理员应业务部门的要求，利用NAT端口映射的技术可以直接将DMZ区域的某台机器上的某个端口对外网开放。</p><p>这里我使用Docker搭建了一个简单的靶场：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>title 靶场结构
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>state 互联网防火墙172.17.0.2{
-</span></span><span style=display:flex><span>    [*] --&gt; 防火墙规则1
-</span></span><span style=display:flex><span>    [*] --&gt; 防火墙规则2
-</span></span><span style=display:flex><span>防火墙规则1 : 172.17.0.2:8080
-</span></span><span style=display:flex><span>防火墙规则2: 172.17.0.2:8081
-</span></span><span style=display:flex><span>note left: 假设172.17.0.2是公网服务器
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>state DMZ区域{
-</span></span><span style=display:flex><span>    DMZ网站业务1: 192.168.1.128:8080
-</span></span><span style=display:flex><span>    note left: 内网
-</span></span><span style=display:flex><span>    DMZ网站业务2: 192.168.1.125:8080
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>state 外网攻击者 {
-</span></span><span style=display:flex><span>攻击者IP:172.17.0.1
-</span></span><span style=display:flex><span>note left: 假设172.17.0.1是攻击者出口
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>攻击者IP --&gt; 防火墙规则1 : 访问第一个业务
-</span></span><span style=display:flex><span>防火墙规则1 -&gt; DMZ网站业务1: NAT
-</span></span><span style=display:flex><span>攻击者IP -&gt; 防火墙规则2
-</span></span><span style=display:flex><span>防火墙规则2 -&gt; DMZ网站业务2: NAT
-</span></span></code></pre></td></tr></table></div></div><p>对应的NAT 端口转发情况：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style=color:#ae81ff>8080</span> -j DNAT --to-destination 192.168.1.128:8080
+<!doctype html><html class="not-ready lg:text-base" style=--bg:#faf8f1 lang=zh-cn dir=ltr><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Web正向代理的思考 - 倾旋的博客</title><meta name=theme-color><meta name=description content="0x01 背景假设
+获取Webshell后，但是机器不出网（DNS、TCP、UDP）等常规端口都进行了尝试。
+不出网的解释：内部的Webshell服务器无法连接互联网。
+尝试过的方案有：
+title 出网探测方式
+state TCP {
+WindowsHttp : certutil -f -split -urlcache http://domain/com
+LinuxHttp: wget <URL>
+}
+state UDP{
+DNS : nslookup domain.com
+}
+state ICMP{
+    ICMP: ping domain.com
+}
+那么，一般我们会尝试：
+
+reGeorg
+Neo-reGeorg
+reDuh
+pivotnacci
+&mldr;
+
+这种类型的工具往往都有一个特性：通过脚本帮助我们把HTTP协议转换成Socks，由于HTTP协议无状态，因此需要发送大量数据包。
+title 脚本代理
+浏览器  -> 本地Socks代理服务 : （1）连接
+本地Socks代理服务 <--> 本地HTTP客户端: （2）转换协议
+本地HTTP客户端 -> Web服务器脚本: （3）不断请求
+本地HTTP客户端 <-- Web服务器脚本: （4）发送响应
+本地Socks代理服务<--> 本地HTTP客户端: （5）协议转换
+本地Socks代理服务 --> 浏览器: （6）发送数据
+note right: 倾旋的博客:https://payloads.online
+但是这个场景以上方案都使用起来都不能给出一个很好的效果，因为网络延迟、系统卡顿等等问题，想要传递工具到服务器上变得困难。"><meta name=author content="倾旋的博客"><link rel="preload stylesheet" as=style href=https://payloads.online/main.min.css><link rel=preload as=image href=https://payloads.online/theme.png><link rel=preload as=image href=/avatar.jpeg><script defer src=https://payloads.online/highlight.min.js onload=hljs.initHighlightingOnLoad()></script><link rel=icon href=https://payloads.online/favicon.ico><link rel=apple-touch-icon href=https://payloads.online/apple-touch-icon.png><meta name=generator content="Hugo 0.148.2"><meta itemprop=name content="Web正向代理的思考"><meta itemprop=description content="本篇文章，主要是记录工作中遇到一个在不出网的机器上，构建正向代理尝试出的一个其他办法。"><meta itemprop=datePublished content="2020-11-01T00:00:00+00:00"><meta itemprop=dateModified content="2020-11-01T00:00:00+00:00"><meta itemprop=wordCount content="453"><meta property="og:url" content="https://payloads.online/archivers/2020-11-01/1/"><meta property="og:site_name" content="倾旋的博客"><meta property="og:title" content="Web正向代理的思考"><meta property="og:description" content="本篇文章，主要是记录工作中遇到一个在不出网的机器上，构建正向代理尝试出的一个其他办法。"><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-11-01T00:00:00+00:00"><meta property="article:modified_time" content="2020-11-01T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Web正向代理的思考"><meta name=twitter:description content="本篇文章，主要是记录工作中遇到一个在不出网的机器上，构建正向代理尝试出的一个其他办法。"><link rel=canonical href=https://payloads.online/archivers/2020-11-01/1/></head><body class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"><header class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"><div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto"><a class="-translate-y-[1px] text-2xl font-medium" href=https://payloads.online/>倾旋的博客</a><div class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf8f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/>首页</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/posts/>文章列表</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/tags>标签</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/projects>开源项目</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/about>关于我</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/links/>友情链接</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/message>留言</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/sponsor>赞助</a></nav></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">Web正向代理的思考</h1><div class="text-xs antialiased opacity-60"><time>Nov 1, 2020</time><span class=mx-1>&#183;</span>
+<span>倾旋</span></div></header><section><h2 id=0x01-背景假设>0x01 背景假设</h2><p>获取Webshell后，但是机器不出网（DNS、TCP、UDP）等常规端口都进行了尝试。</p><p>不出网的解释：内部的Webshell服务器无法连接互联网。</p><p>尝试过的方案有：</p><pre tabindex=0><code class=language-plantuml data-lang=plantuml>title 出网探测方式
+state TCP {
+WindowsHttp : certutil -f -split -urlcache http://domain/com
+LinuxHttp: wget &lt;URL&gt;
+}
+state UDP{
+DNS : nslookup domain.com
+}
+state ICMP{
+    ICMP: ping domain.com
+}
+</code></pre><p>那么，一般我们会尝试：</p><ul><li><a href=https://github.com/sensepost/reGeorg>reGeorg</a></li><li><a href=https://github.com/L-codes/Neo-reGeorg>Neo-reGeorg</a></li><li><a href=https://github.com/sensepost/reDuh>reDuh</a></li><li><a href=https://github.com/blackarrowsec/pivotnacci>pivotnacci</a></li><li>&mldr;</li></ul><p>这种类型的工具往往都有一个特性：通过脚本帮助我们把HTTP协议转换成Socks，由于HTTP协议无状态，因此需要发送大量数据包。</p><pre tabindex=0><code class=language-plantuml data-lang=plantuml>title 脚本代理
+浏览器  -&gt; 本地Socks代理服务 : （1）连接
+本地Socks代理服务 &lt;--&gt; 本地HTTP客户端: （2）转换协议
+本地HTTP客户端 -&gt; Web服务器脚本: （3）不断请求
+本地HTTP客户端 &lt;-- Web服务器脚本: （4）发送响应
+本地Socks代理服务&lt;--&gt; 本地HTTP客户端: （5）协议转换
+本地Socks代理服务 --&gt; 浏览器: （6）发送数据
+note right: 倾旋的博客:https://payloads.online
+</code></pre><p>但是这个场景以上方案都使用起来都不能给出一个很好的效果，因为网络延迟、系统卡顿等等问题，想要传递工具到服务器上变得困难。</p><h2 id=0x02-尝试理解目标网络架构>0x02 尝试理解目标网络架构</h2><p>这里我画了一个简单的架构图：</p><pre tabindex=0><code class=language-plantuml data-lang=plantuml>title 目标网络架构
+浏览器  -&gt; 防火墙 : （1）连接 8080 端口
+防火墙 &lt;-&gt; 内网Web服务器: （2）NAT转发8080端口
+防火墙 -&gt; 浏览器: （3）将结果数据转发
+note right: 倾旋的博客:https://payloads.online
+</code></pre><p>类似这种场景在企业种非常的常见，网络管理员应业务部门的要求，利用NAT端口映射的技术可以直接将DMZ区域的某台机器上的某个端口对外网开放。</p><p>这里我使用Docker搭建了一个简单的靶场：</p><pre tabindex=0><code class=language-plantuml data-lang=plantuml>title 靶场结构
+
+
+state 互联网防火墙172.17.0.2{
+    [*] --&gt; 防火墙规则1
+    [*] --&gt; 防火墙规则2
+防火墙规则1 : 172.17.0.2:8080
+防火墙规则2: 172.17.0.2:8081
+note left: 假设172.17.0.2是公网服务器
+}
+
+state DMZ区域{
+    DMZ网站业务1: 192.168.1.128:8080
+    note left: 内网
+    DMZ网站业务2: 192.168.1.125:8080
+}
+state 外网攻击者 {
+攻击者IP:172.17.0.1
+note left: 假设172.17.0.1是攻击者出口
+}
+
+
+攻击者IP --&gt; 防火墙规则1 : 访问第一个业务
+防火墙规则1 -&gt; DMZ网站业务1: NAT
+攻击者IP -&gt; 防火墙规则2
+防火墙规则2 -&gt; DMZ网站业务2: NAT
+</code></pre><p>对应的NAT 端口转发情况：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style=color:#ae81ff>8080</span> -j DNAT --to-destination 192.168.1.128:8080
 </span></span><span style=display:flex><span>iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style=color:#ae81ff>8080</span> -j SNAT --to-source 192.168.1.129
 </span></span><span style=display:flex><span>iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style=color:#ae81ff>8080</span> -j DNAT --to-destination 192.168.1.125:8080
 </span></span><span style=display:flex><span>iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.125 --dport <span style=color:#ae81ff>8080</span> -j SNAT --to-source 192.168.1.129
 </span></span><span style=display:flex><span>iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style=color:#ae81ff>8081</span> -j DNAT --to-destination 192.168.1.128:8081
 </span></span><span style=display:flex><span>iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style=color:#ae81ff>8081</span> -j SNAT --to-source 192.168.1.129
 </span></span><span style=display:flex><span>iptables-save
-</span></span></code></pre></td></tr></table></div></div><p>如果攻击者访问172.17.0.2的8080端口，流量将会被转发到192.168.1.128上，那么设想一下，NAT规则在生产的场景中会不会产生规则滥用的情况？</p><p>我猜想有以下几种情况：</p><ol><li>业务下线了，NAT规则没有来得及删除</li><li>某个规则指向的端口服务暂时停止了</li><li>网络管理员觉得流程麻烦，遂开放了一段端口，如：8080-8090</li></ol><h2 id=0x03-利用nat规则实现内网漫游>0x03 利用NAT规则实现内网漫游</h2><p>理清楚网络结构后，可以开始寻找有用的NAT规则了，我总结了两个办法：</p><ol><li>结束正在占用NAT端口的程序</li><li>寻找未被使用的NAT端口</li></ol><p>如何判断目标正在使用这个NAT端口，我的办法是使用Nmap进行扫描。一些NAT规则大多数会采用相同端口映射的关系，比如：8080:8080。</p><p><img src=https://images.payloads.online/a3247094-4f5f-11ec-8ef1-00d861bf4abb.png alt=2020-11-01-22-31-26></p><p><img src=https://images.payloads.online/a366145e-4f5f-11ec-b458-00d861bf4abb.png alt=2020-11-01-22-32-56></p><p>通过信息收集，了解到内网IP端口是192.168.1.128。</p><p>映射关系：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>title 靶场结构
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>state 互联网防火墙172.17.0.2{
-</span></span><span style=display:flex><span>    [*] --&gt; 防火墙规则1
-</span></span><span style=display:flex><span>防火墙规则1 : 172.17.0.2:8080
-</span></span><span style=display:flex><span>note left: 假设172.17.0.2是公网服务器
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>state DMZ区域{
-</span></span><span style=display:flex><span>    DMZ网站业务1: 192.168.1.128:8080
-</span></span><span style=display:flex><span>    note left: 内网
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>state 外网攻击者 {
-</span></span><span style=display:flex><span>攻击者IP:172.17.0.1
-</span></span><span style=display:flex><span>note left: 假设172.17.0.1是攻击者出口
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>攻击者IP --&gt; 防火墙规则1 : 访问第一个业务
-</span></span><span style=display:flex><span>防火墙规则1 -&gt; DMZ网站业务1: NAT
-</span></span></code></pre></td></tr></table></div></div><p>这个时候扫描172.17.0.2查看开放状态：</p><p><img src=https://images.payloads.online/a39ded20-4f5f-11ec-be81-00d861bf4abb.png alt=2020-11-01-22-36-44></p><p>我为了模拟真实环境，还映射了其他端口：8081。</p><p><img src=https://images.payloads.online/a3dda3b6-4f5f-11ec-8c80-00d861bf4abb.png alt=2020-11-01-22-38-21></p><p>真实场景下，如果是非映射端口，将会是filtered，这种的情况是数据包到达防火墙后就被DROP掉了。</p><p><img src=https://images.payloads.online/a416ea5e-4f5f-11ec-b2b4-00d861bf4abb.png alt=2020-11-01-22-42-16></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style=color:#ae81ff>8080</span> -j DNAT --to-destination 192.168.1.128:8080
+</span></span></code></pre></div><p>如果攻击者访问172.17.0.2的8080端口，流量将会被转发到192.168.1.128上，那么设想一下，NAT规则在生产的场景中会不会产生规则滥用的情况？</p><p>我猜想有以下几种情况：</p><ol><li>业务下线了，NAT规则没有来得及删除</li><li>某个规则指向的端口服务暂时停止了</li><li>网络管理员觉得流程麻烦，遂开放了一段端口，如：8080-8090</li></ol><h2 id=0x03-利用nat规则实现内网漫游>0x03 利用NAT规则实现内网漫游</h2><p>理清楚网络结构后，可以开始寻找有用的NAT规则了，我总结了两个办法：</p><ol><li>结束正在占用NAT端口的程序</li><li>寻找未被使用的NAT端口</li></ol><p>如何判断目标正在使用这个NAT端口，我的办法是使用Nmap进行扫描。一些NAT规则大多数会采用相同端口映射的关系，比如：8080:8080。</p><p><img src=https://images.payloads.online/a3247094-4f5f-11ec-8ef1-00d861bf4abb.png alt=2020-11-01-22-31-26></p><p><img src=https://images.payloads.online/a366145e-4f5f-11ec-b458-00d861bf4abb.png alt=2020-11-01-22-32-56></p><p>通过信息收集，了解到内网IP端口是192.168.1.128。</p><p>映射关系：</p><pre tabindex=0><code class=language-plantuml data-lang=plantuml>title 靶场结构
+
+state 互联网防火墙172.17.0.2{
+    [*] --&gt; 防火墙规则1
+防火墙规则1 : 172.17.0.2:8080
+note left: 假设172.17.0.2是公网服务器
+}
+
+state DMZ区域{
+    DMZ网站业务1: 192.168.1.128:8080
+    note left: 内网
+}
+state 外网攻击者 {
+攻击者IP:172.17.0.1
+note left: 假设172.17.0.1是攻击者出口
+}
+
+攻击者IP --&gt; 防火墙规则1 : 访问第一个业务
+防火墙规则1 -&gt; DMZ网站业务1: NAT
+</code></pre><p>这个时候扫描172.17.0.2查看开放状态：</p><p><img src=https://images.payloads.online/a39ded20-4f5f-11ec-be81-00d861bf4abb.png alt=2020-11-01-22-36-44></p><p>我为了模拟真实环境，还映射了其他端口：8081。</p><p><img src=https://images.payloads.online/a3dda3b6-4f5f-11ec-8c80-00d861bf4abb.png alt=2020-11-01-22-38-21></p><p>真实场景下，如果是非映射端口，将会是filtered，这种的情况是数据包到达防火墙后就被DROP掉了。</p><p><img src=https://images.payloads.online/a416ea5e-4f5f-11ec-b2b4-00d861bf4abb.png alt=2020-11-01-22-42-16></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style=color:#ae81ff>8080</span> -j DNAT --to-destination 192.168.1.128:8080
 </span></span><span style=display:flex><span>iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style=color:#ae81ff>8080</span> -j SNAT --to-source 192.168.1.129
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>iptables -t nat -A PREROUTING -p tcp -d 172.17.0.2 --dport <span style=color:#ae81ff>8080</span> -j DNAT --to-destination 192.168.1.125:8080
@@ -171,48 +117,26 @@
 </span></span><span style=display:flex><span>iptables -t nat -A POSTROUTING -p tcp -d 192.168.1.128 --dport <span style=color:#ae81ff>8081</span> -j SNAT --to-source 192.168.1.129
 </span></span><span style=display:flex><span>iptables -P INPUT DROP
 </span></span><span style=display:flex><span>iptables-save
-</span></span></code></pre></td></tr></table></div></div><p><img src=https://images.payloads.online/a4529b9e-4f5f-11ec-b01a-00d861bf4abb.png alt=2020-11-01-23-10-02></p><p>倘若在8081 closed情况下，我们可以直接nc监听起来进行测试：</p><p><img src=https://images.payloads.online/a48c4d12-4f5f-11ec-91c1-00d861bf4abb.png alt=2020-11-01-23-12-54></p><p>这个时候，内网的服务器监听了8081端口，成功的利用NAT规则使得我们可以直接正向连接到NC。</p><p><img src=https://images.payloads.online/a4c64e5e-4f5f-11ec-8081-00d861bf4abb.png alt=2020-11-01-23-14-06></p><h3 id=如何利用>如何利用？</h3><p>我们可以将nc这个程序换成别的，比如：socks5的服务端程序，监听8081端口，如此一来就能够直接连接 <code>socks5:172.17.0.2:8081</code>作为内网的入口。</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>title 利用图
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>state 互联网防火墙172.17.0.2{
-</span></span><span style=display:flex><span>    [*] --&gt; 防火墙规则1
-</span></span><span style=display:flex><span>    [*] --&gt; SOCKS5服务NAT
-</span></span><span style=display:flex><span>防火墙规则1 : 172.17.0.2:8080
-</span></span><span style=display:flex><span>SOCKS5服务NAT : 172.17.0.2:8081
-</span></span><span style=display:flex><span>note left: 假设172.17.0.2是公网服务器
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>state DMZ区域{
-</span></span><span style=display:flex><span>    DMZ网站业务1: 192.168.1.128:8080
-</span></span><span style=display:flex><span>    SOCKS5服务端口: 192.168.1.128:8081
-</span></span><span style=display:flex><span>    note left: 内网
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>state 外网攻击者 {
-</span></span><span style=display:flex><span>攻击者IP:172.17.0.1
-</span></span><span style=display:flex><span>note left: 假设172.17.0.1是攻击者出口
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>攻击者IP --&gt; SOCKS5服务NAT : 访问第一个业务
-</span></span><span style=display:flex><span>SOCKS5服务NAT -&gt; DMZ网站业务1: 通过Socks5可以直达内网
-</span></span></code></pre></td></tr></table></div></div><h2 id=0x04-总结>0x04 总结</h2><p>本文主要在防火墙规则上做了一些思考，并且进行了环境的模拟搭建，与实战环境相同，因此得出以下结论：</p><ol><li>通过分析NAT规则，能够构建一个稳定代理。</li><li>测试NAT只能使用端口监听工具，然后在外网进行连接测试。</li><li>Filtered是DROP，ACCEPT是Open，未被使用Closed也是能够ACCEPT。</li><li>通过这种方案可以提升效率。</li><li>在非不得已的情况下，最好不要结束占用了NAT端口的进程。</li></ol></div><nav class="hide-on-mobile section-nav"><nav id=TableOfContents><ol><li><a href=#0x01-背景假设>0x01 背景假设</a></li><li><a href=#0x02-尝试理解目标网络架构>0x02 尝试理解目标网络架构</a></li><li><a href=#0x03-利用nat规则实现内网漫游>0x03 利用NAT规则实现内网漫游</a><ol><li><a href=#如何利用>如何利用？</a></li></ol></li><li><a href=#0x04-总结>0x04 总结</a></li></ol></nav></nav></div><div class=post><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post></div></div><div class="footer wrapper"><nav class=nav><div>2024 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script><script>var enableTruncate=!0,filterDepth=!1;const MAX_DEPTH=9;window.addEventListener("DOMContentLoaded",()=>{const e=new IntersectionObserver(e=>{e.reverse().forEach(e=>{const n=e.target.getAttribute("id");if(e.intersectionRatio>0){var t=document.querySelectorAll(`nav li a[href="#${n}"]`);t!=null&&t.forEach(e=>{if(e!=null){var t=getDepth(e.parentElement);filterDepth&&t<=MAX_DEPTH&&(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))}else filterDepth||(clearActiveStatesInTableOfContents(),e.parentElement.classList.add("active"))})}})});document.querySelectorAll("h1[id],h2[id],h3[id],h4[id]").forEach(t=>{e.observe(t)})});function isVisible(e){if(!(e instanceof Element))return!1;const n=getComputedStyle(e);if(n.display==="none")return!1;if(n.visibility!=="visible")return!1;if(n.opacity<.1)return!1;if(e.offsetWidth+e.offsetHeight+e.getBoundingClientRect().height+e.getBoundingClientRect().width===0)return!1;const t={x:e.getBoundingClientRect().left+e.offsetWidth/2,y:e.getBoundingClientRect().top+e.offsetHeight/2};if(t.x<0)return!1;if(t.x>(document.documentElement.clientWidth||window.innerWidth))return!1;if(t.y<0)return!1;if(t.y>(document.documentElement.clientHeight||window.innerHeight))return!1;let s=document.elementFromPoint(t.x,t.y);do if(s===e)return!0;while(s=s.parentNode)return!1}function clearActiveStatesInTableOfContents(){document.querySelectorAll("nav li").forEach(e=>{e.classList.remove("active")})}function getDepth(e){for(var t=0;e!==null&&e.tagName.toLowerCase()!=="ul";)t++,e=e.parentElement;return t}function navItems(){var e=document.querySelectorAll("nav nav li a");return Array.from(e).filter(e=>e.href!=null&&e.hash.startsWith("#"))}function lasItemInNavBarVisible(){var e=navItems().slice(-1)[0];return isVisible(e)}document.addEventListener("DOMContentLoaded",function(){if(!enableTruncate)return;var e=navItems();console.log(e),lasItemInNavBarVisible()||(filterDepth=!0,e.forEach(function(e){var t=getDepth(e.parentElement);t>MAX_DEPTH&&e.parentElement.classList.add("depth-nested")}))})</script></body></html>
+</span></span></code></pre></div><p><img src=https://images.payloads.online/a4529b9e-4f5f-11ec-b01a-00d861bf4abb.png alt=2020-11-01-23-10-02></p><p>倘若在8081 closed情况下，我们可以直接nc监听起来进行测试：</p><p><img src=https://images.payloads.online/a48c4d12-4f5f-11ec-91c1-00d861bf4abb.png alt=2020-11-01-23-12-54></p><p>这个时候，内网的服务器监听了8081端口，成功的利用NAT规则使得我们可以直接正向连接到NC。</p><p><img src=https://images.payloads.online/a4c64e5e-4f5f-11ec-8081-00d861bf4abb.png alt=2020-11-01-23-14-06></p><h3 id=如何利用>如何利用？</h3><p>我们可以将nc这个程序换成别的，比如：socks5的服务端程序，监听8081端口，如此一来就能够直接连接 <code>socks5:172.17.0.2:8081</code>作为内网的入口。</p><pre tabindex=0><code class=language-plantuml data-lang=plantuml>title 利用图
+
+state 互联网防火墙172.17.0.2{
+    [*] --&gt; 防火墙规则1
+    [*] --&gt; SOCKS5服务NAT
+防火墙规则1 : 172.17.0.2:8080
+SOCKS5服务NAT : 172.17.0.2:8081
+note left: 假设172.17.0.2是公网服务器
+}
+
+state DMZ区域{
+    DMZ网站业务1: 192.168.1.128:8080
+    SOCKS5服务端口: 192.168.1.128:8081
+    note left: 内网
+}
+state 外网攻击者 {
+攻击者IP:172.17.0.1
+note left: 假设172.17.0.1是攻击者出口
+}
+
+攻击者IP --&gt; SOCKS5服务NAT : 访问第一个业务
+SOCKS5服务NAT -&gt; DMZ网站业务1: 通过Socks5可以直达内网
+</code></pre><h2 id=0x04-总结>0x04 总结</h2><p>本文主要在防火墙规则上做了一些思考，并且进行了环境的模拟搭建，与实战环境相同，因此得出以下结论：</p><ol><li>通过分析NAT规则，能够构建一个稳定代理。</li><li>测试NAT只能使用端口监听工具，然后在外网进行连接测试。</li><li>Filtered是DROP，ACCEPT是Open，未被使用Closed也是能够ACCEPT。</li><li>通过这种方案可以提升效率。</li><li>在非不得已的情况下，最好不要结束占用了NAT端口的进程。</li></ol></section><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/archivers/2020-11-13/1/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Linux透明代理在红队渗透中的应用</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2020-10-23/1/><span>静态恶意代码逃逸（第七课）</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a>️</footer></body></html>

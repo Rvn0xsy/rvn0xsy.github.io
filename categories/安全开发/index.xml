@@ -54,34 +54,14 @@
 &lt;p>在进行主机扫描的时候会执行hostrule这个函数，从以往的nmap扩展脚本代码中我们都可以发现在hostrule这个函数中做了一些针对host操作的动作。&lt;/p>
 &lt;p>hostrule有一个参数，变量名叫host，我们可以把它理解为一个对象，在这里称之为对象是为了方便读者理解，在lua中实际它的数据类型是一个多维的table（表），具有很多属性。由于这些rule函数都是被动调用的，我们只能在函数内部对形参进行操作了。&lt;/p>
 &lt;p>参考：https://nmap.org/book/nse-api.html&lt;/p>
-&lt;p>
- &lt;img src="https://images.payloads.online/6e7b0678-4f5f-11ec-bf1a-00d861bf4abb.png" alt="2019-04-24-10-02-11">
-
-&lt;/p>
+&lt;p>&lt;img src="https://images.payloads.online/6e7b0678-4f5f-11ec-bf1a-00d861bf4abb.png" alt="2019-04-24-10-02-11">&lt;/p>
 &lt;p>通过上面这个表格我们能够清楚的了解到从host这个table中可以读取到哪些信息。&lt;/p>
 &lt;p>为了让读者吸收，建立一个需求，请大家与我一起完成。&lt;/p>
 &lt;blockquote>
 &lt;p>需求：使用Nmap扫描获得所有主机的MAC地址&lt;/p>&lt;/blockquote>
 &lt;p>由于Nmap没提供这个需求的解决方案，就需要我们自己来写一个扩展脚本了~&lt;/p>
 &lt;p>还是拿之前的test.nse来改一下：&lt;/p>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-lua" data-lang="lua">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">local&lt;/span> stdnse &lt;span style="color:#f92672">=&lt;/span> require &lt;span style="color:#e6db74">&amp;#34;stdnse&amp;#34;&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-lua" data-lang="lua">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">local&lt;/span> stdnse &lt;span style="color:#f92672">=&lt;/span> require &lt;span style="color:#e6db74">&amp;#34;stdnse&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>prerule&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>()
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>hostrule&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>(host)
@@ -94,9 +74,43 @@
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>postrule&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>()
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>通过host.mac_addr获取的mac地址是二进制编码的，我们要转换成字符串，需要引入stdnse这个扩展包，stdnse包中有一个format_mac函数，能够将host.mac_addr转换成字符串。&lt;/p></description></item><item><title>Nmap扩展开发（二）</title><link>https://payloads.online/archivers/2019-04-24/2/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/2/</guid><description>&lt;h2 id="0x01-nse引擎执行流程">0x01 NSE引擎执行流程&lt;/h2>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>通过host.mac_addr获取的mac地址是二进制编码的，我们要转换成字符串，需要引入stdnse这个扩展包，stdnse包中有一个format_mac函数，能够将host.mac_addr转换成字符串。&lt;/p>
+&lt;p>执行效果如下：&lt;/p>
+&lt;p>&lt;img src="https://images.payloads.online/6ebb6fce-4f5f-11ec-8628-00d861bf4abb.png" alt="2019-04-24-10-02-57">&lt;/p>
+&lt;pre tabindex="0">&lt;code>00:50:56:ec:95:48
+00:50:56:f8:1e:b8
+00:50:56:c0:00:08
+00:0c:29:b4:48:d7
+&lt;/code>&lt;/pre>&lt;p>以上这些MAC地址就是当前内网中的所有主机了。&lt;/p>
+&lt;h2 id="0x02-扩展脚本对象-端口">0X02 扩展脚本对象-端口&lt;/h2>
+&lt;p>端口相对于主机来说，属性较少，主要是针对端口状态、端口协议、端口服务、端口服务版本的一些描述。&lt;/p>
+&lt;p>&lt;img src="https://images.payloads.online/6effee2e-4f5f-11ec-913d-00d861bf4abb.png" alt="2019-04-24-10-03-27">&lt;/p>
+&lt;h3 id="0x02-完成一个需求">0X02 完成一个需求&lt;/h3>
+&lt;p>还是老样子，假设一个需求，解决这个需求：&lt;/p>
+&lt;blockquote>
+&lt;p>需求：获取当前内网中开放HTTP服务的主机的MAC地址&lt;/p>&lt;/blockquote>
+&lt;p>首先可以分析一下这个需求：&lt;/p>
+&lt;blockquote>
+&lt;p>条件：开放了HTTP服务
+开放了HTTP服务的主机一般都会开放80/443
+目的：获取MAC地址
+需要引入stdnse包，调用format_mac函数&lt;/p>&lt;/blockquote>
+&lt;p>如此一来思路清晰了许多，还是从test.nse改起：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-lua" data-lang="lua">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">local&lt;/span> stdnse &lt;span style="color:#f92672">=&lt;/span> require &lt;span style="color:#e6db74">&amp;#34;stdnse&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>prerule&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>hostrule&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>(host)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>portrule&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>(host,port)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	&lt;span style="color:#66d9ef">if&lt;/span>(port.number &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">80&lt;/span> &lt;span style="color:#f92672">or&lt;/span> port.number &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">443&lt;/span>)&lt;span style="color:#66d9ef">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>		print(&lt;span style="color:#e6db74">&amp;#34;[*]Host MAC -&amp;gt; &amp;#34;&lt;/span> &lt;span style="color:#f92672">..&lt;/span> stdnse.format_mac(host.mac_addr))
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>action&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>postrule&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>既然是针对服务/端口的需求，我们可以在portrule中进行编写，肯定有读者会产生疑问，nmap的-p参数就能指定端口，为何还要再portrule中判断。&lt;/p></description></item><item><title>Nmap扩展开发（二）</title><link>https://payloads.online/archivers/2019-04-24/2/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/2/</guid><description>&lt;h2 id="0x01-nse引擎执行流程">0x01 NSE引擎执行流程&lt;/h2>
 &lt;p>Nmap的扩展脚本语言都基于lua来开发的，执行也是调用了内部封装的lua解释器。&lt;/p>
 &lt;p>正常情况下，调用任何一个扩展脚本会首先执行&lt;code>nse_main.lua&lt;/code>，该脚本主要做了以下几件事：&lt;/p>
 &lt;ul>
@@ -114,34 +128,44 @@
 &lt;p>在第一行添加：&lt;/p>
 &lt;p>&lt;code>print(&amp;quot;[*] nse_main.lua first excute ... \n&amp;quot;)&lt;/code>&lt;/p>
 &lt;p>保存后，使用一个脚本观察效果：&lt;/p>
-&lt;p>
- &lt;img src="https://images.payloads.online/6d832994-4f5f-11ec-9c52-00d861bf4abb.png" alt="2019-04-24-09-57-34">
-
-&lt;/p>
+&lt;p>&lt;img src="https://images.payloads.online/6d832994-4f5f-11ec-9c52-00d861bf4abb.png" alt="2019-04-24-09-57-34">&lt;/p>
 &lt;p>可以发现，在nmap启动后就会执行nse_main.lua中的代码。&lt;/p>
 &lt;h2 id="0x03-扩展脚本执行规则">0x03 扩展脚本执行规则&lt;/h2>
 &lt;p>在nse_main.lua的64行左右，定义了一些规则：&lt;/p>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">4
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">5
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">6
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">7
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-lua" data-lang="lua">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">-- Table of different supported rules.&lt;/span>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-lua" data-lang="lua">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">-- Table of different supported rules.&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">local&lt;/span> NSE_SCRIPT_RULES &lt;span style="color:#f92672">=&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> prerule &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;prerule&amp;#34;&lt;/span>,
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> hostrule &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;hostrule&amp;#34;&lt;/span>,
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> portrule &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;portrule&amp;#34;&lt;/span>,
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> postrule &lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#e6db74">&amp;#34;postrule&amp;#34;&lt;/span>,
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>};
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>每一个规则代表了函数，由函数的返回值决定执行流程&lt;/p></description></item><item><title>Nmap扩展开发（四）</title><link>https://payloads.online/archivers/2019-04-24/4/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/4/</guid><description>&lt;h2 id="0x01-http包的使用">0x01 HTTP包的使用&lt;/h2>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>每一个规则代表了函数，由函数的返回值决定执行流程&lt;/p>
+&lt;ul>
+&lt;li>prerule 在扫描任何主机之前，prerule函数运行一次&lt;/li>
+&lt;li>hostrule 在扫描一个主机后运行一次&lt;/li>
+&lt;li>portrule 在扫描一个主机的端口后运行一次&lt;/li>
+&lt;li>postrule 在全部扫描完毕以后运行一次&lt;/li>
+&lt;/ul>
+&lt;p>也就是说，prerule和postrule是在开始和结束运行，并且只运行一次，hostrule是扫描一个主机就运行一次，有N个主机就会运行N次，portrule是扫描到一个端口就运行一次，有N个端口就运行N次。&lt;/p>
+&lt;p>为了验证我得出的结论，写了一个测试脚本：&lt;/p>
+&lt;p>&lt;code>vim /usr/share/nmap/scripts/test.nse&lt;/code>&lt;/p>
+&lt;p>内容如下：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-lua" data-lang="lua">&lt;span style="display:flex;">&lt;span>prerule&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	print(&lt;span style="color:#e6db74">&amp;#34;prerule()&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>hostrule&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>(host)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	print(&lt;span style="color:#e6db74">&amp;#34;hostrule()&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>portrule&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>(host,port)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	print(&lt;span style="color:#e6db74">&amp;#34;portrule()&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>action&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	print(&lt;span style="color:#e6db74">&amp;#34;action()&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>postrule&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#66d9ef">function&lt;/span>()
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>	print(&lt;span style="color:#e6db74">&amp;#34;postrule()&amp;#34;&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">end&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>使用nmap扫描一个主机调用这个脚本看看执行效果：&lt;/p></description></item><item><title>Nmap扩展开发（四）</title><link>https://payloads.online/archivers/2019-04-24/4/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/4/</guid><description>&lt;h2 id="0x01-http包的使用">0x01 HTTP包的使用&lt;/h2>
 &lt;p>一般情况下，我们扫描一些Web服务的同时需要进行渗透测试、安全评估、漏洞检测等操作，但是官方并未提供符合我们需求的脚本，这时候就要自己写脚本了。Nmap已经内置了HTTP包，不需要再进行下载和配置。&lt;/p>
 &lt;h2 id="0x02-基础概念铺垫">0x02 基础概念铺垫&lt;/h2>
 &lt;p>首先，先介绍两个表结构，为了方便我们后续的数据操作，让读者先熟悉两个东西：&lt;/p>
@@ -149,61 +173,31 @@
 &lt;li>响应表&lt;/li>
 &lt;/ul>
 &lt;p>响应表中主要涵盖了：HTTP状态码、HTTP响应头、HTTP版本、HTTP原始响应头、Cookies、HTTP响应主体内容（body）等&lt;/p>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">19
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">20
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">21
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">22
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">23
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">24
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>| Response: 
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| status: 200
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| header: 
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| content-length: 0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| allow: POST,OPTIONS,HEAD,GET
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| connection: close
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| content-type: text/html
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| server: Apache/2.4.29 (Debian)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| date: Fri, 06 Jul 2018 07:02:13 GMT
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| ssl: false
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| body: 
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| cookies: 
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| 
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| status-line: HTTP/1.1 200 OK\x0D
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| 
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| rawheader: 
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Date: Fri, 06 Jul 2018 07:02:13 GMT
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Server: Apache/2.4.29 (Debian)
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Allow: POST,OPTIONS,HEAD,GET
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Content-Length: 0
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Connection: close
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| Content-Type: text/html
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>| 
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>|_ version: 1.1
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;ul>
+&lt;pre tabindex="0">&lt;code>| Response: 
+| status: 200
+| header: 
+| content-length: 0
+| allow: POST,OPTIONS,HEAD,GET
+| connection: close
+| content-type: text/html
+| server: Apache/2.4.29 (Debian)
+| date: Fri, 06 Jul 2018 07:02:13 GMT
+| ssl: false
+| body: 
+| cookies: 
+| 
+| status-line: HTTP/1.1 200 OK\x0D
+| 
+| rawheader: 
+| Date: Fri, 06 Jul 2018 07:02:13 GMT
+| Server: Apache/2.4.29 (Debian)
+| Allow: POST,OPTIONS,HEAD,GET
+| Content-Length: 0
+| Connection: close
+| Content-Type: text/html
+| 
+|_ version: 1.1
+&lt;/code>&lt;/pre>&lt;ul>
 &lt;li>Options表&lt;/li>
 &lt;/ul>
 &lt;p>Options表主要用于设置HTTP请求时的超时时间、Cookie、请求头、HTTP认证、页面缓存、地址类型（IPV4/IPV6）、是否验证重定向&lt;/p></description></item></channel></rss>

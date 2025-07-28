@@ -1,72 +1,28 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>代码审计 on 倾旋的博客</title><link>https://payloads.online/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/</link><description>Recent content in 代码审计 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Mon, 18 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/index.xml" rel="self" type="application/rss+xml"/><item><title>某安全数据交换系统的漏洞挖掘</title><link>https://payloads.online/archivers/2023-09-18/code-auditing/</link><pubDate>Mon, 18 Sep 2023 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2023-09-18/code-auditing/</guid><description>&lt;blockquote>
 &lt;p>本文写于2022年，分享一下挖掘某安全数据交换系统漏洞的过程。&lt;/p>&lt;/blockquote>
-&lt;!-- raw HTML omitted -->
+&lt;aside>
+📎 最初拿到的系统是一个vmware虚拟机，系统是Linux
 &lt;p>基本信息：&lt;/p>
 &lt;ul>
 &lt;li>后台管理界面用户名密码：admin/nxg@LL99&lt;/li>
 &lt;li>操作系统：root / bo%Fn!71、uninxg / lx$zR9ce&lt;/li>
 &lt;/ul>
-&lt;!-- raw HTML omitted -->
+&lt;/aside>
 &lt;h3 id="配置网络">配置网络&lt;/h3>
 &lt;p>根据产品安装文档环境搭建完毕后，手动设置IP地址和DNS：&lt;/p>
 &lt;p>手工修改 &lt;code>/etc/resolv.conf&lt;/code>&lt;/p>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-fallback" data-lang="fallback">&lt;span style="display:flex;">&lt;span>nameserver 114.114.114.114
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>nameserver 8.8.8.8
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>修改 &lt;code>/etc/NetworkManager/NetworkManager.conf&lt;/code> 文件，在main部分添加 “dns=none” 选项：&lt;/p>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">3
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="display:flex;">&lt;span>[main]
+&lt;pre tabindex="0">&lt;code>nameserver 114.114.114.114
+nameserver 8.8.8.8
+&lt;/code>&lt;/pre>&lt;p>修改 &lt;code>/etc/NetworkManager/NetworkManager.conf&lt;/code> 文件，在main部分添加 “dns=none” 选项：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="display:flex;">&lt;span>[main]
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">#plugins=ifcfg-rh
 &lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>dns&lt;span style="color:#f92672">=&lt;/span>none
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>网络IP地址配置文件在 &lt;code>/etc/sysconfig/network-scripts&lt;/code> 文件夹下：&lt;/p>
-&lt;p>
- &lt;img src="https://images.payloads.online/2024-07-29-c1fdebce3a78e6a40d687eb5fa49a1b528c20752858153814edc88cba437ceaa.png" alt="0">
-
-&lt;/p>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>网络IP地址配置文件在 &lt;code>/etc/sysconfig/network-scripts&lt;/code> 文件夹下：&lt;/p>
+&lt;p>&lt;img src="https://images.payloads.online/2024-07-29-c1fdebce3a78e6a40d687eb5fa49a1b528c20752858153814edc88cba437ceaa.png" alt="0">&lt;/p>
 &lt;p>我添加了两个网卡，其中一个用来供本机访问：&lt;/p>
-&lt;p>
- &lt;img src="https://images.payloads.online/2024-07-29-683e57752f22f8419b233e4952db222874f86e8902cfdd70410619b4b6a2aea1.png" alt="1">
-
-&lt;/p>
+&lt;p>&lt;img src="https://images.payloads.online/2024-07-29-683e57752f22f8419b233e4952db222874f86e8902cfdd70410619b4b6a2aea1.png" alt="1">&lt;/p>
 &lt;p>&lt;code>/etc/sysconfig/network-scripts/ifcfg-eth1-1&lt;/code>&lt;/p>
-&lt;div class="highlight">&lt;div style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">
-&lt;table style="border-spacing:0;padding:0;margin:0;border:0;">&lt;tr>&lt;td style="vertical-align:top;padding:0;margin:0;border:0;">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 1
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 2
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 3
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 4
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 5
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 6
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 7
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 8
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f"> 9
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">10
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">11
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">12
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">13
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">14
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">15
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">16
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">17
-&lt;/span>&lt;span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:0.4em;padding:0 0.4em 0 0.4em;color:#7f7f7f">18
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td style="vertical-align:top;padding:0;margin:0;border:0;;width:100%">
-&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="display:flex;">&lt;span>HWADDR&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">00&lt;/span>&lt;span style="color:#f92672">:&lt;/span>&lt;span style="color:#ae81ff">0&lt;/span>C:&lt;span style="color:#ae81ff">29&lt;/span>&lt;span style="color:#f92672">:&lt;/span>&lt;span style="color:#ae81ff">4&lt;/span>B:&lt;span style="color:#ae81ff">16&lt;/span>&lt;span style="color:#f92672">:&lt;/span>B4
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="display:flex;">&lt;span>HWADDR&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">00&lt;/span>&lt;span style="color:#f92672">:&lt;/span>&lt;span style="color:#ae81ff">0&lt;/span>C:&lt;span style="color:#ae81ff">29&lt;/span>&lt;span style="color:#f92672">:&lt;/span>&lt;span style="color:#ae81ff">4&lt;/span>B:&lt;span style="color:#ae81ff">16&lt;/span>&lt;span style="color:#f92672">:&lt;/span>B4
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>TYPE&lt;span style="color:#f92672">=&lt;/span>Ethernet
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>PROXY_METHOD&lt;span style="color:#f92672">=&lt;/span>none
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>BROWSER_ONLY&lt;span style="color:#f92672">=&lt;/span>no
@@ -84,6 +40,25 @@
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>UUID&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">8&lt;/span>a47e710&lt;span style="color:#f92672">-&lt;/span>cadd&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">49&lt;/span>b5&lt;span style="color:#f92672">-&lt;/span>b9b7&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">33&lt;/span>a324c4ab66
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>DEVICE&lt;span style="color:#f92672">=&lt;/span>eth1
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>ONBOOT&lt;span style="color:#f92672">=&lt;/span>no
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>观察启动命令行：&lt;/p></description></item></channel></rss>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>观察启动命令行：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">/&lt;/span>home&lt;span style="color:#f92672">/&lt;/span>leagsoft&lt;span style="color:#f92672">/&lt;/span>SafeDataExchange&lt;span style="color:#f92672">/&lt;/span>jdk&lt;span style="color:#f92672">/&lt;/span>bin&lt;span style="color:#f92672">/&lt;/span>java &lt;span style="color:#f92672">-&lt;/span>Dnop &lt;span style="color:#f92672">-&lt;/span>Djava.util.logging.manager&lt;span style="color:#f92672">=&lt;/span>org.apache.juli.ClassLoaderLogManager &lt;span style="color:#f92672">-&lt;/span>Dlog4j2.formatMsgNoLookups&lt;span style="color:#f92672">=&lt;/span>true &lt;span style="color:#f92672">-&lt;/span>javaagent:&lt;span style="color:#f92672">/&lt;/span>home&lt;span style="color:#f92672">/&lt;/span>leagsoft&lt;span style="color:#f92672">/&lt;/span>SafeDataExchange&lt;span style="color:#f92672">/&lt;/span>Apache&lt;span style="color:#f92672">/&lt;/span>lib&lt;span style="color:#f92672">/&lt;/span>jdc.jar &lt;span style="color:#f92672">-&lt;/span>Djdk.tls.ephemeralDHKeySize&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">2048&lt;/span> &lt;span style="color:#f92672">-&lt;/span>Djava.protocol.handler.pkgs&lt;span style="color:#f92672">=&lt;/span>org.apache.catalina.webresources &lt;span style="color:#f92672">-&lt;/span>Dorg.apache.catalina.security.SecurityListener.UMASK&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">0022&lt;/span> &lt;span style="color:#f92672">-&lt;/span>Dignore.endorsed.dirs&lt;span style="color:#f92672">=&lt;/span> &lt;span style="color:#f92672">-&lt;/span>classpath &lt;span style="color:#f92672">/&lt;/span>home&lt;span style="color:#f92672">/&lt;/span>leagsoft&lt;span style="color:#f92672">/&lt;/span>SafeDataExchange&lt;span style="color:#f92672">/&lt;/span>Apache&lt;span style="color:#f92672">/&lt;/span>bin&lt;span style="color:#f92672">/&lt;/span>bootstrap.jar:&lt;span style="color:#f92672">/&lt;/span>home&lt;span style="color:#f92672">/&lt;/span>leagsoft&lt;span style="color:#f92672">/&lt;/span>SafeDataExchange&lt;span style="color:#f92672">/&lt;/span>Apache&lt;span style="color:#f92672">/&lt;/span>bin&lt;span style="color:#f92672">/&lt;/span>tomcat&lt;span style="color:#f92672">-&lt;/span>juli.jar &lt;span style="color:#f92672">-&lt;/span>Dcatalina.base&lt;span style="color:#f92672">=/&lt;/span>home&lt;span style="color:#f92672">/&lt;/span>leagsoft&lt;span style="color:#f92672">/&lt;/span>SafeDataExchange&lt;span style="color:#f92672">/&lt;/span>Apache &lt;span style="color:#f92672">-&lt;/span>Dcatalina.home&lt;span style="color:#f92672">=/&lt;/span>home&lt;span style="color:#f92672">/&lt;/span>leagsoft&lt;span style="color:#f92672">/&lt;/span>SafeDataExchange&lt;span style="color:#f92672">/&lt;/span>Apache &lt;span style="color:#f92672">-&lt;/span>Djava.io.tmpdir&lt;span style="color:#f92672">=/&lt;/span>home&lt;span style="color:#f92672">/&lt;/span>leagsoft&lt;span style="color:#f92672">/&lt;/span>SafeDataExchange&lt;span style="color:#f92672">/&lt;/span>Apache&lt;span style="color:#f92672">/&lt;/span>temp org.apache.catalina.startup.Bootstrap start
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;code>/home/leagsoft/SafeDataExchange/Apache&lt;/code> 是Tomcat的安装目录，webapps目录下是部署的应用源代码：&lt;/p>
+&lt;p>&lt;img src="https://images.payloads.online/2024-07-29-7eb327a2b65b78ef6312f8ec7ee9a588095d75c22e7b6c0b376fe5954b4cb50d.png" alt="2">&lt;/p>
+&lt;p>将war包通过ssh拷贝至本地就可以看到整个项目的源代码了。&lt;/p>
+&lt;p>&lt;img src="https://images.payloads.online/2024-07-29-1a82b57f36a183a00f4b4ab358743ad1468f7c054a4d846d043739e40cb36011.png" alt="3">&lt;/p>
+&lt;h3 id="源代码解密">源代码解密&lt;/h3>
+&lt;p>将war包拷贝到本地通过idea打开，发现关键代码的实现都是空，连spring的控制器都是空，初步怀疑是被加密了，那么它是如何加密的呢？&lt;/p>
+&lt;p>&lt;img src="https://images.payloads.online/2024-07-29-3d65e98c169d8ee3d33e646b32ff390b9d60142de117b783b26ff2f4286059cf.png" alt="4">&lt;/p>
+&lt;p>既然网站可以正常跑起来，那么应该是运行时的某种技术手段实现，观察启动命令行：&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-cpp" data-lang="cpp">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">/&lt;/span>home&lt;span style="color:#f92672">/&lt;/span>leagsoft&lt;span style="color:#f92672">/&lt;/span>SafeDataExchange&lt;span style="color:#f92672">/&lt;/span>jdk&lt;span style="color:#f92672">/&lt;/span>bin&lt;span style="color:#f92672">/&lt;/span>java 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">-&lt;/span>Dnop &lt;span style="color:#f92672">-&lt;/span>Djava.util.logging.manager&lt;span style="color:#f92672">=&lt;/span>org.apache.juli.ClassLoaderLogManager 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">-&lt;/span>Dlog4j2.formatMsgNoLookups&lt;span style="color:#f92672">=&lt;/span>true 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">**-&lt;/span>javaagent:&lt;span style="color:#f92672">/&lt;/span>home&lt;span style="color:#f92672">/&lt;/span>leagsoft&lt;span style="color:#f92672">/&lt;/span>SafeDataExchange&lt;span style="color:#f92672">/&lt;/span>Apache&lt;span style="color:#f92672">/&lt;/span>lib&lt;span style="color:#f92672">/&lt;/span>jdc.jar&lt;span style="color:#f92672">**&lt;/span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">-&lt;/span>Djdk.tls.ephemeralDHKeySize&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">2048&lt;/span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">-&lt;/span>Djava.protocol.handler.pkgs&lt;span style="color:#f92672">=&lt;/span>org.apache.catalina.webresources 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">-&lt;/span>Dorg.apache.catalina.security.SecurityListener.UMASK&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">0022&lt;/span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">-&lt;/span>Dignore.endorsed.dirs&lt;span style="color:#f92672">=&lt;/span> 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">-&lt;/span>classpath &lt;span style="color:#f92672">/&lt;/span>home&lt;span style="color:#f92672">/&lt;/span>leagsoft&lt;span style="color:#f92672">/&lt;/span>SafeDataExchange&lt;span style="color:#f92672">/&lt;/span>Apache&lt;span style="color:#f92672">/&lt;/span>bin&lt;span style="color:#f92672">/&lt;/span>bootstrap.jar:&lt;span style="color:#f92672">/&lt;/span>home&lt;span style="color:#f92672">/&lt;/span>leagsoft&lt;span style="color:#f92672">/&lt;/span>SafeDataExchange&lt;span style="color:#f92672">/&lt;/span>Apache&lt;span style="color:#f92672">/&lt;/span>bin&lt;span style="color:#f92672">/&lt;/span>tomcat&lt;span style="color:#f92672">-&lt;/span>juli.jar 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">-&lt;/span>Dcatalina.base&lt;span style="color:#f92672">=/&lt;/span>home&lt;span style="color:#f92672">/&lt;/span>leagsoft&lt;span style="color:#f92672">/&lt;/span>SafeDataExchange&lt;span style="color:#f92672">/&lt;/span>Apache &lt;span style="color:#f92672">-&lt;/span>Dcatalina.home&lt;span style="color:#f92672">=/&lt;/span>home&lt;span style="color:#f92672">/&lt;/span>leagsoft&lt;span style="color:#f92672">/&lt;/span>SafeDataExchange&lt;span style="color:#f92672">/&lt;/span>Apache 
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">-&lt;/span>Djava.io.tmpdir&lt;span style="color:#f92672">=/&lt;/span>home&lt;span style="color:#f92672">/&lt;/span>leagsoft&lt;span style="color:#f92672">/&lt;/span>SafeDataExchange&lt;span style="color:#f92672">/&lt;/span>Apache&lt;span style="color:#f92672">/&lt;/span>temp org.apache.catalina.startup.Bootstrap start
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>命令行中有一个javaagent引起了我的注意：&lt;/p></description></item></channel></rss>

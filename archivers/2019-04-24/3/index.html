@@ -1,18 +1,65 @@
-<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>Nmap扩展开发（三） - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"><link rel=stylesheet href=/css/fontawesome.css></head><body><div class="container wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=post><div class=post-header><div class=meta><div class=date><span class=day>24</span>
-<span class=rest>Apr 2019</span></div></div><div class=matter><h1 class=title>Nmap扩展开发（三）</h1></div></div><h2 id=0x01-扩展脚本对象-主机>0X01 扩展脚本对象-主机</h2><p>在进行主机扫描的时候会执行hostrule这个函数，从以往的nmap扩展脚本代码中我们都可以发现在hostrule这个函数中做了一些针对host操作的动作。</p><p>hostrule有一个参数，变量名叫host，我们可以把它理解为一个对象，在这里称之为对象是为了方便读者理解，在lua中实际它的数据类型是一个多维的table（表），具有很多属性。由于这些rule函数都是被动调用的，我们只能在函数内部对形参进行操作了。</p><p>参考：https://nmap.org/book/nse-api.html</p><p><img src=https://images.payloads.online/6e7b0678-4f5f-11ec-bf1a-00d861bf4abb.png alt=2019-04-24-10-02-11></p><p>通过上面这个表格我们能够清楚的了解到从host这个table中可以读取到哪些信息。</p><p>为了让读者吸收，建立一个需求，请大家与我一起完成。</p><blockquote><p>需求：使用Nmap扫描获得所有主机的MAC地址</p></blockquote><p>由于Nmap没提供这个需求的解决方案，就需要我们自己来写一个扩展脚本了~</p><p>还是拿之前的test.nse来改一下：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> stdnse <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;stdnse&#34;</span>
+<!doctype html><html class="not-ready lg:text-base" style=--bg:#faf8f1 lang=zh-cn dir=ltr><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>Nmap扩展开发（三） - 倾旋的博客</title><meta name=theme-color><meta name=description content='0X01 扩展脚本对象-主机
+在进行主机扫描的时候会执行hostrule这个函数，从以往的nmap扩展脚本代码中我们都可以发现在hostrule这个函数中做了一些针对host操作的动作。
+hostrule有一个参数，变量名叫host，我们可以把它理解为一个对象，在这里称之为对象是为了方便读者理解，在lua中实际它的数据类型是一个多维的table（表），具有很多属性。由于这些rule函数都是被动调用的，我们只能在函数内部对形参进行操作了。
+参考：https://nmap.org/book/nse-api.html
+
+通过上面这个表格我们能够清楚的了解到从host这个table中可以读取到哪些信息。
+为了让读者吸收，建立一个需求，请大家与我一起完成。
+
+需求：使用Nmap扫描获得所有主机的MAC地址
+由于Nmap没提供这个需求的解决方案，就需要我们自己来写一个扩展脚本了~
+还是拿之前的test.nse来改一下：
+local stdnse = require "stdnse"
+prerule=function()
+end
+hostrule=function(host)
+	mac = host.mac_addr
+        print(stdnse.format_mac(mac))
+end
+portrule=function(host,port)
+end
+action=function()
+end
+postrule=function()
+end
+通过host.mac_addr获取的mac地址是二进制编码的，我们要转换成字符串，需要引入stdnse这个扩展包，stdnse包中有一个format_mac函数，能够将host.mac_addr转换成字符串。
+执行效果如下：
+
+00:50:56:ec:95:48
+00:50:56:f8:1e:b8
+00:50:56:c0:00:08
+00:0c:29:b4:48:d7
+以上这些MAC地址就是当前内网中的所有主机了。
+0X02 扩展脚本对象-端口
+端口相对于主机来说，属性较少，主要是针对端口状态、端口协议、端口服务、端口服务版本的一些描述。
+
+0X02 完成一个需求
+还是老样子，假设一个需求，解决这个需求：
+
+需求：获取当前内网中开放HTTP服务的主机的MAC地址
+首先可以分析一下这个需求：
+
+条件：开放了HTTP服务
+开放了HTTP服务的主机一般都会开放80/443
+目的：获取MAC地址
+需要引入stdnse包，调用format_mac函数
+如此一来思路清晰了许多，还是从test.nse改起：
+local stdnse = require "stdnse"
+prerule=function()
+end
+hostrule=function(host)
+end
+portrule=function(host,port)
+	if(port.number == 80 or port.number == 443)then
+		print("[*]Host MAC -> " .. stdnse.format_mac(host.mac_addr))
+	end
+end
+action=function()
+end
+postrule=function()
+end
+既然是针对服务/端口的需求，我们可以在portrule中进行编写，肯定有读者会产生疑问，nmap的-p参数就能指定端口，为何还要再portrule中判断。'><meta name=author content="倾旋的博客"><link rel="preload stylesheet" as=style href=https://payloads.online/main.min.css><link rel=preload as=image href=https://payloads.online/theme.png><link rel=preload as=image href=/avatar.jpeg><script defer src=https://payloads.online/highlight.min.js onload=hljs.initHighlightingOnLoad()></script><link rel=icon href=https://payloads.online/favicon.ico><link rel=apple-touch-icon href=https://payloads.online/apple-touch-icon.png><meta name=generator content="Hugo 0.148.2"><meta itemprop=name content="Nmap扩展开发（三）"><meta itemprop=description content="本来是想写成一本书的，但是可能断断续续没有很好的产出，我只能以文章的形式分享出来了，希望我的研究成果能够给大家带来便利。—— 作者：倾旋"><meta itemprop=datePublished content="2019-04-24T00:00:00+00:00"><meta itemprop=dateModified content="2019-04-24T00:00:00+00:00"><meta itemprop=wordCount content="124"><meta itemprop=keywords content="安全开发"><meta property="og:url" content="https://payloads.online/archivers/2019-04-24/3/"><meta property="og:site_name" content="倾旋的博客"><meta property="og:title" content="Nmap扩展开发（三）"><meta property="og:description" content="本来是想写成一本书的，但是可能断断续续没有很好的产出，我只能以文章的形式分享出来了，希望我的研究成果能够给大家带来便利。—— 作者：倾旋"><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-04-24T00:00:00+00:00"><meta property="article:modified_time" content="2019-04-24T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="Nmap扩展开发（三）"><meta name=twitter:description content="本来是想写成一本书的，但是可能断断续续没有很好的产出，我只能以文章的形式分享出来了，希望我的研究成果能够给大家带来便利。—— 作者：倾旋"><link rel=canonical href=https://payloads.online/archivers/2019-04-24/3/></head><body class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"><header class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"><div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto"><a class="-translate-y-[1px] text-2xl font-medium" href=https://payloads.online/>倾旋的博客</a><div class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf8f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/>首页</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/posts/>文章列表</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/tags>标签</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/projects>开源项目</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/about>关于我</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/links/>友情链接</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/message>留言</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/sponsor>赞助</a></nav></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">Nmap扩展开发（三）</h1><div class="text-xs antialiased opacity-60"><time>Apr 24, 2019</time><span class=mx-1>&#183;</span>
+<span>倾旋</span></div></header><section><h2 id=0x01-扩展脚本对象-主机>0X01 扩展脚本对象-主机</h2><p>在进行主机扫描的时候会执行hostrule这个函数，从以往的nmap扩展脚本代码中我们都可以发现在hostrule这个函数中做了一些针对host操作的动作。</p><p>hostrule有一个参数，变量名叫host，我们可以把它理解为一个对象，在这里称之为对象是为了方便读者理解，在lua中实际它的数据类型是一个多维的table（表），具有很多属性。由于这些rule函数都是被动调用的，我们只能在函数内部对形参进行操作了。</p><p>参考：https://nmap.org/book/nse-api.html</p><p><img src=https://images.payloads.online/6e7b0678-4f5f-11ec-bf1a-00d861bf4abb.png alt=2019-04-24-10-02-11></p><p>通过上面这个表格我们能够清楚的了解到从host这个table中可以读取到哪些信息。</p><p>为了让读者吸收，建立一个需求，请大家与我一起完成。</p><blockquote><p>需求：使用Nmap扫描获得所有主机的MAC地址</p></blockquote><p>由于Nmap没提供这个需求的解决方案，就需要我们自己来写一个扩展脚本了~</p><p>还是拿之前的test.nse来改一下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> stdnse <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;stdnse&#34;</span>
 </span></span><span style=display:flex><span>prerule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span>hostrule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>(host)
@@ -25,32 +72,14 @@
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span>postrule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
-</span></span></code></pre></td></tr></table></div></div><p>通过host.mac_addr获取的mac地址是二进制编码的，我们要转换成字符串，需要引入stdnse这个扩展包，stdnse包中有一个format_mac函数，能够将host.mac_addr转换成字符串。</p><p>执行效果如下：</p><p><img src=https://images.payloads.online/6ebb6fce-4f5f-11ec-8628-00d861bf4abb.png alt=2019-04-24-10-02-57></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>00:50:56:ec:95:48
-</span></span><span style=display:flex><span>00:50:56:f8:1e:b8
-</span></span><span style=display:flex><span>00:50:56:c0:00:08
-</span></span><span style=display:flex><span>00:0c:29:b4:48:d7
-</span></span></code></pre></td></tr></table></div></div><p>以上这些MAC地址就是当前内网中的所有主机了。</p><h2 id=0x02-扩展脚本对象-端口>0X02 扩展脚本对象-端口</h2><p>端口相对于主机来说，属性较少，主要是针对端口状态、端口协议、端口服务、端口服务版本的一些描述。</p><p><img src=https://images.payloads.online/6effee2e-4f5f-11ec-913d-00d861bf4abb.png alt=2019-04-24-10-03-27></p><h3 id=0x02-完成一个需求>0X02 完成一个需求</h3><p>还是老样子，假设一个需求，解决这个需求：</p><blockquote><p>需求：获取当前内网中开放HTTP服务的主机的MAC地址</p></blockquote><p>首先可以分析一下这个需求：</p><blockquote><p>条件：开放了HTTP服务
+</span></span></code></pre></div><p>通过host.mac_addr获取的mac地址是二进制编码的，我们要转换成字符串，需要引入stdnse这个扩展包，stdnse包中有一个format_mac函数，能够将host.mac_addr转换成字符串。</p><p>执行效果如下：</p><p><img src=https://images.payloads.online/6ebb6fce-4f5f-11ec-8628-00d861bf4abb.png alt=2019-04-24-10-02-57></p><pre tabindex=0><code>00:50:56:ec:95:48
+00:50:56:f8:1e:b8
+00:50:56:c0:00:08
+00:0c:29:b4:48:d7
+</code></pre><p>以上这些MAC地址就是当前内网中的所有主机了。</p><h2 id=0x02-扩展脚本对象-端口>0X02 扩展脚本对象-端口</h2><p>端口相对于主机来说，属性较少，主要是针对端口状态、端口协议、端口服务、端口服务版本的一些描述。</p><p><img src=https://images.payloads.online/6effee2e-4f5f-11ec-913d-00d861bf4abb.png alt=2019-04-24-10-03-27></p><h3 id=0x02-完成一个需求>0X02 完成一个需求</h3><p>还是老样子，假设一个需求，解决这个需求：</p><blockquote><p>需求：获取当前内网中开放HTTP服务的主机的MAC地址</p></blockquote><p>首先可以分析一下这个需求：</p><blockquote><p>条件：开放了HTTP服务
 开放了HTTP服务的主机一般都会开放80/443
 目的：获取MAC地址
-需要引入stdnse包，调用format_mac函数</p></blockquote><p>如此一来思路清晰了许多，还是从test.nse改起：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> stdnse <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;stdnse&#34;</span>
+需要引入stdnse包，调用format_mac函数</p></blockquote><p>如此一来思路清晰了许多，还是从test.nse改起：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> stdnse <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;stdnse&#34;</span>
 </span></span><span style=display:flex><span>prerule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span>hostrule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>(host)
@@ -64,24 +93,7 @@
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span>postrule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
-</span></span></code></pre></td></tr></table></div></div><p>既然是针对服务/端口的需求，我们可以在portrule中进行编写，肯定有读者会产生疑问，nmap的-p参数就能指定端口，为何还要再portrule中判断。</p><p>是因为我们最终写的脚本可能不只是做这一件事，而是做多件事情，以不同的条件限定它去执行哪些代码。</p><p>扫描结果：</p><p><img src=https://images.payloads.online/6f412b14-4f5f-11ec-a638-00d861bf4abb.png alt=2019-04-24-10-05-42></p><p>通过上面的扫描，我们获得了内网中开启HTTP服务的主机的MAC地址，虽然Nmap已经给出了，但是学习都是一步一步来的，后面还有更复杂的需求等着你呢！</p><h2 id=0x03-优化输出格式表table>0x03 优化输出格式——表（table）</h2><p>在stdnse包中有一个函数叫output_table()，它能够返回一个table数据类型，通过操作这个table，将Key->Value的对应关系数据或列表数据放入，再return，就可以输出漂亮的格式~</p><p>就拿0x01中的test.nse来演示：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> stdnse <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;stdnse&#34;</span>
+</span></span></code></pre></div><p>既然是针对服务/端口的需求，我们可以在portrule中进行编写，肯定有读者会产生疑问，nmap的-p参数就能指定端口，为何还要再portrule中判断。</p><p>是因为我们最终写的脚本可能不只是做这一件事，而是做多件事情，以不同的条件限定它去执行哪些代码。</p><p>扫描结果：</p><p><img src=https://images.payloads.online/6f412b14-4f5f-11ec-a638-00d861bf4abb.png alt=2019-04-24-10-05-42></p><p>通过上面的扫描，我们获得了内网中开启HTTP服务的主机的MAC地址，虽然Nmap已经给出了，但是学习都是一步一步来的，后面还有更复杂的需求等着你呢！</p><h2 id=0x03-优化输出格式表table>0x03 优化输出格式——表（table）</h2><p>在stdnse包中有一个函数叫output_table()，它能够返回一个table数据类型，通过操作这个table，将Key->Value的对应关系数据或列表数据放入，再return，就可以输出漂亮的格式~</p><p>就拿0x01中的test.nse来演示：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lua data-lang=lua><span style=display:flex><span><span style=color:#66d9ef>local</span> stdnse <span style=color:#f92672>=</span> require <span style=color:#e6db74>&#34;stdnse&#34;</span>
 </span></span><span style=display:flex><span>http_table <span style=color:#f92672>=</span> stdnse.output_table()
 </span></span><span style=display:flex><span>prerule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
@@ -98,4 +110,4 @@
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
 </span></span><span style=display:flex><span>postrule<span style=color:#f92672>=</span><span style=color:#66d9ef>function</span>()
 </span></span><span style=display:flex><span><span style=color:#66d9ef>end</span>
-</span></span></code></pre></td></tr></table></div></div><p>执行效果如下：</p><p><img src=https://images.payloads.online/6f815d4c-4f5f-11ec-a1fb-00d861bf4abb.png alt=2019-04-24-10-06-19></p><p>可见在portrule返回true的时候才会执行action函数，在脚本刚开始执行前，声明了一个http_table全局变量，当遇到端口80/443时，会把当前主机的MAC地址装入http_table，在action中返回。</p><p>对象结构图：</p><p><img src=https://images.payloads.online/6fc0b96a-4f5f-11ec-806a-00d861bf4abb.png alt=2019-04-24-10-06-46></p><p>下一章：HTTP包的使用</p><p>会介绍HTTP包的使用，并且会教大家写一些批量检测HTTP协议相关的漏洞脚本，例如：CVE-2017-12615</p><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=light_protanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div></div><div class="footer wrapper"><nav class=nav><div>2024 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script></body></html>
+</span></span></code></pre></div><p>执行效果如下：</p><p><img src=https://images.payloads.online/6f815d4c-4f5f-11ec-a1fb-00d861bf4abb.png alt=2019-04-24-10-06-19></p><p>可见在portrule返回true的时候才会执行action函数，在脚本刚开始执行前，声明了一个http_table全局变量，当遇到端口80/443时，会把当前主机的MAC地址装入http_table，在action中返回。</p><p>对象结构图：</p><p><img src=https://images.payloads.online/6fc0b96a-4f5f-11ec-806a-00d861bf4abb.png alt=2019-04-24-10-06-46></p><p>下一章：HTTP包的使用</p><p>会介绍HTTP包的使用，并且会教大家写一些批量检测HTTP协议相关的漏洞脚本，例如：CVE-2017-12615</p></section><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/archivers/2019-04-24/1/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Nmap扩展开发（一）</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2019-04-24/2/><span>Nmap扩展开发（二）</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a>️</footer></body></html>

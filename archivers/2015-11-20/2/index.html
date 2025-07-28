@@ -1,220 +1,111 @@
-<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>华为RIP协议 - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"><link rel=stylesheet href=/css/fontawesome.css></head><body><div class="container wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=post><div class=post-header><div class=meta><div class=date><span class=day>16</span>
-<span class=rest>Mar 2018</span></div></div><div class=matter><h1 class=title>华为RIP协议</h1></div></div><p>本文记录一下华为RIP协议的简单配置</p><p><strong>CLINET1：</strong></p><p>IP：192.168.1.10</p><p>掩码：255.255.255.0</p><p>网关：192.168.1.1</p><p><strong>CLINET2：</strong></p><p>IP：192.168.2.10</p><p>掩码：255.255.255.0</p><p>网关：192.168.2.1</p><p>用到的网段有：</p><ul><li><p>192.168.1.0/24</p></li><li><p>192.168.2.0/24</p></li><li><p>192.168.5.0/24</p></li><li><p>192.168.6.0/24</p></li></ul><p><figure><img src=https://images.payloads.online/1f46cca4-4f5f-11ec-8296-00d861bf4abb.png alt="enter description here" class=figcaption-img><figcaption>0x06</figcaption></figure></p><p><strong>配置接口IP:</strong></p><blockquote><p>[AR1]配置命令如下——————————————————————- &#187;</p></blockquote><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>
-</span></span><span style=display:flex><span>&lt;Huawei&gt;sys
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>Enter system view, return user view with Ctrl+Z.
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[Huawei]sysname AR1
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR1]int
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>Nov? 6 2015 11:33:00-05:13 AR1 %%01IFPDT/4/IF_STATE(l)[0]:Interface GigabitEthern
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>et0/0/1 has turned into UP state.
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR1]int G0/0/0
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR1-GigabitEthernet0/0/0]ip add 192.168.1.1 24
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR1-GigabitEthernet0/0/0]
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>Nov? 6 2015 11:33:27-05:13 AR1 %%01IFNET/4/LINK_STATE(l)[1]:The line protocol IP
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>on the interface GigabitEthernet0/0/0 has entered the UP state.
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR1-GigabitEthernet0/0/0]int g0/0/1
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR1-GigabitEthernet0/0/1]ip add 192.168.5.1 24
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR1-GigabitEthernet0/0/1]
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>Nov? 6 2015 11:34:19-05:13 AR1 %%01IFNET/4/LINK_STATE(l)[2]:The line protocol IP
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>on the interface GigabitEthernet0/0/1 has entered the UP state.
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR1-GigabitEthernet0/0/1]
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR1-GigabitEthernet0/0/1]q
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR1]rip
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR1-rip-1]version 1
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR1-rip-1]network 192.168.5.0
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR1-rip-1]network 192.168.1.0
-</span></span></code></pre></td></tr></table></div></div><blockquote><p>[AR2]配置命令如下——————————————————————- &#187;</p></blockquote><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>&lt;Huawei&gt;sys
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>Enter system view, return user view with Ctrl+Z.
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[Huawei]sysname AR2
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR2]int g0/0/0
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR2-GigabitEthernet0/0/0]ip add 192.168.5.2 24
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR2-GigabitEthernet0/0/0]
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>Nov? 6 2015 11:34:41-05:13 AR2 %%01IFNET/4/LINK_STATE(l)[0]:The line protocol IP
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>on the interface GigabitEthernet0/0/0 has entered the UP state.
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR2-GigabitEthernet0/0/0]int g0/0/1
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR2-GigabitEthernet0/0/1]ip add 192.168.6.1 24
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR2-GigabitEthernet0/0/1]
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>Nov? 6 2015 11:34:54-05:13 AR2 %%01IFNET/4/LINK_STATE(l)[1]:The line protocol IP
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>on the interface GigabitEthernet0/0/1 has entered the UP state.
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR2-GigabitEthernet0/0/1]
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR2-GigabitEthernet0/0/1]q
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR2-rip-1]version 1
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR2-rip-1]network 192.168.5.0
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR2-rip-1]network 192.168.6.0
-</span></span></code></pre></td></tr></table></div></div><blockquote><p>[AR3]配置命令如下——————————————————————- &#187;</p></blockquote><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>
-</span></span><span style=display:flex><span>&lt;Huawei&gt;sys
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>Enter system view, return user view with Ctrl+Z.
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[Huawei]sysname AR3
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR3]int G0/0/0
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR3-GigabitEthernet0/0/0]ip add 192.168.6.2 24
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR3-GigabitEthernet0/0/0]
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>Nov? 6 2015 11:35:20-05:13 AR3 %%01IFNET/4/LINK_STATE(l)[0]:The line protocol IP
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>on the interface GigabitEthernet0/0/0 has entered the UP state.
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR3-GigabitEthernet0/0/0]int G0/0/1
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR3-GigabitEthernet0/0/1]ip add 192.168.2.1 24
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR3]rip
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR3-rip-1]version 1
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR3-rip-1]network 192.168.6.0
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR3-rip-1]
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[AR3-rip-1]network 192.168.2.0
-</span></span></code></pre></td></tr></table></div></div><p><strong>配置结果：</strong></p><p><figure><img src=https://images.payloads.online/1f7e0ea8-4f5f-11ec-962f-00d861bf4abb.png alt="enter description here" class=figcaption-img><figcaption>0x07</figcaption></figure></p><p>实验链接：http://pan.baidu.com/s/1dDhVMxj 密码：xfnv</p><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=light_protanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div></div><div class="footer wrapper"><nav class=nav><div>2024 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script></body></html>
+<!doctype html><html class="not-ready lg:text-base" style=--bg:#faf8f1 lang=zh-cn dir=ltr><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>华为RIP协议 - 倾旋的博客</title><meta name=theme-color><meta name=description content="本文记录一下华为RIP协议的简单配置"><meta name=author content="倾旋的博客"><link rel="preload stylesheet" as=style href=https://payloads.online/main.min.css><link rel=preload as=image href=https://payloads.online/theme.png><link rel=preload as=image href=/avatar.jpeg><script defer src=https://payloads.online/highlight.min.js onload=hljs.initHighlightingOnLoad()></script><link rel=icon href=https://payloads.online/favicon.ico><link rel=apple-touch-icon href=https://payloads.online/apple-touch-icon.png><meta name=generator content="Hugo 0.148.2"><meta itemprop=name content="华为RIP协议"><meta itemprop=description content="本文记录一下华为RIP协议的简单配置"><meta itemprop=datePublished content="2018-03-16T00:00:00+00:00"><meta itemprop=dateModified content="2018-03-16T00:00:00+00:00"><meta itemprop=wordCount content="227"><meta itemprop=keywords content="网络工程"><meta property="og:url" content="https://payloads.online/archivers/2015-11-20/2/"><meta property="og:site_name" content="倾旋的博客"><meta property="og:title" content="华为RIP协议"><meta property="og:description" content="本文记录一下华为RIP协议的简单配置"><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2018-03-16T00:00:00+00:00"><meta property="article:modified_time" content="2018-03-16T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="华为RIP协议"><meta name=twitter:description content="本文记录一下华为RIP协议的简单配置"><link rel=canonical href=https://payloads.online/archivers/2015-11-20/2/></head><body class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"><header class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"><div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto"><a class="-translate-y-[1px] text-2xl font-medium" href=https://payloads.online/>倾旋的博客</a><div class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf8f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/>首页</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/posts/>文章列表</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/tags>标签</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/projects>开源项目</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/about>关于我</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/links/>友情链接</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/message>留言</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/sponsor>赞助</a></nav></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">华为RIP协议</h1><div class="text-xs antialiased opacity-60"><time>Mar 16, 2018</time><span class=mx-1>&#183;</span>
+<span>倾旋</span></div></header><section><p>本文记录一下华为RIP协议的简单配置</p><p><strong>CLINET1：</strong></p><p>IP：192.168.1.10</p><p>掩码：255.255.255.0</p><p>网关：192.168.1.1</p><p><strong>CLINET2：</strong></p><p>IP：192.168.2.10</p><p>掩码：255.255.255.0</p><p>网关：192.168.2.1</p><p>用到的网段有：</p><ul><li><p>192.168.1.0/24</p></li><li><p>192.168.2.0/24</p></li><li><p>192.168.5.0/24</p></li><li><p>192.168.6.0/24</p></li></ul><p><img src=https://images.payloads.online/1f46cca4-4f5f-11ec-8296-00d861bf4abb.png alt="enter description here" title=0x06></p><p><strong>配置接口IP:</strong></p><blockquote><p>[AR1]配置命令如下——————————————————————- &#187;</p></blockquote><pre tabindex=0><code>
+&lt;Huawei&gt;sys
+
+Enter system view, return user view with Ctrl+Z.
+
+[Huawei]sysname AR1
+
+[AR1]int
+
+Nov? 6 2015 11:33:00-05:13 AR1 %%01IFPDT/4/IF_STATE(l)[0]:Interface GigabitEthern
+
+et0/0/1 has turned into UP state.
+
+[AR1]int G0/0/0
+
+[AR1-GigabitEthernet0/0/0]ip add 192.168.1.1 24
+
+[AR1-GigabitEthernet0/0/0]
+
+Nov? 6 2015 11:33:27-05:13 AR1 %%01IFNET/4/LINK_STATE(l)[1]:The line protocol IP
+
+on the interface GigabitEthernet0/0/0 has entered the UP state.
+
+[AR1-GigabitEthernet0/0/0]int g0/0/1
+
+[AR1-GigabitEthernet0/0/1]ip add 192.168.5.1 24
+
+[AR1-GigabitEthernet0/0/1]
+
+Nov? 6 2015 11:34:19-05:13 AR1 %%01IFNET/4/LINK_STATE(l)[2]:The line protocol IP
+
+on the interface GigabitEthernet0/0/1 has entered the UP state.
+
+[AR1-GigabitEthernet0/0/1]
+
+[AR1-GigabitEthernet0/0/1]q
+
+[AR1]rip
+
+[AR1-rip-1]version 1
+
+[AR1-rip-1]network 192.168.5.0
+
+[AR1-rip-1]network 192.168.1.0
+</code></pre><blockquote><p>[AR2]配置命令如下——————————————————————- &#187;</p></blockquote><pre tabindex=0><code>&lt;Huawei&gt;sys
+
+Enter system view, return user view with Ctrl+Z.
+
+[Huawei]sysname AR2
+
+[AR2]int g0/0/0
+
+[AR2-GigabitEthernet0/0/0]ip add 192.168.5.2 24
+
+[AR2-GigabitEthernet0/0/0]
+
+Nov? 6 2015 11:34:41-05:13 AR2 %%01IFNET/4/LINK_STATE(l)[0]:The line protocol IP
+
+on the interface GigabitEthernet0/0/0 has entered the UP state.
+
+[AR2-GigabitEthernet0/0/0]int g0/0/1
+
+[AR2-GigabitEthernet0/0/1]ip add 192.168.6.1 24
+
+[AR2-GigabitEthernet0/0/1]
+
+Nov? 6 2015 11:34:54-05:13 AR2 %%01IFNET/4/LINK_STATE(l)[1]:The line protocol IP
+
+on the interface GigabitEthernet0/0/1 has entered the UP state.
+
+[AR2-GigabitEthernet0/0/1]
+
+[AR2-GigabitEthernet0/0/1]q
+
+[AR2-rip-1]version 1
+
+[AR2-rip-1]network 192.168.5.0
+
+[AR2-rip-1]network 192.168.6.0
+</code></pre><blockquote><p>[AR3]配置命令如下——————————————————————- &#187;</p></blockquote><pre tabindex=0><code>
+&lt;Huawei&gt;sys
+
+Enter system view, return user view with Ctrl+Z.
+
+[Huawei]sysname AR3
+
+[AR3]int G0/0/0
+
+[AR3-GigabitEthernet0/0/0]ip add 192.168.6.2 24
+
+[AR3-GigabitEthernet0/0/0]
+
+Nov? 6 2015 11:35:20-05:13 AR3 %%01IFNET/4/LINK_STATE(l)[0]:The line protocol IP
+
+on the interface GigabitEthernet0/0/0 has entered the UP state.
+
+[AR3-GigabitEthernet0/0/0]int G0/0/1
+
+[AR3-GigabitEthernet0/0/1]ip add 192.168.2.1 24
+
+[AR3]rip
+
+[AR3-rip-1]version 1
+
+[AR3-rip-1]network 192.168.6.0
+
+[AR3-rip-1]
+
+[AR3-rip-1]network 192.168.2.0
+</code></pre><p><strong>配置结果：</strong></p><p><img src=https://images.payloads.online/1f7e0ea8-4f5f-11ec-962f-00d861bf4abb.png alt="enter description here" title=0x07></p><p>实验链接：http://pan.baidu.com/s/1dDhVMxj 密码：xfnv</p></section><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/archivers/2018-03-18/1/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>渗透测试中使用Ubuntu的一些小技巧</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2018-03-04/1/><span>使用C语言发送伪造源IP的UDP请求及DRDOS拒绝服务攻击原理剖析</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a>️</footer></body></html>

