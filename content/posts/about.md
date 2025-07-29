@@ -1,5 +1,5 @@
 +++
-title = "About"
+title = "关于我"
 url = "/about"
 +++
 
@@ -7,6 +7,6 @@ url = "/about"
 <!-- {{< figure class="avatar" src="/avatar.jpeg" alt="avatar">}} -->
 
 * ID：倾旋 / Rvn0xsy
-* [GitHub](https://github.com/Rvn0xsy/).
+* Email： rvn0xsy#gmail.com
 
-现阶段在进行有效性验证/攻击模拟相关的安全研究工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。
+> 喜欢电影、小说、音乐、美食与代码，在工作与生活中不断地学习与探索。
