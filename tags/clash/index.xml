@@ -1,17 +1,17 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Clash on 倾旋的博客</title><link>https://payloads.online/tags/clash/</link><description>Recent content in Clash on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Mon, 07 Aug 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/tags/clash/index.xml" rel="self" type="application/rss+xml"/><item><title>记录一下配置Clash透明代理</title><link>https://payloads.online/archivers/2023-08-07/clash-config/</link><pubDate>Mon, 07 Aug 2023 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2023-08-07/clash-config/</guid><description>&lt;aside>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Clash on 倾旋的博客</title><link>https://payloads.online/tags/clash/</link><description>Recent content in Clash on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Mon, 07 Aug 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/tags/clash/index.xml" rel="self" type="application/rss+xml"/><item><title>记录一下配置Clash透明代理</title><link>https://payloads.online/archivers/2023-08-07/clash-config/</link><pubDate>Mon, 07 Aug 2023 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2023-08-07/clash-config/</guid><description>&lt;aside&gt;
 😀 我日常使用Arch Linux来进行办公，但公司的办公网络和上网需要挂不同的代理，浏览器切换起来有点麻烦，我需要一个解决方案支持配置规则的方式来让我系统上的流量进行选择性的转发，我发现Clash+iptables（Linux用户独有的福利）可以非常简单的做到。
-&lt;/aside>
-&lt;h1 id="clash是什么">📝Clash是什么？&lt;/h1>
-&lt;p>&lt;a href="https://github.com/Dreamacro/clash">https://github.com/Dreamacro/clash&lt;/a>&lt;/p>
-&lt;p>Clash是一个支持多种协议隧道转发的工具，主要功能如下：&lt;/p>
-&lt;ul>
-&lt;li>Inbound: HTTP, HTTPS, SOCKS5 server, TUN device&lt;/li>
-&lt;li>Outbound: Shadowsocks(R), VMess, Trojan, Snell, SOCKS5, HTTP(S), Wireguard&lt;/li>
-&lt;li>Rule-based Routing: dynamic scripting, domain, IP addresses, process name and more&lt;/li>
-&lt;li>Fake-IP DNS: minimises impact on DNS pollution and improves network performance&lt;/li>
-&lt;li>Transparent Proxy: Redirect TCP and TProxy TCP/UDP with automatic route table/rule management&lt;/li>
-&lt;li>Proxy Groups: automatic fallback, load balancing or latency testing&lt;/li>
-&lt;li>Remote Providers: load remote proxy lists dynamically&lt;/li>
-&lt;li>RESTful API: update configuration in-place via a comprehensive API&lt;/li>
-&lt;/ul>
-&lt;p>目前作者还在维护&lt;a href="https://dreamacro.github.io/clash/premium/introduction.html">高级核心版&lt;/a>（免费），为了尝试支持更多功能。&lt;/p></description></item></channel></rss>
+&lt;/aside&gt;
+&lt;h1 id="clash是什么"&gt;📝Clash是什么？&lt;/h1&gt;
+&lt;p&gt;&lt;a href="https://github.com/Dreamacro/clash"&gt;https://github.com/Dreamacro/clash&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Clash是一个支持多种协议隧道转发的工具，主要功能如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Inbound: HTTP, HTTPS, SOCKS5 server, TUN device&lt;/li&gt;
+&lt;li&gt;Outbound: Shadowsocks(R), VMess, Trojan, Snell, SOCKS5, HTTP(S), Wireguard&lt;/li&gt;
+&lt;li&gt;Rule-based Routing: dynamic scripting, domain, IP addresses, process name and more&lt;/li&gt;
+&lt;li&gt;Fake-IP DNS: minimises impact on DNS pollution and improves network performance&lt;/li&gt;
+&lt;li&gt;Transparent Proxy: Redirect TCP and TProxy TCP/UDP with automatic route table/rule management&lt;/li&gt;
+&lt;li&gt;Proxy Groups: automatic fallback, load balancing or latency testing&lt;/li&gt;
+&lt;li&gt;Remote Providers: load remote proxy lists dynamically&lt;/li&gt;
+&lt;li&gt;RESTful API: update configuration in-place via a comprehensive API&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;目前作者还在维护&lt;a href="https://dreamacro.github.io/clash/premium/introduction.html"&gt;高级核心版&lt;/a&gt;（免费），为了尝试支持更多功能。&lt;/p&gt;</description></item></channel></rss>

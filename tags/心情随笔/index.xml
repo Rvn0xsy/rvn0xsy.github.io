@@ -1,137 +1,137 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>心情随笔 on 倾旋的博客</title><link>https://payloads.online/tags/%E5%BF%83%E6%83%85%E9%9A%8F%E7%AC%94/</link><description>Recent content in 心情随笔 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Mon, 30 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/tags/%E5%BF%83%E6%83%85%E9%9A%8F%E7%AC%94/index.xml" rel="self" type="application/rss+xml"/><item><title>2024，持续向内探索的一年</title><link>https://payloads.online/archivers/2024-12-30/year-end-summary/</link><pubDate>Mon, 30 Dec 2024 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2024-12-30/year-end-summary/</guid><description>&lt;h1 id="开篇">开篇&lt;/h1>
-&lt;p>Hi 👋 最近一年就这样过去了，2025 这个数字仿佛是属于未来的，但其实已经来临了，马上跨入新的一年，按照惯例我写下关于2024年的年终总结。&lt;/p>
-&lt;blockquote>
-&lt;p>我不太擅长用键盘书写太多关于思想的内容，所以本篇大部分内容可能都是通过手机的九键打出来的。&lt;/p>&lt;/blockquote>
-&lt;h1 id="精神层面的再次成长">精神层面的再次成长&lt;/h1>
-&lt;p>大概回忆了一下今年所经历的事情，生活上还是比较充实的，除了生活上的新奇体验，心理上的成长也感受非常明显，根据MBTI的测验结果我属于E人，回望过去十年的性格特点，还真的挺意外的，竟然从内向型转为了外向型，整个人变得比以前更想表达了。&lt;/p>
-&lt;blockquote>
-&lt;p>&lt;strong>迈尔斯-布里格斯类型指标&lt;/strong> （&lt;strong>MBTI）&lt;/strong> 是一种自我报告问卷，它提出伪科学的主张，将个人分为 16 种不同的“心理类型”或“人格类型”。
-MBTI 由美国人凯瑟琳·库克·布里格斯 （Katharine Cook Briggs） 和她的女儿伊莎贝尔·布里格斯·迈尔斯 （Isabel Briggs Myers） 在二战期间建造，灵感来自瑞士精神病学家卡尔·荣格 （Carl Jung） 1921 年出版的《&lt;a href="https://en.wikipedia.org/wiki/Psychological_Types">&lt;em>心理类型&lt;/em>&lt;/a>》一书。该测试为四个类别中的每一个类别分配一个二进制值：内向或外向、感知或直觉、思考或感觉以及判断或感知。每个类别中的一个字母被用于生成一个由四个字母组成的测试结果，代表 16 种可能类型之一，例如“INFP”或“ESTJ”。&lt;/p>&lt;/blockquote>
-&lt;p>今年看了一些关于心理层面的书籍，让我对自己的人格形成有了新的认识，开始内化出一个上帝视角审视自我，在做出任何决定之前都会跳出来理性分析，最后再以感性接纳自我，这种思考过程让我的内核比以往更加稳定。&lt;/p>
-&lt;p>这篇2024年终总结主题是“持续向内探索”，向内探索其实是一个很复杂的过程，需要冷静的、脱离主观视角的分析自我，了解自己的情绪、欲望、性格等等，其中印象深刻的就是我看了一本：《二次成长 （成人人格修补手册）》，跟着章节把自己从小到大的经历全部回忆了一遍，开始了思考如今自我性格形成的因素所在，对人与人的区别之处比以往人生中的所有时间里都更加的包容，书中按照0岁起点至18岁的整个过程来阐述人格的形成规律，从侧面其实也指导了我很多如何与自己相处的方式。在我当前有限的人生经历里，大部分时间是喜欢在热闹里独处度过的，凑近了觉得吵闹，离远了又觉得寂寞，我想很多人都有类似的感受，通过客观的分析本质上这应该属于我与自我相处的方式就是如此，于是2024年我就开始去一个人做了很多事情，尝试在生活上留给自己的时间多一些，例如一个人散步、做饭、看电影、吃火锅、旅行，甚至有一次晚上提着两瓶酒走到公园里坐着听歌。随着时间流逝也发现了此类行为带来的好处，精神世界前所未有的独立。我将这一年的思考归纳为三十岁之前人生必要的阶段，在冥冥中刻画了一个鲜明的印记。&lt;/p>
-&lt;h1 id="工作中的一些感想">工作中的一些感想&lt;/h1>
-&lt;p>时至今日，加入创业公司已经两年多了，今年不断打磨了产品的几个重要功能模块，让我对终端安全、RASP、勒索防护、AD域安全相关的安全建设、安全验证方法、产品设计理论有了更加深刻的了解，编写了上百篇技术文档，推动攻击模拟、安全能力验证相关的安全技术研究工作愈加得心应手，记得去年年底，做了一次职业倦怠调查，当时自己得分是良好，经过这一年的工作和思考，年底发现自己应当转变更多产品视角，以产品视角再切入业务视角，让技能以圆周率（Pi）形展开，真正能触达问题本身：&lt;/p>
-&lt;blockquote>
-&lt;p>π型人才指的是一种复合型人才的新结构。就像π这个字一样，π的横，代表宽广的学科跨度，知识面广，而π的一撇一捺，代表着至少2个领域深耕。相比单一型人才，π型人才的优势是在于打的是“组合拳”，两种以上的专长融合更容易让他们找到不一样的创新方式，最终在众多竞争者中脱颖而出。&lt;/p>&lt;/blockquote>
-&lt;p>既然是工作，不论是理论研究成果还是技术研究成果均需要一个价值转化途径体现价值，而目前网络安全行业处于一个特殊时期，企业开始更加关注产品的核心竞争力，但安全能力与研发能力往往总是不能产生亮眼的协同效应，当下各公司都缺少既懂产品又懂安全的人才，建立这关键的纽带的关键人员是产品核心竞争力的重要因素之一，回归安全验证这一赛道，π形技术人才的关键能力就是安全技术与产品解决方案的融合能力。&lt;/p>
-&lt;h1 id="生活中那些有趣的经历">生活中那些有趣的经历&lt;/h1>
-&lt;p>2024年的夏天我脑袋里突然冒出一句话，可以总结成为我对生活的态度：不让事情白白发生，不让时间白白流逝，人生就是在有限时间和空间里带着某种意识去经历的。后来又在网上看到苏格拉底的至理名言，与我的感受正好相符，这里也引经据典一下，尽量不那么“假文艺”：&lt;/p>
-&lt;blockquote>
-&lt;p>“未经审视的人生不值得过” — 苏格拉底&lt;/p>&lt;/blockquote>
-&lt;p>审视这个词特别好，正是以往许多人容易忽略的动作，经历了经济的衰退、疫情的影响，大家的心态应该变化都挺大的。&lt;/p>
-&lt;p>一月份高中认识的老铁结婚，算是提前回家了一趟，要不是身边的人结婚，我可能无法全面了解现代婚姻的基本流程，作为男方一方的亲友团可没少忙活，不过在他站在台上宣誓时，坐在台下的我由衷地希望他永远幸福，好像在十年之前，我们两个问题少年诉说着青春的烦恼而建立起来最纯粹又美好的友谊，其实就是为了这一刻的见证，为了期盼着美好的事情一定要发生在他身上一样，美好，如约而至，我们都长大了。&lt;/p>
-&lt;p>从去年开始，恋爱与结婚的话题开始出现在身边了，一方面我觉得这方面更不能着急，借用一下王小波的话：“我来这个世界，不是为了繁衍后代。而是来看花怎么开，水怎么流。太阳怎么升起，夕阳何时落下。我活在世上，无非想要明白些道理，遇见些有趣的事。生命是一场偶然，我在其中寻找因果。” —— 每个人都有自己的节奏。另外一方面，不应该在一个人的时候去思考婚姻，因为婚姻是有另外一个人的存在才会存在的，对于不存在的事物，任何情绪都是错误的，无论是恐惧或者期待。&lt;/p>
-&lt;p>&lt;img src="https://images.payloads.online/2024-12-31-f0b465d3a853a1fe905d7387fdf0c3aa7f0d0fd0d45f6eda5f4e768c4ee7214b.png" alt="0">&lt;/p>
-&lt;p>一月底，第一次和朋友一起看了一场脱口秀，我发现这种场合最适合一本正经的胡说八道了，有句流行语是这么说的：“出门在外，身份是自己给的”，都市脱口秀其实主打一个轻松的氛围，当然面子薄的人可能接受不了这种“冒犯”。&lt;/p>
-&lt;p>在从家里再回到上海，刚好到了临近过年的时候，某一天我突然想一个人出国玩一下，再加上平常也上网看一些国际新闻，想到现在泰国免签，就下定了决心来一场一个人的自由行。那是我第一次出国，也没有跟团，主打一个自由散漫。现在回想起来，真是一次大胆的尝试。期间比较有趣的事情就是，我出了泰国普吉岛机场的海关落地才办的手机卡，出发前还给自己开了全国漫游套餐，落地发现一点用都没有，持续了三四十分钟的异国他乡的失联状态，全靠一本护照和一些纸币泰铢。&lt;/p>
-&lt;p>&lt;img src="https://images.payloads.online/2024-12-31-1af8ed227a285ca865e7f5793cc27c15cc75c8b29d277ffec520bad5138c03de.png" alt="1">&lt;/p>
-&lt;p>二月份过春节，我如愿去了泰国普吉岛，旅行期间全靠组装的塑料英语进行信息交换，真正实现了面对面的“国际沟通”。&lt;/p>
-&lt;ul>
-&lt;li>第一次在国外的便利店使用微信支付，在外国享受科技的便捷&lt;/li>
-&lt;li>第一次躺在泰国最南端的斯米兰岛上睡了个午觉（无信号区），别人忙着拍照，我忙着看风景和睡觉，静静的在与世无争的地方体验整个下午&lt;/li>
-&lt;li>第一次和外国人砍价（脸皮超厚，对方报价后我还价直接砍一半，还好人没被砍）&lt;/li>
-&lt;li>第一次在国外过大年三十，在国外没有任何春节的氛围，但是周遭一切陌生的事物让我无比开心&lt;/li>
-&lt;li>第一次潜水意外喝了一口碧蓝色的海水，好看是好看，但是真的苦涩&lt;/li>
-&lt;li>第一次一个人在外国夜市吃海鲜，被泰国服务员围住要红包，我用塑料英语怼回去：“In China, Hongbao only give Children” 他们尴尬的走开了&lt;/li>
-&lt;li>第一次手持各类武器进行实弹射击，狙击枪、手枪、霰弹枪、步枪等，与国内的区别就是，在泰国我可以把枪口随时对准教练(bushi&lt;/li>
-&lt;li>太多就不写了……&lt;/li>
-&lt;/ul>
-&lt;p>&lt;img src="https://images.payloads.online/2024-12-31-41daf360fdd49b2d61bc5fbce98275b4c2bb65ee61a1e77a789e5739d583f08f.png" alt="2">&lt;/p></description></item><item><title>2023年终总结 - 你好2024！</title><link>https://payloads.online/archivers/2023-12-29/year-end-summary/</link><pubDate>Fri, 29 Dec 2023 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2023-12-29/year-end-summary/</guid><description>&lt;h2 id="前言">前言&lt;/h2>
-&lt;p>2023年转眼过去，好像2022年-2023年很少写总结了，心血来潮在元旦来临之前花了一些时间给博客装修了一下，为了迎接2024年的到来，认真写一篇年度总结，算是给这一年一个交代，我会总结一下这近两年以来自己做的一些事情和成长。&lt;/p>
-&lt;p>在上周末看到阮老师的周刊的标题：&lt;a href="http://www.ruanyifeng.com/blog/2023/12/weekly-issue-283.html">科技爱好者周刊（第 283 期）：[年终感想] 没有目的地，向前走&lt;/a>，主要内容为BaseCamp 公司创始人 Jason Fried 的一篇短文提到“我做事，我尝试，我建造，我想要取得进步，我想让我做的东西使得自己、使得公司、使得家庭、使得社会变得更好。但我从未设定过目标。这不是我做事的方式。”看完这篇短文，思考了一下好像我也没有什么确切具体的目标，虽说确切具体的目标对于个人来说是会起到激励的作用，但这一年我对自己的要求没有以往那么苛刻了，在这种状态下收获了很多从未有过的体验。&lt;/p>
-&lt;h2 id="2023这一年的工作感想">2023这一年的工作感想&lt;/h2>
-&lt;p>2022年做了许多重大的决定，其中对生活节奏影响较大的就是换了一份工作，由红队研究员的身份转向一个对安全运营视角进行有效性验证的安全研究员，大概是2022年9月底从老东家离职，写了一篇&lt;a href="https://payloads.online/archivers/2022-09-19/1/">《我的三年红队生涯总结》&lt;/a>宣告自己的红队工作告一段落，开始拥抱新的视角，拓展更广的视野，对安全工作的理解也慢慢发生改变。起初刚加入创业公司，节奏还是能够快速适应的，首先就是工作的交付形式开始转变，从项目的阶段性成果转变成产品相关的测试用例、新技术的调研与应用、与头部企业的安全负责人交流实践经验等等，做产品和做业务有很大的区别，产品功需要更加精细化，对每个功能的要求都应当非常高，才会产生价值，是一个需要内心始终与用户对话的工作形式，所有的产品最初都需要打磨，都需要反馈才能变得更好，这个过程对比此前进行的项目交付，显得节奏感慢了很多，而项目是一个短周期、阶段性的事务。&lt;/p>
-&lt;p>再者就是参与到产品的建设中经常可以获得一些正反馈，这是我的动力源，应用的每个技术方案都会通过更新流转到每个用户面前，类比于红队获取了一个目标权限等同。在前几个月的时候，和前辈聊天提到“对手”这个词，前辈说我现在没有对手了，没有对手就会影响到一个人的动力，以往的环境是天天有竞争的，红蓝队伍的对抗，一场场攻防演练，一个个排名，外部的对手数不胜数，所以每次竞争后都会变得更有力量，而现在需要从自身寻找对手，这个对手就是自己，从头梳理自己对企业安全建设的理解，去学习别人的最佳实践，思考事物为何如此发展，善用平台的资源和力量。&lt;/p>
-&lt;p>入职后先后接手了终端安全验证、勒索软件验证、AD域安全验证、RASP验证，重新设计了很多次不同验证方向的闭环方案，也接触了何谓“有效性验证”、何谓“安全能力验证”，如果用一句话概括我做的事情就是：“企业先有安全建设，后有安全运营，安全建设积累安全能力，安全运营积累最佳实践，验证安全能力提高安全建设水平，验证安全运营有效性提升实践能力。“&lt;/p>
-&lt;p>其实我的大部分时间不只是在做攻击模拟，而是在建立反向验证的思维逻辑，以及应用/研究一套可行性较高、成本较低的验证方案。举例终端安全来说，验证的维度其实非常广，覆盖了ATT&amp;amp;CK矩阵的大部分技术项，而从终端安全防御视角来看，大部分攻击都可以通过操作系统遥测事件输入威胁识别模型识别哪些命令、行为是攻击从而分析出来终端是否受到了攻击。攻击模拟就是在不影响系统安全性的情况下完成一次或多次的攻击回放，回放技术做的越好、越真实、越能体现归因（这个攻击被检测了吗？被谁检测的？响应时间多长？若不能检测，该如何检测），价值就越大，这里摸爬滚打一路过来遇到很多难点就不展开陈述了。&lt;/p>
-&lt;p>总的来说，建立反向验证思维，可以让安全工作做的更可信，更容易量化分析。在我设计好一套验证方案后，输出的验证结果反应出了安全能力的很多问题，这些是我以往在红队视角无法想象的，可能是攻击特征很明显的命令，某安全产品竟然没有告警？还有的时候想去验证一些自己的Bypass思路，发现有的安全产品也无法检测，终于真正站在一个中立视角、科学的验证安全能力。&lt;/p>
-&lt;p>在今年工作的最后的一天，同事发来了一个“&lt;em>MBI-GS职业倦怠量表“&lt;/em>，经过测试我得到了23分的结果，工作状态良好。&lt;/p>
-&lt;blockquote>
-&lt;p>什么是工作倦怠&lt;/p>&lt;/blockquote>
-&lt;p>“职业倦怠症”又称“职业枯竭症”，它是一种由工作引发的心理枯竭现象，是上班族在工作的重压之下所体验到的身心俱疲、能量被耗尽的感觉，这和肉体的疲倦劳累是不一样的，而是缘自心理的疲乏。&lt;/p>
-&lt;p>工作倦怠方面最权威、最常用的量表——MBI-GS(Maslach Burnout Inventory-General Survey)。2002年，李超平获得该问卷开发者Michael Leiter教授的授权，在国内修订MBI-GS。结果表明：该量表在国内具有较好的信度和效度。该量表包括三部分：情绪衰竭(Emotional Exhaustion)、玩世不恭(Cynicism)和成就感低落（Reduced Personal Accomplishment）。情绪衰竭分量表包括5道题，玩世不恭分量表包括5道题，成就感低落分量表包括6道题，整个问卷共16道题。该量表采用利克特7分等级量表，0代表“从不”，6代表“非常频繁”。&lt;/p>
-&lt;blockquote>
-&lt;/blockquote>
-&lt;p>在做这个问卷的过程中，有很多或者几乎都是，需要从自身的工作感受出发进行作答的问题，以前和朋友、领导多少都发表过对于一份工作的观点，在不同时间的节点，我都会思考做事的意义，在抓住能让自己变得更好的前提下，总能得到正向的反馈，这种感觉可以持续推动我成长下去。&lt;/p>
-&lt;h2 id="2023这一年的生活感想">2023这一年的生活感想&lt;/h2>
-&lt;p>今年经历太多无法言说的事情了，我始终抱着过去发生的、经历的，总能成为将来自己的一部分，让我带着它继续的走向明天。这一年认识了新朋友，接触了很多不一样的观点，觉得自己人生的岁岁年年真的才刚开始，我开始阅读更多类别的书籍、尝试不一样的食物、锻炼自己的身体、掌控自己的时间，也学会适当的放松自己、爱自己，以一个旁观者的身份回顾自己，用今天的经验去总结过去某个时刻的自己所做出的选择，然后再回到现实中，感受都会无比通透，让所经历的苦难、快乐能真正成为自己的一部分。&lt;/p>
-&lt;p>我经常会担心忘记自己某天某时某刻某地所见所闻所想，能够引起我情绪波动的事物我都会放开自己的去感受它，这样对比起曾经的自己变化还是挺大的。&lt;/p>
-&lt;p>下面回顾我这一年的每个月，我都写了一句送给自己的话。&lt;/p>
-&lt;p>一月份，在新疆过了农历新年，排除疫情的两年以外，与往年一样，吃了许多新疆美食，家人也想让我多吃一点，总担心我一个人在外面吃得不好，穿的不好。在今年过生日之前，我对于至亲总会离去这件事感觉很遥远，虽然没有发生，但人总会经历，记得在网上看到过，有些男人可能一夜就会长大。&lt;/p>
-&lt;p>&lt;em>“其实我很好，只是回到家里，我好像无法褪去孩子的身份与模样，超幸福的。”&lt;/em>&lt;/p>
-&lt;p>二月份，去见了北京的老朋友，郭师傅还是一样我没变，他也没变。突然发现我有一个特质，就是朋友一开始认识我时是什么样，不管多久，见到我时我还是始终一样。简单跟郭师傅学习了单反的使用，原来摄影这件事也很酷，我好像还没有很多其他的爱好。&lt;/p>
-&lt;p>&lt;em>“羡慕有许多爱好的人，在不喜欢工作的时候可以通过其他爱好补充能量。”&lt;/em>&lt;/p>
-&lt;p>三月份，和同事们一起去了一次环球影城，果然诚不欺吾，唯一不足的就是人真的太多了，从未能想象到原来游乐园可以这么好玩，从早到晚的一天几乎都在排队，累到脚都不想着地，还是钱包够硬才能痛快。&lt;/p>
-&lt;p>&lt;em>“今年在知乎上刷到一个问题，大概意思是游乐场为什么不能线上取号，排队真的能快乐吗？我比较认同一个答案：排队是游乐园的一环。【热闹】【期待感】【获得感】是游乐场重要的一部分。”&lt;/em>&lt;/p>
-&lt;p>四月份，已经回到上海工作了，这个我陌生又熟悉的城市，相比于北京好像这里我更容易找到自己的生活节奏，能走在街头感受人海车流，脑海中还能做一些闲暇的思考，可快可慢，允许我自己进行调节。翻开相册和博客，2018年的那个四月，也如近日一样逐渐成为人生重要的节点。&lt;/p>
-&lt;p>&lt;em>“我们都要好好生活，好好找到自己的节奏，不盲目活在他人的节奏之下。”&lt;/em>&lt;/p>
-&lt;p>五月份，和上海的朋友聚了聚，他们开始关注身体健康，普遍走向三高，我貌似并没有这种焦虑，体检的时候医生竟然说我是最好的，讲的我都有点不自信了。&lt;/p>
-&lt;p>&lt;em>“我的朋友们啊，虽然不经常联系，如果可以见面，我们都保持曾经最好的状态就太好了，祝愿所有的人都身体健康。”&lt;/em>&lt;/p>
-&lt;p>六月份，在飞机上拿了一份报纸，其中有一篇文章《“断亲”现象背后的社会根源》提到了几个根源：&lt;/p>
-&lt;ol>
-&lt;li>人口少子化可能催生了“断亲族”，亲戚数量少、交往不够&lt;/li>
-&lt;li>家庭结构和家庭关系的变迁，城市化和人口流动将家庭结构小型化&lt;/li>
-&lt;li>对于“孝道”的理解也有了时代新的内涵，出现了代际之间的差异&lt;/li>
-&lt;li>当下年轻人面临着诸多的现代社会压力，比如当下流行的“社交恐惧症”等网络用语也许能帮助我们窥见一斑&lt;/li>
-&lt;/ol>
-&lt;p>我觉得我也属于这大时代中的一个小小缩影，在外打工拼搏的年轻人与家族亲属关系的维系慢慢变得减少，和父母的联系做到很紧密就已经很不错了，况且我还是那个话少的那个。今年在网上认识也认识了一些在家工作的朋友，他们反馈给我的感觉都是生活节奏较慢，没有房租焦虑，归属感强，朋友家人可以经常见面，工作场所和家庭相距并不远，其实还是有点羡慕的，但城市与城镇的资源配比相差较大，这是一个围城。&lt;/p>
-&lt;p>&lt;em>“如果我们可以经常像朋友一样沟通，我有好多话想说。”&lt;/em>&lt;/p>
-&lt;p>七月份，开始健身，调整自己的体态。那段时间我有好好吃饭，好好运动，好好睡觉。因为每天健身，早上会起的很早睡得很早，就是因为起得早，有点产生时间焦虑了，以往都是经常熬夜，在夜晚阅读、学习，效率很高。在早晨做自己的事情还没有养成习惯，做的最多的事情就是看日出，呼吸清晨的空气，阅读微信文章。除了健身，还帮朋友每天晚上照顾猫咪，我总觉得猫咪如果每天没有人玩会变得抑郁吧，这件事让我锻炼了熟练的铲屎技能。&lt;/p>
-&lt;p>&lt;em>“健身好像是一个永远不会吃亏的决定之一，对抗懒惰，让处于人生黄金时代的身体燃烧起来。”&lt;/em>&lt;/p>
-&lt;p>八月份，上海还是一如既往的酷暑，每天晚上的云彩都有不同颜色，拍了很多晚霞的照片。中旬的时候去烫了一次头发，开始理解原来改变自己的外在，也能获得不一样的心情。同时，也开始在网上给大洋彼岸的陌生人写信，我只写了三四封，其中三封有回信，但没有坚持下去，倒是锻炼了自己的文笔能力。通过写信，了解了集邮、名信片的功能，这种东西真的好适合做“意义”的载体。&lt;/p>
-&lt;p>&lt;em>“我把自己丢到广阔世界里，听一听不同的回响，原来我是一个不起眼的坚硬原石，再多的风雨和时间都无法褪去我存在过的痕迹。”&lt;/em>&lt;/p>
-&lt;p>九月份，下午开始频繁的喝起了咖啡，瑞幸的咖啡打卡了不少，喝到最后找到了适合自己的口味。经常一个人出入电影院享受周末闲暇的时光，喜欢看晚场，坐前排，散场的时候也第一个走。中旬的时候公司周年纪念，去了山东青岛，满足了自己对海洋的向往，海浪拍打在自己的腿上，扑鼻而来的海洋气息，那一刻站在沙滩上的我一定是远离这个世界上喧嚣最远的一次。&lt;/p>
-&lt;p>&lt;em>“旅行的路上让我捡拾自己的贝壳，我把它们挂满身上，再带回现实人间。”&lt;/em>&lt;/p>
-&lt;p>十月份，最值得纪念的就是回到新疆，和家人去看了天池，和十年朋友一起骑马，我坐在马背上享受草原上该有的狂野，羊群静静的扎堆低头吃草，鸟群在湛蓝天空掠过，十年之前趴在课桌上的我们可曾想过我们会像今天自由。&lt;/p>
-&lt;p>&lt;em>“不知不觉地，我就长大了，该狂野就狂野，该文静就文静。”&lt;/em>&lt;/p>
-&lt;p>十一月份，周末去了华师大参加第十七届国际文化节，见到很多外国的留学生，展台上摆满了他们自己国家的美食和小礼物，我和朋友走了一圈，感觉站在了文化汇聚的焦点，为了借一张纸去找街头的学生打招呼、和外国实习生交谈，那一刻我毫不社恐。晚上有幸观看了每个国家自己编排的节目，有舞蹈、唱歌、服装品鉴等等。其中有一个关于汉服的节目，介绍了汉服的起源和演变，穿着汉服的人都是外国留学生，他们喜爱我们的文化，朗读我们的诗歌，在这里我感受到了民族该有的文化自信。&lt;/p>
-&lt;p>&lt;em>“没有人可以评价你，做一个自信的人，我们的文化也是一样。”&lt;/em>&lt;/p>
-&lt;p>十二月份，天气逐渐变冷，给自己买了几件衣服，没想到还挺适合自己。每逢周五的晚上偶尔给自己做一桌便餐，摆上几瓶啤酒，享受着自己的生活。同时，朋友送给我的那颗多肉在桌上正茁壮成长，是我喜欢的颜色，好像阳光强烈它就会慢慢长出渐变的桃色。&lt;/p>
-&lt;p>&lt;em>“如果要送朋友礼物，不知道送什么的话，送一颗绿植是不错的选择，愿烦心事丢掉，腾地方装花。”&lt;/em>&lt;/p>
-&lt;p>这一年的生活节奏就像《Whisper Of Hope》那样，这首歌是我在十二月收到最好的日推了，除了这个以外，我还经常听一听摇滚，最爱《美好的事可不可以发生在我身上》，也是朋友给我安利的。&lt;/p>
-&lt;h2 id="最后">最后&lt;/h2>
-&lt;p>2024年，这里我就不立什么Flag了，就如文章开头所讲。最后我写下祝福，希望自己可以有更多的人生体验，多和朋友接触，多向身边优秀的人看齐，希望朋友们也都越来越好，人生如书，都可以撰写出自己无悔的青春岁月。&lt;/p></description></item><item><title>需要保持的几个好习惯</title><link>https://payloads.online/archivers/2023-10-31/good-habits/</link><pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2023-10-31/good-habits/</guid><description>&lt;aside>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>心情随笔 on 倾旋的博客</title><link>https://payloads.online/tags/%E5%BF%83%E6%83%85%E9%9A%8F%E7%AC%94/</link><description>Recent content in 心情随笔 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Mon, 30 Dec 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/tags/%E5%BF%83%E6%83%85%E9%9A%8F%E7%AC%94/index.xml" rel="self" type="application/rss+xml"/><item><title>2024，持续向内探索的一年</title><link>https://payloads.online/archivers/2024-12-30/year-end-summary/</link><pubDate>Mon, 30 Dec 2024 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2024-12-30/year-end-summary/</guid><description>&lt;h1 id="开篇"&gt;开篇&lt;/h1&gt;
+&lt;p&gt;Hi 👋 最近一年就这样过去了，2025 这个数字仿佛是属于未来的，但其实已经来临了，马上跨入新的一年，按照惯例我写下关于2024年的年终总结。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;我不太擅长用键盘书写太多关于思想的内容，所以本篇大部分内容可能都是通过手机的九键打出来的。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h1 id="精神层面的再次成长"&gt;精神层面的再次成长&lt;/h1&gt;
+&lt;p&gt;大概回忆了一下今年所经历的事情，生活上还是比较充实的，除了生活上的新奇体验，心理上的成长也感受非常明显，根据MBTI的测验结果我属于E人，回望过去十年的性格特点，还真的挺意外的，竟然从内向型转为了外向型，整个人变得比以前更想表达了。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;迈尔斯-布里格斯类型指标&lt;/strong&gt; （&lt;strong&gt;MBTI）&lt;/strong&gt; 是一种自我报告问卷，它提出伪科学的主张，将个人分为 16 种不同的“心理类型”或“人格类型”。
+MBTI 由美国人凯瑟琳·库克·布里格斯 （Katharine Cook Briggs） 和她的女儿伊莎贝尔·布里格斯·迈尔斯 （Isabel Briggs Myers） 在二战期间建造，灵感来自瑞士精神病学家卡尔·荣格 （Carl Jung） 1921 年出版的《&lt;a href="https://en.wikipedia.org/wiki/Psychological_Types"&gt;&lt;em&gt;心理类型&lt;/em&gt;&lt;/a&gt;》一书。该测试为四个类别中的每一个类别分配一个二进制值：内向或外向、感知或直觉、思考或感觉以及判断或感知。每个类别中的一个字母被用于生成一个由四个字母组成的测试结果，代表 16 种可能类型之一，例如“INFP”或“ESTJ”。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;今年看了一些关于心理层面的书籍，让我对自己的人格形成有了新的认识，开始内化出一个上帝视角审视自我，在做出任何决定之前都会跳出来理性分析，最后再以感性接纳自我，这种思考过程让我的内核比以往更加稳定。&lt;/p&gt;
+&lt;p&gt;这篇2024年终总结主题是“持续向内探索”，向内探索其实是一个很复杂的过程，需要冷静的、脱离主观视角的分析自我，了解自己的情绪、欲望、性格等等，其中印象深刻的就是我看了一本：《二次成长 （成人人格修补手册）》，跟着章节把自己从小到大的经历全部回忆了一遍，开始了思考如今自我性格形成的因素所在，对人与人的区别之处比以往人生中的所有时间里都更加的包容，书中按照0岁起点至18岁的整个过程来阐述人格的形成规律，从侧面其实也指导了我很多如何与自己相处的方式。在我当前有限的人生经历里，大部分时间是喜欢在热闹里独处度过的，凑近了觉得吵闹，离远了又觉得寂寞，我想很多人都有类似的感受，通过客观的分析本质上这应该属于我与自我相处的方式就是如此，于是2024年我就开始去一个人做了很多事情，尝试在生活上留给自己的时间多一些，例如一个人散步、做饭、看电影、吃火锅、旅行，甚至有一次晚上提着两瓶酒走到公园里坐着听歌。随着时间流逝也发现了此类行为带来的好处，精神世界前所未有的独立。我将这一年的思考归纳为三十岁之前人生必要的阶段，在冥冥中刻画了一个鲜明的印记。&lt;/p&gt;
+&lt;h1 id="工作中的一些感想"&gt;工作中的一些感想&lt;/h1&gt;
+&lt;p&gt;时至今日，加入创业公司已经两年多了，今年不断打磨了产品的几个重要功能模块，让我对终端安全、RASP、勒索防护、AD域安全相关的安全建设、安全验证方法、产品设计理论有了更加深刻的了解，编写了上百篇技术文档，推动攻击模拟、安全能力验证相关的安全技术研究工作愈加得心应手，记得去年年底，做了一次职业倦怠调查，当时自己得分是良好，经过这一年的工作和思考，年底发现自己应当转变更多产品视角，以产品视角再切入业务视角，让技能以圆周率（Pi）形展开，真正能触达问题本身：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;π型人才指的是一种复合型人才的新结构。就像π这个字一样，π的横，代表宽广的学科跨度，知识面广，而π的一撇一捺，代表着至少2个领域深耕。相比单一型人才，π型人才的优势是在于打的是“组合拳”，两种以上的专长融合更容易让他们找到不一样的创新方式，最终在众多竞争者中脱颖而出。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;既然是工作，不论是理论研究成果还是技术研究成果均需要一个价值转化途径体现价值，而目前网络安全行业处于一个特殊时期，企业开始更加关注产品的核心竞争力，但安全能力与研发能力往往总是不能产生亮眼的协同效应，当下各公司都缺少既懂产品又懂安全的人才，建立这关键的纽带的关键人员是产品核心竞争力的重要因素之一，回归安全验证这一赛道，π形技术人才的关键能力就是安全技术与产品解决方案的融合能力。&lt;/p&gt;
+&lt;h1 id="生活中那些有趣的经历"&gt;生活中那些有趣的经历&lt;/h1&gt;
+&lt;p&gt;2024年的夏天我脑袋里突然冒出一句话，可以总结成为我对生活的态度：不让事情白白发生，不让时间白白流逝，人生就是在有限时间和空间里带着某种意识去经历的。后来又在网上看到苏格拉底的至理名言，与我的感受正好相符，这里也引经据典一下，尽量不那么“假文艺”：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“未经审视的人生不值得过” — 苏格拉底&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;审视这个词特别好，正是以往许多人容易忽略的动作，经历了经济的衰退、疫情的影响，大家的心态应该变化都挺大的。&lt;/p&gt;
+&lt;p&gt;一月份高中认识的老铁结婚，算是提前回家了一趟，要不是身边的人结婚，我可能无法全面了解现代婚姻的基本流程，作为男方一方的亲友团可没少忙活，不过在他站在台上宣誓时，坐在台下的我由衷地希望他永远幸福，好像在十年之前，我们两个问题少年诉说着青春的烦恼而建立起来最纯粹又美好的友谊，其实就是为了这一刻的见证，为了期盼着美好的事情一定要发生在他身上一样，美好，如约而至，我们都长大了。&lt;/p&gt;
+&lt;p&gt;从去年开始，恋爱与结婚的话题开始出现在身边了，一方面我觉得这方面更不能着急，借用一下王小波的话：“我来这个世界，不是为了繁衍后代。而是来看花怎么开，水怎么流。太阳怎么升起，夕阳何时落下。我活在世上，无非想要明白些道理，遇见些有趣的事。生命是一场偶然，我在其中寻找因果。” —— 每个人都有自己的节奏。另外一方面，不应该在一个人的时候去思考婚姻，因为婚姻是有另外一个人的存在才会存在的，对于不存在的事物，任何情绪都是错误的，无论是恐惧或者期待。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://images.payloads.online/2024-12-31-f0b465d3a853a1fe905d7387fdf0c3aa7f0d0fd0d45f6eda5f4e768c4ee7214b.png" alt="0"&gt;&lt;/p&gt;
+&lt;p&gt;一月底，第一次和朋友一起看了一场脱口秀，我发现这种场合最适合一本正经的胡说八道了，有句流行语是这么说的：“出门在外，身份是自己给的”，都市脱口秀其实主打一个轻松的氛围，当然面子薄的人可能接受不了这种“冒犯”。&lt;/p&gt;
+&lt;p&gt;在从家里再回到上海，刚好到了临近过年的时候，某一天我突然想一个人出国玩一下，再加上平常也上网看一些国际新闻，想到现在泰国免签，就下定了决心来一场一个人的自由行。那是我第一次出国，也没有跟团，主打一个自由散漫。现在回想起来，真是一次大胆的尝试。期间比较有趣的事情就是，我出了泰国普吉岛机场的海关落地才办的手机卡，出发前还给自己开了全国漫游套餐，落地发现一点用都没有，持续了三四十分钟的异国他乡的失联状态，全靠一本护照和一些纸币泰铢。&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://images.payloads.online/2024-12-31-1af8ed227a285ca865e7f5793cc27c15cc75c8b29d277ffec520bad5138c03de.png" alt="1"&gt;&lt;/p&gt;
+&lt;p&gt;二月份过春节，我如愿去了泰国普吉岛，旅行期间全靠组装的塑料英语进行信息交换，真正实现了面对面的“国际沟通”。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;第一次在国外的便利店使用微信支付，在外国享受科技的便捷&lt;/li&gt;
+&lt;li&gt;第一次躺在泰国最南端的斯米兰岛上睡了个午觉（无信号区），别人忙着拍照，我忙着看风景和睡觉，静静的在与世无争的地方体验整个下午&lt;/li&gt;
+&lt;li&gt;第一次和外国人砍价（脸皮超厚，对方报价后我还价直接砍一半，还好人没被砍）&lt;/li&gt;
+&lt;li&gt;第一次在国外过大年三十，在国外没有任何春节的氛围，但是周遭一切陌生的事物让我无比开心&lt;/li&gt;
+&lt;li&gt;第一次潜水意外喝了一口碧蓝色的海水，好看是好看，但是真的苦涩&lt;/li&gt;
+&lt;li&gt;第一次一个人在外国夜市吃海鲜，被泰国服务员围住要红包，我用塑料英语怼回去：“In China, Hongbao only give Children” 他们尴尬的走开了&lt;/li&gt;
+&lt;li&gt;第一次手持各类武器进行实弹射击，狙击枪、手枪、霰弹枪、步枪等，与国内的区别就是，在泰国我可以把枪口随时对准教练(bushi&lt;/li&gt;
+&lt;li&gt;太多就不写了……&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src="https://images.payloads.online/2024-12-31-41daf360fdd49b2d61bc5fbce98275b4c2bb65ee61a1e77a789e5739d583f08f.png" alt="2"&gt;&lt;/p&gt;</description></item><item><title>2023年终总结 - 你好2024！</title><link>https://payloads.online/archivers/2023-12-29/year-end-summary/</link><pubDate>Fri, 29 Dec 2023 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2023-12-29/year-end-summary/</guid><description>&lt;h2 id="前言"&gt;前言&lt;/h2&gt;
+&lt;p&gt;2023年转眼过去，好像2022年-2023年很少写总结了，心血来潮在元旦来临之前花了一些时间给博客装修了一下，为了迎接2024年的到来，认真写一篇年度总结，算是给这一年一个交代，我会总结一下这近两年以来自己做的一些事情和成长。&lt;/p&gt;
+&lt;p&gt;在上周末看到阮老师的周刊的标题：&lt;a href="http://www.ruanyifeng.com/blog/2023/12/weekly-issue-283.html"&gt;科技爱好者周刊（第 283 期）：[年终感想] 没有目的地，向前走&lt;/a&gt;，主要内容为BaseCamp 公司创始人 Jason Fried 的一篇短文提到“我做事，我尝试，我建造，我想要取得进步，我想让我做的东西使得自己、使得公司、使得家庭、使得社会变得更好。但我从未设定过目标。这不是我做事的方式。”看完这篇短文，思考了一下好像我也没有什么确切具体的目标，虽说确切具体的目标对于个人来说是会起到激励的作用，但这一年我对自己的要求没有以往那么苛刻了，在这种状态下收获了很多从未有过的体验。&lt;/p&gt;
+&lt;h2 id="2023这一年的工作感想"&gt;2023这一年的工作感想&lt;/h2&gt;
+&lt;p&gt;2022年做了许多重大的决定，其中对生活节奏影响较大的就是换了一份工作，由红队研究员的身份转向一个对安全运营视角进行有效性验证的安全研究员，大概是2022年9月底从老东家离职，写了一篇&lt;a href="https://payloads.online/archivers/2022-09-19/1/"&gt;《我的三年红队生涯总结》&lt;/a&gt;宣告自己的红队工作告一段落，开始拥抱新的视角，拓展更广的视野，对安全工作的理解也慢慢发生改变。起初刚加入创业公司，节奏还是能够快速适应的，首先就是工作的交付形式开始转变，从项目的阶段性成果转变成产品相关的测试用例、新技术的调研与应用、与头部企业的安全负责人交流实践经验等等，做产品和做业务有很大的区别，产品功需要更加精细化，对每个功能的要求都应当非常高，才会产生价值，是一个需要内心始终与用户对话的工作形式，所有的产品最初都需要打磨，都需要反馈才能变得更好，这个过程对比此前进行的项目交付，显得节奏感慢了很多，而项目是一个短周期、阶段性的事务。&lt;/p&gt;
+&lt;p&gt;再者就是参与到产品的建设中经常可以获得一些正反馈，这是我的动力源，应用的每个技术方案都会通过更新流转到每个用户面前，类比于红队获取了一个目标权限等同。在前几个月的时候，和前辈聊天提到“对手”这个词，前辈说我现在没有对手了，没有对手就会影响到一个人的动力，以往的环境是天天有竞争的，红蓝队伍的对抗，一场场攻防演练，一个个排名，外部的对手数不胜数，所以每次竞争后都会变得更有力量，而现在需要从自身寻找对手，这个对手就是自己，从头梳理自己对企业安全建设的理解，去学习别人的最佳实践，思考事物为何如此发展，善用平台的资源和力量。&lt;/p&gt;
+&lt;p&gt;入职后先后接手了终端安全验证、勒索软件验证、AD域安全验证、RASP验证，重新设计了很多次不同验证方向的闭环方案，也接触了何谓“有效性验证”、何谓“安全能力验证”，如果用一句话概括我做的事情就是：“企业先有安全建设，后有安全运营，安全建设积累安全能力，安全运营积累最佳实践，验证安全能力提高安全建设水平，验证安全运营有效性提升实践能力。“&lt;/p&gt;
+&lt;p&gt;其实我的大部分时间不只是在做攻击模拟，而是在建立反向验证的思维逻辑，以及应用/研究一套可行性较高、成本较低的验证方案。举例终端安全来说，验证的维度其实非常广，覆盖了ATT&amp;amp;CK矩阵的大部分技术项，而从终端安全防御视角来看，大部分攻击都可以通过操作系统遥测事件输入威胁识别模型识别哪些命令、行为是攻击从而分析出来终端是否受到了攻击。攻击模拟就是在不影响系统安全性的情况下完成一次或多次的攻击回放，回放技术做的越好、越真实、越能体现归因（这个攻击被检测了吗？被谁检测的？响应时间多长？若不能检测，该如何检测），价值就越大，这里摸爬滚打一路过来遇到很多难点就不展开陈述了。&lt;/p&gt;
+&lt;p&gt;总的来说，建立反向验证思维，可以让安全工作做的更可信，更容易量化分析。在我设计好一套验证方案后，输出的验证结果反应出了安全能力的很多问题，这些是我以往在红队视角无法想象的，可能是攻击特征很明显的命令，某安全产品竟然没有告警？还有的时候想去验证一些自己的Bypass思路，发现有的安全产品也无法检测，终于真正站在一个中立视角、科学的验证安全能力。&lt;/p&gt;
+&lt;p&gt;在今年工作的最后的一天，同事发来了一个“&lt;em&gt;MBI-GS职业倦怠量表“&lt;/em&gt;，经过测试我得到了23分的结果，工作状态良好。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;什么是工作倦怠&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;“职业倦怠症”又称“职业枯竭症”，它是一种由工作引发的心理枯竭现象，是上班族在工作的重压之下所体验到的身心俱疲、能量被耗尽的感觉，这和肉体的疲倦劳累是不一样的，而是缘自心理的疲乏。&lt;/p&gt;
+&lt;p&gt;工作倦怠方面最权威、最常用的量表——MBI-GS(Maslach Burnout Inventory-General Survey)。2002年，李超平获得该问卷开发者Michael Leiter教授的授权，在国内修订MBI-GS。结果表明：该量表在国内具有较好的信度和效度。该量表包括三部分：情绪衰竭(Emotional Exhaustion)、玩世不恭(Cynicism)和成就感低落（Reduced Personal Accomplishment）。情绪衰竭分量表包括5道题，玩世不恭分量表包括5道题，成就感低落分量表包括6道题，整个问卷共16道题。该量表采用利克特7分等级量表，0代表“从不”，6代表“非常频繁”。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;在做这个问卷的过程中，有很多或者几乎都是，需要从自身的工作感受出发进行作答的问题，以前和朋友、领导多少都发表过对于一份工作的观点，在不同时间的节点，我都会思考做事的意义，在抓住能让自己变得更好的前提下，总能得到正向的反馈，这种感觉可以持续推动我成长下去。&lt;/p&gt;
+&lt;h2 id="2023这一年的生活感想"&gt;2023这一年的生活感想&lt;/h2&gt;
+&lt;p&gt;今年经历太多无法言说的事情了，我始终抱着过去发生的、经历的，总能成为将来自己的一部分，让我带着它继续的走向明天。这一年认识了新朋友，接触了很多不一样的观点，觉得自己人生的岁岁年年真的才刚开始，我开始阅读更多类别的书籍、尝试不一样的食物、锻炼自己的身体、掌控自己的时间，也学会适当的放松自己、爱自己，以一个旁观者的身份回顾自己，用今天的经验去总结过去某个时刻的自己所做出的选择，然后再回到现实中，感受都会无比通透，让所经历的苦难、快乐能真正成为自己的一部分。&lt;/p&gt;
+&lt;p&gt;我经常会担心忘记自己某天某时某刻某地所见所闻所想，能够引起我情绪波动的事物我都会放开自己的去感受它，这样对比起曾经的自己变化还是挺大的。&lt;/p&gt;
+&lt;p&gt;下面回顾我这一年的每个月，我都写了一句送给自己的话。&lt;/p&gt;
+&lt;p&gt;一月份，在新疆过了农历新年，排除疫情的两年以外，与往年一样，吃了许多新疆美食，家人也想让我多吃一点，总担心我一个人在外面吃得不好，穿的不好。在今年过生日之前，我对于至亲总会离去这件事感觉很遥远，虽然没有发生，但人总会经历，记得在网上看到过，有些男人可能一夜就会长大。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;“其实我很好，只是回到家里，我好像无法褪去孩子的身份与模样，超幸福的。”&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;二月份，去见了北京的老朋友，郭师傅还是一样我没变，他也没变。突然发现我有一个特质，就是朋友一开始认识我时是什么样，不管多久，见到我时我还是始终一样。简单跟郭师傅学习了单反的使用，原来摄影这件事也很酷，我好像还没有很多其他的爱好。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;“羡慕有许多爱好的人，在不喜欢工作的时候可以通过其他爱好补充能量。”&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;三月份，和同事们一起去了一次环球影城，果然诚不欺吾，唯一不足的就是人真的太多了，从未能想象到原来游乐园可以这么好玩，从早到晚的一天几乎都在排队，累到脚都不想着地，还是钱包够硬才能痛快。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;“今年在知乎上刷到一个问题，大概意思是游乐场为什么不能线上取号，排队真的能快乐吗？我比较认同一个答案：排队是游乐园的一环。【热闹】【期待感】【获得感】是游乐场重要的一部分。”&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;四月份，已经回到上海工作了，这个我陌生又熟悉的城市，相比于北京好像这里我更容易找到自己的生活节奏，能走在街头感受人海车流，脑海中还能做一些闲暇的思考，可快可慢，允许我自己进行调节。翻开相册和博客，2018年的那个四月，也如近日一样逐渐成为人生重要的节点。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;“我们都要好好生活，好好找到自己的节奏，不盲目活在他人的节奏之下。”&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;五月份，和上海的朋友聚了聚，他们开始关注身体健康，普遍走向三高，我貌似并没有这种焦虑，体检的时候医生竟然说我是最好的，讲的我都有点不自信了。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;“我的朋友们啊，虽然不经常联系，如果可以见面，我们都保持曾经最好的状态就太好了，祝愿所有的人都身体健康。”&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;六月份，在飞机上拿了一份报纸，其中有一篇文章《“断亲”现象背后的社会根源》提到了几个根源：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;人口少子化可能催生了“断亲族”，亲戚数量少、交往不够&lt;/li&gt;
+&lt;li&gt;家庭结构和家庭关系的变迁，城市化和人口流动将家庭结构小型化&lt;/li&gt;
+&lt;li&gt;对于“孝道”的理解也有了时代新的内涵，出现了代际之间的差异&lt;/li&gt;
+&lt;li&gt;当下年轻人面临着诸多的现代社会压力，比如当下流行的“社交恐惧症”等网络用语也许能帮助我们窥见一斑&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;我觉得我也属于这大时代中的一个小小缩影，在外打工拼搏的年轻人与家族亲属关系的维系慢慢变得减少，和父母的联系做到很紧密就已经很不错了，况且我还是那个话少的那个。今年在网上认识也认识了一些在家工作的朋友，他们反馈给我的感觉都是生活节奏较慢，没有房租焦虑，归属感强，朋友家人可以经常见面，工作场所和家庭相距并不远，其实还是有点羡慕的，但城市与城镇的资源配比相差较大，这是一个围城。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;“如果我们可以经常像朋友一样沟通，我有好多话想说。”&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;七月份，开始健身，调整自己的体态。那段时间我有好好吃饭，好好运动，好好睡觉。因为每天健身，早上会起的很早睡得很早，就是因为起得早，有点产生时间焦虑了，以往都是经常熬夜，在夜晚阅读、学习，效率很高。在早晨做自己的事情还没有养成习惯，做的最多的事情就是看日出，呼吸清晨的空气，阅读微信文章。除了健身，还帮朋友每天晚上照顾猫咪，我总觉得猫咪如果每天没有人玩会变得抑郁吧，这件事让我锻炼了熟练的铲屎技能。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;“健身好像是一个永远不会吃亏的决定之一，对抗懒惰，让处于人生黄金时代的身体燃烧起来。”&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;八月份，上海还是一如既往的酷暑，每天晚上的云彩都有不同颜色，拍了很多晚霞的照片。中旬的时候去烫了一次头发，开始理解原来改变自己的外在，也能获得不一样的心情。同时，也开始在网上给大洋彼岸的陌生人写信，我只写了三四封，其中三封有回信，但没有坚持下去，倒是锻炼了自己的文笔能力。通过写信，了解了集邮、名信片的功能，这种东西真的好适合做“意义”的载体。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;“我把自己丢到广阔世界里，听一听不同的回响，原来我是一个不起眼的坚硬原石，再多的风雨和时间都无法褪去我存在过的痕迹。”&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;九月份，下午开始频繁的喝起了咖啡，瑞幸的咖啡打卡了不少，喝到最后找到了适合自己的口味。经常一个人出入电影院享受周末闲暇的时光，喜欢看晚场，坐前排，散场的时候也第一个走。中旬的时候公司周年纪念，去了山东青岛，满足了自己对海洋的向往，海浪拍打在自己的腿上，扑鼻而来的海洋气息，那一刻站在沙滩上的我一定是远离这个世界上喧嚣最远的一次。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;“旅行的路上让我捡拾自己的贝壳，我把它们挂满身上，再带回现实人间。”&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;十月份，最值得纪念的就是回到新疆，和家人去看了天池，和十年朋友一起骑马，我坐在马背上享受草原上该有的狂野，羊群静静的扎堆低头吃草，鸟群在湛蓝天空掠过，十年之前趴在课桌上的我们可曾想过我们会像今天自由。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;“不知不觉地，我就长大了，该狂野就狂野，该文静就文静。”&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;十一月份，周末去了华师大参加第十七届国际文化节，见到很多外国的留学生，展台上摆满了他们自己国家的美食和小礼物，我和朋友走了一圈，感觉站在了文化汇聚的焦点，为了借一张纸去找街头的学生打招呼、和外国实习生交谈，那一刻我毫不社恐。晚上有幸观看了每个国家自己编排的节目，有舞蹈、唱歌、服装品鉴等等。其中有一个关于汉服的节目，介绍了汉服的起源和演变，穿着汉服的人都是外国留学生，他们喜爱我们的文化，朗读我们的诗歌，在这里我感受到了民族该有的文化自信。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;“没有人可以评价你，做一个自信的人，我们的文化也是一样。”&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;十二月份，天气逐渐变冷，给自己买了几件衣服，没想到还挺适合自己。每逢周五的晚上偶尔给自己做一桌便餐，摆上几瓶啤酒，享受着自己的生活。同时，朋友送给我的那颗多肉在桌上正茁壮成长，是我喜欢的颜色，好像阳光强烈它就会慢慢长出渐变的桃色。&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;“如果要送朋友礼物，不知道送什么的话，送一颗绿植是不错的选择，愿烦心事丢掉，腾地方装花。”&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;这一年的生活节奏就像《Whisper Of Hope》那样，这首歌是我在十二月收到最好的日推了，除了这个以外，我还经常听一听摇滚，最爱《美好的事可不可以发生在我身上》，也是朋友给我安利的。&lt;/p&gt;
+&lt;h2 id="最后"&gt;最后&lt;/h2&gt;
+&lt;p&gt;2024年，这里我就不立什么Flag了，就如文章开头所讲。最后我写下祝福，希望自己可以有更多的人生体验，多和朋友接触，多向身边优秀的人看齐，希望朋友们也都越来越好，人生如书，都可以撰写出自己无悔的青春岁月。&lt;/p&gt;</description></item><item><title>需要保持的几个好习惯</title><link>https://payloads.online/archivers/2023-10-31/good-habits/</link><pubDate>Tue, 31 Oct 2023 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2023-10-31/good-habits/</guid><description>&lt;aside&gt;
 😀 在这里我梳理一些工作和生活需要保持的几个好习惯，用于时刻提醒自己继续保持。
-&lt;/aside>
-&lt;h3 id="使用带密码的私钥">使用带密码的私钥&lt;/h3>
-&lt;p>使用带密码的私钥能够确保公私钥文件被窃取后，依然无法使用。&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># ssh-keygen 命令&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ ssh-keygen -t rsa -f secret-key
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Generating public/private rsa key pair.
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Enter passphrase &lt;span style="color:#f92672">(&lt;/span>empty &lt;span style="color:#66d9ef">for&lt;/span> no passphrase&lt;span style="color:#f92672">)&lt;/span>: &lt;span style="color:#75715e"># 输入密码&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>Enter same passphrase again: &lt;span style="color:#75715e"># 输入密码&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;img src="https://images.payloads.online/2024-07-29-fcceb13ae2e9e9954f3e168e822e583565003cf814c46b123015ed18723b01f8.png" alt="0">&lt;/p>
-&lt;h3 id="使用命令行提示工具-oh-my-zsh">使用命令行提示工具 oh-my-zsh&lt;/h3>
-&lt;p>&lt;a href="https://ohmyz.sh/">oh my zsh&lt;/a>&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>$ sh -c &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>$ vim .zshrc
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 我使用的插件&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>plugins&lt;span style="color:#f92672">=(&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>git 
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>docker 
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>zsh-syntax-highlighting 
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>zsh-autosuggestions 
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>zsh-completions 
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>copyfil 
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>e emoji
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>extract
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>sudo
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#f92672">)&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="使用更好的替代命令">使用更好的替代命令&lt;/h3>
-&lt;p>在Linux命令行下，会经常使用系统命令进行工作，但是内置的命令功能很单一，需要做一些增强，我这里摘取部分配置：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># https://github.com/AmineZouitine/rmt.rs&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 删除文件备份&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>alias rm&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;rmt&amp;#39;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># https://github.com/lsd-rs/lsd&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 查看文件列表高亮&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>alias ls&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#e6db74">&amp;#39;lsd&amp;#39;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 使用pyenv管理Python环境&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>eval &lt;span style="color:#e6db74">&amp;#34;&lt;/span>&lt;span style="color:#66d9ef">$(&lt;/span>pyenv init -&lt;span style="color:#66d9ef">)&lt;/span>&lt;span style="color:#e6db74">&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 这里放一些零散的二进制文件工具&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export PATH&lt;span style="color:#f92672">=&lt;/span>$HOME/.local/bin:$PATH
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># 这里放一些常用的管理系统的Bash脚本&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export PATH&lt;span style="color:#f92672">=&lt;/span>$HOME/scripts:$PATH
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="将后台程序变成服务">将后台程序变成服务&lt;/h3>
-&lt;p>后台程序就是那些没有界面，但是需要命令行运行的程序，这类程序我其实不太喜欢将他们单独运行在一个终端中，Linux\Windows\MacOS都有提供创建服务的功能，我这里举例Clash服务的管理：&lt;/p></description></item></channel></rss>
+&lt;/aside&gt;
+&lt;h3 id="使用带密码的私钥"&gt;使用带密码的私钥&lt;/h3&gt;
+&lt;p&gt;使用带密码的私钥能够确保公私钥文件被窃取后，依然无法使用。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ssh-keygen 命令&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ ssh-keygen -t rsa -f secret-key
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Generating public/private rsa key pair.
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Enter passphrase &lt;span style="color:#f92672"&gt;(&lt;/span&gt;empty &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; no passphrase&lt;span style="color:#f92672"&gt;)&lt;/span&gt;: &lt;span style="color:#75715e"&gt;# 输入密码&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Enter same passphrase again: &lt;span style="color:#75715e"&gt;# 输入密码&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src="https://images.payloads.online/2024-07-29-fcceb13ae2e9e9954f3e168e822e583565003cf814c46b123015ed18723b01f8.png" alt="0"&gt;&lt;/p&gt;
+&lt;h3 id="使用命令行提示工具-oh-my-zsh"&gt;使用命令行提示工具 oh-my-zsh&lt;/h3&gt;
+&lt;p&gt;&lt;a href="https://ohmyz.sh/"&gt;oh my zsh&lt;/a&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ sh -c &lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;$(&lt;/span&gt;curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh&lt;span style="color:#66d9ef"&gt;)&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ vim .zshrc
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 我使用的插件&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;plugins&lt;span style="color:#f92672"&gt;=(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;git 
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker 
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;zsh-syntax-highlighting 
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;zsh-autosuggestions 
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;zsh-completions 
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;copyfil 
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;e emoji
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;extract
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="使用更好的替代命令"&gt;使用更好的替代命令&lt;/h3&gt;
+&lt;p&gt;在Linux命令行下，会经常使用系统命令进行工作，但是内置的命令功能很单一，需要做一些增强，我这里摘取部分配置：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# https://github.com/AmineZouitine/rmt.rs&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 删除文件备份&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;alias rm&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#39;rmt&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# https://github.com/lsd-rs/lsd&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 查看文件列表高亮&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;alias ls&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#39;lsd&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 使用pyenv管理Python环境&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;eval &lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;$(&lt;/span&gt;pyenv init -&lt;span style="color:#66d9ef"&gt;)&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 这里放一些零散的二进制文件工具&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;export PATH&lt;span style="color:#f92672"&gt;=&lt;/span&gt;$HOME/.local/bin:$PATH
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 这里放一些常用的管理系统的Bash脚本&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;export PATH&lt;span style="color:#f92672"&gt;=&lt;/span&gt;$HOME/scripts:$PATH
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="将后台程序变成服务"&gt;将后台程序变成服务&lt;/h3&gt;
+&lt;p&gt;后台程序就是那些没有界面，但是需要命令行运行的程序，这类程序我其实不太喜欢将他们单独运行在一个终端中，Linux\Windows\MacOS都有提供创建服务的功能，我这里举例Clash服务的管理：&lt;/p&gt;</description></item></channel></rss>

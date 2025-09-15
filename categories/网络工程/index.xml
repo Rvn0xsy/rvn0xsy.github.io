@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>网络工程 on 倾旋的博客</title><link>https://payloads.online/categories/%E7%BD%91%E7%BB%9C%E5%B7%A5%E7%A8%8B/</link><description>Recent content in 网络工程 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Fri, 16 Mar 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/%E7%BD%91%E7%BB%9C%E5%B7%A5%E7%A8%8B/index.xml" rel="self" type="application/rss+xml"/><item><title>华为RIP协议</title><link>https://payloads.online/archivers/2015-11-20/2/</link><pubDate>Fri, 16 Mar 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/2/</guid><description>&lt;p>本文记录一下华为RIP协议的简单配置&lt;/p></description></item><item><title>思科路由</title><link>https://payloads.online/archivers/2015-11-23/1/</link><pubDate>Mon, 23 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-23/1/</guid><description>&lt;p>本文介绍一下思科设备的简单配置&lt;/p>
-&lt;p>&lt;img src="https://images.payloads.online/d2ecd43e-4f5e-11ec-b24b-00d861bf4abb.png" alt="enter description here" title="0x01">&lt;/p>
-&lt;h2 id="0x01-思科rip">0x01 思科RIP&lt;/h2>
-&lt;pre tabindex="0">&lt;code>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>网络工程 on 倾旋的博客</title><link>https://payloads.online/categories/%E7%BD%91%E7%BB%9C%E5%B7%A5%E7%A8%8B/</link><description>Recent content in 网络工程 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Fri, 16 Mar 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/%E7%BD%91%E7%BB%9C%E5%B7%A5%E7%A8%8B/index.xml" rel="self" type="application/rss+xml"/><item><title>华为RIP协议</title><link>https://payloads.online/archivers/2015-11-20/2/</link><pubDate>Fri, 16 Mar 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/2/</guid><description>&lt;p&gt;本文记录一下华为RIP协议的简单配置&lt;/p&gt;</description></item><item><title>思科路由</title><link>https://payloads.online/archivers/2015-11-23/1/</link><pubDate>Mon, 23 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-23/1/</guid><description>&lt;p&gt;本文介绍一下思科设备的简单配置&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://images.payloads.online/d2ecd43e-4f5e-11ec-b24b-00d861bf4abb.png" alt="enter description here" title="0x01"&gt;&lt;/p&gt;
+&lt;h2 id="0x01-思科rip"&gt;0x01 思科RIP&lt;/h2&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
 Router5:
 Router&amp;gt;en
 Router#conf t
@@ -67,64 +67,64 @@ Router(config-router)#network 172.16.3.0
 Router(config-router)#network 172.16.4.0
 Router(config-router)#network 192.168.2.0
 Router(config-router)#
-&lt;/code>&lt;/pre>&lt;p>通信测试：&lt;/p></description></item><item><title>华为MSTP协议</title><link>https://payloads.online/archivers/2015-11-20/6/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/6/</guid><description>&lt;p>本文记录一下华为MSTP协议配置&lt;/p>
-&lt;ul>
-&lt;li>
-&lt;p>1.创建四个VLAN在四个交换机上,分别是 10 20 30 40。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>2.分别设置trunk链路&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>3.进入STP配置视图&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>4.设置域名和修订级别&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>5.创建两个实例&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>6.激活实例&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>7.设置实例的优先级别，指定实例的根桥&lt;/p>
-&lt;/li>
-&lt;/ul>
-&lt;h2 id="0x01-创建四个vlan">0x01 创建四个VLAN&lt;/h2>
-&lt;pre tabindex="0">&lt;code>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;通信测试：&lt;/p&gt;</description></item><item><title>华为MSTP协议</title><link>https://payloads.online/archivers/2015-11-20/6/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/6/</guid><description>&lt;p&gt;本文记录一下华为MSTP协议配置&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;1.创建四个VLAN在四个交换机上,分别是 10 20 30 40。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;2.分别设置trunk链路&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;3.进入STP配置视图&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;4.设置域名和修订级别&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;5.创建两个实例&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;6.激活实例&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;7.设置实例的优先级别，指定实例的根桥&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="0x01-创建四个vlan"&gt;0x01 创建四个VLAN&lt;/h2&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
 &amp;lt;Huawei&amp;gt;sys
 
 [Huawei]vlan batch 10 20 30 40
-&lt;/code>&lt;/pre>&lt;h2 id="0x02-分别设置trunk链路">0x02 分别设置trunk链路&lt;/h2>
-&lt;pre tabindex="0">&lt;code>
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="0x02-分别设置trunk链路"&gt;0x02 分别设置trunk链路&lt;/h2&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
 [Huawei]port-group group-member e 0/0/1 to e 0/0/2
 
 [Huawei-port-group]port link-type trunk
 
 [Huawei-port-group]port trunk allow-pass vlan all
-&lt;/code>&lt;/pre>&lt;p>说明：在每个交换机都要创建四个VLAN、并且都设置trunk链路&lt;/p>
-&lt;h2 id="0x03-进入stp配置视图">0x03 进入STP配置视图&lt;/h2>
-&lt;pre tabindex="0">&lt;code>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;说明：在每个交换机都要创建四个VLAN、并且都设置trunk链路&lt;/p&gt;
+&lt;h2 id="0x03-进入stp配置视图"&gt;0x03 进入STP配置视图&lt;/h2&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
 [Huawei]stp region-configuration
-&lt;/code>&lt;/pre>&lt;h2 id="0x04-创建域名以及修订级别">0x04 创建域名以及修订级别&lt;/h2>
-&lt;pre tabindex="0">&lt;code>
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="0x04-创建域名以及修订级别"&gt;0x04 创建域名以及修订级别&lt;/h2&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
 [Huawei-mst-region]region-name xinhua
 
 [Huawei-mst-region]revision-level 1
-&lt;/code>&lt;/pre>&lt;h2 id="0x05-创建两个实例分别加入vlan">0x05 创建两个实例分别加入vlan&lt;/h2>
-&lt;pre tabindex="0">&lt;code>
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="0x05-创建两个实例分别加入vlan"&gt;0x05 创建两个实例分别加入vlan&lt;/h2&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
 [Huawei-mst-region]instance 1 vlan 10 20
 
 [Huawei-mst-region]instance 2 vlan 30 40
-&lt;/code>&lt;/pre>&lt;h2 id="0x06-激活实例">0x06 激活实例&lt;/h2>
-&lt;pre tabindex="0">&lt;code>
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="0x06-激活实例"&gt;0x06 激活实例&lt;/h2&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
 [Huawei-mst-region]active region-configuration
-&lt;/code>&lt;/pre>&lt;h2 id="0x07-设置实例的优先级别指定实例根桥">0x07 设置实例的优先级别、指定实例根桥&lt;/h2>
-&lt;p>首先查看一下LSW3：&lt;/p>
-&lt;p>&lt;img src="https://images.payloads.online/d0ac8340-4f5e-11ec-9dfc-00d861bf4abb.png" alt="enter description here" title="0x13">&lt;/p></description></item><item><title>华为交换机MUX-VLAN</title><link>https://payloads.online/archivers/2015-11-20/5/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/5/</guid><description>&lt;p>本文记录一下华为交换机MUX-VLAN配置&lt;/p>
-&lt;p>&lt;img src="https://images.payloads.online/d1b893a0-4f5e-11ec-b60d-00d861bf4abb.png" alt="enter description here" title="0x11">&lt;/p>
-&lt;pre tabindex="0">&lt;code>
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="0x07-设置实例的优先级别指定实例根桥"&gt;0x07 设置实例的优先级别、指定实例根桥&lt;/h2&gt;
+&lt;p&gt;首先查看一下LSW3：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://images.payloads.online/d0ac8340-4f5e-11ec-9dfc-00d861bf4abb.png" alt="enter description here" title="0x13"&gt;&lt;/p&gt;</description></item><item><title>华为交换机MUX-VLAN</title><link>https://payloads.online/archivers/2015-11-20/5/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/5/</guid><description>&lt;p&gt;本文记录一下华为交换机MUX-VLAN配置&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://images.payloads.online/d1b893a0-4f5e-11ec-b60d-00d861bf4abb.png" alt="enter description here" title="0x11"&gt;&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
 &amp;lt;Huawei&amp;gt;sys
 
 [Huawei]vlan batch 100 20 30 10
@@ -206,10 +206,10 @@ Router(config-router)#
 [Huawei-port-group]q
 
 &amp;lt;Huawei&amp;gt;save
-&lt;/code>&lt;/pre>&lt;p>将把当前的配置保存到存储设备中。&lt;/p></description></item><item><title>华为交换机Telnet远程登录</title><link>https://payloads.online/archivers/2015-11-20/1/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/1/</guid><description>&lt;p>本文记录一下华为交换机Telnet远程登录的简单配置&lt;/p>
-&lt;p>&lt;img src="https://images.payloads.online/d05697e6-4f5e-11ec-a083-00d861bf4abb.png" alt="enter description here" title="0x05">&lt;/p>
-&lt;p>交换机：&lt;/p>
-&lt;pre tabindex="0">&lt;code>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;将把当前的配置保存到存储设备中。&lt;/p&gt;</description></item><item><title>华为交换机Telnet远程登录</title><link>https://payloads.online/archivers/2015-11-20/1/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/1/</guid><description>&lt;p&gt;本文记录一下华为交换机Telnet远程登录的简单配置&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://images.payloads.online/d05697e6-4f5e-11ec-a083-00d861bf4abb.png" alt="enter description here" title="0x05"&gt;&lt;/p&gt;
+&lt;p&gt;交换机：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
 
 &amp;lt;Huawei&amp;gt;sys
 
@@ -230,8 +230,8 @@ Router(config-router)#
 [Huawei]int vlan 1
 
 [Huawei-Vlanif1]ip address 192.168.1.1 24
-&lt;/code>&lt;/pre>&lt;p>路由器：&lt;/p>
-&lt;pre tabindex="0">&lt;code>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;路由器：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
 &amp;lt;Huawei&amp;gt;sys
 
 [Huawei]int G 0/0/0
@@ -247,25 +247,25 @@ Press CTRL_] to quit telnet mode
 Trying 192.168.1.1 …
 
 Connected to 192.168.1.1 …
-&lt;/code>&lt;/pre></description></item><item><title>华为交换机VLAN聚合实例</title><link>https://payloads.online/archivers/2015-11-20/4/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/4/</guid><description>&lt;p>本文记录一下华为交换机VLAN聚合实例配置&lt;/p>
-&lt;ul>
-&lt;li>创建VLAN聚合的VLAN&lt;/li>
-&lt;li>设置VLAN聚合所需要的trunk链路&lt;/li>
-&lt;li>划分VLAN&lt;/li>
-&lt;li>配置三层交换机的VLAN聚合&lt;/li>
-&lt;li>配置聚合VLAN的IP&lt;/li>
-&lt;li>开启ARP代理&lt;/li>
-&lt;li>配置客户机IP地址及网关&lt;/li>
-&lt;li>测试&lt;/li>
-&lt;/ul>
-&lt;h2 id="0x01-创建vlan聚合的vlan">0x01 创建VLAN聚合的VLAN&lt;/h2>
-&lt;pre tabindex="0">&lt;code>
+&lt;/code&gt;&lt;/pre&gt;</description></item><item><title>华为交换机VLAN聚合实例</title><link>https://payloads.online/archivers/2015-11-20/4/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/4/</guid><description>&lt;p&gt;本文记录一下华为交换机VLAN聚合实例配置&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;创建VLAN聚合的VLAN&lt;/li&gt;
+&lt;li&gt;设置VLAN聚合所需要的trunk链路&lt;/li&gt;
+&lt;li&gt;划分VLAN&lt;/li&gt;
+&lt;li&gt;配置三层交换机的VLAN聚合&lt;/li&gt;
+&lt;li&gt;配置聚合VLAN的IP&lt;/li&gt;
+&lt;li&gt;开启ARP代理&lt;/li&gt;
+&lt;li&gt;配置客户机IP地址及网关&lt;/li&gt;
+&lt;li&gt;测试&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="0x01-创建vlan聚合的vlan"&gt;0x01 创建VLAN聚合的VLAN&lt;/h2&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
 &amp;lt;Huawei&amp;gt;sys
 
 [Huawei]vlan batch 10 20 30
-&lt;/code>&lt;/pre>&lt;p>注：vlan的个数必须相同&lt;/p>
-&lt;h2 id="0x02-设置vlan聚合所需要的trunk链路">0x02 设置VLAN聚合所需要的trunk链路&lt;/h2>
-&lt;pre tabindex="0">&lt;code>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;注：vlan的个数必须相同&lt;/p&gt;
+&lt;h2 id="0x02-设置vlan聚合所需要的trunk链路"&gt;0x02 设置VLAN聚合所需要的trunk链路&lt;/h2&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
 [Huawei]int g0/0/1
 
 [Huawei-GigabitEthernet0/0/1]port link-type trunk
@@ -277,9 +277,9 @@ Connected to 192.168.1.1 …
 [Huawei-port-group]port link-type trunk
 
 [Huawei-port-group]port trunk allow-pass vlan 10 20
-&lt;/code>&lt;/pre>&lt;p>注：Trunk链路不需要allow Vlan聚合的vlan&lt;/p>
-&lt;h2 id="0x03-划分vlan">0x03 划分VLAN&lt;/h2>
-&lt;pre tabindex="0">&lt;code>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;注：Trunk链路不需要allow Vlan聚合的vlan&lt;/p&gt;
+&lt;h2 id="0x03-划分vlan"&gt;0x03 划分VLAN&lt;/h2&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
 [Huawei-GigabitEthernet0/0/1]int g0/0/2
 
 [Huawei-GigabitEthernet0/0/2]port link-type access
@@ -291,8 +291,8 @@ Connected to 192.168.1.1 …
 [Huawei-GigabitEthernet0/0/3]port link-type access
 
 [Huawei-GigabitEthernet0/0/3]port default vlan 20
-&lt;/code>&lt;/pre>&lt;h2 id="0x04-配置三层交换机的vlan聚合">0x04 配置三层交换机的VLAN聚合&lt;/h2>
-&lt;pre tabindex="0">&lt;code>
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id="0x04-配置三层交换机的vlan聚合"&gt;0x04 配置三层交换机的VLAN聚合&lt;/h2&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
 
 [Huawei]vlan 30
 
@@ -303,11 +303,11 @@ Connected to 192.168.1.1 …
 [Huawei-Vlanif30]ip address 192.168.0.100 16
 
 [Huawei-Vlanif30]arp-proxy inner-sub-vlan-proxy enable
-&lt;/code>&lt;/pre>&lt;p>剩下的5~7步省略&lt;/p></description></item><item><title>华为路由OSPF被动接口配置</title><link>https://payloads.online/archivers/2015-11-20/3/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/3/</guid><description>&lt;p>本文记录一下华为路由OSPF被动接口配置&lt;/p>
-&lt;p>拓扑图：&lt;/p>
-&lt;p>&lt;img src="https://images.payloads.online/d20c0e40-4f5e-11ec-97c7-00d861bf4abb.png" alt="enter description here" title="0x08">&lt;/p>
-&lt;p>AR1配置命令：&lt;/p>
-&lt;pre tabindex="0">&lt;code>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;剩下的5~7步省略&lt;/p&gt;</description></item><item><title>华为路由OSPF被动接口配置</title><link>https://payloads.online/archivers/2015-11-20/3/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/3/</guid><description>&lt;p&gt;本文记录一下华为路由OSPF被动接口配置&lt;/p&gt;
+&lt;p&gt;拓扑图：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://images.payloads.online/d20c0e40-4f5e-11ec-97c7-00d861bf4abb.png" alt="enter description here" title="0x08"&gt;&lt;/p&gt;
+&lt;p&gt;AR1配置命令：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
 
 &amp;lt;Huawei&amp;gt;sys
 
@@ -342,8 +342,8 @@ Enter system view, return user view with Ctrl+Z.
 [AR1-ospf-1-area-0.0.0.0]q
 
 [AR1-ospf-1]silent-interface G0/0/0
-&lt;/code>&lt;/pre>&lt;p>AR2配置命令：&lt;/p>
-&lt;pre tabindex="0">&lt;code>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;AR2配置命令：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
 
 &amp;lt;Huawei&amp;gt;sys
 
@@ -378,4 +378,4 @@ Enter system view, return user view with Ctrl+Z.
 [AR2-ospf-1-area-0.0.0.0]q
 
 [AR2-ospf-1]silent-interface G0/0/1
-&lt;/code>&lt;/pre>&lt;p>AR3配置命令：&lt;/p></description></item></channel></rss>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;AR3配置命令：&lt;/p&gt;</description></item></channel></rss>

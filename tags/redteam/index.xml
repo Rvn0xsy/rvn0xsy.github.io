@@ -1,137 +1,137 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Redteam on 倾旋的博客</title><link>https://payloads.online/tags/redteam/</link><description>Recent content in Redteam on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Wed, 23 Oct 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/tags/redteam/index.xml" rel="self" type="application/rss+xml"/><item><title>利用RDAP数据确定资产边界</title><link>https://payloads.online/archivers/2024-10-23/search-ip-via-rdap/</link><pubDate>Wed, 23 Oct 2024 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2024-10-23/search-ip-via-rdap/</guid><description>&lt;h2 id="前言">前言&lt;/h2>
-&lt;p>在传统的渗透测试初始阶段，我们通常依赖域名备案信息、企业工商信息和网络空间测绘数据来确定资产归属。然而，这些方法可能存在信息不完整或过时的问题。本文将介绍一种创新的方法来精确界定资产范围：利用注册数据访问协议（RDAP）。&lt;/p>
-&lt;p>RDAP作为Whois协议的现代化替代品，提供了更全面、准确和实时的域名注册信息。通过RDAP，我们可以获取域名持有者、管理员联系方式、注册和到期日期等关键信息，从而更有效地识别和验证目标资产。此外，RDAP的结构化数据格式便于自动化处理，能够显著提高资产梳理的效率。&lt;/p>
-&lt;p>在接下来的章节中，我们将深入探讨如何利用RDAP数据进行资产边界确定，包括查询技巧、数据解析方法以及与其他信息源的交叉验证策略。通过掌握这种新方法，安全专业人员可以更全面、准确地评估目标环境，为后续的渗透测试工作奠定坚实基础。&lt;/p>
-&lt;h2 id="什么是注册数据访问协议">什么是注册数据访问协议？&lt;/h2>
-&lt;p>注册数据访问协议（RDAP）是一种用于访问互联网域名注册数据的协议。RDAP提供了一种比传统的Whois协议更安全和结构化的方式来查询域名、IP地址和自治系统号码的信息。它支持认证和授权、国际化以及标准化的数据格式，旨在解决Whois协议中的许多限制和缺陷。&lt;/p>
-&lt;p>注册数据访问协议（RDAP）的发展始于2011年，由互联网工程任务组（IETF）负责制定。RDAP的目标是取代传统的Whois协议，解决其在安全性、隐私保护、数据格式标准化等方面的不足。2015年，IETF正式发布了RDAP的相关标准文档，使其成为互联网域名注册数据访问的现代化协议。&lt;/p>
-&lt;h2 id="iana---互联网分配号码权威机构">IANA - 互联网分配号码权威机构&lt;/h2>
-&lt;p>在探讨RDAP协议之前，我们必须提及IANA（Internet Assigned Numbers Authority，互联网分配号码权威机构）。IANA是互联网的基石之一，负责全球互联网的唯一标识符分配和协调工作。它的核心职能包括管理DNS根区域、分配IP地址和自治系统编号，以及注册互联网协议的相关参数。作为一个关键的技术组织，IANA确保了互联网的稳定性和互通性，让全球的用户和信息得以顺畅连接。&lt;/p>
-&lt;p>中国与IANA的关系主要体现在中国作为全球互联网的重要组成部分，积极参与全球互联网的治理和技术发展。中国通过其国家域名注册机构CNNIC（China Internet Network Information Center）参与IANA的相关工作，负责中国国家顶级域名.cn的注册和管理，以及IP地址资源的分配与管理，其他国家也是类似的情况。2016年，IANA的管理权从美国政府正式移交给了全球互联网社群，这一过程中，中国作为多利益相关方之一，参与了相关的讨论和决策，因此我们可以通过IANA公开的信息获取到不同国家分配的IP地址范围。&lt;/p>
-&lt;h2 id="通过rdap数据获取国家组织分配的ip范围">通过RDAP数据获取国家/组织分配的IP范围&lt;/h2>
-&lt;p>RDAP 是基于RESTful的Web服务，因此错误代码、用户标识、身份认证和访问控制可以通过HTTP协议进行提供，我们可以使用简单的Curl工具访问RDAP数据，而RDAP数据分别由区域互联网注册管理机构分别管理，如果要访问中国的网络分配资源，我们需要查找到对应的服务器。&lt;/p>
-&lt;blockquote>
-&lt;p>现在世界上有五个正在运作的区域互联网注册管理机构：&lt;/p>
-&lt;ul>
-&lt;li>美洲互联网号码注册管理机构（American Registry for Internet Numbers，ARIN）&lt;/li>
-&lt;li>欧洲IP网络资源协调中心&lt;/li>
-&lt;li>亚太网络信息中心（Asia-Pacific Network Information Centre，APNIC）&lt;/li>
-&lt;li>拉丁美洲及加勒比地区互联网地址注册管理机构（Latin American and Caribbean Internet Address Registry，LACNIC）&lt;/li>
-&lt;li>非洲网络信息中心（African Network Information Centre，AfriNIC）&lt;/li>
-&lt;/ul>
-&lt;p>下文中简称 “信息中心”。&lt;/p>&lt;/blockquote>
-&lt;p>了解完毕所有的前置知识后，我们可以开始查询全球的IPv4地址分配情况：&lt;/p>
-&lt;p>&lt;a href="https://data.iana.org/rdap/ipv4.json">https://data.iana.org/rdap/ipv4.json&lt;/a>&lt;/p>
-&lt;p>这个网址是IANA互联网分配号码权威机构的数据网址，上面显示了全球的IPv4在不同信息中心的分配情况，我在中国解析后的地址是属于ICANN的，可见应该是做了一些网络优化。&lt;/p>
-&lt;p>在响应的Json结构中，我们可以先关注一下APNIC的数据，这部分指的是亚太信息中心管理的IP资源，而中国区域就属于这部分：&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-jsx" data-lang="jsx">&lt;span style="display:flex;">&lt;span>.....
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>[
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;1.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;14.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;27.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;36.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;39.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;42.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;43.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;49.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;58.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;59.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;60.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;61.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;101.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;103.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;106.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;110.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;111.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;112.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;113.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;114.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;115.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;116.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;117.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;118.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;119.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;120.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;121.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;122.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;123.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;124.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;125.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;126.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;133.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;150.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;153.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;163.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;171.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;175.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;180.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;182.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;183.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;202.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;203.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;210.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;211.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;218.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;219.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;220.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;221.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;222.0.0.0/8&amp;#34;&lt;/span>,
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;223.0.0.0/8&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ],
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> [
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#e6db74">&amp;#34;https://rdap.apnic.net/&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> ]
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>]
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>....
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>APNIC的RDAP数据库保存在&lt;code>https://rdap.apnic.net/&lt;/code>上面，我们继续在这个网址后面增加上面的IP地址段，则会得到这些IP被分配的信息：&lt;/p></description></item><item><title>红队行动守则</title><link>https://payloads.online/archivers/2023-08-10/redteam-operation-code-of-conduct/</link><pubDate>Thu, 10 Aug 2023 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2023-08-10/redteam-operation-code-of-conduct/</guid><description>&lt;aside>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Redteam on 倾旋的博客</title><link>https://payloads.online/tags/redteam/</link><description>Recent content in Redteam on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Wed, 23 Oct 2024 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/tags/redteam/index.xml" rel="self" type="application/rss+xml"/><item><title>利用RDAP数据确定资产边界</title><link>https://payloads.online/archivers/2024-10-23/search-ip-via-rdap/</link><pubDate>Wed, 23 Oct 2024 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2024-10-23/search-ip-via-rdap/</guid><description>&lt;h2 id="前言"&gt;前言&lt;/h2&gt;
+&lt;p&gt;在传统的渗透测试初始阶段，我们通常依赖域名备案信息、企业工商信息和网络空间测绘数据来确定资产归属。然而，这些方法可能存在信息不完整或过时的问题。本文将介绍一种创新的方法来精确界定资产范围：利用注册数据访问协议（RDAP）。&lt;/p&gt;
+&lt;p&gt;RDAP作为Whois协议的现代化替代品，提供了更全面、准确和实时的域名注册信息。通过RDAP，我们可以获取域名持有者、管理员联系方式、注册和到期日期等关键信息，从而更有效地识别和验证目标资产。此外，RDAP的结构化数据格式便于自动化处理，能够显著提高资产梳理的效率。&lt;/p&gt;
+&lt;p&gt;在接下来的章节中，我们将深入探讨如何利用RDAP数据进行资产边界确定，包括查询技巧、数据解析方法以及与其他信息源的交叉验证策略。通过掌握这种新方法，安全专业人员可以更全面、准确地评估目标环境，为后续的渗透测试工作奠定坚实基础。&lt;/p&gt;
+&lt;h2 id="什么是注册数据访问协议"&gt;什么是注册数据访问协议？&lt;/h2&gt;
+&lt;p&gt;注册数据访问协议（RDAP）是一种用于访问互联网域名注册数据的协议。RDAP提供了一种比传统的Whois协议更安全和结构化的方式来查询域名、IP地址和自治系统号码的信息。它支持认证和授权、国际化以及标准化的数据格式，旨在解决Whois协议中的许多限制和缺陷。&lt;/p&gt;
+&lt;p&gt;注册数据访问协议（RDAP）的发展始于2011年，由互联网工程任务组（IETF）负责制定。RDAP的目标是取代传统的Whois协议，解决其在安全性、隐私保护、数据格式标准化等方面的不足。2015年，IETF正式发布了RDAP的相关标准文档，使其成为互联网域名注册数据访问的现代化协议。&lt;/p&gt;
+&lt;h2 id="iana---互联网分配号码权威机构"&gt;IANA - 互联网分配号码权威机构&lt;/h2&gt;
+&lt;p&gt;在探讨RDAP协议之前，我们必须提及IANA（Internet Assigned Numbers Authority，互联网分配号码权威机构）。IANA是互联网的基石之一，负责全球互联网的唯一标识符分配和协调工作。它的核心职能包括管理DNS根区域、分配IP地址和自治系统编号，以及注册互联网协议的相关参数。作为一个关键的技术组织，IANA确保了互联网的稳定性和互通性，让全球的用户和信息得以顺畅连接。&lt;/p&gt;
+&lt;p&gt;中国与IANA的关系主要体现在中国作为全球互联网的重要组成部分，积极参与全球互联网的治理和技术发展。中国通过其国家域名注册机构CNNIC（China Internet Network Information Center）参与IANA的相关工作，负责中国国家顶级域名.cn的注册和管理，以及IP地址资源的分配与管理，其他国家也是类似的情况。2016年，IANA的管理权从美国政府正式移交给了全球互联网社群，这一过程中，中国作为多利益相关方之一，参与了相关的讨论和决策，因此我们可以通过IANA公开的信息获取到不同国家分配的IP地址范围。&lt;/p&gt;
+&lt;h2 id="通过rdap数据获取国家组织分配的ip范围"&gt;通过RDAP数据获取国家/组织分配的IP范围&lt;/h2&gt;
+&lt;p&gt;RDAP 是基于RESTful的Web服务，因此错误代码、用户标识、身份认证和访问控制可以通过HTTP协议进行提供，我们可以使用简单的Curl工具访问RDAP数据，而RDAP数据分别由区域互联网注册管理机构分别管理，如果要访问中国的网络分配资源，我们需要查找到对应的服务器。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;现在世界上有五个正在运作的区域互联网注册管理机构：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;美洲互联网号码注册管理机构（American Registry for Internet Numbers，ARIN）&lt;/li&gt;
+&lt;li&gt;欧洲IP网络资源协调中心&lt;/li&gt;
+&lt;li&gt;亚太网络信息中心（Asia-Pacific Network Information Centre，APNIC）&lt;/li&gt;
+&lt;li&gt;拉丁美洲及加勒比地区互联网地址注册管理机构（Latin American and Caribbean Internet Address Registry，LACNIC）&lt;/li&gt;
+&lt;li&gt;非洲网络信息中心（African Network Information Centre，AfriNIC）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;下文中简称 “信息中心”。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;了解完毕所有的前置知识后，我们可以开始查询全球的IPv4地址分配情况：&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://data.iana.org/rdap/ipv4.json"&gt;https://data.iana.org/rdap/ipv4.json&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;这个网址是IANA互联网分配号码权威机构的数据网址，上面显示了全球的IPv4在不同信息中心的分配情况，我在中国解析后的地址是属于ICANN的，可见应该是做了一些网络优化。&lt;/p&gt;
+&lt;p&gt;在响应的Json结构中，我们可以先关注一下APNIC的数据，这部分指的是亚太信息中心管理的IP资源，而中国区域就属于这部分：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-jsx" data-lang="jsx"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;.....
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;[
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;1.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;14.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;27.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;36.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;39.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;42.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;43.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;49.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;58.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;59.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;60.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;61.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;101.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;103.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;106.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;110.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;111.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;112.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;113.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;114.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;115.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;116.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;117.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;118.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;119.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;120.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;121.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;122.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;123.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;124.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;125.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;126.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;133.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;150.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;153.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;163.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;171.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;175.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;180.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;182.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;183.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;202.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;203.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;210.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;211.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;218.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;219.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;220.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;221.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;222.0.0.0/8&amp;#34;&lt;/span&gt;,
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;223.0.0.0/8&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ],
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; [
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;https://rdap.apnic.net/&amp;#34;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; ]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;]
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;....
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;APNIC的RDAP数据库保存在&lt;code&gt;https://rdap.apnic.net/&lt;/code&gt;上面，我们继续在这个网址后面增加上面的IP地址段，则会得到这些IP被分配的信息：&lt;/p&gt;</description></item><item><title>红队行动守则</title><link>https://payloads.online/archivers/2023-08-10/redteam-operation-code-of-conduct/</link><pubDate>Thu, 10 Aug 2023 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2023-08-10/redteam-operation-code-of-conduct/</guid><description>&lt;aside&gt;
 📌 这篇文章是收集了多数红队在进行红队行动的经验之谈，由于工作发展原因，不再继续红队相关的工作，因此决定分享出来。
-&lt;/aside>
-&lt;h2 id="攻击注意事项">攻击注意事项&lt;/h2>
-&lt;ul>
-&lt;li>使用免杀Webshell（文件特征、流量特征），禁止使用开源社区通用Webshell，这些是我过去常用的Webshell: &lt;a href="https://github.com/Rvn0xsy/usefull-code">https://github.com/Rvn0xsy/usefull-code&lt;/a>&lt;/li>
-&lt;li>尽可能的删除依赖工具的软件特征、流量特征&lt;/li>
-&lt;li>打点后先进行权限维持(并且最好都额外打一个内存马) 原因：单个Webshell即使免杀，也有可能被防守方发现，一旦被删除就失去了服务器控制权&lt;/li>
-&lt;li>不执行敏感的操作(如反弹Shell)&lt;/li>
-&lt;li>获取权限后的信息收集，通过网络、应用业务、服务器登录日志、命令执行日志判断当前机器是否是蜜罐&lt;/li>
-&lt;li>核心关键隧道：使用规避内存扫描的C2解决方案&lt;/li>
-&lt;li>端口反连使用常见端口，伪装正常应用流量(25,110,80,443,993,995,8080,8443)&lt;/li>
-&lt;li>C2基础设施配置为HTTPS/DNS上线，最好勿用HTTP，证书采用CDN服务商或Let’s Encrypt&lt;/li>
-&lt;li>搭建正向的Web代理后，应当先研究如何提升隧道传输质量，避免多人扫描&lt;/li>
-&lt;/ul>
-&lt;p>&lt;a href="https://payloads.online/archivers/2020-11-01/1/">Web正向代理的思考 | 倾旋的博客&lt;/a>&lt;/p>
-&lt;ul>
-&lt;li>内网探测工具的选择尽可能脚本化、去特征、低频率&lt;/li>
-&lt;li>隧道建立：采用开源魔改工具实现，避免流量和样本特征与公开的重合&lt;/li>
-&lt;li>弱口令扫描：低频、小字典、优先尝试SSH/RDP/MySQL/MSSQL等弱口令（分两类：有数据的服务器、有管理端口的服务器）&lt;/li>
-&lt;li>登录Linux服务器，应当避免Bash History被记录可使用sh来执行命令，或设置环境变量避免Bash记录历史命令。&lt;/li>
-&lt;/ul>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-bash" data-lang="bash">&lt;span style="display:flex;">&lt;span>python -c &lt;span style="color:#e6db74">&amp;#39;import pty;pty.spawn(&amp;#34;/bin/sh&amp;#34;)&amp;#39;&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e"># or&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>unset HISTORY HISTFILE HISTSAVE HISTZONE HISTORY HISTLOG; 
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export HISTFILE&lt;span style="color:#f92672">=&lt;/span>/dev/null; 
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export HISTSIZE&lt;span style="color:#f92672">=&lt;/span>0;
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>export HISTFILESIZE&lt;span style="color:#f92672">=&lt;/span>&lt;span style="color:#ae81ff">0&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
-&lt;li>操作合规：非必要情况下，不修改任何服务器用户密码&lt;/li>
-&lt;li>操作合规：非必要情况下，不使用破坏性较强的Exploit或者工具&lt;/li>
-&lt;li>操作合规：非必要情况下，不要对内网进行大规模探测 例如不要/8&lt;/li>
-&lt;li>操作合规：非必要情况下，切勿上来就进行扫描探测，先应对当前主机做详细的信息搜集和分析&lt;/li>
-&lt;li>工具存放：工具统一存放在隐藏目录下，文件名称命名为服务进程（tomcat/nginx）等，有AV/EDR情况，工具应先本地测试免杀之后，再落地到目标服务器，最好有多个平替工具&lt;/li>
-&lt;/ul>
-&lt;h2 id="反溯源注意事项">反溯源注意事项&lt;/h2>
-&lt;ul>
-&lt;li>外网攻击时：尽量使用虚拟机进行渗透，并且测试时不提交包含个人特征信息的手机号码、QQ、微信、其他信息，最好日常工作的浏览器和渗透攻击的浏览器用两个。一般我会创建攻击机的虚拟机快照，项目结束恢复初始状态，干干净净。&lt;/li>
-&lt;li>内网攻击时：攻击结束必须进行痕迹清理，及时删除自用软件，如Webshell、免杀上线马、0day工具、扫描工具、自研工具，甚至包含系统日志。&lt;/li>
-&lt;li>短线社工钓鱼：尽量避开技术人员，从非技术人员入手，钓鱼信息为非实名信息&lt;/li>
-&lt;li>短线社工钓鱼：远程获取的可执行文件，谨慎点击(尤其是VPN客户端，谨防蜜罐)，可以上传各类沙箱进行检测，同时运行可以采用虚拟机的方式。&lt;/li>
-&lt;li>在开源社区获得系统或工具源代码后，谨慎打开，防止IDE的编译、加载、调试选项内藏上线命令。&lt;/li>
-&lt;/ul>
-&lt;h2 id="职业操守">职业操守&lt;/h2>
-&lt;ul>
-&lt;li>禁止下载、更改业务数据（企业数据），修改业务系统密码（如路由器、Web站点后台、VPN）降低业务影响。&lt;/li>
-&lt;li>禁止使用会造成不良后果的攻击方式（如DDOS攻击）。&lt;/li>
-&lt;li>测试结束后删除Webshell等恶意文件或记住固定存放位置。&lt;/li>
-&lt;li>禁止使用境外跳板机、VPN。&lt;/li>
-&lt;li>使用统一攻击资源与授权攻击工具。&lt;/li>
-&lt;li>对项目、行动内容在公开场合进行保密，不产生任何舆论影响。&lt;/li>
-&lt;/ul></description></item></channel></rss>
+&lt;/aside&gt;
+&lt;h2 id="攻击注意事项"&gt;攻击注意事项&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;使用免杀Webshell（文件特征、流量特征），禁止使用开源社区通用Webshell，这些是我过去常用的Webshell: &lt;a href="https://github.com/Rvn0xsy/usefull-code"&gt;https://github.com/Rvn0xsy/usefull-code&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;尽可能的删除依赖工具的软件特征、流量特征&lt;/li&gt;
+&lt;li&gt;打点后先进行权限维持(并且最好都额外打一个内存马) 原因：单个Webshell即使免杀，也有可能被防守方发现，一旦被删除就失去了服务器控制权&lt;/li&gt;
+&lt;li&gt;不执行敏感的操作(如反弹Shell)&lt;/li&gt;
+&lt;li&gt;获取权限后的信息收集，通过网络、应用业务、服务器登录日志、命令执行日志判断当前机器是否是蜜罐&lt;/li&gt;
+&lt;li&gt;核心关键隧道：使用规避内存扫描的C2解决方案&lt;/li&gt;
+&lt;li&gt;端口反连使用常见端口，伪装正常应用流量(25,110,80,443,993,995,8080,8443)&lt;/li&gt;
+&lt;li&gt;C2基础设施配置为HTTPS/DNS上线，最好勿用HTTP，证书采用CDN服务商或Let’s Encrypt&lt;/li&gt;
+&lt;li&gt;搭建正向的Web代理后，应当先研究如何提升隧道传输质量，避免多人扫描&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href="https://payloads.online/archivers/2020-11-01/1/"&gt;Web正向代理的思考 | 倾旋的博客&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;内网探测工具的选择尽可能脚本化、去特征、低频率&lt;/li&gt;
+&lt;li&gt;隧道建立：采用开源魔改工具实现，避免流量和样本特征与公开的重合&lt;/li&gt;
+&lt;li&gt;弱口令扫描：低频、小字典、优先尝试SSH/RDP/MySQL/MSSQL等弱口令（分两类：有数据的服务器、有管理端口的服务器）&lt;/li&gt;
+&lt;li&gt;登录Linux服务器，应当避免Bash History被记录可使用sh来执行命令，或设置环境变量避免Bash记录历史命令。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;python -c &lt;span style="color:#e6db74"&gt;&amp;#39;import pty;pty.spawn(&amp;#34;/bin/sh&amp;#34;)&amp;#39;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# or&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;unset HISTORY HISTFILE HISTSAVE HISTZONE HISTORY HISTLOG; 
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;export HISTFILE&lt;span style="color:#f92672"&gt;=&lt;/span&gt;/dev/null; 
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;export HISTSIZE&lt;span style="color:#f92672"&gt;=&lt;/span&gt;0;
+&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;export HISTFILESIZE&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;操作合规：非必要情况下，不修改任何服务器用户密码&lt;/li&gt;
+&lt;li&gt;操作合规：非必要情况下，不使用破坏性较强的Exploit或者工具&lt;/li&gt;
+&lt;li&gt;操作合规：非必要情况下，不要对内网进行大规模探测 例如不要/8&lt;/li&gt;
+&lt;li&gt;操作合规：非必要情况下，切勿上来就进行扫描探测，先应对当前主机做详细的信息搜集和分析&lt;/li&gt;
+&lt;li&gt;工具存放：工具统一存放在隐藏目录下，文件名称命名为服务进程（tomcat/nginx）等，有AV/EDR情况，工具应先本地测试免杀之后，再落地到目标服务器，最好有多个平替工具&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="反溯源注意事项"&gt;反溯源注意事项&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;外网攻击时：尽量使用虚拟机进行渗透，并且测试时不提交包含个人特征信息的手机号码、QQ、微信、其他信息，最好日常工作的浏览器和渗透攻击的浏览器用两个。一般我会创建攻击机的虚拟机快照，项目结束恢复初始状态，干干净净。&lt;/li&gt;
+&lt;li&gt;内网攻击时：攻击结束必须进行痕迹清理，及时删除自用软件，如Webshell、免杀上线马、0day工具、扫描工具、自研工具，甚至包含系统日志。&lt;/li&gt;
+&lt;li&gt;短线社工钓鱼：尽量避开技术人员，从非技术人员入手，钓鱼信息为非实名信息&lt;/li&gt;
+&lt;li&gt;短线社工钓鱼：远程获取的可执行文件，谨慎点击(尤其是VPN客户端，谨防蜜罐)，可以上传各类沙箱进行检测，同时运行可以采用虚拟机的方式。&lt;/li&gt;
+&lt;li&gt;在开源社区获得系统或工具源代码后，谨慎打开，防止IDE的编译、加载、调试选项内藏上线命令。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="职业操守"&gt;职业操守&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;禁止下载、更改业务数据（企业数据），修改业务系统密码（如路由器、Web站点后台、VPN）降低业务影响。&lt;/li&gt;
+&lt;li&gt;禁止使用会造成不良后果的攻击方式（如DDOS攻击）。&lt;/li&gt;
+&lt;li&gt;测试结束后删除Webshell等恶意文件或记住固定存放位置。&lt;/li&gt;
+&lt;li&gt;禁止使用境外跳板机、VPN。&lt;/li&gt;
+&lt;li&gt;使用统一攻击资源与授权攻击工具。&lt;/li&gt;
+&lt;li&gt;对项目、行动内容在公开场合进行保密，不产生任何舆论影响。&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

