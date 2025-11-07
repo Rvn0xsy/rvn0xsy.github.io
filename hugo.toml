@@ -6,10 +6,10 @@ author = "倾旋"
 # theme = "ink-free"
 theme = "hugo-paper"
 
-# [taxonomies]
-#   tag = "tags"
-#   category = "categories"
-#   course = "courses"
+[taxonomies]
+  tag = "tags"
+  category = "categories"
+  course = "courses"
 
 [params]
   email = "rvn0xsy@gmail.com"

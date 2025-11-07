@@ -1,0 +1,15 @@
+{{- define "main" -}}
+
+<h1 class="mb-14">标签</h1>
+
+<div class="flex flex-wrap gap-6">
+  {{- range $name, $terms := .Data.Terms -}}
+    {{- with $.Site.GetPage (printf "/%s/%s" $.Data.Plural $name) -}}
+      <a href="{{- .Permalink -}}" class="btn margin-left-10">
+        {{- .Name -}} <span class="text-orange-500">({{- $terms.Count -}})</span>
+      </a>
+    {{- end -}}
+  {{- end -}}
+</div>
+
+{{- end -}}

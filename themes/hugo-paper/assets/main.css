@@ -6,7 +6,7 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
-    --color-orange-500: oklch(0.705 0.213 47.604);
+    
     --color-black: #000;
     --color-white: #fff;
     --spacing: 0.25rem;
@@ -1483,10 +1483,11 @@ article {
   padding-inline: calc(var(--spacing) * 5);
   padding-block: calc(var(--spacing) * 3);
   font-size: 0.95em;
-  color: var(--color-white);
+  color: color-mix(in oklab, var(--color-white) 95%, var(--color-black) 5%);
   text-decoration-line: none;
   --tw-duration: 100ms;
   transition-duration: 100ms;
+  margin: 4px;
   &:active {
     --tw-scale-x: 95%;
     --tw-scale-y: 95%;

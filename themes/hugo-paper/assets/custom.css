@@ -1,2 +1,256 @@
 /* Place custom css here. */
 @reference './app.css';
+
+/* Improved typography for better readability */
+article {
+  font-size: 1.125rem; /* 18px base font size */
+  line-height: 1.85; /* Slightly increased line height for better readability */
+  
+  /* Ensure proper sizing for different content elements */
+  h1 {
+    font-size: 2.25em;
+    line-height: 1.2;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+  }
+  
+  h2 {
+    font-size: 1.75em;
+    line-height: 1.25;
+    margin-top: 1.5em;
+    margin-bottom: 0.6em;
+  }
+  
+  h3 {
+    font-size: 1.4em;
+    line-height: 1.3;
+    margin-top: 1.7em;
+    margin-bottom: 0.7em;
+  }
+  
+  h4 {
+    font-size: 1.25em;
+    line-height: 1.35;
+    margin-top: 1.8em;
+    margin-bottom: 0.8em;
+  }
+  
+  p {
+    margin-top: 0.8em;
+    margin-bottom: 0.8em;
+    line-height: 1.85;
+  }
+  
+  /* Improve readability for lists */
+  ul, ol {
+    margin-top: 0.8em;
+    margin-bottom: 0.8em;
+    padding-left: 1.5em;
+  }
+  
+  li {
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+    line-height: 1.7;
+  }
+  
+  /* Better quotes readability */
+  blockquote {
+    font-size: 1.1em;
+    border-left-width: 4px;
+    padding-left: 1.2em;
+    margin: 1.8em 0;
+    color: #666;
+    font-style: italic;
+  }
+  
+  /* Code elements readability */
+  code {
+    font-size: 0.9em;
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    background-color: #f3f4f6;
+    color: #d63384;
+    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  }
+  
+  /* Improve table readability */
+  table {
+    margin: 1.8em 0;
+    font-size: 0.95em;
+    line-height: 1.5;
+  }
+  
+  th, td {
+    padding: 0.6em 0.8em;
+    text-align: left;
+  }
+}
+
+/* Enhanced spacing for better visual hierarchy */
+article {
+  /* Section spacing */
+  section {
+    margin-bottom: 2.5em;
+  }
+  
+  /* Paragraph spacing */
+  p {
+    margin-top: 0.9em;
+    margin-bottom: 0.9em;
+  }
+  
+  /* Headings spacing */
+  h1, h2, h3, h4 {
+    position: relative;
+  }
+  
+  h1 + p,
+  h2 + p,
+  h3 + p,
+  h4 + p {
+    margin-top: 0.5em;
+  }
+  
+  /* List spacing improvements */
+  ul, ol {
+    margin-top: 0.9em;
+    margin-bottom: 0.9em;
+    padding-left: 1.8em;
+  }
+  
+  li {
+    margin-top: 0.4em;
+    margin-bottom: 0.4em;
+  }
+  
+  /* Blockquote spacing */
+  blockquote {
+    margin: 2em 0;
+    padding: 1.2em 1.5em;
+  }
+  
+  /* Code block spacing */
+  pre {
+    margin: 1.8em 0;
+    padding: 1.2em;
+    border-radius: 6px;
+  }
+  
+  /* Figure and image spacing */
+  figure {
+    margin: 2em 0;
+  }
+  
+  figcaption {
+    font-size: 0.9em;
+    color: #6b7280;
+    text-align: center;
+    margin-top: 0.6em;
+  }
+  
+  /* Horizontal rule spacing */
+  hr {
+    margin: 2.5em 0;
+    border-top-width: 1px;
+    border-color: #e5e7eb;
+  }
+}
+
+/* Enhanced code block styling with improved syntax highlighting */
+pre {
+  background-color: #f8fafc !important;
+  border: 1px solid #e2e8f0;
+  overflow-x: auto;
+  line-height: 1.5;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+pre code {
+  background: none !important;
+  padding: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #334155;
+}
+
+/* Line number styling for code blocks */
+.highlight table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.highlight table td {
+  padding: 0;
+}
+
+.highlight table td:first-child {
+  padding: 0.75rem 0.5rem;
+  text-align: right;
+  width: 3rem;
+  background-color: #f1f5f9;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+  user-select: none;
+  color: #64748b;
+  font-size: 0.8rem;
+}
+
+.highlight table td:last-child {
+  padding: 0.75rem 1rem;
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  vertical-align: top;
+}
+
+.highlight .hljs {
+  background: transparent !important;
+  padding: 0 !important;
+  overflow-x: initial;
+}
+
+/* Dark mode code block styling */
+.dark pre {
+  background-color: #1e293b !important;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+.dark .highlight table td:first-child {
+  background-color: #334155;
+  color: #94a3b8;
+}
+
+.dark .highlight .hljs {
+  color: #e2e8f0;
+}
+
+/* Specific syntax highlighting for dark mode */
+.dark .highlight .k { color: #f87171; } /* keyword */
+.dark .highlight .kt { color: #f87171; } /* type */
+.dark .highlight .s, .dark .highlight .sb, .dark .highlight .sc, .dark .highlight .sd, .dark .highlight .s2, .dark .highlight .se, .dark .highlight .sh, .dark .highlight .si, .dark .highlight .sx, .dark .highlight .sr, .dark .highlight .s1 { color: #a3e635; } /* strings */
+.dark .highlight .nt { color: #60a5fa; } /* tag */
+.dark .highlight .na { color: #fb923c; } /* attribute */
+.dark .highlight .nf { color: #818cf8; } /* function */
+.dark .highlight .nc { color: #c084fc; } /* class */
+.dark .highlight .mi { color: #2dd4bf; } /* number */
+.dark .highlight .mf { color: #2dd4bf; } /* float */
+.dark .highlight .c, .dark .highlight .ch, .dark .highlight .cm, .dark .highlight .cp, .dark .highlight .cpf, .dark .highlight .c1, .dark .highlight .cs { color: #94a3b8; } /* comments */
+
+/* Inline code improvements */
+code {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  background-color: #f3f4f6;
+  color: #d63384;
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  border: 1px solid #e5e7eb;
+}
+
+.dark code {
+  background-color: #374151;
+  color: #f87171;
+  border-color: #4b5563;
+}
