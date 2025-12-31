@@ -2,10 +2,8 @@
 @layer theme, base, components, utilities;
 @layer theme {
   :root, :host {
-    --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-      "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-      "Courier New", monospace;
+    --font-sans: 'JetBrains Mono', monospace;
+    --font-mono: 'JetBrains Mono', monospace;
     
     --color-black: #000;
     --color-white: #fff;
@@ -130,11 +128,19 @@
   }
   img, svg, video, canvas, audio, iframe, embed, object {
     display: block;
-    vertical-align: middle;
+    
+    max-width: 100%; /* 图片最大宽度不超过其容器宽度 */
+    height: auto;    /* 高度自动调整，保持图片原始宽高比 */
+    display: block;  /* 将图片设置为块级元素，便于居中等操作 */
+    margin: 0 auto; 
   }
   img, video {
     max-width: 100%;
     height: auto;
+    max-width: 100%; /* 图片最大宽度不超过其容器宽度 */
+    height: auto;    /* 高度自动调整，保持图片原始宽高比 */
+    display: block;  /* 将图片设置为块级元素，便于居中等操作 */
+    margin: 0 auto; 
   }
   button, input, select, optgroup, textarea, ::file-selector-button {
     font: inherit;
@@ -426,6 +432,11 @@
     :where(img):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
       margin-top: 2em;
       margin-bottom: 2em;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 0.5rem; /* Added border-radius for rounded corners */
+      cursor: pointer; /* Added cursor pointer for clickable indication */
     }
     :where(picture):not(:where([class~="not-prose"],[class~="not-prose"] *)) {
       display: block;

@@ -39,6 +39,7 @@
   lang="{{- or site.LanguageCode site.Language.Lang -}}"
   dir="{{- if site.Params.direction -}}{{- site.Params.direction -}}{{- else -}}ltr{{- end -}}"
 >
+  <link rel="stylesheet" href="/css/fancybox.css" />
   {{- partial "head.html" . -}}
   <body
     class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"
@@ -51,6 +52,18 @@
       {{- block "main" . -}}{{- end -}}
     </main>
 
+    <script src="/js/fancybox.umd.js"></script>
+    <script>
+      Fancybox.bind('[data-fancybox="gallery"]', {
+        // Your custom options
+      });
+    </script>
+    <script src="/js/pangu.min.js" ></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        pangu.spacingElementByClassName('prose');
+      });
+    </script>
     {{- partial "footer.html" . -}}
   </body>
 </html>

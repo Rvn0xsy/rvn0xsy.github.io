@@ -1,0 +1,3 @@
+<a href="{{ .Destination | safeURL }}" data-fancybox="gallery" data-caption="{{ .Text }}">
+  <img src="{{ .Destination | safeURL }}" alt="{{ .Text }}" {{ with .Title}} title="{{ . }}"{{ end }} />
+</a>
