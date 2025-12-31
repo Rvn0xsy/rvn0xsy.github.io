@@ -6,12 +6,14 @@
 &lt;li&gt;Windows: &lt;a href="https://msdn.itellyou.cn/"&gt;MSDN-ItellYou&lt;/a&gt; \ ✨&lt;a href="http://www.microsoft.com/en-us/evalcenter/download-windows-10-enterprise"&gt;LTSC&lt;/a&gt; 系统比较纯净&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;推荐使用LTSC版本的操作系统，系统比较纯净，但需要激活&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;推荐使用LTSC版本的操作系统，系统比较纯净，但需要激活&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;ul&gt;
 &lt;li&gt;Linux: &lt;a href="https://mirrors.tuna.tsinghua.edu.cn/archlinux/iso/2023.07.01/"&gt;Arch Linux&lt;/a&gt; / &lt;a href="https://mirrors.tuna.tsinghua.edu.cn/ubuntu-cdimage/releases/23.04/release/"&gt;Ubuntu&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;
-&lt;p&gt;比较推荐直接去一些软件源上下载，这里举例清华源&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;比较推荐直接去一些软件源上下载，这里举例清华源&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;h3 id="操作系统工具-linux"&gt;操作系统工具-[Linux]&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;文档处理：&lt;a href="https://wiki.archlinux.org/title/WPS_Office"&gt;WPS Office&lt;/a&gt;、&lt;a href="https://archlinux.org/packages/extra/x86_64/mousepad/"&gt;Mousepad&lt;/a&gt;&lt;/li&gt;

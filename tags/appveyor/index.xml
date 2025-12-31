@@ -12,13 +12,25 @@
 &lt;h2 id="构建github项目"&gt;构建Github项目&lt;/h2&gt;
 &lt;p&gt;AppVeyor提供了它特有的配置文件用于声明构建动作，开发者可以通过编写AppVeyor配置文件来控制程序的发布流程。&lt;/p&gt;
 &lt;p&gt;这里只讨论没有AppVeyor配置文件的项目，以https://github.com/goldshtn/etrace为例，etrace是一个命令行工具，用于实时跟踪 ETW 事件和 处理现有的 .etl 录制文件。它的灵感来自Microsoft &lt;a href="https://github.com/Microsoft/Microsoft.Diagnostics.Tracing.Logging/tree/master/utils/LogTool"&gt;ELT&lt;/a&gt;工具。&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2024-07-29-5dc81fb4ac997c5b4bde39e315f39c8f87b29af725c22684aec2530770030f47.png" alt="0"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/2024-07-29-5dc81fb4ac997c5b4bde39e315f39c8f87b29af725c22684aec2530770030f47.png" data-fancybox="gallery" data-caption="0"&gt;
+ &lt;img src="https://images.payloads.online/2024-07-29-5dc81fb4ac997c5b4bde39e315f39c8f87b29af725c22684aec2530770030f47.png" alt="0" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;该项目没有AppVeyor配置文件，首先Fork这个项目到自己账户名下，然后访问https://www.appveyor.com/，以Github账户登录，并且授权读取此仓库。&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2024-07-29-b3783ff0a64525ecfe7a180228595ce723443326cd8b6f720cf98246f0cd7b25.png" alt="1"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/2024-07-29-b3783ff0a64525ecfe7a180228595ce723443326cd8b6f720cf98246f0cd7b25.png" data-fancybox="gallery" data-caption="1"&gt;
+ &lt;img src="https://images.payloads.online/2024-07-29-b3783ff0a64525ecfe7a180228595ce723443326cd8b6f720cf98246f0cd7b25.png" alt="1" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;在Github这一栏可以看到授权的仓库，点击 &lt;strong&gt;+ADD&lt;/strong&gt; 就可以进入项目的构建配置界面：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2024-07-29-0901705e6c5f3cc7db29338176b4c9558f1e87bf3a5e092df44706d38ae89b61.png" alt="2"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/2024-07-29-0901705e6c5f3cc7db29338176b4c9558f1e87bf3a5e092df44706d38ae89b61.png" data-fancybox="gallery" data-caption="2"&gt;
+ &lt;img src="https://images.payloads.online/2024-07-29-0901705e6c5f3cc7db29338176b4c9558f1e87bf3a5e092df44706d38ae89b61.png" alt="2" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;由于这个项目是采用C#开发的，所以我们着重关注C#相关的配置：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2024-07-29-1b7abdb53043453e086a25620f4411330f445299864c87d91beb53bc87a47890.png" alt="3"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/2024-07-29-1b7abdb53043453e086a25620f4411330f445299864c87d91beb53bc87a47890.png" data-fancybox="gallery" data-caption="3"&gt;
+ &lt;img src="https://images.payloads.online/2024-07-29-1b7abdb53043453e086a25620f4411330f445299864c87d91beb53bc87a47890.png" alt="3" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;在Before build script中输入如下命令，会在开始编译之前去下载这个项目所依赖的库：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;nuget restore
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;aside&gt;
@@ -27,32 +39,17 @@
 &lt;p&gt;&amp;ldquo;nuget restore&amp;quot;命令会读取项目文件（.csproj或.vbproj）中的依赖关系，并下载或还原所需的NuGet包，以确保项目可以成功编译和构建。这个命令通常在CI/CD（持续集成/持续交付）过程中使用，以确保在构建项目之前，所有的依赖关系都被正确地还原和安装。&lt;/p&gt;
 &lt;/aside&gt;
 &lt;p&gt;除此之外，还可以在环境配置中设置安装开发库的命令：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2024-07-29-d2dbacd81fcf3c3ae4c2d9dad8dbfaafff18b18a138d0b6d46d966c00c66e23c.png" alt="4"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/2024-07-29-d2dbacd81fcf3c3ae4c2d9dad8dbfaafff18b18a138d0b6d46d966c00c66e23c.png" data-fancybox="gallery" data-caption="4"&gt;
+ &lt;img src="https://images.payloads.online/2024-07-29-d2dbacd81fcf3c3ae4c2d9dad8dbfaafff18b18a138d0b6d46d966c00c66e23c.png" alt="4" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;最后一步就是设置二进制文件打包了，点击artifacts，可以配置要打包的路径，必须是相对路径，C#的程序一般会将二进制文件生成到bin目录下，所以我这里就写：etrace\bin&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2024-07-29-250ee79944bc86c985221b13aee115fb153e56ca50d88d16799a3eebb3d29c44.png" alt="5"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/2024-07-29-250ee79944bc86c985221b13aee115fb153e56ca50d88d16799a3eebb3d29c44.png" data-fancybox="gallery" data-caption="5"&gt;
+ &lt;img src="https://images.payloads.online/2024-07-29-250ee79944bc86c985221b13aee115fb153e56ca50d88d16799a3eebb3d29c44.png" alt="5" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;保存后，回到项目页面，点击Start New Build就开始构建了：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2024-07-29-51d2f8ad59c102c96729da44ee8c88a28706eefb90c6a52e00e4ae94c055db8b.png" alt="6"&gt;&lt;/p&gt;
-&lt;p&gt;稍微等待一下，就可以看到构建好的程序了，直接下载就可以使用。&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2024-07-29-71e3d69c746a01016da0b57aa98abcd4de9029ce06eec2f5ef3127062e78cb7d.png" alt="7"&gt;&lt;/p&gt;
-&lt;h2 id="使用appveyor构建mimikatz"&gt;使用AppVeyor构建Mimikatz&lt;/h2&gt;
-&lt;p&gt;Mimikatz是&lt;a href="https://github.com/gentilkiwi"&gt;gentilkiwi&lt;/a&gt;使用C语言开发的Windows安全工具，该工具有着丰富的功能，能过从内存中提取明文密码，哈希，PIN码和kerberos票据、哈希传递等等，随着越来越多的黑客滥用此工具进行一些非法活动，因此&lt;a href="https://github.com/gentilkiwi"&gt;gentilkiwi&lt;/a&gt;每发布一个Release，Release中的Mimikatz样本就会被标记为黑客工具，这对红队带来了一些小麻烦，通过AppVeyor我们可以自动化的做一些静态特征处理，然后自动构建产生新的工具。&lt;/p&gt;
-&lt;p&gt;gentilkiwi已经在Mimikatz项目中内置了一个AppVeyor的配置文件，这个配置文件会随着项目改动自动触发AppVeyor的构建流程。&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2024-07-29-0238150c9f7ae7a6d62517d0ec9e5beef84f2e8d1e8ba4110fc3a425d8ceb3c1.png" alt="8"&gt;&lt;/p&gt;
-&lt;p&gt;我们要做的就是先Fork一份Mimikatz到自己的项目中，然后开始修改AppVeyor配置文件：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2024-07-29-eed2a89c92d68e937b3d5989177a2671ac1b8178540e0fea812447eb0967a88c.png" alt="9"&gt;&lt;/p&gt;
-&lt;p&gt;这里我只是做了一个工作，就是将代码中的所有Mimikatz字符串替换为aabbcc，当然还可以做很多其它的替换操作。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-powershell" data-lang="powershell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ls;
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Copy-Item C:\projects\mimikatz\mimikatz\mimikatz.ico C:\projects\mimikatz\mimikatz\aabbcc.ico;
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;(Get-ChildItem -Path &lt;span style="color:#e6db74"&gt;&amp;#34;.&amp;#34;&lt;/span&gt; -Recurse &lt;span style="color:#f92672"&gt;-File&lt;/span&gt; -Include *.h,*.c,*.vcxproj,*.rc) | ForEach-Object {
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; $newFileName = $_.Name &lt;span style="color:#f92672"&gt;-replace&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;mimikatz\.(h|c|rc)&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;aabbcc.&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;`$&lt;/span&gt;&lt;span style="color:#e6db74"&gt;1&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; $newPath = Join-Path -Path $_.Directory.FullName -ChildPath $newFileName
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; (Get-Content $_.FullName) | ForEach-Object {
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; $_ &lt;span style="color:#f92672"&gt;-ireplace&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;mimikatz&amp;#34;&lt;/span&gt;, &lt;span style="color:#e6db74"&gt;&amp;#34;aabbcc&amp;#34;&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; } | Set-Content $newPath
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; ($newFileName &lt;span style="color:#f92672"&gt;-ne&lt;/span&gt; $_.Name) {
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Remove-Item $_.FullName
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Write-Host $newPath
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;};
-&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ls mimikatz;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;其中替换图标的操作可以改为从互联网下载某个地址的图标，这里就不赘述了。&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;&lt;a href="https://images.payloads.online/2024-07-29-51d2f8ad59c102c96729da44ee8c88a28706eefb90c6a52e00e4ae94c055db8b.png" data-fancybox="gallery" data-caption="6"&gt;
+ &lt;img src="https://images.payloads.online/2024-07-29-51d2f8ad59c102c96729da44ee8c88a28706eefb90c6a52e00e4ae94c055db8b.png" alt="6" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;</description></item></channel></rss>

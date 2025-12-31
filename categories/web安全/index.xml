@@ -26,7 +26,10 @@
 &lt;h2 id="0x01-安装"&gt;0x01 安装&lt;/h2&gt;
 &lt;h3 id="安装插件"&gt;安装插件&lt;/h3&gt;
 &lt;p&gt;打开Burp，点击“Extender”-&amp;gt;“BApp Store”-&amp;gt;&amp;ldquo;XSS Validator&amp;rdquo;-&amp;gt;“install”&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/334a8eca-4f5f-11ec-b118-00d861bf4abb.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/334a8eca-4f5f-11ec-b118-00d861bf4abb.png" data-fancybox="gallery" data-caption=""&gt;
+ &lt;img src="https://images.payloads.online/334a8eca-4f5f-11ec-b118-00d861bf4abb.png" alt="" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;h3 id="安装phantomjs"&gt;安装phantomjs&lt;/h3&gt;
 &lt;p&gt;下载页面：http://phantomjs.org/download.html&lt;/p&gt;
 &lt;p&gt;可根据自己的操作系统类型，选择对应的版本，我这里是Mac OSX&lt;/p&gt;
@@ -38,7 +41,10 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;phantomjs xss.js
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;rvn0xsy@Rvn0xsy ~/G/p/bin&amp;gt; ./phantomjs xss.js &lt;span style="color:#75715e"&gt;# 启动监听&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这时回到Burp的xss Validator插件页面：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/339905be-4f5f-11ec-bdc6-00d861bf4abb.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/339905be-4f5f-11ec-bdc6-00d861bf4abb.png" data-fancybox="gallery" data-caption=""&gt;
+ &lt;img src="https://images.payloads.online/339905be-4f5f-11ec-bdc6-00d861bf4abb.png" alt="" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;其中：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;Grep Phrase&lt;/code&gt;是XSS执行成功后，能够解析出的字符串，支持自定义。&lt;/li&gt;
@@ -56,11 +62,18 @@
 &lt;h2 id="0x01-题目"&gt;0x01 题目&lt;/h2&gt;
 &lt;p&gt;大概意思是拿到管理员的手机号码，这个手机号码是flag。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;你能获得女神的手机号吗？ 就在这里，存在一个高危漏洞，并且使用工具是无法达到目的的，追女神还是要用真心呀！！&lt;/p&gt;&lt;/blockquote&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/e62c2c02-4f5e-11ec-a5af-00d861bf4abb.png" alt="login.php"&gt;&lt;/p&gt;
+&lt;p&gt;你能获得女神的手机号吗？ 就在这里，存在一个高危漏洞，并且使用工具是无法达到目的的，追女神还是要用真心呀！！&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/e62c2c02-4f5e-11ec-a5af-00d861bf4abb.png" data-fancybox="gallery" data-caption="login.php"&gt;
+ &lt;img src="https://images.payloads.online/e62c2c02-4f5e-11ec-a5af-00d861bf4abb.png" alt="login.php" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;h2 id="0x02-细节分析"&gt;0x02 细节分析&lt;/h2&gt;
 &lt;p&gt;我首先使用自己手中的字典进行了一轮爆破，爆破的同时去注册了两个账号。&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/e66d3be8-4f5e-11ec-8b5d-00d861bf4abb.png" alt="register.php"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/e66d3be8-4f5e-11ec-8b5d-00d861bf4abb.png" data-fancybox="gallery" data-caption="register.php"&gt;
+ &lt;img src="https://images.payloads.online/e66d3be8-4f5e-11ec-8b5d-00d861bf4abb.png" alt="register.php" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;注册需要提供：&lt;/p&gt;
 &lt;p&gt;| username | password | phone |&lt;/p&gt;
 &lt;p&gt;这时，爆破未果，既然是一个高危漏洞，概率不会依附在“弱口令”上 （安慰一下自己）。&lt;/p&gt;
@@ -113,7 +126,10 @@
 &lt;li&gt;-alias tomcat：用户别名为tomcat&lt;/li&gt;
 &lt;li&gt;-keyalg RSA： 使用RSA算法。 MD5算法也是被支持的，但是建议使用RSA获得更好的兼容。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/e5c1e982-4f5e-11ec-93d0-00d861bf4abb.jpg" alt="生成证书"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/e5c1e982-4f5e-11ec-93d0-00d861bf4abb.jpg" data-fancybox="gallery" data-caption="生成证书"&gt;
+ &lt;img src="https://images.payloads.online/e5c1e982-4f5e-11ec-93d0-00d861bf4abb.jpg" alt="生成证书" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;生成证书后，此证书会被保存在当前用户主目录下。&lt;/p&gt;
 &lt;h2 id="0x01-修改配置文件"&gt;0x01 修改配置文件&lt;/h2&gt;
 &lt;p&gt;找到tomcat目录下的&lt;code&gt;conf/server.xml&lt;/code&gt;，将原来的&lt;code&gt;Connector &lt;/code&gt;更改一下即可。&lt;/p&gt;

@@ -20,7 +20,10 @@
 &lt;/ul&gt;
 &lt;h2 id="0x02-复现过程"&gt;0X02 复现过程&lt;/h2&gt;
 &lt;h3 id="使用cobalt-strike生成hta反弹shell"&gt;使用Cobalt Strike生成hta反弹shell&lt;/h3&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/eca6cc68-4f5e-11ec-9ca9-00d861bf4abb.png" alt="生成"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/eca6cc68-4f5e-11ec-9ca9-00d861bf4abb.png" data-fancybox="gallery" data-caption="生成"&gt;
+ &lt;img src="https://images.payloads.online/eca6cc68-4f5e-11ec-9ca9-00d861bf4abb.png" alt="生成" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;将生成的hta文档放入WebServer根目录：http://192.168.3.106/evil.hta&lt;/p&gt;
 &lt;p&gt;我(Cobalt Strike)本地监听了一个8081端口，用来接收客户端的Shell&lt;/p&gt;
 &lt;h3 id="生成一个rtfdoc文档"&gt;生成一个rtf/doc文档&lt;/h3&gt;

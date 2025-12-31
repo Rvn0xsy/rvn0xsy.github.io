@@ -12,11 +12,14 @@
 &lt;p&gt;我的分类不是很清晰，但是对于一个渗透测试人员、运维人员、甲、乙方的工程师都会需要它的定制化功能，例如：将扫描结果写到数据库？新的漏洞出了POC，客户需要立即进行漏洞扫描？&lt;/p&gt;
 &lt;p&gt;导出扫描结果这个问题，Nmap官方做出如下回应：&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;&lt;a href="https://link.zhihu.com/?target=https%3A//nmap.org/book/output-formats-output-to-database.html"&gt;Nmap Network Scanning&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;&lt;a href="https://link.zhihu.com/?target=https%3A//nmap.org/book/output-formats-output-to-database.html"&gt;Nmap Network Scanning&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;blockquote&gt;
-&lt;p&gt;一个共同的愿望是将Nmap结果输出到数据库以便于查询和跟踪。这允许用户来自个人渗透测试仪 到国际企业存储他们的所有扫描结果并轻松比较它们。企业可能每天运行大型扫描，并为新打开的端口或可用计算机的邮件管理员安排查询。渗透测试人员可能会了解新漏洞并搜索受影响应用程序的所有旧扫描结果，以便他可以警告相关客户端。研究人员可以扫描数百万个IP地址，并将结果保存在数据库中，以便进行实时查询。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;一个共同的愿望是将Nmap结果输出到数据库以便于查询和跟踪。这允许用户来自个人渗透测试仪 到国际企业存储他们的所有扫描结果并轻松比较它们。企业可能每天运行大型扫描，并为新打开的端口或可用计算机的邮件管理员安排查询。渗透测试人员可能会了解新漏洞并搜索受影响应用程序的所有旧扫描结果，以便他可以警告相关客户端。研究人员可以扫描数百万个IP地址，并将结果保存在数据库中，以便进行实时查询。&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;blockquote&gt;
-&lt;p&gt;虽然这些目标值得称赞，但Nmap不提供直接的数据库输出功能。我不仅有太多不同的数据库类型支持它们，而且用户的需求变化如此之大，以至于没有单一的数据库模式是合适的。企业，笔测试员和研究人员的需求都需要不同的表结构。&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;虽然这些目标值得称赞，但Nmap不提供直接的数据库输出功能。我不仅有太多不同的数据库类型支持它们，而且用户的需求变化如此之大，以至于没有单一的数据库模式是合适的。企业，笔测试员和研究人员的需求都需要不同的表结构。&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;而很多朋友大多都是使用Python来调用Nmap进行格式解析，这种方式无法预估扫描进度，不能进行状态交互，效率很差，如果我们需要一个实时进行独写、漏洞检测等定制化的操作，那么就可以跟我一起来学习如何写一个自己的Nmap脚本，这本书涵盖的知识比较多，会涉及安全、网络协议、编程技术这些相关知识，相信你能够收获很多。&lt;/p&gt;
 &lt;p&gt;笔者写扩展脚本开发系列的初衷是让大家了解nmap这个优秀的开源工具的功能，解决一些定制化的扫描需求。&lt;/p&gt;
 &lt;p&gt;在开始之前，需要读者具备：能够熟练使用Nmap进行端口扫描、了解Nmap目录结构、懂得常见的网络知识、&lt;strong&gt;Lua基础（如果需要的话，我会在后期铺垫）&lt;/strong&gt;。&lt;/p&gt;
@@ -50,15 +53,21 @@
 &lt;h3 id="0x03-nmap扩展脚本使用方法"&gt;0x03 Nmap扩展脚本使用方法&lt;/h3&gt;
 &lt;p&gt;在很早之前，我写过一篇科普文章，主要介绍了Nmap的脚本分类、使用方法，链接：&lt;/p&gt;
 &lt;p&gt;&lt;a href="http://zhuanlan.zhihu.com/p/26618074"&gt;http://zhuanlan.zhihu.com/p/26618074&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;本章没有太多概念性的东西，希望读者能够边看边做。首先设定一个需求，我有一个需要搜集某个IP或某组IP所有开放HTTP服务的中间件信息。那么Nmap有一个脚本是可以直接满足我们需求的：&lt;/p&gt;</description></item><item><title>Nmap扩展开发（三）</title><link>https://payloads.online/archivers/2019-04-24/3/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/3/</guid><description>&lt;h2 id="0x01-扩展脚本对象-主机"&gt;0X01 扩展脚本对象-主机&lt;/h2&gt;
+&lt;p&gt;本章没有太多概念性的东西，希望读者能够边看边做。首先设定一个需求，我有一个需要搜集某个IP或某组IP所有开放HTTP服务的中间件信息。那么Nmap有一个脚本是可以直接满足我们需求的：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;http-server-header.nse&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;扫描命令：&lt;code&gt;nmap --script=http-server-header &amp;lt;TARGET&amp;gt;&lt;/code&gt;&lt;/p&gt;</description></item><item><title>Nmap扩展开发（三）</title><link>https://payloads.online/archivers/2019-04-24/3/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/3/</guid><description>&lt;h2 id="0x01-扩展脚本对象-主机"&gt;0X01 扩展脚本对象-主机&lt;/h2&gt;
 &lt;p&gt;在进行主机扫描的时候会执行hostrule这个函数，从以往的nmap扩展脚本代码中我们都可以发现在hostrule这个函数中做了一些针对host操作的动作。&lt;/p&gt;
 &lt;p&gt;hostrule有一个参数，变量名叫host，我们可以把它理解为一个对象，在这里称之为对象是为了方便读者理解，在lua中实际它的数据类型是一个多维的table（表），具有很多属性。由于这些rule函数都是被动调用的，我们只能在函数内部对形参进行操作了。&lt;/p&gt;
 &lt;p&gt;参考：https://nmap.org/book/nse-api.html&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/6e7b0678-4f5f-11ec-bf1a-00d861bf4abb.png" alt="2019-04-24-10-02-11"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/6e7b0678-4f5f-11ec-bf1a-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-04-24-10-02-11"&gt;
+ &lt;img src="https://images.payloads.online/6e7b0678-4f5f-11ec-bf1a-00d861bf4abb.png" alt="2019-04-24-10-02-11" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;通过上面这个表格我们能够清楚的了解到从host这个table中可以读取到哪些信息。&lt;/p&gt;
 &lt;p&gt;为了让读者吸收，建立一个需求，请大家与我一起完成。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;需求：使用Nmap扫描获得所有主机的MAC地址&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;需求：使用Nmap扫描获得所有主机的MAC地址&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;由于Nmap没提供这个需求的解决方案，就需要我们自己来写一个扩展脚本了~&lt;/p&gt;
 &lt;p&gt;还是拿之前的test.nse来改一下：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-lua" data-lang="lua"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;local&lt;/span&gt; stdnse &lt;span style="color:#f92672"&gt;=&lt;/span&gt; require &lt;span style="color:#e6db74"&gt;&amp;#34;stdnse&amp;#34;&lt;/span&gt;
@@ -76,7 +85,10 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;end&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;通过host.mac_addr获取的mac地址是二进制编码的，我们要转换成字符串，需要引入stdnse这个扩展包，stdnse包中有一个format_mac函数，能够将host.mac_addr转换成字符串。&lt;/p&gt;
 &lt;p&gt;执行效果如下：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/6ebb6fce-4f5f-11ec-8628-00d861bf4abb.png" alt="2019-04-24-10-02-57"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/6ebb6fce-4f5f-11ec-8628-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-04-24-10-02-57"&gt;
+ &lt;img src="https://images.payloads.online/6ebb6fce-4f5f-11ec-8628-00d861bf4abb.png" alt="2019-04-24-10-02-57" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;pre tabindex="0"&gt;&lt;code&gt;00:50:56:ec:95:48
 00:50:56:f8:1e:b8
 00:50:56:c0:00:08
@@ -84,17 +96,22 @@
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;以上这些MAC地址就是当前内网中的所有主机了。&lt;/p&gt;
 &lt;h2 id="0x02-扩展脚本对象-端口"&gt;0X02 扩展脚本对象-端口&lt;/h2&gt;
 &lt;p&gt;端口相对于主机来说，属性较少，主要是针对端口状态、端口协议、端口服务、端口服务版本的一些描述。&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/6effee2e-4f5f-11ec-913d-00d861bf4abb.png" alt="2019-04-24-10-03-27"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/6effee2e-4f5f-11ec-913d-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-04-24-10-03-27"&gt;
+ &lt;img src="https://images.payloads.online/6effee2e-4f5f-11ec-913d-00d861bf4abb.png" alt="2019-04-24-10-03-27" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;h3 id="0x02-完成一个需求"&gt;0X02 完成一个需求&lt;/h3&gt;
 &lt;p&gt;还是老样子，假设一个需求，解决这个需求：&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;需求：获取当前内网中开放HTTP服务的主机的MAC地址&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;需求：获取当前内网中开放HTTP服务的主机的MAC地址&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;首先可以分析一下这个需求：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;条件：开放了HTTP服务
 开放了HTTP服务的主机一般都会开放80/443
 目的：获取MAC地址
-需要引入stdnse包，调用format_mac函数&lt;/p&gt;&lt;/blockquote&gt;
+需要引入stdnse包，调用format_mac函数&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;如此一来思路清晰了许多，还是从test.nse改起：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-lua" data-lang="lua"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;local&lt;/span&gt; stdnse &lt;span style="color:#f92672"&gt;=&lt;/span&gt; require &lt;span style="color:#e6db74"&gt;&amp;#34;stdnse&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;prerule&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;function&lt;/span&gt;()
@@ -128,7 +145,10 @@
 &lt;p&gt;在第一行添加：&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;print(&amp;quot;[*] nse_main.lua first excute ... \n&amp;quot;)&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;保存后，使用一个脚本观察效果：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/6d832994-4f5f-11ec-9c52-00d861bf4abb.png" alt="2019-04-24-09-57-34"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/6d832994-4f5f-11ec-9c52-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-04-24-09-57-34"&gt;
+ &lt;img src="https://images.payloads.online/6d832994-4f5f-11ec-9c52-00d861bf4abb.png" alt="2019-04-24-09-57-34" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;可以发现，在nmap启动后就会执行nse_main.lua中的代码。&lt;/p&gt;
 &lt;h2 id="0x03-扩展脚本执行规则"&gt;0x03 扩展脚本执行规则&lt;/h2&gt;
 &lt;p&gt;在nse_main.lua的64行左右，定义了一些规则：&lt;/p&gt;

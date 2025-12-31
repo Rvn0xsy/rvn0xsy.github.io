@@ -4,14 +4,20 @@
 &lt;p&gt;通常最简单的发送命令：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;swaks --to user@example.com --server test-server.example.net
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;但是邮件头中会带上&lt;code&gt;X-Mailer&lt;/code&gt;：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/74cbdcfa-4f5f-11ec-9bc1-00d861bf4abb.png" alt="2019-05-09-14-24-53"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/74cbdcfa-4f5f-11ec-9bc1-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-05-09-14-24-53"&gt;
+ &lt;img src="https://images.payloads.online/74cbdcfa-4f5f-11ec-9bc1-00d861bf4abb.png" alt="2019-05-09-14-24-53" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;同时，SPF检测会FAIL。&lt;/p&gt;
 &lt;h2 id="0x01-smtp2go"&gt;0x01 smtp2go&lt;/h2&gt;
 &lt;p&gt;这个是从evi1cg师傅那里看到的，smtp2go主要是相当于邮件托管，可以分发子账户进行发送。&lt;/p&gt;
 &lt;p&gt;地址：https://support.smtp2go.com/hc/en-gb&lt;/p&gt;
 &lt;p&gt;（邮箱注册）普通账户可以免费发1000封邮件。&lt;/p&gt;
 &lt;p&gt;分配好账户后，可以通过swaks进行登录发送邮件：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/750c7a8a-4f5f-11ec-889d-00d861bf4abb.png" alt="2019-05-09-14-28-50"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/750c7a8a-4f5f-11ec-889d-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-05-09-14-28-50"&gt;
+ &lt;img src="https://images.payloads.online/750c7a8a-4f5f-11ec-889d-00d861bf4abb.png" alt="2019-05-09-14-28-50" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;h2 id="0x02-swaks发送邮件"&gt;0x02 swaks发送邮件&lt;/h2&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;swaks --to rvn0xsy@gmail.com --from admin@qq.com --ehlo gmail.com --body hello --server mail.smtp2go.com -p &lt;span style="color:#ae81ff"&gt;2525&lt;/span&gt; -au &amp;lt;USER&amp;gt; -ap &amp;lt;PASS&amp;gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;但是上面这个邮件无法绕过SPF。&lt;/p&gt;

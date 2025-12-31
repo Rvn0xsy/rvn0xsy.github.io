@@ -2,30 +2,40 @@
 💡 VSCode是一款由微软开发的免费且开源的代码编辑器，支持多种编程语言，可通过安装扩展包来进一步扩展其功能。VSCode的扩展包具有丰富的功能，包括但不限于代码片段、自动完成、调试工具、主题等。用户可以轻松地在VSCode中安装、管理和使用扩展包，以满足个人的编程需求。
 &lt;/aside&gt;
 &lt;p&gt;安装完毕Python调试扩展后，会在扩展目录中生成一些文件：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2024-07-29-1ac07f2ccf6b6ba8768b96e62815f150289ca24887a111685646538b567130d5.png" alt="0"&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2024-07-29-8ba004d0a43efcfa27809998a10469e46d3e380ea3ed0c3122c60583d5a0ee6b.png" alt="1"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/2024-07-29-1ac07f2ccf6b6ba8768b96e62815f150289ca24887a111685646538b567130d5.png" data-fancybox="gallery" data-caption="0"&gt;
+ &lt;img src="https://images.payloads.online/2024-07-29-1ac07f2ccf6b6ba8768b96e62815f150289ca24887a111685646538b567130d5.png" alt="0" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/2024-07-29-8ba004d0a43efcfa27809998a10469e46d3e380ea3ed0c3122c60583d5a0ee6b.png" data-fancybox="gallery" data-caption="1"&gt;
+ &lt;img src="https://images.payloads.online/2024-07-29-8ba004d0a43efcfa27809998a10469e46d3e380ea3ed0c3122c60583d5a0ee6b.png" alt="1" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;其中以下两个文件是DLL注入器，分别对应X86和X64位操作系统：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;inject_dll_x86.exe&lt;/li&gt;
 &lt;li&gt;inject_dll_amd64.exe&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;在windows文件夹中还保留了注入器的源代码：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2024-07-29-03d06e145c8996fcbaafefa67c5c28df4b4f53a9f77b69a21cfefebd0fea9d28.png" alt="2"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/2024-07-29-03d06e145c8996fcbaafefa67c5c28df4b4f53a9f77b69a21cfefebd0fea9d28.png" data-fancybox="gallery" data-caption="2"&gt;
+ &lt;img src="https://images.payloads.online/2024-07-29-03d06e145c8996fcbaafefa67c5c28df4b4f53a9f77b69a21cfefebd0fea9d28.png" alt="2" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;路径：&lt;code&gt;C:\Users\Administrator\.vscode\extensions\ms-python.python-2022.20.2\pythonFiles\lib\python\debugpy\_vendored\pydevd\pydevd_attach_to_process\windows&lt;/code&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;路径：&lt;code&gt;C:\Users\Administrator\.vscode\extensions\ms-python.python-2022.20.2\pythonFiles\lib\python\debugpy\_vendored\pydevd\pydevd_attach_to_process\windows&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// inject_dll.cpp
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;windows.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;conio.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;tchar.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;tlhelp32.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#pragma comment(lib, &amp;#34;kernel32.lib&amp;#34;)
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#pragma comment(lib, &amp;#34;user32.lib&amp;#34;)
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// Helper to free data when we leave the scope.
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;class&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;DataToFree&lt;/span&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;class&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;DataToFree&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt;&lt;span style="color:#f92672"&gt;:&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; HANDLE hProcess;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; HANDLE snapshotHandle;
@@ -73,7 +83,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; std&lt;span style="color:#f92672"&gt;::&lt;/span&gt;cout &lt;span style="color:#f92672"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;Running executable to inject dll.&amp;#34;&lt;/span&gt; &lt;span style="color:#f92672"&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style="color:#f92672"&gt;::&lt;/span&gt;endl;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// Helper to clear resources.
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt; DataToFree dataToFree;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; DataToFree dataToFree;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;if&lt;/span&gt;(argc &lt;span style="color:#f92672"&gt;!=&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt;){
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; std&lt;span style="color:#f92672"&gt;::&lt;/span&gt;cout &lt;span style="color:#f92672"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;Expected 2 arguments (pid, dll name).&amp;#34;&lt;/span&gt; &lt;span style="color:#f92672"&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style="color:#f92672"&gt;::&lt;/span&gt;endl;
@@ -132,7 +142,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; }
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// We wait for the load to finish before proceeding to get the function to actually do the attach.
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt; std&lt;span style="color:#f92672"&gt;::&lt;/span&gt;cout &lt;span style="color:#f92672"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;Waiting for LoadLibraryA to complete.&amp;#34;&lt;/span&gt; &lt;span style="color:#f92672"&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style="color:#f92672"&gt;::&lt;/span&gt;endl;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; std&lt;span style="color:#f92672"&gt;::&lt;/span&gt;cout &lt;span style="color:#f92672"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;Waiting for LoadLibraryA to complete.&amp;#34;&lt;/span&gt; &lt;span style="color:#f92672"&gt;&amp;lt;&amp;lt;&lt;/span&gt; std&lt;span style="color:#f92672"&gt;::&lt;/span&gt;endl;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; DWORD result &lt;span style="color:#f92672"&gt;=&lt;/span&gt; WaitForSingleObject(remoteThread, &lt;span style="color:#ae81ff"&gt;5&lt;/span&gt; &lt;span style="color:#f92672"&gt;*&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;1000&lt;/span&gt;);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;if&lt;/span&gt;(result &lt;span style="color:#f92672"&gt;==&lt;/span&gt; WAIT_TIMEOUT) {

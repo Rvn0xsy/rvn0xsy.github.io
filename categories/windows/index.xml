@@ -20,22 +20,34 @@ file gets deleted.&lt;/p&gt;</description></item><item><title>BMP位图隐写</t
 &lt;p&gt;当然，我们不需要了解那么多，唯一比较重要的就是文件数据结构。&lt;/p&gt;
 &lt;h2 id="0x02-bmp文件格式"&gt;0x02 BMP文件格式&lt;/h2&gt;
 &lt;p&gt;第一个知识点：BM (0x4D 0x42)&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/4be2fdaa-4f5f-11ec-aab0-00d861bf4abb.png" alt="2019-01-31-16-00-25"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/4be2fdaa-4f5f-11ec-aab0-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-01-31-16-00-25"&gt;
+ &lt;img src="https://images.payloads.online/4be2fdaa-4f5f-11ec-aab0-00d861bf4abb.png" alt="2019-01-31-16-00-25" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;所有的BMP文件都以这两个字节开头（固定格式）。&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://www.cnblogs.com/mingcaoyouxin/p/4286310.html"&gt;详解大端模式和小端模式&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;由于个人计算机都是以小端存储的，所以你看到的0x4D 0x42都要从0x4D由右向左开始读取。&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;第二个知识点：BMP文件大小&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/4c1ecef2-4f5f-11ec-a65b-00d861bf4abb.png" alt="2019-01-31-16-02-53"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/4c1ecef2-4f5f-11ec-a65b-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-01-31-16-02-53"&gt;
+ &lt;img src="https://images.payloads.online/4c1ecef2-4f5f-11ec-a65b-00d861bf4abb.png" alt="2019-01-31-16-02-53" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;0x00072D46 = 470342（Byte） = 470KB&lt;/p&gt;
 &lt;p&gt;所以这个BMP的文件大小是470KB，也就是说一个图片软件，校验图片是否损坏、是否完整，都是通过读取这四个字节来判断的。&lt;/p&gt;
 &lt;p&gt;当然在Web领域也是一样，在图片进行渲染的过程中也会判断文件是否完整。&lt;/p&gt;
 &lt;h2 id="0x03-偏移量-像素位置"&gt;0x03 偏移量-像素位置&lt;/h2&gt;
 &lt;p&gt;BMP的格式我们不介绍太多，关键是找到像素的偏移量就够了，有了偏移量就能够覆盖像素，每一个像素的宽度是3个字节，也就是色光三原色的RGB值。&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/4c568f90-4f5f-11ec-8291-00d861bf4abb.png" alt="2019-01-31-16-16-59"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/4c568f90-4f5f-11ec-8291-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-01-31-16-16-59"&gt;
+ &lt;img src="https://images.payloads.online/4c568f90-4f5f-11ec-8291-00d861bf4abb.png" alt="2019-01-31-16-16-59" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;其中36前面的00 00 00 00是保留位，没有意义。&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;36 00 00 00(0x36)转换成十进制是54。&lt;/p&gt;
 &lt;p&gt;也就是说，从BMP文件的第一个字节开始，到第54个字节就是像素的开始。&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/4c8c9144-4f5f-11ec-982e-00d861bf4abb.png" alt="2019-01-31-16-21-16"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/4c8c9144-4f5f-11ec-982e-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-01-31-16-21-16"&gt;
+ &lt;img src="https://images.payloads.online/4c8c9144-4f5f-11ec-982e-00d861bf4abb.png" alt="2019-01-31-16-21-16" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;三个D8就是一个像素。&lt;/p&gt;
 &lt;h2 id="0x04-写入内容"&gt;0x04 写入内容&lt;/h2&gt;
 &lt;p&gt;这个过程中，我们可以写入shellcode、PE文件、字符串等。&lt;/p&gt;
@@ -43,46 +55,46 @@ file gets deleted.&lt;/p&gt;</description></item><item><title>BMP位图隐写</t
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// ConsoleApplication1.cpp : This file contains the &amp;#39;main&amp;#39; function. Program execution begins and ends there.
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;//
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;Windows.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;winsock.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;// int WinMain(HINSTANCE hinstance,HINSTANCE hprevinstance,LPSTR lpcmdline,int ncmdshow)
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;()
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// int WinMain(HINSTANCE hinstance,HINSTANCE hprevinstance,LPSTR lpcmdline,int ncmdshow)
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;()
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	CHAR text[] &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;Hello world !!!&amp;#34;&lt;/span&gt;;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	LPCWCHAR pFilename &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;TEXT&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;C:&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\\&lt;/span&gt;&lt;span style="color:#e6db74"&gt;Users&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\\&lt;/span&gt;&lt;span style="color:#e6db74"&gt;Rvn0xsy&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\\&lt;/span&gt;&lt;span style="color:#e6db74"&gt;source&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\\&lt;/span&gt;&lt;span style="color:#e6db74"&gt;repos&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\\&lt;/span&gt;&lt;span style="color:#e6db74"&gt;ConsoleApplication1&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\\&lt;/span&gt;&lt;span style="color:#e6db74"&gt;Debug&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\\&lt;/span&gt;&lt;span style="color:#e6db74"&gt;splash.bmp&amp;#34;&lt;/span&gt;);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	LPCWCHAR pSaveFilename &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;TEXT&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;C:&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\\&lt;/span&gt;&lt;span style="color:#e6db74"&gt;Users&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\\&lt;/span&gt;&lt;span style="color:#e6db74"&gt;Rvn0xsy&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\\&lt;/span&gt;&lt;span style="color:#e6db74"&gt;source&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\\&lt;/span&gt;&lt;span style="color:#e6db74"&gt;repos&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\\&lt;/span&gt;&lt;span style="color:#e6db74"&gt;ConsoleApplication1&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\\&lt;/span&gt;&lt;span style="color:#e6db74"&gt;Debug&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;\\&lt;/span&gt;&lt;span style="color:#e6db74"&gt;save.bmp&amp;#34;&lt;/span&gt;);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#75715e"&gt;// 创建文件句柄，打开图片
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;	HANDLE hFile &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;CreateFile&lt;/span&gt;(pFilename, GENERIC_ALL, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	HANDLE hFile &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;CreateFile&lt;/span&gt;(pFilename, GENERIC_ALL, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; (hFile &lt;span style="color:#f92672"&gt;==&lt;/span&gt; INVALID_HANDLE_VALUE) {
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;		std&lt;span style="color:#f92672"&gt;::&lt;/span&gt;wcout &lt;span style="color:#f92672"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;GetLastError&lt;/span&gt;();
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;		&lt;span style="color:#a6e22e"&gt;MessageBox&lt;/span&gt;(&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;, &lt;span style="color:#a6e22e"&gt;TEXT&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;CreateFile&amp;#34;&lt;/span&gt;), &lt;span style="color:#a6e22e"&gt;TEXT&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;Error&amp;#34;&lt;/span&gt;), MB_OK);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;		&lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	}
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#75715e"&gt;// 获取文件大小
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;	DWORD dwFileSize;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	DWORD dwFileSize;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	dwFileSize&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;GetFileSize&lt;/span&gt;(hFile, NULL);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#75715e"&gt;// 申请一个与文件大小对应的内存空间
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;	CHAR &lt;span style="color:#f92672"&gt;*&lt;/span&gt; lpBuffer &lt;span style="color:#f92672"&gt;=&lt;/span&gt;(CHAR &lt;span style="color:#f92672"&gt;*&lt;/span&gt;) &lt;span style="color:#a6e22e"&gt;HeapAlloc&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;GetProcessHeap&lt;/span&gt;(), HEAP_ZERO_MEMORY, dwFileSize);
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	CHAR &lt;span style="color:#f92672"&gt;*&lt;/span&gt; lpBuffer &lt;span style="color:#f92672"&gt;=&lt;/span&gt;(CHAR &lt;span style="color:#f92672"&gt;*&lt;/span&gt;) &lt;span style="color:#a6e22e"&gt;HeapAlloc&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;GetProcessHeap&lt;/span&gt;(), HEAP_ZERO_MEMORY, dwFileSize);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#75715e"&gt;// 将文件内容读入内存
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;	&lt;span style="color:#a6e22e"&gt;ReadFile&lt;/span&gt;(hFile, lpBuffer, dwFileSize, &lt;span style="color:#f92672"&gt;&amp;amp;&lt;/span&gt;dwFileSize, NULL);
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#a6e22e"&gt;ReadFile&lt;/span&gt;(hFile, lpBuffer, dwFileSize, &lt;span style="color:#f92672"&gt;&amp;amp;&lt;/span&gt;dwFileSize, NULL);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#75715e"&gt;// 获取第一个像素点对应的首字节
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;	DWORD &lt;span style="color:#f92672"&gt;*&lt;/span&gt; point &lt;span style="color:#f92672"&gt;=&lt;/span&gt; (DWORD&lt;span style="color:#f92672"&gt;*&lt;/span&gt;)(lpBuffer &lt;span style="color:#f92672"&gt;+&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;10&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	DWORD &lt;span style="color:#f92672"&gt;*&lt;/span&gt; point &lt;span style="color:#f92672"&gt;=&lt;/span&gt; (DWORD&lt;span style="color:#f92672"&gt;*&lt;/span&gt;)(lpBuffer &lt;span style="color:#f92672"&gt;+&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;10&lt;/span&gt;);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#75715e"&gt;// 获取首个像素地址
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;	CHAR&lt;span style="color:#f92672"&gt;*&lt;/span&gt; lpData &lt;span style="color:#f92672"&gt;=&lt;/span&gt; (lpBuffer &lt;span style="color:#f92672"&gt;+&lt;/span&gt; (&lt;span style="color:#f92672"&gt;*&lt;/span&gt;point));
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	CHAR&lt;span style="color:#f92672"&gt;*&lt;/span&gt; lpData &lt;span style="color:#f92672"&gt;=&lt;/span&gt; (lpBuffer &lt;span style="color:#f92672"&gt;+&lt;/span&gt; (&lt;span style="color:#f92672"&gt;*&lt;/span&gt;point));
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#75715e"&gt;// 写入内容
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;	&lt;span style="color:#a6e22e"&gt;CopyMemory&lt;/span&gt;(lpData, text, &lt;span style="color:#66d9ef"&gt;sizeof&lt;/span&gt;(text));
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#a6e22e"&gt;CopyMemory&lt;/span&gt;(lpData, text, &lt;span style="color:#66d9ef"&gt;sizeof&lt;/span&gt;(text));
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#75715e"&gt;//创建保存副本
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;	HANDLE hSave &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;CreateFile&lt;/span&gt;(pSaveFilename, GENERIC_ALL, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	HANDLE hSave &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;CreateFile&lt;/span&gt;(pSaveFilename, GENERIC_ALL, &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#a6e22e"&gt;WriteFile&lt;/span&gt;(hSave, lpBuffer, dwFileSize, &lt;span style="color:#f92672"&gt;&amp;amp;&lt;/span&gt;dwFileSize, NULL); &lt;span style="color:#75715e"&gt;// 写入文件
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;	&lt;span style="color:#a6e22e"&gt;CloseHandle&lt;/span&gt;(hSave); &lt;span style="color:#75715e"&gt;// 保存
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#a6e22e"&gt;CloseHandle&lt;/span&gt;(hSave); &lt;span style="color:#75715e"&gt;// 保存
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#75715e"&gt;// 释放堆
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;	&lt;span style="color:#a6e22e"&gt;HeapFree&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;GetProcessHeap&lt;/span&gt;(), &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;, lpBuffer);
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#a6e22e"&gt;HeapFree&lt;/span&gt;(&lt;span style="color:#a6e22e"&gt;GetProcessHeap&lt;/span&gt;(), &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;, lpBuffer);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#75715e"&gt;// 关闭文件
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;	&lt;span style="color:#a6e22e"&gt;CloseHandle&lt;/span&gt;(hFile);
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#a6e22e"&gt;CloseHandle&lt;/span&gt;(hFile);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;效果如下：&lt;/p&gt;</description></item></channel></rss>

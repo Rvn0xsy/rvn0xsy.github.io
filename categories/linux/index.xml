@@ -13,7 +13,10 @@
 &lt;h2 id="0x01-网络套接字socket"&gt;0x01 网络套接字(SOCKET)&lt;/h2&gt;
 &lt;h3 id="什么是套接字"&gt;什么是套接字&lt;/h3&gt;
 &lt;p&gt;在我的理解中，网络套接字是一个被封装在传输层与应用层之间的API接口。&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/22779e12-4f5f-11ec-928f-00d861bf4abb.jpg" alt="enter description here" title="0x01"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/22779e12-4f5f-11ec-928f-00d861bf4abb.jpg" data-fancybox="gallery" data-caption="enter description here"&gt;
+ &lt;img src="https://images.payloads.online/22779e12-4f5f-11ec-928f-00d861bf4abb.jpg" alt="enter description here" title="0x01" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;每一个方法都被操作系统支持，我们只需要知道创建套接字的流程以及网络基本知识就可以进行套接字的编程了。&lt;/p&gt;
 &lt;p&gt;许多的远程利用攻击、漏洞验证工具都离不开套接字，没有套接字就没有现在能够进行“进程”与“进程”之间通信的过程实现。&lt;/p&gt;
 &lt;p&gt;下面引用百科的解释：&lt;/p&gt;
@@ -28,7 +31,7 @@
 &lt;p&gt;于是出现了被计算机界公认的结构体，这个结构体保存在系统的标准库中：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;arpa/inet.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;struct&lt;/span&gt; sockaddr_in
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;struct&lt;/span&gt; sockaddr_in
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;__SOCKADDR_COMMON&lt;/span&gt; (sin_);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;in_port_t&lt;/span&gt; sin_port;			&lt;span style="color:#75715e"&gt;/* Port number. */&lt;/span&gt;
@@ -59,18 +62,13 @@ deb http://security.ubuntu.com/ubuntu artful-security multiverse
 &lt;p&gt;我们可以通过&lt;code&gt;nautilus-actions-config-tool&lt;/code&gt; 来配置自己想要的菜单&lt;/p&gt;
 &lt;p&gt;安装方式很简单：&lt;code&gt;sudo apt-get install nautilus-actions&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;在命令行中启动&lt;code&gt;nautilus-actions-config-tool&lt;/code&gt;就可以打开配置页面&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/1fdfde30-4f5f-11ec-817b-00d861bf4abb.png" alt="enter description here" title="0x01"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/1fdfde30-4f5f-11ec-817b-00d861bf4abb.png" data-fancybox="gallery" data-caption="enter description here"&gt;
+ &lt;img src="https://images.payloads.online/1fdfde30-4f5f-11ec-817b-00d861bf4abb.png" alt="enter description here" title="0x01" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;可以看到我已经自己添加了两个菜单，主要用于Nmap从文本中读取目标进行扫描&lt;/p&gt;
 &lt;p&gt;Ubuntu默认情况下是没有新建文本这个菜单的，我们自己通过这个工具添加一下试试：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2019ecba-4f5f-11ec-8af4-00d861bf4abb.png" alt="enter description here" title="0x02"&gt;&lt;/p&gt;
-&lt;p&gt;配置一下命令：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/20587ad4-4f5f-11ec-ae0f-00d861bf4abb.png" alt="enter description here" title="0x03"&gt;&lt;/p&gt;
-&lt;p&gt;这里有几个变量介绍一下：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;%d 当前目录&lt;/li&gt;
-&lt;li&gt;%f 当前选择的文件（单个）&lt;/li&gt;
-&lt;li&gt;%F 当前选择的所有文件&lt;/li&gt;
-&lt;li&gt;%b 当前文件&lt;/li&gt;
-&lt;li&gt;&amp;hellip;&amp;hellip;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;剩下的自己摸索，以上的已经够用了&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;&lt;a href="https://images.payloads.online/2019ecba-4f5f-11ec-8af4-00d861bf4abb.png" data-fancybox="gallery" data-caption="enter description here"&gt;
+ &lt;img src="https://images.payloads.online/2019ecba-4f5f-11ec-8af4-00d861bf4abb.png" alt="enter description here" title="0x02" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;</description></item></channel></rss>

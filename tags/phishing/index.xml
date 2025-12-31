@@ -2,17 +2,26 @@
 📌 攻击者可能会滥用编译的 HTML 文件 （.chm） 来隐藏恶意代码。CHM文件通常作为Microsoft HTML帮助系统的一部分分发。CHM文件是各种内容的压缩编译，如HTML文档，图像和脚本/Web相关的编程语言，如VBA，JScript，Java和ActiveX。CHM 内容使用由 HTML 帮助可执行程序 （hh.exe） 加载的 Internet Explorer 浏览器的基础组件显示。 - 摘自 ATT&amp;CK [System Binary Proxy Execution: Compiled HTML File, Sub-technique T1218.001 - Enterprise | MITRE ATT&amp;CK®](https://attack.mitre.org/techniques/T1218/001/)
 &lt;/aside&gt;
 &lt;h2 id="背景"&gt;背景&lt;/h2&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2024-07-29-9c23ae3e32974727854fe650b5d94e641f5d33fa6fff2ff2aca32a224127b8e4.png" alt="0"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/2024-07-29-9c23ae3e32974727854fe650b5d94e641f5d33fa6fff2ff2aca32a224127b8e4.png" data-fancybox="gallery" data-caption="0"&gt;
+ &lt;img src="https://images.payloads.online/2024-07-29-9c23ae3e32974727854fe650b5d94e641f5d33fa6fff2ff2aca32a224127b8e4.png" alt="0" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;今天中午看到一份关于&lt;a href="https://intezer.com/blog/research/phishing-campaign-targets-nuclear-energy-industry/"&gt;Bitter组织针对亚太地区能源部门发起钓鱼活动&lt;/a&gt;分析报告，其中@Ryan Robinson 2023年3月24日对该组织使用的CHM样本进行了分析。于是开始详细了解为什么CHM格式在钓鱼中可以发挥如此大的价值。&lt;/p&gt;
 &lt;h2 id="chm文件打开的过程"&gt;CHM文件打开的过程&lt;/h2&gt;
 &lt;p&gt;CHM文件是各种内容的压缩编译，如HTML文档，图像和脚本/Web相关的编程语言，在CHM打开时，会调用IE浏览器的基础组件解析显示,双击打开CHM文件其实本质上是创建了一个hh.exe的进程。&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2024-07-29-eab40d97f6ec3c24b6f998a624539ba37ed83871a7c7c07c00dddb5dad7d9ce9.png" alt="1"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/2024-07-29-eab40d97f6ec3c24b6f998a624539ba37ed83871a7c7c07c00dddb5dad7d9ce9.png" data-fancybox="gallery" data-caption="1"&gt;
+ &lt;img src="https://images.payloads.online/2024-07-29-eab40d97f6ec3c24b6f998a624539ba37ed83871a7c7c07c00dddb5dad7d9ce9.png" alt="1" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;h2 id="chm的payload"&gt;CHM的Payload&lt;/h2&gt;
 &lt;p&gt;CHM文件可以通过hh.exe进行反编译：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hh.exe -decompile %temp% payload.chm
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="如何构建chm文件"&gt;如何构建CHM文件？&lt;/h3&gt;
 &lt;p&gt;可以使用&lt;code&gt;Microsoft HTML Help Workshop&lt;/code&gt;工具创建CHM文件，FILES指的是目录，OPTIONS指的是文档基本信息：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2024-07-29-46f7eb69f2f9cfa3972058713818f15955e891fb99252bae45c6209f88a87e69.png" alt="2"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/2024-07-29-46f7eb69f2f9cfa3972058713818f15955e891fb99252bae45c6209f88a87e69.png" data-fancybox="gallery" data-caption="2"&gt;
+ &lt;img src="https://images.payloads.online/2024-07-29-46f7eb69f2f9cfa3972058713818f15955e891fb99252bae45c6209f88a87e69.png" alt="2" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-html" data-lang="html"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;lt;&lt;span style="color:#f92672"&gt;html&lt;/span&gt;&amp;gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &amp;lt;&lt;span style="color:#f92672"&gt;head&lt;/span&gt;&amp;gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;lt;&lt;span style="color:#f92672"&gt;OBJECT&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;id&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;Test&amp;#34;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;type&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;application/x-oleobject&amp;#34;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;classid&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;clsid:52a2aaae-085d-4187-97ea-8c30db990436&amp;#34;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;codebase&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;hhctrl.ocx#Version=5,02,3790,1194&amp;#34;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;width&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;1&amp;#34;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;height&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;1&amp;#34;&lt;/span&gt;&amp;gt;

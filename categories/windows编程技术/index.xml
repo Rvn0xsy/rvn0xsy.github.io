@@ -12,9 +12,9 @@
 &lt;h3 id="dllmain的原型"&gt;DllMain的原型&lt;/h3&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL WINAPI &lt;span style="color:#a6e22e"&gt;DllMain&lt;/span&gt;(
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ HINSTANCE hinstDLL, &lt;span style="color:#75715e"&gt;// 指向自身的句柄
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt; _In_ DWORD fdwReason, &lt;span style="color:#75715e"&gt;// 调用原因
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt; _In_ LPVOID lpvReserved &lt;span style="color:#75715e"&gt;// 隐式加载和显式加载
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;);
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ DWORD fdwReason, &lt;span style="color:#75715e"&gt;// 调用原因
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ LPVOID lpvReserved &lt;span style="color:#75715e"&gt;// 隐式加载和显式加载
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;);
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="0x01-dllmain调用原因"&gt;0x01 DllMain调用原因&lt;/h2&gt;
 &lt;p&gt;其中&lt;code&gt;fdwReason&lt;/code&gt;用来表示Dll被调用的状态，一共分为四种：&lt;/p&gt;
 &lt;ul&gt;

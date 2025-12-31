@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>网络工程 on 倾旋的博客</title><link>https://payloads.online/categories/%E7%BD%91%E7%BB%9C%E5%B7%A5%E7%A8%8B/</link><description>Recent content in 网络工程 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Fri, 16 Mar 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/%E7%BD%91%E7%BB%9C%E5%B7%A5%E7%A8%8B/index.xml" rel="self" type="application/rss+xml"/><item><title>华为RIP协议</title><link>https://payloads.online/archivers/2015-11-20/2/</link><pubDate>Fri, 16 Mar 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/2/</guid><description>&lt;p&gt;本文记录一下华为RIP协议的简单配置&lt;/p&gt;</description></item><item><title>思科路由</title><link>https://payloads.online/archivers/2015-11-23/1/</link><pubDate>Mon, 23 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-23/1/</guid><description>&lt;p&gt;本文介绍一下思科设备的简单配置&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/d2ecd43e-4f5e-11ec-b24b-00d861bf4abb.png" alt="enter description here" title="0x01"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/d2ecd43e-4f5e-11ec-b24b-00d861bf4abb.png" data-fancybox="gallery" data-caption="enter description here"&gt;
+ &lt;img src="https://images.payloads.online/d2ecd43e-4f5e-11ec-b24b-00d861bf4abb.png" alt="enter description here" title="0x01" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;h2 id="0x01-思科rip"&gt;0x01 思科RIP&lt;/h2&gt;
 &lt;pre tabindex="0"&gt;&lt;code&gt;
 Router5:
@@ -122,8 +125,14 @@ Router(config-router)#
 [Huawei-mst-region]active region-configuration
 &lt;/code&gt;&lt;/pre&gt;&lt;h2 id="0x07-设置实例的优先级别指定实例根桥"&gt;0x07 设置实例的优先级别、指定实例根桥&lt;/h2&gt;
 &lt;p&gt;首先查看一下LSW3：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/d0ac8340-4f5e-11ec-9dfc-00d861bf4abb.png" alt="enter description here" title="0x13"&gt;&lt;/p&gt;</description></item><item><title>华为交换机MUX-VLAN</title><link>https://payloads.online/archivers/2015-11-20/5/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/5/</guid><description>&lt;p&gt;本文记录一下华为交换机MUX-VLAN配置&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/d1b893a0-4f5e-11ec-b60d-00d861bf4abb.png" alt="enter description here" title="0x11"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/d0ac8340-4f5e-11ec-9dfc-00d861bf4abb.png" data-fancybox="gallery" data-caption="enter description here"&gt;
+ &lt;img src="https://images.payloads.online/d0ac8340-4f5e-11ec-9dfc-00d861bf4abb.png" alt="enter description here" title="0x13" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;</description></item><item><title>华为交换机MUX-VLAN</title><link>https://payloads.online/archivers/2015-11-20/5/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/5/</guid><description>&lt;p&gt;本文记录一下华为交换机MUX-VLAN配置&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/d1b893a0-4f5e-11ec-b60d-00d861bf4abb.png" data-fancybox="gallery" data-caption="enter description here"&gt;
+ &lt;img src="https://images.payloads.online/d1b893a0-4f5e-11ec-b60d-00d861bf4abb.png" alt="enter description here" title="0x11" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;pre tabindex="0"&gt;&lt;code&gt;
 &amp;lt;Huawei&amp;gt;sys
 
@@ -207,7 +216,10 @@ Router(config-router)#
 
 &amp;lt;Huawei&amp;gt;save
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;将把当前的配置保存到存储设备中。&lt;/p&gt;</description></item><item><title>华为交换机Telnet远程登录</title><link>https://payloads.online/archivers/2015-11-20/1/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/1/</guid><description>&lt;p&gt;本文记录一下华为交换机Telnet远程登录的简单配置&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/d05697e6-4f5e-11ec-a083-00d861bf4abb.png" alt="enter description here" title="0x05"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/d05697e6-4f5e-11ec-a083-00d861bf4abb.png" data-fancybox="gallery" data-caption="enter description here"&gt;
+ &lt;img src="https://images.payloads.online/d05697e6-4f5e-11ec-a083-00d861bf4abb.png" alt="enter description here" title="0x05" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;交换机：&lt;/p&gt;
 &lt;pre tabindex="0"&gt;&lt;code&gt;
 
@@ -305,7 +317,10 @@ Connected to 192.168.1.1 …
 [Huawei-Vlanif30]arp-proxy inner-sub-vlan-proxy enable
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;剩下的5~7步省略&lt;/p&gt;</description></item><item><title>华为路由OSPF被动接口配置</title><link>https://payloads.online/archivers/2015-11-20/3/</link><pubDate>Fri, 20 Nov 2015 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2015-11-20/3/</guid><description>&lt;p&gt;本文记录一下华为路由OSPF被动接口配置&lt;/p&gt;
 &lt;p&gt;拓扑图：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/d20c0e40-4f5e-11ec-97c7-00d861bf4abb.png" alt="enter description here" title="0x08"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/d20c0e40-4f5e-11ec-97c7-00d861bf4abb.png" data-fancybox="gallery" data-caption="enter description here"&gt;
+ &lt;img src="https://images.payloads.online/d20c0e40-4f5e-11ec-97c7-00d861bf4abb.png" alt="enter description here" title="0x08" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;AR1配置命令：&lt;/p&gt;
 &lt;pre tabindex="0"&gt;&lt;code&gt;
 

