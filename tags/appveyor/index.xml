@@ -32,7 +32,7 @@
 &lt;/a&gt;
 &lt;/p&gt;
 &lt;p&gt;在Before build script中输入如下命令，会在开始编译之前去下载这个项目所依赖的库：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;nuget restore
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;nuget restore
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;aside&gt;
 💡 "nuget restore" 是NuGet命令行工具中的一个命令。它用于还原（restore）一个项目（project）所依赖的所有NuGet包（NuGet packages）。
 &lt;p&gt;在开发.NET应用程序时，通常会使用NuGet来管理项目所依赖的第三方库和组件。NuGet是.NET生态系统中最受欢迎的包管理器之一，它提供了一个中央存储库，开发人员可以从中获取各种软件包和库。&lt;/p&gt;

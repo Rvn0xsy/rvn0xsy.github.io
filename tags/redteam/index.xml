@@ -25,7 +25,7 @@
 &lt;p&gt;&lt;a href="https://data.iana.org/rdap/ipv4.json"&gt;https://data.iana.org/rdap/ipv4.json&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;这个网址是IANA互联网分配号码权威机构的数据网址，上面显示了全球的IPv4在不同信息中心的分配情况，我在中国解析后的地址是属于ICANN的，可见应该是做了一些网络优化。&lt;/p&gt;
 &lt;p&gt;在响应的Json结构中，我们可以先关注一下APNIC的数据，这部分指的是亚太信息中心管理的IP资源，而中国区域就属于这部分：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-jsx" data-lang="jsx"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;.....
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-jsx" data-lang="jsx"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;.....
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;[
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;1.0.0.0/8&amp;#34;&lt;/span&gt;,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;14.0.0.0/8&amp;#34;&lt;/span&gt;,
@@ -106,7 +106,7 @@
 &lt;li&gt;弱口令扫描：低频、小字典、优先尝试SSH/RDP/MySQL/MSSQL等弱口令（分两类：有数据的服务器、有管理端口的服务器）&lt;/li&gt;
 &lt;li&gt;登录Linux服务器，应当避免Bash History被记录可使用sh来执行命令，或设置环境变量避免Bash记录历史命令。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;python -c &lt;span style="color:#e6db74"&gt;&amp;#39;import pty;pty.spawn(&amp;#34;/bin/sh&amp;#34;)&amp;#39;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;python -c &lt;span style="color:#e6db74"&gt;&amp;#39;import pty;pty.spawn(&amp;#34;/bin/sh&amp;#34;)&amp;#39;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# or&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;unset HISTORY HISTFILE HISTSAVE HISTZONE HISTORY HISTLOG; 
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;export HISTFILE&lt;span style="color:#f92672"&gt;=&lt;/span&gt;/dev/null; 

@@ -2,7 +2,7 @@
 &lt;p&gt;swaks - Swiss Army Knife SMTP, the all-purpose smtp transaction tester.&lt;/p&gt;
 &lt;p&gt;swaks堪称SMTP协议的瑞士军刀，使用它我们可以灵活的操作SMTP协议报文，这篇文章主要是记录一下我是如何伪造一封邮件绕过gmail的检测。&lt;/p&gt;
 &lt;p&gt;通常最简单的发送命令：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;swaks --to user@example.com --server test-server.example.net
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;swaks --to user@example.com --server test-server.example.net
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;但是邮件头中会带上&lt;code&gt;X-Mailer&lt;/code&gt;：&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://images.payloads.online/74cbdcfa-4f5f-11ec-9bc1-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-05-09-14-24-53"&gt;
  &lt;img src="https://images.payloads.online/74cbdcfa-4f5f-11ec-9bc1-00d861bf4abb.png" alt="2019-05-09-14-24-53" /&gt;
@@ -19,15 +19,15 @@
 &lt;/a&gt;
 &lt;/p&gt;
 &lt;h2 id="0x02-swaks发送邮件"&gt;0x02 swaks发送邮件&lt;/h2&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;swaks --to rvn0xsy@gmail.com --from admin@qq.com --ehlo gmail.com --body hello --server mail.smtp2go.com -p &lt;span style="color:#ae81ff"&gt;2525&lt;/span&gt; -au &amp;lt;USER&amp;gt; -ap &amp;lt;PASS&amp;gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;swaks --to rvn0xsy@gmail.com --from admin@qq.com --ehlo gmail.com --body hello --server mail.smtp2go.com -p &lt;span style="color:#ae81ff"&gt;2525&lt;/span&gt; -au &amp;lt;USER&amp;gt; -ap &amp;lt;PASS&amp;gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;但是上面这个邮件无法绕过SPF。&lt;/p&gt;
 &lt;h2 id="0x03-spf验证原理"&gt;0x03 SPF验证原理&lt;/h2&gt;
 &lt;p&gt;如果mail.smtp2go.com是我的邮件服务器，那么gmail服务器收到的源IP也肯定是mail.smtp2go.com的IP。&lt;/p&gt;
 &lt;p&gt;gmail会校验邮件发送者的IP是否存在于smtp.from的域名spf配置列表里。&lt;/p&gt;
 &lt;p&gt;而上面这条命令：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;swaks --to rvn0xsy@gmail.com --from admin@qq.com --ehlo gmail.com --body hello --server mail.smtp2go.com -p &lt;span style="color:#ae81ff"&gt;2525&lt;/span&gt; -au &amp;lt;USER&amp;gt; -ap &amp;lt;PASS&amp;gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;swaks --to rvn0xsy@gmail.com --from admin@qq.com --ehlo gmail.com --body hello --server mail.smtp2go.com -p &lt;span style="color:#ae81ff"&gt;2525&lt;/span&gt; -au &amp;lt;USER&amp;gt; -ap &amp;lt;PASS&amp;gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;smtp.from就是admin@qq.com，和mail.smtp2go.com的IP肯定不同，所以SPF校验失败，而校验失败的邮件，会有很高的几率被扔到垃圾邮件中。&lt;/p&gt;</description></item><item><title>解决Mac OS挂载NTFS格式硬盘无法读写</title><link>https://payloads.online/archivers/2018-10-30/1/</link><pubDate>Tue, 30 Oct 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-10-30/1/</guid><description>&lt;h2 id="查看分区"&gt;查看分区&lt;/h2&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;rvn0xsy@Rvn0xsy ~/&amp;gt; diskutil list
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;rvn0xsy@Rvn0xsy ~/&amp;gt; diskutil list
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/dev/disk0 &lt;span style="color:#f92672"&gt;(&lt;/span&gt;internal&lt;span style="color:#f92672"&gt;)&lt;/span&gt;:
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;#: TYPE NAME SIZE IDENTIFIER&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 0: GUID_partition_scheme 500.3 GB disk0
@@ -52,13 +52,13 @@
 &lt;p&gt;virtualenv 用来建立一个虚拟的python环境，为了解决Python各种库的冲突问题。&lt;/p&gt;
 &lt;h2 id="0x01-virtualenv-安装"&gt;0x01 virtualenv 安装&lt;/h2&gt;
 &lt;h3 id="通用安装方法"&gt;通用安装方法&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;pip install virtualenv
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;pip install virtualenv
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="ubuntukalidebian"&gt;Ubuntu/Kali/Debian&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;apt-get upgrade &lt;span style="color:#f92672"&gt;&amp;amp;&amp;amp;&lt;/span&gt; apt-get update
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;apt-get upgrade &lt;span style="color:#f92672"&gt;&amp;amp;&amp;amp;&lt;/span&gt; apt-get update
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;apt-get install virtualenv
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="0x02-virtualenv-使用"&gt;0x02 virtualenv 使用&lt;/h2&gt;
 &lt;h3 id="帮助信息"&gt;帮助信息&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;~$ virtualenv -h
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;~$ virtualenv -h
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Usage: virtualenv &lt;span style="color:#f92672"&gt;[&lt;/span&gt;OPTIONS&lt;span style="color:#f92672"&gt;]&lt;/span&gt; DEST_DIR
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Options:
@@ -83,10 +83,10 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --distribute 已废弃
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --unzip-setuptools 已废弃
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="查看当前版本"&gt;查看当前版本&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;~$ virtualenv --version
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;~$ virtualenv --version
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;16.0.0
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="配置一个新的环境"&gt;配置一个新的环境&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;~$ which python &lt;span style="color:#75715e"&gt;# 查看Python路径&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;~$ which python &lt;span style="color:#75715e"&gt;# 查看Python路径&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/usr/bin/python
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;~$ virtualenv --no-site-packages -p /usr/bin/python MyNewEnv &lt;span style="color:#75715e"&gt;# 创建环境目录&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Running virtualenv with interpreter /usr/bin/python

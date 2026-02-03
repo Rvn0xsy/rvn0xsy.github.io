@@ -52,7 +52,7 @@ file gets deleted.&lt;/p&gt;</description></item><item><title>BMP位图隐写</t
 &lt;h2 id="0x04-写入内容"&gt;0x04 写入内容&lt;/h2&gt;
 &lt;p&gt;这个过程中，我们可以写入shellcode、PE文件、字符串等。&lt;/p&gt;
 &lt;p&gt;这里我只是写入了一个“Hello world !!!”：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;// ConsoleApplication1.cpp : This file contains the &amp;#39;main&amp;#39; function. Program execution begins and ends there.
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;&lt;span style="color:#75715e"&gt;//
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;

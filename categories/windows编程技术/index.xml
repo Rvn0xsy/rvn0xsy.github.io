@@ -10,7 +10,7 @@
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;如果DLL被多次&lt;code&gt;LoadLibrary&lt;/code&gt;，那么&lt;code&gt;DllMain&lt;/code&gt;只执行一次，引用基数+1。&lt;/strong&gt;&lt;/p&gt;
 &lt;h3 id="dllmain的原型"&gt;DllMain的原型&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL WINAPI &lt;span style="color:#a6e22e"&gt;DllMain&lt;/span&gt;(
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL WINAPI &lt;span style="color:#a6e22e"&gt;DllMain&lt;/span&gt;(
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ HINSTANCE hinstDLL, &lt;span style="color:#75715e"&gt;// 指向自身的句柄
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ DWORD fdwReason, &lt;span style="color:#75715e"&gt;// 调用原因
 &lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt; _In_ LPVOID lpvReserved &lt;span style="color:#75715e"&gt;// 隐式加载和显式加载
@@ -24,7 +24,7 @@
 &lt;li&gt;DLL_THREAD_DETACH 被线程释放&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;在DllMain中通常为了捕获DLL被调用的方式来进行某些动作：&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL APIENTRY &lt;span style="color:#a6e22e"&gt;DllMain&lt;/span&gt;( HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
+&lt;div class="highlight"&gt;&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"&gt;&lt;code class="language-c++" data-lang="c++"&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;BOOL APIENTRY &lt;span style="color:#a6e22e"&gt;DllMain&lt;/span&gt;( HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;{
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;　&lt;span style="color:#66d9ef"&gt;switch&lt;/span&gt; (ul_reason_for_call)
 &lt;/span&gt;&lt;/span&gt;&lt;span style="display:flex;"&gt;&lt;span&gt;　{
