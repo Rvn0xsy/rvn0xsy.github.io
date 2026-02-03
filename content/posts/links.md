@@ -13,6 +13,7 @@ author: Rvn0xsy
 - [Wolvez's blog](http://wolvez.club/)
 - [SYM01's blog](https://sym01.com/)
 - [Evi1cg's blog](https://evi1cg.me/)
+- [EndlessParadox](https://blog.endlessparadox.com/)
 - [澄澈少年的网络小站](https://gotojava.cn/)
 
 > 需要添加请发送邮件至：rvn0xsy@gmail.com
