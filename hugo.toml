@@ -1,5 +1,5 @@
 baseURL = "https://payloads.online/"
-languageCode = "zh-cn"
+locale = "zh-cn"
 title = "倾旋的博客"
 copyright = "倾旋 All rights reserved"
 author = "倾旋"
