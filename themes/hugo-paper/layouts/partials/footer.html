@@ -7,8 +7,13 @@
     <a class="link" href="{{- `` | absURL -}}">{{- site.Title -}}</a>
     {{- end -}}
   </div>
-  <a class="link mx-6" href="https://gohugo.io/" rel="noopener" target="_blank"
-    >powered by hugo️️</a
-  >️
-  
+
+  <nav class="flex items-center">
+    {{- range site.Menus.footer -}}
+    <a class="link footer-link" href="{{- .URL -}}">{{- .Name -}}</a>
+    {{- end -}}
+    <a class="link footer-link" href="https://gohugo.io/" rel="noopener" target="_blank"
+      >powered by hugo️️</a
+    >
+  </nav>
 </footer>

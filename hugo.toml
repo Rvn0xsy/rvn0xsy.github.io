@@ -52,21 +52,21 @@ theme = "hugo-paper"
     name = "关于我"
     url = "/about"
     weight = 5
-  [[menu.main]]
+  [[menu.footer]]
     identifier = "links"
     name = "友情链接"
     url = "/links/"
-    weight = 6
-  [[menu.main]]
+    weight = 1
+  [[menu.footer]]
     identifier = "message"
     name = "留言"
     url = "/message"
-    weight = 7
-  [[menu.main]]
+    weight = 2
+  [[menu.footer]]
     identifier = "sponsor"
     name = "赞助"
     url = "/sponsor"
-    weight = 8
+    weight = 3
 
 [[params.social]]
 name = "Github"

@@ -253,3 +253,174 @@ code {
   color: #f87171;
   border-color: #4b5563;
 }
+
+/* =====================================================================
+   Article layout: wider single-column `main` (no table of contents).
+   Nav / footer keep the theme's original narrow `--w` width — only the
+   content container (`main`) is widened so the reading area is bigger.
+   Pure CSS only — this theme's Tailwind is precompiled, so new utility
+   classes would not be generated. All rules below are plain CSS.
+   ===================================================================== */
+
+/* Unify the whole site to one container width: nav, footer and content all
+   use `max-w-(--w)`, so overriding the `--w` variable widens every one of
+   them to 880px at once. That keeps the title (header), the avatar and the
+   article all left-aligned (no 68px offset between a 880px body and a
+   744px header). */
+:root {
+  --w: 880px;
+}
+
+/* =====================================================================
+   Footer: space out the secondary links so they don't bunch together.
+   `gap-x-6` isn't in this theme's precompiled Tailwind set, so set the
+   gap in plain CSS instead.
+   ===================================================================== */
+footer nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+footer nav .footer-link {
+  white-space: nowrap;
+}
+
+@media (max-width: 479px) {
+  footer nav {
+    gap: 0.75rem;
+  }
+}
+
+/* =====================================================================
+   Theme toggle: a sun/moon ball dangling from a thread at the top-right.
+   Clicking the ball switches light/dark. Pure CSS (plain rules only).
+   ===================================================================== */
+
+.theme-pull {
+  position: fixed;
+  top: 0;
+  right: 18px;
+  z-index: 1200; /* above the nav (z-1000) */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  transform-origin: 50% 0; /* swing around the top attachment point */
+  animation: theme-sway 6s ease-in-out infinite;
+}
+
+/* small knot where the thread meets the page top */
+.theme-pull::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+html.dark .theme-pull::before {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* the cord */
+.theme-thread {
+  width: 2px;
+  height: 42px;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.32));
+}
+
+html.dark .theme-thread {
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.32));
+}
+
+/* the ball */
+.theme-ball {
+  width: 28px;
+  height: 28px;
+  border: none;
+  padding: 0;
+  margin: 2px 0 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #b8860b;
+  background: #fdf8e5;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.theme-ball:hover {
+  transform: scale(1.1);
+}
+
+.theme-ball:active {
+  transform: scale(0.96);
+}
+
+html.dark .theme-ball {
+  color: #ffd97a;
+  background: #2b3a55;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+.theme-ball svg {
+  width: 16px;
+  height: 16px;
+  display: block;
+  pointer-events: none;
+}
+
+/* swap sun / moon icon with the theme */
+.theme-ball .icon-moon {
+  display: none;
+}
+
+html.dark .theme-ball .icon-sun {
+  display: none;
+}
+
+html.dark .theme-ball .icon-moon {
+  display: block;
+}
+
+/* gentle pendulum sway */
+@keyframes theme-sway {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(3deg);
+  }
+  75% {
+    transform: rotate(-3deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-pull {
+    animation: none;
+  }
+}
+
+/* keep clear of the header content on small screens */
+@media (max-width: 767px) {
+  .theme-pull {
+    right: 12px;
+  }
+  .theme-thread {
+    height: 30px;
+  }
+}
