@@ -1,0 +1,112 @@
+<!doctype html><html class="not-ready lg:text-base" style=--bg:#faf8f1 lang=zh-cn dir=ltr><link rel=stylesheet href=/css/fancybox.css><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><title>慢即是快——企者不立，跨者不行 - 倾旋的博客</title><meta name=theme-color><meta name=description content='
+道德经：&ldquo;企者不立，跨者不行&rdquo;，意为不可好高骛远、急功近利。无论是踮起脚硬撑着高度，还是超负荷迈大步急于赶路，都是不符合自然规律的 &ldquo;矫揉造作&rdquo; 状态，费力且无法持久。
+
+最近我也开始思考我应当如何应对AI时代周身这么快速的变化，当下正好有几件正在做的事情，遂进行一次分享。在 AGENT 、Harness 等概念潮流在 2026 年席卷而来时，我也经历了好几个心态阶段，从一开始自己动手做、再到 AGENT 编排，接着又研究 AGENT 记忆工程怎么嵌入到我的生活方方面面，也花了很多精力去各种探索尝试，今天不禁想停下来思考，AI给我带来了什么？我要用 AI 完成什么事情？
+在生活方面，我把 AI 用到帮我记账、分析财务状况、健康状况分析、保险筛选、小病问诊、待办记录、答疑百科等场景，甚至也会通过 AI 去读取日志做一点简单的心理状态评估，可谓是无所不用其极，但距离我理想的状态还是有一些距离——&ldquo;我想拥有一个贾维斯&rdquo;。
+
+贾维斯（J.A.R.V.I.S.）是美国漫威漫画旗下人工智能系统，全称 Just A Rather Very Intelligent System，其名称源自托尼・斯塔克的管家埃德温・贾维斯。
+
+我梦想里的贾维斯可以直接理解我的意图，拆分任务然后递进的解决问题，但这是理想状态，当前我还没有做到这个程度上，目前在 &ldquo;如何让 AGENT 知我懂我"的路上我探索的还不够，我理解 Harness 工程本质上解决的根本问题是怎么帮助人类把事情做对。
+持续经验资产化
+光我手上换过的主力 Coding Agent 都好几个了：Claude Code -> OpenCode -> Codex -> DeepSeek Harness -> Pi -> Oh My Pi，还有一些知名的开源软件：Multica 、Orca、Paseo 等，工具一大堆，确没有把其中一个完完全全的用好。
+怎么算用好呢？我认为应该像是微信，成为日常，每个功能都比较熟悉，打开就能干活（摸鱼）一样自然。里边存储着自己生活或工作的很多信息和现实链接的人，与自己的身份也是紧密绑定的。
+那么如何达到这个效果呢？首先肯定是多用、多探索，然后沉淀好属于自己的 Skills、MCP，做好全局的归纳整理。今年有一句话令我印象深刻，就是 &ldquo;Skill 就是人的经验资产化&rdquo;，俗称把干一件事的经验转化为Skill的过程称之为自我蒸馏。我目前常用的Skill说实话真的不多，用的最多的还是自己改造的 outline Skill，它的功能很简单，就是可以管理我自己私有的笔记服务，其次就是对pdf、xlsx、docx等文档的处理，最后就是grill-me、research等，好像自己写的Skill还是比较少的，更多的是依据开源的进行优化，下面的reflect-mem-memory就是我开源的一个比较轻量、简单易用的记忆 MCP ，长期在用。
+╭─ ~/.agents/skills ‹master●›
+╰─$ ls
+ agent   coding   docs  ego-browser   infra   lark   pi   README.md   thinking
+╭─ ~/.agents/skills ‹master●›
+╰─$ ls docs
+ codex-ppt   docx   human-writing   patent-disclosure-skill   pdf   pptx   text-to-image   to-questionnaire   to-spec   to-tickets   wechat-chat-screenshot   writing-for-agents   xlsx
+╭─ ~/.agents/skills ‹master●›
+╰─$ ls thinking
+ ask-matt   grill-me   grill-with-docs   grilling   handoff   research   setup-matt-pocock-skills   steelman   teach   wait-what   wayfinder
+╭─ ~/.agents/skills ‹master●›
+╰─$ ls coding
+ code-review       diagnosing-bugs  implement                       prototype                  sensitive-rg-scanner  triage                       web-design-guidelines
+ codebase-design  domain-modeling  improve-codebase-architecture  resolving-merge-conflicts  tdd                   vercel-react-native-skills
+╭─ ~/.agents/skills ‹master●›
+╰─$ ls agent
+ computer-use  ego-browser  orca-cli  orchestration  outline  reflect-mem-memory
+保持洁癖
+还有一个观点我也想拿出来讲讲，项目级的配置项目要多用。主流的Coding Agent都支持项目级的配置，不用把每个配置都写到全局，因此我创建了 AI工作空间（临时工作）、工作空间、漏洞挖掘空间等目录，然后在目录下面管理该文件夹所必要的MCP、Skills，尽可能不在全局里写入配置，这么做能够减少侵入，还可以设置bash别名等方式快速进入对应的目录开始干活，例如下面我对二进制分析+手机App漏洞自动挖掘结合的工作目录是这么配置的：'><meta name=author content="倾旋"><link rel="preload stylesheet" as=style href=/main.min.css><link rel=preload as=image href=https://payloads.online/theme.png><link rel=preload as=image href=/avatar.jpeg><script defer src=https://payloads.online/highlight.min.js onload=hljs.initHighlightingOnLoad()></script><link rel=icon href=https://payloads.online/favicon.ico><link rel=apple-touch-icon href=https://payloads.online/apple-touch-icon.png><meta name=generator content="Hugo 0.169.0"><meta itemprop=name content="慢即是快——企者不立，跨者不行"><meta itemprop=description content='道德经："企者不立，跨者不行"，意为不可好高骛远、急功近利。分享我在 AI 时代下对经验资产化、项目级配置与回归基本功的一些思考。'><meta itemprop=datePublished content="2026-11-03T00:00:00+00:00"><meta itemprop=dateModified content="2026-11-03T00:00:00+00:00"><meta itemprop=wordCount content="372"><meta itemprop=keywords content="AI相关,心情随笔"><meta property="og:url" content="https://payloads.online/archivers/2026-11-03/slow-is-fast/"><meta property="og:site_name" content="倾旋的博客"><meta property="og:title" content="慢即是快——企者不立，跨者不行"><meta property="og:description" content='道德经："企者不立，跨者不行"，意为不可好高骛远、急功近利。分享我在 AI 时代下对经验资产化、项目级配置与回归基本功的一些思考。'><meta property="og:locale" content="zh_cn"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2026-11-03T00:00:00+00:00"><meta property="article:modified_time" content="2026-11-03T00:00:00+00:00"><meta property="article:tag" content="AI相关,心情随笔"><meta name=twitter:card content="summary"><meta name=twitter:title content="慢即是快——企者不立，跨者不行"><meta name=twitter:description content='道德经："企者不立，跨者不行"，意为不可好高骛远、急功近利。分享我在 AI 时代下对经验资产化、项目级配置与回归基本功的一些思考。'><link rel=canonical href=https://payloads.online/archivers/2026-11-03/slow-is-fast/></head><body class="bg-(--bg) text-black antialiased duration-200 ease-out [-webkit-tap-highlight-color:transparent] dark:text-white"><header class="mx-auto flex h-[4.5rem] max-w-(--w) px-8 whitespace-nowrap lg:justify-center"><div class="relative z-50 flex items-center ltr:mr-auto rtl:ml-auto"><a class="-translate-y-[1px] text-2xl font-medium" href=https://payloads.online/>倾旋的博客</a></div><div class="btn-menu relative z-50 flex h-[4.5rem] w-[5rem] shrink-0 cursor-pointer flex-col items-center justify-center gap-2.5 lg:hidden ltr:-mr-8 rtl:-ml-8" role=button aria-label=Menu></div><script>const htmlClass=document.documentElement.classList;setTimeout(()=>{htmlClass.remove("not-ready")},10);const btnMenu=document.querySelector(".btn-menu");btnMenu.addEventListener("click",()=>{htmlClass.toggle("open")});const metaTheme=document.querySelector('meta[name="theme-color"]'),lightBg="#faf8f1".replace(/"/g,""),setDark=e=>{metaTheme.setAttribute("content",e?"#000":lightBg),htmlClass[e?"add":"remove"]("dark"),localStorage.setItem("dark",e)},darkScheme=window.matchMedia("(prefers-color-scheme: dark)");if(htmlClass.contains("dark"))setDark(!0);else{const e=localStorage.getItem("dark");setDark(e?e==="true":darkScheme.matches)}darkScheme.addEventListener("change",e=>{setDark(e.matches)}),document.addEventListener("DOMContentLoaded",()=>{const e=document.querySelector(".theme-ball");e.addEventListener("click",()=>{setDark(localStorage.getItem("dark")!=="true")})})</script><div class="nav-wrapper fixed inset-x-0 top-full z-40 flex h-full flex-col justify-center bg-(--bg) pb-16 duration-200 select-none lg:static lg:h-auto lg:flex-row lg:bg-transparent! lg:pb-0 lg:transition-none"><nav class="lg:ml-12 lg:flex lg:flex-row lg:items-center lg:space-x-10 rtl:space-x-reverse"><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/>首页</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/posts/>文章列表</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/tags>标签</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/projects>开源项目</a><a class="block text-center text-xl leading-[5rem] lg:text-base lg:font-normal" href=/about>关于我</a></nav></div><div class=theme-pull aria-hidden=false><span class=theme-thread aria-hidden=true></span>
+<button type=button class=theme-ball role=button aria-label=切换主题 title=切换主题>
+<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.9" y1="4.9" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.1" y2="19.1"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.9" y1="19.1" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.1" y2="4.9"/></svg>
+<svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></button></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">慢即是快——企者不立，跨者不行</h1><div class="text-xs antialiased opacity-60"><time>Nov 3, 2026</time><span class=mx-1>&#183;</span>
+<span>倾旋</span></div></header><section><blockquote><p>道德经：&ldquo;企者不立，跨者不行&rdquo;，意为<strong>不可好高骛远、急功近利。无论是踮起脚硬撑着高度，还是超负荷迈大步急于赶路，都是不符合自然规律的 &ldquo;矫揉造作&rdquo; 状态，费力且无法持久。</strong></p></blockquote><p>最近我也开始思考我应当如何应对AI时代周身这么快速的变化，当下正好有几件正在做的事情，遂进行一次分享。在 AGENT 、Harness 等概念潮流在 2026 年席卷而来时，我也经历了好几个心态阶段，从一开始自己动手做、再到 AGENT 编排，接着又研究 AGENT 记忆工程怎么嵌入到我的生活方方面面，也花了很多精力去各种探索尝试，今天不禁想停下来思考，AI给我带来了什么？我要用 AI 完成什么事情？</p><p>在生活方面，我把 AI 用到帮我记账、分析财务状况、健康状况分析、保险筛选、小病问诊、待办记录、答疑百科等场景，甚至也会通过 AI 去读取日志做一点简单的心理状态评估，可谓是无所不用其极，但距离我理想的状态还是有一些距离——&ldquo;我想拥有一个贾维斯&rdquo;。</p><blockquote><p>贾维斯（J.A.R.V.I.S.）是美国漫威漫画旗下人工智能系统，全称 Just A Rather Very Intelligent System，其名称源自托尼・斯塔克的管家埃德温・贾维斯。</p></blockquote><p>我梦想里的贾维斯可以直接理解我的意图，拆分任务然后递进的解决问题，但这是理想状态，当前我还没有做到这个程度上，目前在 &ldquo;如何让 AGENT 知我懂我"的路上我探索的还不够，我理解 Harness 工程本质上解决的根本问题是怎么帮助人类把事情做对。</p><h2 id=持续经验资产化>持续经验资产化</h2><p>光我手上换过的主力 <code>Coding Agent</code> 都好几个了：<code>Claude Code -> OpenCode -> Codex -> DeepSeek Harness -> Pi -> Oh My Pi</code>，还有一些知名的开源软件：Multica 、Orca、Paseo 等，工具一大堆，确没有把其中一个完完全全的用好。</p><p>怎么算用好呢？我认为应该像是微信，成为日常，每个功能都比较熟悉，打开就能干活（摸鱼）一样自然。里边存储着自己生活或工作的很多信息和现实链接的人，与自己的身份也是紧密绑定的。</p><p>那么如何达到这个效果呢？首先肯定是多用、多探索，然后沉淀好属于自己的 Skills、MCP，做好全局的归纳整理。今年有一句话令我印象深刻，就是 &ldquo;Skill 就是人的经验资产化&rdquo;，俗称把干一件事的经验转化为Skill的过程称之为<strong>自我蒸馏</strong>。我目前常用的Skill说实话真的不多，用的最多的还是自己改造的 outline Skill，它的功能很简单，就是可以管理我自己私有的笔记服务，其次就是对pdf、xlsx、docx等文档的处理，最后就是grill-me、research等，好像自己写的Skill还是比较少的，更多的是依据开源的进行优化，下面的<a href=https://github.com/Rvn0xsy/reflect-mem>reflect-mem-memory</a>就是我开源的一个比较轻量、简单易用的记忆 MCP ，长期在用。</p><pre tabindex=0><code>╭─ ~/.agents/skills ‹master●›
+╰─$ ls
+ agent   coding   docs  ego-browser   infra   lark   pi   README.md   thinking
+╭─ ~/.agents/skills ‹master●›
+╰─$ ls docs
+ codex-ppt   docx   human-writing   patent-disclosure-skill   pdf   pptx   text-to-image   to-questionnaire   to-spec   to-tickets   wechat-chat-screenshot   writing-for-agents   xlsx
+╭─ ~/.agents/skills ‹master●›
+╰─$ ls thinking
+ ask-matt   grill-me   grill-with-docs   grilling   handoff   research   setup-matt-pocock-skills   steelman   teach   wait-what   wayfinder
+╭─ ~/.agents/skills ‹master●›
+╰─$ ls coding
+ code-review       diagnosing-bugs  implement                       prototype                  sensitive-rg-scanner  triage                       web-design-guidelines
+ codebase-design  domain-modeling  improve-codebase-architecture  resolving-merge-conflicts  tdd                   vercel-react-native-skills
+╭─ ~/.agents/skills ‹master●›
+╰─$ ls agent
+ computer-use  ego-browser  orca-cli  orchestration  outline  reflect-mem-memory
+</code></pre><h2 id=保持洁癖>保持洁癖</h2><p>还有一个观点我也想拿出来讲讲，项目级的配置项目要多用。主流的Coding Agent都支持项目级的配置，不用把每个配置都写到全局，因此我创建了 AI工作空间（临时工作）、工作空间、漏洞挖掘空间等目录，然后在目录下面管理该文件夹所必要的MCP、Skills，尽可能不在全局里写入配置，这么做能够减少侵入，还可以设置bash别名等方式快速进入对应的目录开始干活，例如下面我对二进制分析+手机App漏洞自动挖掘结合的工作目录是这么配置的：</p><pre tabindex=0><code>╭─ ~rea
+╰─$ ls -al .omp
+drwxr-xr-x - staff 128 B Thu Oct 29 14:46:47 2026  .
+drwxr-xr-x - staff 448 B Thu Oct 29 14:51:28 2026  ..
+.rw------- - staff 672 B Thu Oct 29 14:47:41 2026  mcp.json
+.rw------- - staff   0 B Thu Oct 29 14:46:11 2026  mcp.json.lock
+╭─ ~rea
+╰─$ cat .omp/mcp.json
+{
+  &#34;$schema&#34;: &#34;https://raw.githubusercontent.com/can1357/oh-my-pi/main/packages/coding-agent/src/config/mcp-schema.json&#34;,
+  &#34;mcpServers&#34;: {
+    &#34;rea&#34;: {
+      &#34;type&#34;: &#34;stdio&#34;,
+      &#34;command&#34;: &#34;npx&#34;,
+      &#34;args&#34;: [
+        &#34;-y&#34;,
+        &#34;rea-agents@6.4.0&#34;,
+        &#34;mcp&#34;
+      ],
+      &#34;env&#34;: {
+        &#34;GHIDRA_INSTALL_DIR&#34;: &#34;/opt/homebrew/opt/ghidra/libexec&#34;,
+        &#34;JAVA_HOME&#34;: &#34;/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home&#34;
+      },
+      &#34;timeout&#34;: 300000,
+      &#34;description&#34;: &#34;REA reverse-engineering tools; Ghidra 12.1.4 headless provider via Homebrew&#34;
+    },
+    &#34;burp&#34;: {
+      &#34;type&#34;: &#34;sse&#34;,
+      &#34;url&#34;: &#34;http://localhost:9876&#34;
+    }
+  }
+}
+╭─ ~rea
+╰─$ pwd
+/Users/-/Documents/workspace-for-ai/Pi/Pi-rea
+╭─ ~rea
+╰─$
+</code></pre><p>记得上上周，<code>DeepSeek v4 Flash</code>和我一起只花了20分钟就把我的OnePlus Ace5 Pro给Root了，还装上了KernelSU，编写了两个模块：植入Burp证书、祛除系统广告，插入USB它就能操作手机进行自动化测试了……</p><h2 id=回归基本功把话说清楚>回归基本功：把话说清楚</h2><p>最近我在用DeepSeek V4 Flash和GLM 5.3 Flash进行代码开发工具，在以往进行古法编程的时候我经常会需要构建测试、然后递进式的才能把需求梳理清楚并实现，缺乏全局思考的过程，这导致我对于长程任务的描述语言很有限，如果Vibe Coding任务的工程量很大，最合适的用法是提前确定/goal的目标是什么，最好是有验收标准的目标，这里就很有趣了。我发现我写不清楚，只能一段段的人机协同，有时候还变得急躁想骂两句AI，我想很多人都这样做过。</p><p>对于一个类似Akkuman、三米前有蕉皮这类资深的架构师肯定没有这种烦恼，而这变成了我亟待解决的问题，于是我开始让自己慢下来，递进式脑补过程，尝试写几段/goal 提示词，发现越写越好：</p><pre tabindex=0><code>&gt; 移植 ~/Documents/Git/ABC 下的 BCD、DEF、RST 到当前项目，创建一个 channels 文件夹，以后这个项目要增加一个通道的概念，未来可能会增加很多channel，每个channel 都是一个MCP服务，提供http/stdio模式连接的MCP，channels文件夹下每一个channel 除了源代码都要有README.md \ docs \ AGENTS.md 方便未来原子化开发，你可以考虑抽象出通用的接口，当我告诉AI Coding Agent : 帮我开发一个channel时，它能快速理解channel是什么，然后开始访谈，最后再写代码、验证
+&gt; 给 makefile增加一个功能，能够构建、打包发布：BCD、DEF、RST 二进制（windows、linux、macos）每个二进制打包文件里还要包含README.md ，方便使用者快速了解channel，以及包含命令示例参考
+&gt; 检查makefile是否和当前项目有出入、缺陷，然后修复，makefile 还要支持 发布镜像、构建中间构建镜像、docker compose启动、停止服务的子命令，还有发布 XXX 二进制文件（一定要包含先进行前端构建、后构建二进制，嵌入二进制），支持macos、windows、linux ，你可以考虑gorelease 这类成熟的发布、构建工具
+&gt; 检查若以docker compose启动，数据目录是否在 git 排除列表，方便我本地开发调试，避免把数据也提交到git仓库中，数据目录最好都放到一个目录下
+</code></pre><p>这是我一口气写出来的，期间我去安心的喝咖啡了，我想这才是最好的状态，但还不够，我又继续写提示词：</p><pre tabindex=0><code>IMPORTANT: 要尽可能使用现成的、成熟开源项目和方案、代码，少造轮子
+IMPORTANT: 不要一个文件写很多很多行代码，要注意代码文件结构清晰
+以上任务你完成后，给我一个进展报告、风险，以及我没有考虑到的地方
+&gt; 对项目根目录下的 *.sh *.bat 脚本文件进行整理，挪到 scripts 目录，过时无用的就删掉
+&gt; 对项目整体文件夹的结构进行分析、优化，目录结构要清晰、有条理
+&gt;  CCC/cmd/cccc/main.go 的参数要支持子命令，可以用golang viper cobra等库进行优化，子命令可以增加：重置管理员密码、服务管理、健康检查、等其他你认为有必要的功能，开发完毕你要进行测试、验证，要有单元测试跑通才可以完成这一项任务
+&gt; docker、二进制、源码构建部署的几种方式，要写到 docs 文档里，后续会随着发版本一起构建
+&gt; channel 概念介绍也要加入 docs 文档中，然后子章节增加每个channel的介绍、使用方法、错误排查，还有channel如何开发
+&gt; 考虑增加https证书部署，你要考虑到VPS主机的IP可能是运营商给的内网IP，但也有公网IP，外部访问的时候，需要指定域名的方式访问，因此还要绑定域名参数
+&gt; 分析现阶段架构前端渲染的速度，对页面加载进行提速，还有后端接口的响应速度优化
+&gt; 前端的菜单里增加一项&#34;文档/手册&#34;的菜单项，指向 /docs 页面
+
+执行通道的逻辑是： 执行通道下面有三个子菜单，每个菜单项目就是执行通道的名称，页面内容里是可以配置执行通道的安装命令和连接执行通道，以及对话，具体可以参考 ~/Documents/Git/KKKK 的前端设计（关于执行通道部分），你先梳理出来一个开发计划
+
+&#34;通道连接默认读 .env（KALI_MCP_URL + MCP_API_TOKEN）&#34;，这个是错误的。通道管理只负责 创建部署通道、连接、检测通道，从环境变量读取这类参数意味着只能连接、部署1个通道，我要的是可以部署多个同类型通道，然后可以给Agent绑定，或下发任务的时候绑定相关通道，让agent有这些能力，.env中只保留必要的KV
+在执行通道的功能处，开发一个安装执行通道的需求，参考：~/Documents/Git/KKKK 里的实现，功能说明：
+支持生成安装命令，执行后自动回连平台，这样可以达到自动注册通道的效果，最后作为资深的产品经理分析一下这个项目的菜单项，你给出一个方案进行优化，哪些可以归类的，给出一个归纳方案，我拍板后你再行动
+</code></pre><p>以及：</p><pre tabindex=0><code>我决定对整个项目的前端进行改造，使用HeroUI，你可以参考它的官网：https://heroui.com/
+这里有Skills ： https://heroui.com/en/docs/react/getting-started/agent-skills 和MCP：https://heroui.com/en/docs/react/getting-started/mcp-server 你可以把这些需要的东西，安装到当前项目级然后定义一个专业的前端工程师提示词，指定给subagent ，由 subagent 生成一个改造计划，主Agent再进行评估、审核（是否有遗漏的）最后生成一个改造计划的方案，和我讨论使用哪种风格，设计理念、全局的样式，保持原有的所有菜单功能、表单、功能，主要是对样式进行重构，必须使用HeroUI，不要造轮子，如果官网有现成的example，拿来即用。
+当前你是在一个worktree里，可以放心改动
+</code></pre><p>我知道 OpenAI、Anthropic 的模型更好，可能不需要这么复杂的提示词，但我们可能真的不能丢掉把想法说出来的能力，<strong>语言让智能从个体属性，部分转变为可以在群体之间共享、积累和发展的能力，同样的，语言也让大规模人类合作成为可能</strong>，所以，要回归基本功，多去真诚的交流！</p></section><footer class="mt-12 flex flex-wrap"><a class="mb-1.5 rounded-lg bg-black/[3%] px-5 py-1 no-underline hover:bg-black/[6%] ltr:mr-1.5 rtl:ml-1.5 dark:bg-white/[8%] dark:hover:bg-white/[12%]" href=https://payloads.online/tags/ai%E7%9B%B8%E5%85%B3%E5%BF%83%E6%83%85%E9%9A%8F%E7%AC%94>AI相关,心情随笔</a></footer><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2026-02-04/browseros-prompt-inject/><span>Prompt Injection in AI System Allows Arbitrary Command Execution</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><script src=/js/fancybox.umd.js></script><script>Fancybox.bind('[data-fancybox="gallery"]',{})</script><script src=/js/pangu.min.js></script><script>document.addEventListener("DOMContentLoaded",()=>{pangu.spacingElementByClassName("prose")})</script><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><nav class="flex items-center"><a class="link footer-link" href=/links/>友情链接</a><a class="link footer-link" href=/message>留言</a><a class="link footer-link" href=/sponsor>赞助</a><a class="link footer-link" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a></nav></footer></body></html>
