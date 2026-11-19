@@ -71,147 +71,147 @@ if __name__ == '__main__':
 <button type=button class=theme-ball role=button aria-label=切换主题 title=切换主题>
 <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.9" y1="4.9" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.1" y2="19.1"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.9" y1="19.1" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.1" y2="4.9"/></svg>
 <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></button></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">使用Coze平台对Github Star项目进行分析推送</h1><div class="text-xs antialiased opacity-60"><time>Jun 4, 2024</time><span class=mx-1>&#183;</span>
-<span>倾旋</span></div></header><section><aside>👾 Coze 是新一代一站式 AI Bot 开发平台。无论你是否有编程基础，都可以在 Coze 平台上快速搭建基于 AI 模型的各类问答 Bot，从解决简单的问答到处理复杂逻辑的对话。并且，你可以将搭建的 Bot 发布到各类社交平台和通讯软件上，与这些平台/软件上的用户互动。<aside>💡 在这篇文章中，我将介绍如何使用Coze平台开发一个Bot来读取Github Star项目，并输出分析结果。</aside></aside><h1 id=实现思路>👾实现思路</h1><p>Coze有个版本，分别面向海外和国内，这里我使用海外版本</p><table><thead><tr><th>域名</th><th>模型</th><th>备注</th></tr></thead><tbody><tr><td>coze.com</td><td>GPT4o\GPT3.5\GPT4\Gemini 1.5 Pro..</td><td>海外魔法</td></tr><tr><td>coze.cn</td><td>字节云雀</td><td>国内</td></tr></tbody></table><p>这里不多介绍Coze平台的基本功能了，请移步官方文档：<a href="https://www.coze.com/docs/guides/welcome?_lang=zh">Coze - Coze 文档中心</a></p><p>整体实现思路如下：</p><ul><li>编写一个能够读取我自己Github Star项目的插件</li><li>编写一个能够向知识星球推送文字的插件</li><li>创建工作流，方便后续其他Bot调用</li><li>创建一个Bot，编写Prompt，导入上述插件进行调试</li><li>设置自定义交互的按钮来修改<code>变量</code>，增加易用性</li></ul><h2 id=编写访问github-api的插件>🔧编写访问Github API的插件</h2><p>为了实现能够将Github的Star项目输入给AI，首先需要编写一个插件，这个插件用于访问Github API接口：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#f92672>import</span> requests
-</span></span><span style=display:flex><span><span style=color:#f92672>import</span> os
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># 获取Github访问令牌</span>
-</span></span><span style=display:flex><span>GITHUB_TOKEN <span style=color:#f92672>=</span> os<span style=color:#f92672>.</span>getenv(<span style=color:#e6db74>&#39;GITHUB_TOKEN&#39;</span>)
-</span></span><span style=display:flex><span>headers <span style=color:#f92672>=</span> {
-</span></span><span style=display:flex><span>    <span style=color:#e6db74>&#39;Authorization&#39;</span>: <span style=color:#e6db74>f</span><span style=color:#e6db74>&#39;token </span><span style=color:#e6db74>{</span>GITHUB_TOKEN<span style=color:#e6db74>}</span><span style=color:#e6db74>&#39;</span>
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>get_starred_repos</span>(username):
-</span></span><span style=display:flex><span>    url <span style=color:#f92672>=</span> <span style=color:#e6db74>f</span><span style=color:#e6db74>&#39;https://api.github.com/users/</span><span style=color:#e6db74>{</span>username<span style=color:#e6db74>}</span><span style=color:#e6db74>/starred&#39;</span>
-</span></span><span style=display:flex><span>    response <span style=color:#f92672>=</span> requests<span style=color:#f92672>.</span>get(url, headers<span style=color:#f92672>=</span>headers)
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> response<span style=color:#f92672>.</span>status_code <span style=color:#f92672>==</span> <span style=color:#ae81ff>200</span>:
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> response<span style=color:#f92672>.</span>json()
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>else</span>:
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> []
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>main</span>():
-</span></span><span style=display:flex><span>    username <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;your-github-username&#39;</span>
-</span></span><span style=display:flex><span>    starred_repos <span style=color:#f92672>=</span> get_starred_repos(username)
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> repo <span style=color:#f92672>in</span> starred_repos:
-</span></span><span style=display:flex><span>        print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;项目名称: </span><span style=color:#e6db74>{</span>repo[<span style=color:#e6db74>&#39;name&#39;</span>]<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
-</span></span><span style=display:flex><span>        print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;项目描述: </span><span style=color:#e6db74>{</span>repo[<span style=color:#e6db74>&#39;description&#39;</span>]<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
-</span></span><span style=display:flex><span>        print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;项目地址: </span><span style=color:#e6db74>{</span>repo[<span style=color:#e6db74>&#39;html_url&#39;</span>]<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
-</span></span><span style=display:flex><span>        print(<span style=color:#e6db74>f</span><span style=color:#e6db74>&#34;Star数量: </span><span style=color:#e6db74>{</span>repo[<span style=color:#e6db74>&#39;stargazers_count&#39;</span>]<span style=color:#e6db74>}</span><span style=color:#e6db74>&#34;</span>)
-</span></span><span style=display:flex><span>        print(<span style=color:#e6db74>&#39;---&#39;</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>if</span> __name__ <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;__main__&#39;</span>:
-</span></span><span style=display:flex><span>    main()
-</span></span></code></pre></div><p>以上是我用Prompt AI生成的示例代码，这个示例代码确实能直接拿来使用，但是还需要按照实际情况调整输入输出参数，在Coze平台中每一个插件都可以通过<code>Metadata</code>设定输入参数以及输入参数的数据类型，同样的也有输出参数以及输出参数的数据类型。</p><p><a href=https://images.payloads.online/2024-07-29-6fdee332ce723882c331e5a5463bd990939887a4657c25a921d24fa4ffce4874.png data-fancybox=gallery data-caption=0><img src=https://images.payloads.online/2024-07-29-6fdee332ce723882c331e5a5463bd990939887a4657c25a921d24fa4ffce4874.png alt=0></a></p><p><a href=https://images.payloads.online/2024-07-29-0f3ce13bcc3fc802a54d4ff7bb2fce362649c257acaeaa6a2894427fff9c9b51.png data-fancybox=gallery data-caption=1><img src=https://images.payloads.online/2024-07-29-0f3ce13bcc3fc802a54d4ff7bb2fce362649c257acaeaa6a2894427fff9c9b51.png alt=1></a></p><p>我在Metadata设定了这个插件输入、输出的数据格式，输入参数分别是：</p><table><thead><tr><th>参数名称</th><th>参数描述</th></tr></thead><tbody><tr><td>token</td><td>用于访问Github API接口的Access Token</td></tr><tr><td>limit</td><td>用于设定要取得多少个Star项目</td></tr></tbody></table><p>输出参数分别是：</p><table><thead><tr><th>参数名称</th><th>参数描述</th></tr></thead><tbody><tr><td>description</td><td>项目描述</td></tr><tr><td>url</td><td>项目链接</td></tr><tr><td>stargazers_count</td><td>项目Star数量</td></tr><tr><td>topics</td><td>项目主题</td></tr></tbody></table><p>但通过<code>requests</code> 访问API接口还是不够优雅，我找到了<code>PyGithub</code>这个库，对Github API封装很好，在插件依赖中直接引入了：</p><p><a href=https://images.payloads.online/2024-07-29-53f04ff44afb5a6b1d643b5bff8f5a73aace3df71f0bdd26e89b17de795bab04.png data-fancybox=gallery data-caption=2><img src=https://images.payloads.online/2024-07-29-53f04ff44afb5a6b1d643b5bff8f5a73aace3df71f0bdd26e89b17de795bab04.png alt=2></a></p><p>最终的插件代码如下：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#f92672>from</span> runtime <span style=color:#f92672>import</span> Args
-</span></span><span style=display:flex><span><span style=color:#f92672>from</span> typings.GetGithubStarredRepos.GetGithubStarredRepos <span style=color:#f92672>import</span> Input, Output
-</span></span><span style=display:flex><span><span style=color:#e6db74>&#34;&#34;&#34;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>Each file needs to export a function named `handler`. This function is the entrance to the Tool.
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>Parameters:
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>args: parameters of the entry function.
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>args.input - input parameters, you can get test input value by args.input.xxx.
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>args.logger - logger instance used to print logs, injected by runtime.
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>Remember to fill in input/output in Metadata, it helps LLM to recognize and use tool.
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>Return:
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>The return data of the function, which should match the declared output parameters.
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&#34;&#34;&#34;</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>from</span> github <span style=color:#f92672>import</span> Github
-</span></span><span style=display:flex><span><span style=color:#75715e># https://pygithub.readthedocs.io/en/stable/introduction.html</span>
-</span></span><span style=display:flex><span><span style=color:#75715e># Authentication is defined via github.Auth</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>from</span> github <span style=color:#f92672>import</span> Auth
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>handler</span>(args: Args[Input])<span style=color:#f92672>-&gt;</span>Output:
-</span></span><span style=display:flex><span>    print(args<span style=color:#f92672>.</span>input<span style=color:#f92672>.</span>username)
-</span></span><span style=display:flex><span>    limit <span style=color:#f92672>=</span> args<span style=color:#f92672>.</span>input<span style=color:#f92672>.</span>limit
-</span></span><span style=display:flex><span>    token <span style=color:#f92672>=</span> args<span style=color:#f92672>.</span>input<span style=color:#f92672>.</span>token
-</span></span><span style=display:flex><span>    count <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e># using an access token</span>
-</span></span><span style=display:flex><span>    auth <span style=color:#f92672>=</span> Auth<span style=color:#f92672>.</span>Token(token)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e># First create a Github instance:</span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e># Public Web Github</span>
-</span></span><span style=display:flex><span>    g <span style=color:#f92672>=</span> Github(auth<span style=color:#f92672>=</span>auth)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    repos  <span style=color:#f92672>=</span> list()
-</span></span><span style=display:flex><span>    <span style=color:#75715e># repo_info = {&#39;url&#39;:&#39;&#39;, &#39;description&#39;: &#39;&#39;, &#39;stargazers_count&#39;: 0, &#39;topics&#39;: &#39;&#39;}</span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e># https://docs.github.com/zh/rest/activity/starring?apiVersion=2022-11-28#list-repositories-starred-by-the-authenticated-user--parameters</span>
-</span></span><span style=display:flex><span>    starred_repos <span style=color:#f92672>=</span> g<span style=color:#f92672>.</span>get_user()<span style=color:#f92672>.</span>get_starred()
-</span></span><span style=display:flex><span>    <span style=color:#75715e># Then play with your Github objects:</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> starred_repos <span style=color:#f92672>in</span> g<span style=color:#f92672>.</span>get_user()<span style=color:#f92672>.</span>get_starred():
-</span></span><span style=display:flex><span>        print(<span style=color:#e6db74>&#34;Got &gt; &#34;</span> <span style=color:#f92672>+</span> str(count))
-</span></span><span style=display:flex><span>        <span style=color:#75715e># repo_info[&#39;description&#39;] = starred_repos.description</span>
-</span></span><span style=display:flex><span>        <span style=color:#75715e># repo_info[&#39;url&#39;] = starred_repos.owner.url</span>
-</span></span><span style=display:flex><span>        <span style=color:#75715e># repo_info[&#39;stargazers_count&#39;] = starred_repos.stargazers_count</span>
-</span></span><span style=display:flex><span>        <span style=color:#75715e># repo_info[&#39;topics&#39;] = &#34;,&#34;.join(starred_repos.topics)</span>
-</span></span><span style=display:flex><span>        repo_info <span style=color:#f92672>=</span> {
-</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;url&#39;</span>: starred_repos<span style=color:#f92672>.</span>owner<span style=color:#f92672>.</span>html_url,
-</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;description&#39;</span>: starred_repos<span style=color:#f92672>.</span>description,
-</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;stargazers_count&#39;</span>: starred_repos<span style=color:#f92672>.</span>stargazers_count,
-</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;topics&#39;</span>: <span style=color:#e6db74>&#34;,&#34;</span><span style=color:#f92672>.</span>join(starred_repos<span style=color:#f92672>.</span>topics)
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>        repos<span style=color:#f92672>.</span>append(repo_info)
-</span></span><span style=display:flex><span>        args<span style=color:#f92672>.</span>logger<span style=color:#f92672>.</span>info(repo_info)
-</span></span><span style=display:flex><span>        <span style=color:#75715e># 如果不限制，则读取全部</span>
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> limit <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span>:
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>continue</span>
-</span></span><span style=display:flex><span>        count <span style=color:#f92672>=</span> count <span style=color:#f92672>+</span> <span style=color:#ae81ff>1</span>
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> limit <span style=color:#f92672>==</span> count:
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>break</span>
-</span></span><span style=display:flex><span>        <span style=color:#75715e># To close connections after use</span>
-</span></span><span style=display:flex><span>    g<span style=color:#f92672>.</span>close()
-</span></span><span style=display:flex><span>    args<span style=color:#f92672>.</span>logger<span style=color:#f92672>.</span>info(repos)
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> {<span style=color:#e6db74>&#34;repos&#34;</span>: repos}
-</span></span></code></pre></div><p>在Coze平台上可以直接对插件进行测试，在<code>Output Value</code>日志栏目中可以看到返回的数据结构：</p><p><a href=https://images.payloads.online/2024-07-29-7213688f5345b471cc944e24dafec68c0412a2b7d15f9652de2c27ccad4ea010.png data-fancybox=gallery data-caption=3><img src=https://images.payloads.online/2024-07-29-7213688f5345b471cc944e24dafec68c0412a2b7d15f9652de2c27ccad4ea010.png alt=3></a></p><p>至此一个获取Github Star项目的插件就做好了。</p><h2 id=编写发送知识星球帖子的插件>📔编写发送知识星球帖子的插件</h2><p>由于知识星球没有提供API接口，因此我使用浏览器开发者工具查看了一下请求规律，编写了如下代码：</p><table><thead><tr><th>参数</th><th>参数说明</th></tr></thead><tbody><tr><td>cookie</td><td>知识星球Cookie</td></tr><tr><td>group_id</td><td>知识星球的ID</td></tr><tr><td>content</td><td>帖子内容</td></tr></tbody></table><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#f92672>from</span> runtime <span style=color:#f92672>import</span> Args
-</span></span><span style=display:flex><span><span style=color:#f92672>from</span> typings.send_topic.send_topic <span style=color:#f92672>import</span> Input, Output
-</span></span><span style=display:flex><span><span style=color:#f92672>import</span> requests
-</span></span><span style=display:flex><span><span style=color:#f92672>import</span> json
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>post_topics</span>(cookie, group_id, content):
-</span></span><span style=display:flex><span>    url <span style=color:#f92672>=</span> <span style=color:#e6db74>f</span><span style=color:#e6db74>&#39;https://api.zsxq.com/v2/groups/</span><span style=color:#e6db74>{</span>group_id<span style=color:#e6db74>}</span><span style=color:#e6db74>/topics&#39;</span>
-</span></span><span style=display:flex><span>    headers <span style=color:#f92672>=</span> {
-</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;Accept&#39;</span>: <span style=color:#e6db74>&#39;application/json, text/plain, */*&#39;</span>,
-</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;Accept-Language&#39;</span>: <span style=color:#e6db74>&#39;zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6&#39;</span>,
-</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;Content-Type&#39;</span>: <span style=color:#e6db74>&#39;application/json&#39;</span>,
-</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;Cookie&#39;</span>: cookie,
-</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;Dnt&#39;</span>: <span style=color:#e6db74>&#39;1&#39;</span>,
-</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;Origin&#39;</span>: <span style=color:#e6db74>&#39;https://wx.zsxq.com&#39;</span>,
-</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;Priority&#39;</span>: <span style=color:#e6db74>&#39;u=1, i&#39;</span>,
-</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;Referer&#39;</span>: <span style=color:#e6db74>&#39;https://wx.zsxq.com/&#39;</span>,
-</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;User-Agent&#39;</span>: <span style=color:#e6db74>&#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.0.0&#39;</span>,
-</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;X-Version&#39;</span>: <span style=color:#e6db74>&#39;2.57.0&#39;</span>
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    data <span style=color:#f92672>=</span> {
-</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#39;req_data&#39;</span>: {
-</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;type&#39;</span>: <span style=color:#e6db74>&#39;topic&#39;</span>,
-</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;text&#39;</span>: content,
-</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;image_ids&#39;</span>: [],
-</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;file_ids&#39;</span>: [],
-</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#39;mentioned_user_ids&#39;</span>: []
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>    response <span style=color:#f92672>=</span> requests<span style=color:#f92672>.</span>post(url, headers<span style=color:#f92672>=</span>headers, json<span style=color:#f92672>=</span>data)
-</span></span><span style=display:flex><span>    response_json <span style=color:#f92672>=</span> response<span style=color:#f92672>.</span>json()
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> response_json
-</span></span><span style=display:flex><span><span style=color:#e6db74>&#34;&#34;&#34;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>Each file needs to export a function named `handler`. This function is the entrance to the Tool.
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>Parameters:
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>args: parameters of the entry function.
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>args.input - input parameters, you can get test input value by args.input.xxx.
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>args.logger - logger instance used to print logs, injected by runtime.
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>Remember to fill in input/output in Metadata, it helps LLM to recognize and use tool.
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>Return:
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>The return data of the function, which should match the declared output parameters.
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>&#34;&#34;&#34;</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>handler</span>(args: Args[Input])<span style=color:#f92672>-&gt;</span>Output:
-</span></span><span style=display:flex><span>    cookie <span style=color:#f92672>=</span> args<span style=color:#f92672>.</span>input<span style=color:#f92672>.</span>cookie
-</span></span><span style=display:flex><span>    group_id <span style=color:#f92672>=</span> args<span style=color:#f92672>.</span>input<span style=color:#f92672>.</span>group_id
-</span></span><span style=display:flex><span>    content <span style=color:#f92672>=</span> args<span style=color:#f92672>.</span>input<span style=color:#f92672>.</span>content
-</span></span><span style=display:flex><span>    result <span style=color:#f92672>=</span> post_topics(cookie, group_id, content)
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> {<span style=color:#e6db74>&#39;succeeded&#39;</span>: result[<span style=color:#e6db74>&#39;succeeded&#39;</span>]}
+<span>倾旋</span></div></header><section><aside>👾 Coze 是新一代一站式 AI Bot 开发平台。无论你是否有编程基础，都可以在 Coze 平台上快速搭建基于 AI 模型的各类问答 Bot，从解决简单的问答到处理复杂逻辑的对话。并且，你可以将搭建的 Bot 发布到各类社交平台和通讯软件上，与这些平台/软件上的用户互动。<aside>💡 在这篇文章中，我将介绍如何使用Coze平台开发一个Bot来读取Github Star项目，并输出分析结果。</aside></aside><h1 id=实现思路>👾实现思路</h1><p>Coze有个版本，分别面向海外和国内，这里我使用海外版本</p><table><thead><tr><th>域名</th><th>模型</th><th>备注</th></tr></thead><tbody><tr><td>coze.com</td><td>GPT4o\GPT3.5\GPT4\Gemini 1.5 Pro..</td><td>海外魔法</td></tr><tr><td>coze.cn</td><td>字节云雀</td><td>国内</td></tr></tbody></table><p>这里不多介绍Coze平台的基本功能了，请移步官方文档：<a href="https://www.coze.com/docs/guides/welcome?_lang=zh">Coze - Coze 文档中心</a></p><p>整体实现思路如下：</p><ul><li>编写一个能够读取我自己Github Star项目的插件</li><li>编写一个能够向知识星球推送文字的插件</li><li>创建工作流，方便后续其他Bot调用</li><li>创建一个Bot，编写Prompt，导入上述插件进行调试</li><li>设置自定义交互的按钮来修改<code>变量</code>，增加易用性</li></ul><h2 id=编写访问github-api的插件>🔧编写访问Github API的插件</h2><p>为了实现能够将Github的Star项目输入给AI，首先需要编写一个插件，这个插件用于访问Github API接口：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>requests</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>os</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 获取Github访问令牌</span>
+</span></span><span class=line><span class=cl><span class=n>GITHUB_TOKEN</span> <span class=o>=</span> <span class=n>os</span><span class=o>.</span><span class=n>getenv</span><span class=p>(</span><span class=s1>&#39;GITHUB_TOKEN&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>headers</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=s1>&#39;Authorization&#39;</span><span class=p>:</span> <span class=sa>f</span><span class=s1>&#39;token </span><span class=si>{</span><span class=n>GITHUB_TOKEN</span><span class=si>}</span><span class=s1>&#39;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>get_starred_repos</span><span class=p>(</span><span class=n>username</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>url</span> <span class=o>=</span> <span class=sa>f</span><span class=s1>&#39;https://api.github.com/users/</span><span class=si>{</span><span class=n>username</span><span class=si>}</span><span class=s1>/starred&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=n>response</span> <span class=o>=</span> <span class=n>requests</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>url</span><span class=p>,</span> <span class=n>headers</span><span class=o>=</span><span class=n>headers</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>response</span><span class=o>.</span><span class=n>status_code</span> <span class=o>==</span> <span class=mi>200</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>response</span><span class=o>.</span><span class=n>json</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=k>else</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=p>[]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>main</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=n>username</span> <span class=o>=</span> <span class=s1>&#39;your-github-username&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=n>starred_repos</span> <span class=o>=</span> <span class=n>get_starred_repos</span><span class=p>(</span><span class=n>username</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>repo</span> <span class=ow>in</span> <span class=n>starred_repos</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;项目名称: </span><span class=si>{</span><span class=n>repo</span><span class=p>[</span><span class=s1>&#39;name&#39;</span><span class=p>]</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;项目描述: </span><span class=si>{</span><span class=n>repo</span><span class=p>[</span><span class=s1>&#39;description&#39;</span><span class=p>]</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;项目地址: </span><span class=si>{</span><span class=n>repo</span><span class=p>[</span><span class=s1>&#39;html_url&#39;</span><span class=p>]</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;Star数量: </span><span class=si>{</span><span class=n>repo</span><span class=p>[</span><span class=s1>&#39;stargazers_count&#39;</span><span class=p>]</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=s1>&#39;---&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s1>&#39;__main__&#39;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>main</span><span class=p>()</span>
+</span></span></code></pre></div><p>以上是我用Prompt AI生成的示例代码，这个示例代码确实能直接拿来使用，但是还需要按照实际情况调整输入输出参数，在Coze平台中每一个插件都可以通过<code>Metadata</code>设定输入参数以及输入参数的数据类型，同样的也有输出参数以及输出参数的数据类型。</p><p><a href=https://images.payloads.online/2024-07-29-6fdee332ce723882c331e5a5463bd990939887a4657c25a921d24fa4ffce4874.png data-fancybox=gallery data-caption=0><img src=https://images.payloads.online/2024-07-29-6fdee332ce723882c331e5a5463bd990939887a4657c25a921d24fa4ffce4874.png alt=0></a></p><p><a href=https://images.payloads.online/2024-07-29-0f3ce13bcc3fc802a54d4ff7bb2fce362649c257acaeaa6a2894427fff9c9b51.png data-fancybox=gallery data-caption=1><img src=https://images.payloads.online/2024-07-29-0f3ce13bcc3fc802a54d4ff7bb2fce362649c257acaeaa6a2894427fff9c9b51.png alt=1></a></p><p>我在Metadata设定了这个插件输入、输出的数据格式，输入参数分别是：</p><table><thead><tr><th>参数名称</th><th>参数描述</th></tr></thead><tbody><tr><td>token</td><td>用于访问Github API接口的Access Token</td></tr><tr><td>limit</td><td>用于设定要取得多少个Star项目</td></tr></tbody></table><p>输出参数分别是：</p><table><thead><tr><th>参数名称</th><th>参数描述</th></tr></thead><tbody><tr><td>description</td><td>项目描述</td></tr><tr><td>url</td><td>项目链接</td></tr><tr><td>stargazers_count</td><td>项目Star数量</td></tr><tr><td>topics</td><td>项目主题</td></tr></tbody></table><p>但通过<code>requests</code> 访问API接口还是不够优雅，我找到了<code>PyGithub</code>这个库，对Github API封装很好，在插件依赖中直接引入了：</p><p><a href=https://images.payloads.online/2024-07-29-53f04ff44afb5a6b1d643b5bff8f5a73aace3df71f0bdd26e89b17de795bab04.png data-fancybox=gallery data-caption=2><img src=https://images.payloads.online/2024-07-29-53f04ff44afb5a6b1d643b5bff8f5a73aace3df71f0bdd26e89b17de795bab04.png alt=2></a></p><p>最终的插件代码如下：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>runtime</span> <span class=kn>import</span> <span class=n>Args</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>typings.GetGithubStarredRepos.GetGithubStarredRepos</span> <span class=kn>import</span> <span class=n>Input</span><span class=p>,</span> <span class=n>Output</span>
+</span></span><span class=line><span class=cl><span class=s2>&#34;&#34;&#34;
+</span></span></span><span class=line><span class=cl><span class=s2>Each file needs to export a function named `handler`. This function is the entrance to the Tool.
+</span></span></span><span class=line><span class=cl><span class=s2>
+</span></span></span><span class=line><span class=cl><span class=s2>Parameters:
+</span></span></span><span class=line><span class=cl><span class=s2>args: parameters of the entry function.
+</span></span></span><span class=line><span class=cl><span class=s2>args.input - input parameters, you can get test input value by args.input.xxx.
+</span></span></span><span class=line><span class=cl><span class=s2>args.logger - logger instance used to print logs, injected by runtime.
+</span></span></span><span class=line><span class=cl><span class=s2>
+</span></span></span><span class=line><span class=cl><span class=s2>Remember to fill in input/output in Metadata, it helps LLM to recognize and use tool.
+</span></span></span><span class=line><span class=cl><span class=s2>
+</span></span></span><span class=line><span class=cl><span class=s2>Return:
+</span></span></span><span class=line><span class=cl><span class=s2>The return data of the function, which should match the declared output parameters.
+</span></span></span><span class=line><span class=cl><span class=s2>&#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>github</span> <span class=kn>import</span> <span class=n>Github</span>
+</span></span><span class=line><span class=cl><span class=c1># https://pygithub.readthedocs.io/en/stable/introduction.html</span>
+</span></span><span class=line><span class=cl><span class=c1># Authentication is defined via github.Auth</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>github</span> <span class=kn>import</span> <span class=n>Auth</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>handler</span><span class=p>(</span><span class=n>args</span><span class=p>:</span> <span class=n>Args</span><span class=p>[</span><span class=n>Input</span><span class=p>])</span><span class=o>-&gt;</span><span class=n>Output</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=n>args</span><span class=o>.</span><span class=n>input</span><span class=o>.</span><span class=n>username</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>limit</span> <span class=o>=</span> <span class=n>args</span><span class=o>.</span><span class=n>input</span><span class=o>.</span><span class=n>limit</span>
+</span></span><span class=line><span class=cl>    <span class=n>token</span> <span class=o>=</span> <span class=n>args</span><span class=o>.</span><span class=n>input</span><span class=o>.</span><span class=n>token</span>
+</span></span><span class=line><span class=cl>    <span class=n>count</span> <span class=o>=</span> <span class=mi>0</span>
+</span></span><span class=line><span class=cl>    <span class=c1># using an access token</span>
+</span></span><span class=line><span class=cl>    <span class=n>auth</span> <span class=o>=</span> <span class=n>Auth</span><span class=o>.</span><span class=n>Token</span><span class=p>(</span><span class=n>token</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1># First create a Github instance:</span>
+</span></span><span class=line><span class=cl>    <span class=c1># Public Web Github</span>
+</span></span><span class=line><span class=cl>    <span class=n>g</span> <span class=o>=</span> <span class=n>Github</span><span class=p>(</span><span class=n>auth</span><span class=o>=</span><span class=n>auth</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>repos</span>  <span class=o>=</span> <span class=nb>list</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=c1># repo_info = {&#39;url&#39;:&#39;&#39;, &#39;description&#39;: &#39;&#39;, &#39;stargazers_count&#39;: 0, &#39;topics&#39;: &#39;&#39;}</span>
+</span></span><span class=line><span class=cl>    <span class=c1># https://docs.github.com/zh/rest/activity/starring?apiVersion=2022-11-28#list-repositories-starred-by-the-authenticated-user--parameters</span>
+</span></span><span class=line><span class=cl>    <span class=n>starred_repos</span> <span class=o>=</span> <span class=n>g</span><span class=o>.</span><span class=n>get_user</span><span class=p>()</span><span class=o>.</span><span class=n>get_starred</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=c1># Then play with your Github objects:</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>starred_repos</span> <span class=ow>in</span> <span class=n>g</span><span class=o>.</span><span class=n>get_user</span><span class=p>()</span><span class=o>.</span><span class=n>get_starred</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;Got &gt; &#34;</span> <span class=o>+</span> <span class=nb>str</span><span class=p>(</span><span class=n>count</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>        <span class=c1># repo_info[&#39;description&#39;] = starred_repos.description</span>
+</span></span><span class=line><span class=cl>        <span class=c1># repo_info[&#39;url&#39;] = starred_repos.owner.url</span>
+</span></span><span class=line><span class=cl>        <span class=c1># repo_info[&#39;stargazers_count&#39;] = starred_repos.stargazers_count</span>
+</span></span><span class=line><span class=cl>        <span class=c1># repo_info[&#39;topics&#39;] = &#34;,&#34;.join(starred_repos.topics)</span>
+</span></span><span class=line><span class=cl>        <span class=n>repo_info</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=s1>&#39;url&#39;</span><span class=p>:</span> <span class=n>starred_repos</span><span class=o>.</span><span class=n>owner</span><span class=o>.</span><span class=n>html_url</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=s1>&#39;description&#39;</span><span class=p>:</span> <span class=n>starred_repos</span><span class=o>.</span><span class=n>description</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=s1>&#39;stargazers_count&#39;</span><span class=p>:</span> <span class=n>starred_repos</span><span class=o>.</span><span class=n>stargazers_count</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=s1>&#39;topics&#39;</span><span class=p>:</span> <span class=s2>&#34;,&#34;</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>starred_repos</span><span class=o>.</span><span class=n>topics</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=n>repos</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>repo_info</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>args</span><span class=o>.</span><span class=n>logger</span><span class=o>.</span><span class=n>info</span><span class=p>(</span><span class=n>repo_info</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=c1># 如果不限制，则读取全部</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>limit</span> <span class=o>==</span> <span class=mi>0</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>continue</span>
+</span></span><span class=line><span class=cl>        <span class=n>count</span> <span class=o>=</span> <span class=n>count</span> <span class=o>+</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>limit</span> <span class=o>==</span> <span class=n>count</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>break</span>
+</span></span><span class=line><span class=cl>        <span class=c1># To close connections after use</span>
+</span></span><span class=line><span class=cl>    <span class=n>g</span><span class=o>.</span><span class=n>close</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=n>args</span><span class=o>.</span><span class=n>logger</span><span class=o>.</span><span class=n>info</span><span class=p>(</span><span class=n>repos</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=p>{</span><span class=s2>&#34;repos&#34;</span><span class=p>:</span> <span class=n>repos</span><span class=p>}</span>
+</span></span></code></pre></div><p>在Coze平台上可以直接对插件进行测试，在<code>Output Value</code>日志栏目中可以看到返回的数据结构：</p><p><a href=https://images.payloads.online/2024-07-29-7213688f5345b471cc944e24dafec68c0412a2b7d15f9652de2c27ccad4ea010.png data-fancybox=gallery data-caption=3><img src=https://images.payloads.online/2024-07-29-7213688f5345b471cc944e24dafec68c0412a2b7d15f9652de2c27ccad4ea010.png alt=3></a></p><p>至此一个获取Github Star项目的插件就做好了。</p><h2 id=编写发送知识星球帖子的插件>📔编写发送知识星球帖子的插件</h2><p>由于知识星球没有提供API接口，因此我使用浏览器开发者工具查看了一下请求规律，编写了如下代码：</p><table><thead><tr><th>参数</th><th>参数说明</th></tr></thead><tbody><tr><td>cookie</td><td>知识星球Cookie</td></tr><tr><td>group_id</td><td>知识星球的ID</td></tr><tr><td>content</td><td>帖子内容</td></tr></tbody></table><div class=highlight><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>runtime</span> <span class=kn>import</span> <span class=n>Args</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>typings.send_topic.send_topic</span> <span class=kn>import</span> <span class=n>Input</span><span class=p>,</span> <span class=n>Output</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>requests</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>json</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>post_topics</span><span class=p>(</span><span class=n>cookie</span><span class=p>,</span> <span class=n>group_id</span><span class=p>,</span> <span class=n>content</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>url</span> <span class=o>=</span> <span class=sa>f</span><span class=s1>&#39;https://api.zsxq.com/v2/groups/</span><span class=si>{</span><span class=n>group_id</span><span class=si>}</span><span class=s1>/topics&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=n>headers</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;Accept&#39;</span><span class=p>:</span> <span class=s1>&#39;application/json, text/plain, */*&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;Accept-Language&#39;</span><span class=p>:</span> <span class=s1>&#39;zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;Content-Type&#39;</span><span class=p>:</span> <span class=s1>&#39;application/json&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;Cookie&#39;</span><span class=p>:</span> <span class=n>cookie</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;Dnt&#39;</span><span class=p>:</span> <span class=s1>&#39;1&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;Origin&#39;</span><span class=p>:</span> <span class=s1>&#39;https://wx.zsxq.com&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;Priority&#39;</span><span class=p>:</span> <span class=s1>&#39;u=1, i&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;Referer&#39;</span><span class=p>:</span> <span class=s1>&#39;https://wx.zsxq.com/&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;User-Agent&#39;</span><span class=p>:</span> <span class=s1>&#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.0.0&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;X-Version&#39;</span><span class=p>:</span> <span class=s1>&#39;2.57.0&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=n>data</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;req_data&#39;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=s1>&#39;type&#39;</span><span class=p>:</span> <span class=s1>&#39;topic&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=s1>&#39;text&#39;</span><span class=p>:</span> <span class=n>content</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=s1>&#39;image_ids&#39;</span><span class=p>:</span> <span class=p>[],</span>
+</span></span><span class=line><span class=cl>            <span class=s1>&#39;file_ids&#39;</span><span class=p>:</span> <span class=p>[],</span>
+</span></span><span class=line><span class=cl>            <span class=s1>&#39;mentioned_user_ids&#39;</span><span class=p>:</span> <span class=p>[]</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>response</span> <span class=o>=</span> <span class=n>requests</span><span class=o>.</span><span class=n>post</span><span class=p>(</span><span class=n>url</span><span class=p>,</span> <span class=n>headers</span><span class=o>=</span><span class=n>headers</span><span class=p>,</span> <span class=n>json</span><span class=o>=</span><span class=n>data</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>response_json</span> <span class=o>=</span> <span class=n>response</span><span class=o>.</span><span class=n>json</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>response_json</span>
+</span></span><span class=line><span class=cl><span class=s2>&#34;&#34;&#34;
+</span></span></span><span class=line><span class=cl><span class=s2>Each file needs to export a function named `handler`. This function is the entrance to the Tool.
+</span></span></span><span class=line><span class=cl><span class=s2>
+</span></span></span><span class=line><span class=cl><span class=s2>Parameters:
+</span></span></span><span class=line><span class=cl><span class=s2>args: parameters of the entry function.
+</span></span></span><span class=line><span class=cl><span class=s2>args.input - input parameters, you can get test input value by args.input.xxx.
+</span></span></span><span class=line><span class=cl><span class=s2>args.logger - logger instance used to print logs, injected by runtime.
+</span></span></span><span class=line><span class=cl><span class=s2>
+</span></span></span><span class=line><span class=cl><span class=s2>Remember to fill in input/output in Metadata, it helps LLM to recognize and use tool.
+</span></span></span><span class=line><span class=cl><span class=s2>
+</span></span></span><span class=line><span class=cl><span class=s2>Return:
+</span></span></span><span class=line><span class=cl><span class=s2>The return data of the function, which should match the declared output parameters.
+</span></span></span><span class=line><span class=cl><span class=s2>&#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>handler</span><span class=p>(</span><span class=n>args</span><span class=p>:</span> <span class=n>Args</span><span class=p>[</span><span class=n>Input</span><span class=p>])</span><span class=o>-&gt;</span><span class=n>Output</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>cookie</span> <span class=o>=</span> <span class=n>args</span><span class=o>.</span><span class=n>input</span><span class=o>.</span><span class=n>cookie</span>
+</span></span><span class=line><span class=cl>    <span class=n>group_id</span> <span class=o>=</span> <span class=n>args</span><span class=o>.</span><span class=n>input</span><span class=o>.</span><span class=n>group_id</span>
+</span></span><span class=line><span class=cl>    <span class=n>content</span> <span class=o>=</span> <span class=n>args</span><span class=o>.</span><span class=n>input</span><span class=o>.</span><span class=n>content</span>
+</span></span><span class=line><span class=cl>    <span class=n>result</span> <span class=o>=</span> <span class=n>post_topics</span><span class=p>(</span><span class=n>cookie</span><span class=p>,</span> <span class=n>group_id</span><span class=p>,</span> <span class=n>content</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=p>{</span><span class=s1>&#39;succeeded&#39;</span><span class=p>:</span> <span class=n>result</span><span class=p>[</span><span class=s1>&#39;succeeded&#39;</span><span class=p>]}</span>
 </span></span></code></pre></div><p>这个插件返回的比较简单，如果成功就返回True，失败就返回False。</p><p><a href=https://images.payloads.online/2024-07-29-1f40680babed6668b4e85f86bc3e2940ff58cc8143f5c38d145379da82f0c69a.png data-fancybox=gallery data-caption=4><img src=https://images.payloads.online/2024-07-29-1f40680babed6668b4e85f86bc3e2940ff58cc8143f5c38d145379da82f0c69a.png alt=4></a></p><h2 id=创建工作流>🔄创建工作流</h2><p>工作流支持通过可视化的方式，对插件、大语言模型、代码块等功能进行组合，从而实现复杂、稳定的业务流程编排，例如旅行规划、报告分析等。当目标任务场景包含较多的步骤，且对输出结果的准确性、格式有严格要求时，适合配置工作流来实现。</p><p>在工作流中可以引入多种模块：</p><table><thead><tr><th>节点名称</th><th>描述</th></tr></thead><tbody><tr><td>LLM</td><td>大语言模型节点，该节点支持选择不同的 AI 模型处理文本生成任务。</td></tr><tr><td>Code</td><td>代码节点。通过 IDE 编写代码处理输入参数，并返回输出值。</td></tr><tr><td>Knowledge</td><td>知识库节点。根据输入参数从关联知识库中召回数据，并返回。</td></tr><tr><td>Condition</td><td>if-else 逻辑节点。满足设置条件则运行 if 分支，否则运行 else 分支。</td></tr><tr><td>Variable</td><td>变量节点。用于读取和写入 Bot 中的变量。</td></tr><tr><td>Plugins</td><td>插件节点，能够调用Plugins Store中的所有插件</td></tr></tbody></table><p><a href=https://images.payloads.online/2024-07-29-d027efbf21fd1556b3ae2537cd57e13581df54dc2d29f2685a46a92d0b63fc2b.png data-fancybox=gallery data-caption=5><img src=https://images.payloads.online/2024-07-29-d027efbf21fd1556b3ae2537cd57e13581df54dc2d29f2685a46a92d0b63fc2b.png alt=5></a></p><p>这里我以获取Github Star项目的工作流为例，首先每个Workflow都有一个起始节点和结束节点，结束节点可以设置返回值。</p><p>在整个工作流内，上一个节点的输入输出变量可以被下一个节点引用：</p><aside>💡 我为了保证Star的Github项目描述信息更加丰富，所以调用了另外一个模拟浏览器访问网页的插件去抓取网页内容，交给大模型去分析。这里我使用的是Gemini 1.5 Pro，因为GPT4o在晚上的时候处理起来非常慢（毕竟大家都在白嫖），这个任务就会超时，导致整个Workflow执行失败。</aside><p><a href=https://images.payloads.online/2024-07-29-2e74aa53f726e9072f5f3a3fbe2789323bbaa57aa5c49c396f5b75a7deb0a5ec.png data-fancybox=gallery data-caption=6><img src=https://images.payloads.online/2024-07-29-2e74aa53f726e9072f5f3a3fbe2789323bbaa57aa5c49c396f5b75a7deb0a5ec.png alt=6></a></p><ul><li>Batch processing : 可以并发执行，如果要处理一批线性的输入（例如数组），可以调用这个方式去执行。</li></ul><p><a href=https://images.payloads.online/2024-07-29-ba52e7c6fbc0e72f9cb4f50c90a6ff6620a1fba040eed297d0c01374f3e1ad70.png data-fancybox=gallery data-caption=7><img src=https://images.payloads.online/2024-07-29-ba52e7c6fbc0e72f9cb4f50c90a6ff6620a1fba040eed297d0c01374f3e1ad70.png alt=7></a></p><h2 id=创建一个面向用户的bot>🤖创建一个面向用户的Bot</h2><p>Coze 利用大型语言模型极大地简化了 Bot 的搭建过程。 在充分利用大语言模型优势的同时，Coze 还支持用户通过知识库、工作流等功能来配置 Bot 如何响应用户查询，以保证 Bot 符合预期。</p><p>你可以使用 Coze 提供的以下功能，定制你的 AI Bot：</p><ul><li><strong>人设与提示词</strong></li></ul><p>设定 Bot 的身份及其目标和技能，例如产品问答助手、新闻播报员、翻译助理等等。Bot 的人设和提示词决定了 Bot 如何与你的用户进行互动。</p><ul><li><strong>插件</strong></li></ul><p>通过 API 连接集成各种平台和服务，扩展 Bot 能力。Coze 平台内置丰富的插件供你直接调用，你也可以创建自定义插件，将你所需要的 API 集成在 Coze 内作为插件来使用。</p><ul><li><strong>工作流</strong></li></ul><p>一种用于规划和实现复杂功能逻辑的工具。你可以通过拖拽不同的任务节点来设计复杂的多步骤任务，提升 Bot 处理复杂任务的效率。</p><ul><li><strong>记忆库</strong></li></ul><p>Coze 的记忆库功能可以保留和理解对话细节，并支持添加外部知识库给模型补充知识，使 Bot 与用户的互动更加有针对性和个性化。你可以通过以下方式来存储和管理外部知识。</p><ul><li><strong>知识库</strong>：支持上传本地或线上内容，然后将这些内容分割成知识分片，通过语义匹配给模型补充知识。</li><li><strong>变量</strong>：通过 key-value 的形式来记录变量值。例如记录用户的某一偏好。</li><li><strong>数据库</strong>：用来存储和管理结构化数据，并支持用户通过自然语言方式对数据库中的数据进行增删改查。</li><li><strong>多发布渠道</strong></li></ul><p>Coze 支持将搭建的 Bot 发布到各种社交应用中，让你的 Bot 服务更多的用户。</p><ul><li><p><strong>其他定制化功能</strong></p><ul><li><strong>定时任务</strong>：你可以为 Bot 添加定时任务，预定的时间条件下自动触发 Bot 向用户发送消息。</li><li><strong>开场白</strong>：设置 Bot 对话的开场语，让用户快速了解 Bot 的功能。例如 我是一个旅行助手 Bot，我能帮助你计划行程和查找旅行信息。</li><li><strong>用户问题建议</strong>：Bot 每次响应用户问题后，系统会根据上下文自动提供三个相关的问题建议给用户使用。</li><li><strong>音色</strong>：为 Bot 选择与用户交流使用的语言和语调。</li></ul><p><a href=https://images.payloads.online/2024-07-29-dbb8a6584306869175de70ac3071dd9895abd150073dfaf206ce4b6aa58a65a1.png data-fancybox=gallery data-caption=8><img src=https://images.payloads.online/2024-07-29-dbb8a6584306869175de70ac3071dd9895abd150073dfaf206ce4b6aa58a65a1.png alt=8></a></p></li></ul><hr><p>以上内容引用自：<a href="https://www.coze.com/docs/guides/function_overview?_lang=zh">Coze - Coze 文档中心</a></p><p>创建完插件、Workflow，就可以将Workflow导入到Bot中了，再写上Prompt就基本完成了。这里贴一下我的Prompt（写的比较烂，有很大优化空间）：</p><pre tabindex=0><code># 角色
 您是一位专精于整理和推送数据的AI助理。
 

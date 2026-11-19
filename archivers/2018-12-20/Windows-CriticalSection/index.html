@@ -56,89 +56,89 @@ CRITICAL_SECTION是在进程的虚拟内存空间的一种锁，互斥体（Mute
 <button type=button class=theme-ball role=button aria-label=切换主题 title=切换主题>
 <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.9" y1="4.9" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.1" y2="19.1"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.9" y1="19.1" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.1" y2="4.9"/></svg>
 <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></button></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">Windows - 线程同步</h1><div class="text-xs antialiased opacity-60"><time>Dec 20, 2018</time><span class=mx-1>&#183;</span>
-<span>倾旋</span></div></header><section><h2 id=0x00-线程基础>0x00 线程基础</h2><p>每个线程的堆栈空间不同，在多线程执行时，可以互不干扰的运行，但是全局变量保存在全局区，当多个线程读写全局变量时，由于读写操作不是原子的，会发生程序错乱。</p><h3 id=为什么不是原子>为什么不是原子？</h3><p>当自增、自减时，需要两行汇编指令，而CPU线程调度的最小单位是一行汇编指令，所以当某个值自增时，操作就不是原子的。</p><p>为了保证多线程读写全局变量达到同步，可以使用临界区技术，Windows正是实现了这个技术，提供了对应的API。</p><h2 id=0x01-令牌线程同步>0x01 令牌线程同步</h2><p>代码：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>// ConsoleApplication2.cpp : 定义控制台应用程序的入口点。
-</span></span></span><span style=display:flex><span><span style=color:#75715e>//
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&#34;stdafx.h&#34;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;iostream&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>DWORD num <span style=color:#f92672>=</span> <span style=color:#ae81ff>100</span>;
-</span></span><span style=display:flex><span>CRITICAL_SECTION cs;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>DWORD WINAPI <span style=color:#a6e22e>ThreadPro1</span>() {
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>EnterCriticalSection</span>(<span style=color:#f92672>&amp;</span>cs);
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>while</span> (num <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>) {
-</span></span><span style=display:flex><span>		std<span style=color:#f92672>::</span>wcout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;Thread num :&#34;</span> <span style=color:#f92672>&lt;&lt;</span> num <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34; Thread ID :&#34;</span> <span style=color:#f92672>&lt;&lt;</span> <span style=color:#a6e22e>GetCurrentThreadId</span>() <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
-</span></span><span style=display:flex><span>		num<span style=color:#f92672>--</span>;
-</span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>LeaveCriticalSection</span>(<span style=color:#f92672>&amp;</span>cs);
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>10</span>;
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>DWORD WINAPI <span style=color:#a6e22e>ThreadPro2</span>() {
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>EnterCriticalSection</span>(<span style=color:#f92672>&amp;</span>cs);
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>while</span> (num <span style=color:#f92672>&gt;</span> <span style=color:#ae81ff>0</span>) {
-</span></span><span style=display:flex><span>		std<span style=color:#f92672>::</span>wcout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;Thread num :&#34;</span> <span style=color:#f92672>&lt;&lt;</span> num <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34; Thread ID :&#34;</span> <span style=color:#f92672>&lt;&lt;</span> <span style=color:#a6e22e>GetCurrentThreadId</span>() <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
-</span></span><span style=display:flex><span>		num<span style=color:#f92672>--</span>;
-</span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>LeaveCriticalSection</span>(<span style=color:#f92672>&amp;</span>cs);
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>10</span>;
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>_tmain</span>()
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>	HANDLE hThread[<span style=color:#ae81ff>2</span>];
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>InitializeCriticalSection</span>(<span style=color:#f92672>&amp;</span>cs);
-</span></span><span style=display:flex><span>	hThread[<span style=color:#ae81ff>0</span>] <span style=color:#f92672>=</span> <span style=color:#a6e22e>CreateThread</span>(NULL, <span style=color:#ae81ff>0</span>,(PTHREAD_START_ROUTINE) ThreadPro1, NULL, <span style=color:#ae81ff>0</span>, NULL);
-</span></span><span style=display:flex><span>	hThread[<span style=color:#ae81ff>1</span>] <span style=color:#f92672>=</span> <span style=color:#a6e22e>CreateThread</span>(NULL, <span style=color:#ae81ff>0</span>, (PTHREAD_START_ROUTINE)ThreadPro2, NULL, <span style=color:#ae81ff>0</span>, NULL);
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>WaitForMultipleObjects</span>(<span style=color:#ae81ff>2</span>, hThread, TRUE,INFINITE);
-</span></span><span style=display:flex><span>	std<span style=color:#f92672>::</span><span style=color:#a6e22e>wprintf</span>(<span style=color:#a6e22e>TEXT</span>(<span style=color:#e6db74>&#34;Success ... </span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>));
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>system</span>(<span style=color:#e6db74>&#34;pause&#34;</span>);
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>}
+<span>倾旋</span></div></header><section><h2 id=0x00-线程基础>0x00 线程基础</h2><p>每个线程的堆栈空间不同，在多线程执行时，可以互不干扰的运行，但是全局变量保存在全局区，当多个线程读写全局变量时，由于读写操作不是原子的，会发生程序错乱。</p><h3 id=为什么不是原子>为什么不是原子？</h3><p>当自增、自减时，需要两行汇编指令，而CPU线程调度的最小单位是一行汇编指令，所以当某个值自增时，操作就不是原子的。</p><p>为了保证多线程读写全局变量达到同步，可以使用临界区技术，Windows正是实现了这个技术，提供了对应的API。</p><h2 id=0x01-令牌线程同步>0x01 令牌线程同步</h2><p>代码：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=c1>// ConsoleApplication2.cpp : 定义控制台应用程序的入口点。
+</span></span></span><span class=line><span class=cl><span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&#34;stdafx.h&#34;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;Windows.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>DWORD</span> <span class=n>num</span> <span class=o>=</span> <span class=mi>100</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=n>CRITICAL_SECTION</span> <span class=n>cs</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>DWORD</span> <span class=n>WINAPI</span> <span class=nf>ThreadPro1</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nf>EnterCriticalSection</span><span class=p>(</span><span class=o>&amp;</span><span class=n>cs</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=k>while</span> <span class=p>(</span><span class=n>num</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=n>std</span><span class=o>::</span><span class=n>wcout</span> <span class=o>&lt;&lt;</span> <span class=s>&#34;Thread num :&#34;</span> <span class=o>&lt;&lt;</span> <span class=n>num</span> <span class=o>&lt;&lt;</span> <span class=s>&#34; Thread ID :&#34;</span> <span class=o>&lt;&lt;</span> <span class=nf>GetCurrentThreadId</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=n>num</span><span class=o>--</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=nf>LeaveCriticalSection</span><span class=p>(</span><span class=o>&amp;</span><span class=n>cs</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=mi>10</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>DWORD</span> <span class=n>WINAPI</span> <span class=nf>ThreadPro2</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nf>EnterCriticalSection</span><span class=p>(</span><span class=o>&amp;</span><span class=n>cs</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=k>while</span> <span class=p>(</span><span class=n>num</span> <span class=o>&gt;</span> <span class=mi>0</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=n>std</span><span class=o>::</span><span class=n>wcout</span> <span class=o>&lt;&lt;</span> <span class=s>&#34;Thread num :&#34;</span> <span class=o>&lt;&lt;</span> <span class=n>num</span> <span class=o>&lt;&lt;</span> <span class=s>&#34; Thread ID :&#34;</span> <span class=o>&lt;&lt;</span> <span class=nf>GetCurrentThreadId</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=n>num</span><span class=o>--</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=nf>LeaveCriticalSection</span><span class=p>(</span><span class=o>&amp;</span><span class=n>cs</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=mi>10</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>_tmain</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=n>HANDLE</span> <span class=n>hThread</span><span class=p>[</span><span class=mi>2</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>	<span class=nf>InitializeCriticalSection</span><span class=p>(</span><span class=o>&amp;</span><span class=n>cs</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=n>hThread</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span> <span class=o>=</span> <span class=nf>CreateThread</span><span class=p>(</span><span class=nb>NULL</span><span class=p>,</span> <span class=mi>0</span><span class=p>,(</span><span class=n>PTHREAD_START_ROUTINE</span><span class=p>)</span> <span class=n>ThreadPro1</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=n>hThread</span><span class=p>[</span><span class=mi>1</span><span class=p>]</span> <span class=o>=</span> <span class=nf>CreateThread</span><span class=p>(</span><span class=nb>NULL</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=p>(</span><span class=n>PTHREAD_START_ROUTINE</span><span class=p>)</span><span class=n>ThreadPro2</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=nf>WaitForMultipleObjects</span><span class=p>(</span><span class=mi>2</span><span class=p>,</span> <span class=n>hThread</span><span class=p>,</span> <span class=n>TRUE</span><span class=p>,</span><span class=n>INFINITE</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=n>std</span><span class=o>::</span><span class=nf>wprintf</span><span class=p>(</span><span class=nf>TEXT</span><span class=p>(</span><span class=s>&#34;Success ... </span><span class=se>\n</span><span class=s>&#34;</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>	<span class=nf>system</span><span class=p>(</span><span class=s>&#34;pause&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span></code></pre></div><h2 id=0x02-令牌api>0x02 令牌API</h2><pre tabindex=0><code>CRITICAL_SECTION cs; // 创建临界区变量
 InitializeCriticalSection(CRITICAL_SECTION *); // 初始化临界区变量
 EnterCriticalSection(CRITICAL_SECTION *);//获取临界区变量
 LeaveCriticalSection(CRITICAL_SECTION *);//离开临界区
-</code></pre><h2 id=0x03-互斥体>0x03 互斥体</h2><p>CRITICAL_SECTION是在进程的虚拟内存空间的一种锁，互斥体（Mutex）是用于内核级资源（内核空间）的线程同步锁，如：跨进程间的读写内核级资源。</p><h3 id=创建互斥体>创建互斥体</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c data-lang=c><span style=display:flex><span>HANDLE hMutex <span style=color:#f92672>=</span> <span style=color:#a6e22e>CreateMutex</span>(NULL, FALSE, <span style=color:#a6e22e>TEXT</span>(<span style=color:#e6db74>&#34;hello&#34;</span>));
-</span></span><span style=display:flex><span><span style=color:#75715e>/*
-</span></span></span><span style=display:flex><span><span style=color:#75715e>	if (GetLastError() == ERROR_ALREADY_EXISTS) {
-</span></span></span><span style=display:flex><span><span style=color:#75715e>		std::wcout &lt;&lt; &#34;Allready exists Mutex ...&#34; &lt;&lt; std::endl;
-</span></span></span><span style=display:flex><span><span style=color:#75715e>		system(&#34;pause&#34;);
-</span></span></span><span style=display:flex><span><span style=color:#75715e>		return 0;
-</span></span></span><span style=display:flex><span><span style=color:#75715e>	}
-</span></span></span><span style=display:flex><span><span style=color:#75715e>*/</span>    
+</code></pre><h2 id=0x03-互斥体>0x03 互斥体</h2><p>CRITICAL_SECTION是在进程的虚拟内存空间的一种锁，互斥体（Mutex）是用于内核级资源（内核空间）的线程同步锁，如：跨进程间的读写内核级资源。</p><h3 id=创建互斥体>创建互斥体</h3><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=n>HANDLE</span> <span class=n>hMutex</span> <span class=o>=</span> <span class=nf>CreateMutex</span><span class=p>(</span><span class=nb>NULL</span><span class=p>,</span> <span class=n>FALSE</span><span class=p>,</span> <span class=nf>TEXT</span><span class=p>(</span><span class=s>&#34;hello&#34;</span><span class=p>));</span>
+</span></span><span class=line><span class=cl><span class=cm>/*
+</span></span></span><span class=line><span class=cl><span class=cm>	if (GetLastError() == ERROR_ALREADY_EXISTS) {
+</span></span></span><span class=line><span class=cl><span class=cm>		std::wcout &lt;&lt; &#34;Allready exists Mutex ...&#34; &lt;&lt; std::endl;
+</span></span></span><span class=line><span class=cl><span class=cm>		system(&#34;pause&#34;);
+</span></span></span><span class=line><span class=cl><span class=cm>		return 0;
+</span></span></span><span class=line><span class=cl><span class=cm>	}
+</span></span></span><span class=line><span class=cl><span class=cm>*/</span>    
 </span></span></code></pre></div><p>函数原型：</p><pre tabindex=0><code>HANDLE WINAPI CreateMutex(
   _In_opt_ LPSECURITY_ATTRIBUTES lpMutexAttributes,
   _In_     BOOL                  bInitialOwner,
   _In_opt_ LPCTSTR               lpName
 );
-</code></pre><ul><li>lpMutexAttributes 安全描述符</li><li>bInitialOwner 如果为TRUE则只对当前进程的内存空间有效，如果为FALSE，则对内核空间有效（系统全局）。</li><li>lpName 内核对象名称</li></ul><p><strong>多个进程要使用同一个互斥体时，内核对象的名称必须相同。</strong></p><p>当互斥体已经被创建时，在其他进程中或在当前进程中调用<code>CreateMutex</code>，使用<code>GetLastError</code>可以捕获到<code>ERROR_ALREADY_EXISTS</code>常量。通过判断<code>ERROR_ALREADY_EXISTS</code>就可以知道当前进程有没有另外一个相同的进程了。</p><p>源代码：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>// ConsoleApplication2.cpp : 定义控制台应用程序的入口点。
-</span></span></span><span style=display:flex><span><span style=color:#75715e>//
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&#34;stdafx.h&#34;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;iostream&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>_tmain</span>()
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>	HANDLE hMutex <span style=color:#f92672>=</span> <span style=color:#a6e22e>CreateMutex</span>(NULL, FALSE, <span style=color:#a6e22e>TEXT</span>(<span style=color:#e6db74>&#34;hello&#34;</span>));
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (<span style=color:#a6e22e>GetLastError</span>() <span style=color:#f92672>==</span> ERROR_ALREADY_EXISTS) {
-</span></span><span style=display:flex><span>		std<span style=color:#f92672>::</span>wcout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;Allready exists Mutex ...&#34;</span> <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
-</span></span><span style=display:flex><span>		<span style=color:#a6e22e>system</span>(<span style=color:#e6db74>&#34;pause&#34;</span>);
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>WaitForSingleObject</span>(hMutex, INFINITE);
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>for</span> (INT i <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>; i <span style=color:#f92672>&lt;</span> <span style=color:#ae81ff>10</span>; i<span style=color:#f92672>++</span>)
-</span></span><span style=display:flex><span>	{
-</span></span><span style=display:flex><span>		<span style=color:#a6e22e>Sleep</span>(<span style=color:#ae81ff>1000</span>);
-</span></span><span style=display:flex><span>		std<span style=color:#f92672>::</span>wcout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#a6e22e>GetCurrentProcessId</span>() <span style=color:#f92672>&lt;&lt;</span> <span style=color:#e6db74>&#34;:&#34;</span> <span style=color:#f92672>&lt;&lt;</span> i <span style=color:#f92672>&lt;&lt;</span> std<span style=color:#f92672>::</span>endl;
-</span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>ReleaseMutex</span>(hMutex);
-</span></span><span style=display:flex><span>	std<span style=color:#f92672>::</span><span style=color:#a6e22e>wprintf</span>(<span style=color:#a6e22e>TEXT</span>(<span style=color:#e6db74>&#34;Success ... </span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>));
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>system</span>(<span style=color:#e6db74>&#34;pause&#34;</span>);
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>}
+</code></pre><ul><li>lpMutexAttributes 安全描述符</li><li>bInitialOwner 如果为TRUE则只对当前进程的内存空间有效，如果为FALSE，则对内核空间有效（系统全局）。</li><li>lpName 内核对象名称</li></ul><p><strong>多个进程要使用同一个互斥体时，内核对象的名称必须相同。</strong></p><p>当互斥体已经被创建时，在其他进程中或在当前进程中调用<code>CreateMutex</code>，使用<code>GetLastError</code>可以捕获到<code>ERROR_ALREADY_EXISTS</code>常量。通过判断<code>ERROR_ALREADY_EXISTS</code>就可以知道当前进程有没有另外一个相同的进程了。</p><p>源代码：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=c1>// ConsoleApplication2.cpp : 定义控制台应用程序的入口点。
+</span></span></span><span class=line><span class=cl><span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&#34;stdafx.h&#34;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;Windows.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>_tmain</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=n>HANDLE</span> <span class=n>hMutex</span> <span class=o>=</span> <span class=nf>CreateMutex</span><span class=p>(</span><span class=nb>NULL</span><span class=p>,</span> <span class=n>FALSE</span><span class=p>,</span> <span class=nf>TEXT</span><span class=p>(</span><span class=s>&#34;hello&#34;</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=p>(</span><span class=nf>GetLastError</span><span class=p>()</span> <span class=o>==</span> <span class=n>ERROR_ALREADY_EXISTS</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=n>std</span><span class=o>::</span><span class=n>wcout</span> <span class=o>&lt;&lt;</span> <span class=s>&#34;Allready exists Mutex ...&#34;</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=nf>system</span><span class=p>(</span><span class=s>&#34;pause&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=nf>WaitForSingleObject</span><span class=p>(</span><span class=n>hMutex</span><span class=p>,</span> <span class=n>INFINITE</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=k>for</span> <span class=p>(</span><span class=n>INT</span> <span class=n>i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=n>i</span> <span class=o>&lt;</span> <span class=mi>10</span><span class=p>;</span> <span class=n>i</span><span class=o>++</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nf>Sleep</span><span class=p>(</span><span class=mi>1000</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>		<span class=n>std</span><span class=o>::</span><span class=n>wcout</span> <span class=o>&lt;&lt;</span> <span class=nf>GetCurrentProcessId</span><span class=p>()</span> <span class=o>&lt;&lt;</span> <span class=s>&#34;:&#34;</span> <span class=o>&lt;&lt;</span> <span class=n>i</span> <span class=o>&lt;&lt;</span> <span class=n>std</span><span class=o>::</span><span class=n>endl</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=nf>ReleaseMutex</span><span class=p>(</span><span class=n>hMutex</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=n>std</span><span class=o>::</span><span class=nf>wprintf</span><span class=p>(</span><span class=nf>TEXT</span><span class=p>(</span><span class=s>&#34;Success ... </span><span class=se>\n</span><span class=s>&#34;</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>	<span class=nf>system</span><span class=p>(</span><span class=s>&#34;pause&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span></code></pre></div></section><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/archivers/2018-12-21/1/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Windows - 内存管理</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2018-12-20/windows-FileMapping/><span>Windows 文件映射</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><script src=/js/fancybox.umd.js></script><script>Fancybox.bind('[data-fancybox="gallery"]',{})</script><script src=/js/pangu.min.js></script><script>document.addEventListener("DOMContentLoaded",()=>{pangu.spacingElementByClassName("prose")})</script><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><nav class="flex items-center"><a class="link footer-link" href=/links/>友情链接</a><a class="link footer-link" href=/message>留言</a><a class="link footer-link" href=/sponsor>赞助</a><a class="link footer-link" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a></nav></footer></body></html>

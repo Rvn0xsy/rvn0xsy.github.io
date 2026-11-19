@@ -87,89 +87,89 @@ BOOL WINAPI UnmapViewOfFile(
 <button type=button class=theme-ball role=button aria-label=切换主题 title=切换主题>
 <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.9" y1="4.9" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.1" y2="19.1"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.9" y1="19.1" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.1" y2="4.9"/></svg>
 <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></button></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">Windows 文件映射</h1><div class="text-xs antialiased opacity-60"><time>Dec 20, 2018</time><span class=mx-1>&#183;</span>
-<span>倾旋</span></div></header><section><h2 id=0x00-文件映射的原理>0x00 文件映射的原理</h2><p>文件映射(Mapping)是一种能够将文件内容映射到进程的虚拟地址空间的技术。视图(view)是一个由映射句柄开辟的一块虚拟地址空间，用于存放文件内容，当文件被映射完成后，改写视图虚拟地址空间的内容就相当于更改文件内容。</p><p>一般情况下，当代码运行完毕后，视图将会被自动写入文件中。</p><h2 id=0x01-文件映射的步骤>0x01 文件映射的步骤</h2><ul><li>CreateFile()&mldr;</li><li>CreateFileMapping()&mldr;</li><li>MapViewofFile()&mldr;</li><li>FlushViewofFile()&mldr;</li></ul><p>首先需要创建一个文件句柄，然后再创建一个文件映射的Mapping内核对象，通过映射获得视图。</p><h2 id=0x02-文件映射简单代码>0x02 文件映射简单代码</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>// ConsoleApplication2.cpp : 定义控制台应用程序的入口点。
-</span></span></span><span style=display:flex><span><span style=color:#75715e>//
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&#34;stdafx.h&#34;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;iostream&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>_tmain</span>()
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>	<span style=color:#75715e>// 内存映射
-</span></span></span><span style=display:flex><span>	<span style=color:#75715e>// CreateFile()...
-</span></span></span><span style=display:flex><span>	<span style=color:#75715e>// CreateFileMapping()...
-</span></span></span><span style=display:flex><span>	<span style=color:#75715e>// MapViewofFile()...
-</span></span></span><span style=display:flex><span>	<span style=color:#75715e>// FlushViewofFile...
-</span></span></span><span style=display:flex><span>	HANDLE hFile <span style=color:#f92672>=</span> <span style=color:#a6e22e>CreateFile</span>(<span style=color:#a6e22e>TEXT</span>(<span style=color:#e6db74>&#34;C:</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Temp</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>99.txt&#34;</span>), GENERIC_ALL, <span style=color:#ae81ff>0</span>, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (hFile <span style=color:#f92672>==</span> INVALID_HANDLE_VALUE) {
-</span></span><span style=display:flex><span>		std<span style=color:#f92672>::</span>wcout <span style=color:#f92672>&lt;&lt;</span> <span style=color:#a6e22e>GetLastError</span>();
-</span></span><span style=display:flex><span>		<span style=color:#a6e22e>MessageBox</span>(<span style=color:#ae81ff>0</span>, <span style=color:#a6e22e>TEXT</span>(<span style=color:#e6db74>&#34;CreateFile&#34;</span>), <span style=color:#a6e22e>TEXT</span>(<span style=color:#e6db74>&#34;Error&#34;</span>), MB_OK);
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	HANDLE hMap <span style=color:#f92672>=</span> <span style=color:#a6e22e>CreateFileMapping</span>(hFile, NULL, PAGE_READWRITE, <span style=color:#ae81ff>0</span>, <span style=color:#ae81ff>1024</span>, <span style=color:#a6e22e>TEXT</span>(<span style=color:#e6db74>&#34;f&#34;</span>));
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (hMap <span style=color:#f92672>==</span> INVALID_HANDLE_VALUE) {
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
-</span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	TCHAR szBuff[<span style=color:#ae81ff>100</span>] <span style=color:#f92672>=</span> <span style=color:#a6e22e>TEXT</span>(<span style=color:#e6db74>&#34;sssss</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>);
-</span></span><span style=display:flex><span>	TCHAR <span style=color:#f92672>*</span> pFileVoid <span style=color:#f92672>=</span> (TCHAR <span style=color:#f92672>*</span>)<span style=color:#a6e22e>MapViewOfFile</span>(hMap, FILE_MAP_ALL_ACCESS, <span style=color:#ae81ff>0</span>, <span style=color:#ae81ff>0</span>, <span style=color:#ae81ff>1024</span>);
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>_tcscpy_s</span>(pFileVoid, <span style=color:#a6e22e>_countof</span>(szBuff), szBuff);
-</span></span><span style=display:flex><span>	std<span style=color:#f92672>::</span><span style=color:#a6e22e>wprintf</span>(pFileVoid);
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>system</span>(<span style=color:#e6db74>&#34;pause&#34;</span>);
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>CloseHandle</span>(hMap);
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>CloseHandle</span>(hFile);
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><h2 id=0x03-api-list>0x03 API List</h2><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c data-lang=c><span style=display:flex><span>HANDLE WINAPI <span style=color:#a6e22e>CreateFile</span>(
-</span></span><span style=display:flex><span>  _In_     LPCTSTR               lpFileName,
-</span></span><span style=display:flex><span>  _In_     DWORD                 dwDesiredAccess,
-</span></span><span style=display:flex><span>  _In_     DWORD                 dwShareMode,
-</span></span><span style=display:flex><span>  _In_opt_ LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-</span></span><span style=display:flex><span>  _In_     DWORD                 dwCreationDisposition,
-</span></span><span style=display:flex><span>  _In_     DWORD                 dwFlagsAndAttributes,
-</span></span><span style=display:flex><span>  _In_opt_ HANDLE                hTemplateFile
-</span></span><span style=display:flex><span>);
-</span></span></code></pre></div><hr><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c data-lang=c><span style=display:flex><span>HANDLE WINAPI <span style=color:#a6e22e>CreateFileMapping</span>(
-</span></span><span style=display:flex><span>  _In_     HANDLE                hFile,
-</span></span><span style=display:flex><span>  _In_opt_ LPSECURITY_ATTRIBUTES lpAttributes,
-</span></span><span style=display:flex><span>  _In_     DWORD                 flProtect,
-</span></span><span style=display:flex><span>  _In_     DWORD                 dwMaximumSizeHigh,
-</span></span><span style=display:flex><span>  _In_     DWORD                 dwMaximumSizeLow,
-</span></span><span style=display:flex><span>  _In_opt_ LPCTSTR               lpName
-</span></span><span style=display:flex><span>);
-</span></span></code></pre></div><hr><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c data-lang=c><span style=display:flex><span>LPVOID WINAPI <span style=color:#a6e22e>MapViewOfFile</span>(
-</span></span><span style=display:flex><span>  _In_ HANDLE hFileMappingObject,
-</span></span><span style=display:flex><span>  _In_ DWORD  dwDesiredAccess,
-</span></span><span style=display:flex><span>  _In_ DWORD  dwFileOffsetHigh,
-</span></span><span style=display:flex><span>  _In_ DWORD  dwFileOffsetLow,
-</span></span><span style=display:flex><span>  _In_ SIZE_T dwNumberOfBytesToMap
-</span></span><span style=display:flex><span>);
-</span></span></code></pre></div><hr><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c data-lang=c><span style=display:flex><span>BOOL WINAPI <span style=color:#a6e22e>FlushViewOfFile</span>(
-</span></span><span style=display:flex><span>  _In_ LPCVOID lpBaseAddress,
-</span></span><span style=display:flex><span>  _In_ SIZE_T  dwNumberOfBytesToFlush
-</span></span><span style=display:flex><span>);
-</span></span></code></pre></div><hr><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c data-lang=c><span style=display:flex><span>BOOL WINAPI <span style=color:#a6e22e>UnmapViewOfFile</span>(
-</span></span><span style=display:flex><span>  _In_ LPCVOID lpBaseAddress
-</span></span><span style=display:flex><span>);
-</span></span></code></pre></div><hr><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c data-lang=c><span style=display:flex><span>BOOL WINAPI <span style=color:#a6e22e>UnmapViewOfFile</span>(
-</span></span><span style=display:flex><span>  _In_ LPCVOID lpBaseAddress
-</span></span><span style=display:flex><span>);
-</span></span></code></pre></div><h2 id=0x04-创建一个超大文件>0x04 创建一个超大文件</h2><p>在写Example的过程中，我发现申请映射的内存空间会把每个字节写入文件中。</p><p>把<code>MapViewOfFile</code>的<code>dwMaximumSizeHigh</code>和<code>dwMaximumSizeLow</code>设置为一个超大值时，就能够把那么大的内存写入文件。</p><p>当然前提是映射的空间不得大于<code>CreateFileMapping</code>的<code>dwMaximumSizeHigh</code>和<code>dwMaximumSizeLow</code>。</p><p>例如：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c data-lang=c><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>// ConsoleApplication2.cpp : 定义控制台应用程序的入口点。
-</span></span></span><span style=display:flex><span><span style=color:#75715e>//
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&#34;stdafx.h&#34;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;iostream&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>_tmain</span>()
-</span></span><span style=display:flex><span>{   DWORD dwFileSize <span style=color:#f92672>=</span> <span style=color:#ae81ff>1024</span><span style=color:#f92672>*</span><span style=color:#ae81ff>1024</span><span style=color:#f92672>*</span><span style=color:#ae81ff>1024</span>;
-</span></span><span style=display:flex><span>	HANDLE hFile <span style=color:#f92672>=</span> <span style=color:#a6e22e>CreateFile</span>(<span style=color:#a6e22e>TEXT</span>(<span style=color:#e6db74>&#34;C:</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Temp</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>99.txt&#34;</span>), GENERIC_ALL, <span style=color:#ae81ff>0</span>, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-</span></span><span style=display:flex><span>	HANDLE hMap <span style=color:#f92672>=</span> <span style=color:#a6e22e>CreateFileMapping</span>(hFile, NULL, PAGE_READWRITE, <span style=color:#ae81ff>0</span>, dwFileSize, <span style=color:#a6e22e>TEXT</span>(<span style=color:#e6db74>&#34;f&#34;</span>));
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (hMap <span style=color:#f92672>==</span> INVALID_HANDLE_VALUE) {
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>;
-</span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	TCHAR <span style=color:#f92672>*</span> pFileVoid <span style=color:#f92672>=</span> (TCHAR <span style=color:#f92672>*</span>)<span style=color:#a6e22e>MapViewOfFile</span>(hMap, FILE_MAP_ALL_ACCESS, <span style=color:#ae81ff>0</span>, <span style=color:#ae81ff>0</span>, dwFileSize);
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>CloseHandle</span>(hMap);
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>CloseHandle</span>(hFile);
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>}
+<span>倾旋</span></div></header><section><h2 id=0x00-文件映射的原理>0x00 文件映射的原理</h2><p>文件映射(Mapping)是一种能够将文件内容映射到进程的虚拟地址空间的技术。视图(view)是一个由映射句柄开辟的一块虚拟地址空间，用于存放文件内容，当文件被映射完成后，改写视图虚拟地址空间的内容就相当于更改文件内容。</p><p>一般情况下，当代码运行完毕后，视图将会被自动写入文件中。</p><h2 id=0x01-文件映射的步骤>0x01 文件映射的步骤</h2><ul><li>CreateFile()&mldr;</li><li>CreateFileMapping()&mldr;</li><li>MapViewofFile()&mldr;</li><li>FlushViewofFile()&mldr;</li></ul><p>首先需要创建一个文件句柄，然后再创建一个文件映射的Mapping内核对象，通过映射获得视图。</p><h2 id=0x02-文件映射简单代码>0x02 文件映射简单代码</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=c1>// ConsoleApplication2.cpp : 定义控制台应用程序的入口点。
+</span></span></span><span class=line><span class=cl><span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&#34;stdafx.h&#34;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;Windows.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>_tmain</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=c1>// 内存映射
+</span></span></span><span class=line><span class=cl>	<span class=c1>// CreateFile()...
+</span></span></span><span class=line><span class=cl>	<span class=c1>// CreateFileMapping()...
+</span></span></span><span class=line><span class=cl>	<span class=c1>// MapViewofFile()...
+</span></span></span><span class=line><span class=cl>	<span class=c1>// FlushViewofFile...
+</span></span></span><span class=line><span class=cl>	<span class=n>HANDLE</span> <span class=n>hFile</span> <span class=o>=</span> <span class=nf>CreateFile</span><span class=p>(</span><span class=nf>TEXT</span><span class=p>(</span><span class=s>&#34;C:</span><span class=se>\\</span><span class=s>Temp</span><span class=se>\\</span><span class=s>99.txt&#34;</span><span class=p>),</span> <span class=n>GENERIC_ALL</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=n>OPEN_ALWAYS</span><span class=p>,</span> <span class=n>FILE_ATTRIBUTE_NORMAL</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=p>(</span><span class=n>hFile</span> <span class=o>==</span> <span class=n>INVALID_HANDLE_VALUE</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=n>std</span><span class=o>::</span><span class=n>wcout</span> <span class=o>&lt;&lt;</span> <span class=nf>GetLastError</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>		<span class=nf>MessageBox</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=nf>TEXT</span><span class=p>(</span><span class=s>&#34;CreateFile&#34;</span><span class=p>),</span> <span class=nf>TEXT</span><span class=p>(</span><span class=s>&#34;Error&#34;</span><span class=p>),</span> <span class=n>MB_OK</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=n>HANDLE</span> <span class=n>hMap</span> <span class=o>=</span> <span class=nf>CreateFileMapping</span><span class=p>(</span><span class=n>hFile</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=n>PAGE_READWRITE</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>1024</span><span class=p>,</span> <span class=nf>TEXT</span><span class=p>(</span><span class=s>&#34;f&#34;</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=p>(</span><span class=n>hMap</span> <span class=o>==</span> <span class=n>INVALID_HANDLE_VALUE</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=n>TCHAR</span> <span class=n>szBuff</span><span class=p>[</span><span class=mi>100</span><span class=p>]</span> <span class=o>=</span> <span class=nf>TEXT</span><span class=p>(</span><span class=s>&#34;sssss</span><span class=se>\n</span><span class=s>&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=n>TCHAR</span> <span class=o>*</span> <span class=n>pFileVoid</span> <span class=o>=</span> <span class=p>(</span><span class=n>TCHAR</span> <span class=o>*</span><span class=p>)</span><span class=nf>MapViewOfFile</span><span class=p>(</span><span class=n>hMap</span><span class=p>,</span> <span class=n>FILE_MAP_ALL_ACCESS</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>1024</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=nf>_tcscpy_s</span><span class=p>(</span><span class=n>pFileVoid</span><span class=p>,</span> <span class=nf>_countof</span><span class=p>(</span><span class=n>szBuff</span><span class=p>),</span> <span class=n>szBuff</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=n>std</span><span class=o>::</span><span class=nf>wprintf</span><span class=p>(</span><span class=n>pFileVoid</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=nf>system</span><span class=p>(</span><span class=s>&#34;pause&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=nf>CloseHandle</span><span class=p>(</span><span class=n>hMap</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=nf>CloseHandle</span><span class=p>(</span><span class=n>hFile</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><h2 id=0x03-api-list>0x03 API List</h2><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=n>HANDLE</span> <span class=n>WINAPI</span> <span class=nf>CreateFile</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span>     <span class=n>LPCTSTR</span>               <span class=n>lpFileName</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span>     <span class=n>DWORD</span>                 <span class=n>dwDesiredAccess</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span>     <span class=n>DWORD</span>                 <span class=n>dwShareMode</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_opt_</span> <span class=n>LPSECURITY_ATTRIBUTES</span> <span class=n>lpSecurityAttributes</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span>     <span class=n>DWORD</span>                 <span class=n>dwCreationDisposition</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span>     <span class=n>DWORD</span>                 <span class=n>dwFlagsAndAttributes</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_opt_</span> <span class=n>HANDLE</span>                <span class=n>hTemplateFile</span>
+</span></span><span class=line><span class=cl><span class=p>);</span>
+</span></span></code></pre></div><hr><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=n>HANDLE</span> <span class=n>WINAPI</span> <span class=nf>CreateFileMapping</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span>     <span class=n>HANDLE</span>                <span class=n>hFile</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_opt_</span> <span class=n>LPSECURITY_ATTRIBUTES</span> <span class=n>lpAttributes</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span>     <span class=n>DWORD</span>                 <span class=n>flProtect</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span>     <span class=n>DWORD</span>                 <span class=n>dwMaximumSizeHigh</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span>     <span class=n>DWORD</span>                 <span class=n>dwMaximumSizeLow</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_opt_</span> <span class=n>LPCTSTR</span>               <span class=n>lpName</span>
+</span></span><span class=line><span class=cl><span class=p>);</span>
+</span></span></code></pre></div><hr><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=n>LPVOID</span> <span class=n>WINAPI</span> <span class=nf>MapViewOfFile</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span> <span class=n>HANDLE</span> <span class=n>hFileMappingObject</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span> <span class=n>DWORD</span>  <span class=n>dwDesiredAccess</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span> <span class=n>DWORD</span>  <span class=n>dwFileOffsetHigh</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span> <span class=n>DWORD</span>  <span class=n>dwFileOffsetLow</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span> <span class=n>SIZE_T</span> <span class=n>dwNumberOfBytesToMap</span>
+</span></span><span class=line><span class=cl><span class=p>);</span>
+</span></span></code></pre></div><hr><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=n>BOOL</span> <span class=n>WINAPI</span> <span class=nf>FlushViewOfFile</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span> <span class=n>LPCVOID</span> <span class=n>lpBaseAddress</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span> <span class=n>SIZE_T</span>  <span class=n>dwNumberOfBytesToFlush</span>
+</span></span><span class=line><span class=cl><span class=p>);</span>
+</span></span></code></pre></div><hr><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=n>BOOL</span> <span class=n>WINAPI</span> <span class=nf>UnmapViewOfFile</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span> <span class=n>LPCVOID</span> <span class=n>lpBaseAddress</span>
+</span></span><span class=line><span class=cl><span class=p>);</span>
+</span></span></code></pre></div><hr><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=n>BOOL</span> <span class=n>WINAPI</span> <span class=nf>UnmapViewOfFile</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>  <span class=n>_In_</span> <span class=n>LPCVOID</span> <span class=n>lpBaseAddress</span>
+</span></span><span class=line><span class=cl><span class=p>);</span>
+</span></span></code></pre></div><h2 id=0x04-创建一个超大文件>0x04 创建一个超大文件</h2><p>在写Example的过程中，我发现申请映射的内存空间会把每个字节写入文件中。</p><p>把<code>MapViewOfFile</code>的<code>dwMaximumSizeHigh</code>和<code>dwMaximumSizeLow</code>设置为一个超大值时，就能够把那么大的内存写入文件。</p><p>当然前提是映射的空间不得大于<code>CreateFileMapping</code>的<code>dwMaximumSizeHigh</code>和<code>dwMaximumSizeLow</code>。</p><p>例如：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// ConsoleApplication2.cpp : 定义控制台应用程序的入口点。
+</span></span></span><span class=line><span class=cl><span class=c1>//
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&#34;stdafx.h&#34;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;iostream&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;Windows.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>_tmain</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>   <span class=n>DWORD</span> <span class=n>dwFileSize</span> <span class=o>=</span> <span class=mi>1024</span><span class=o>*</span><span class=mi>1024</span><span class=o>*</span><span class=mi>1024</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=n>HANDLE</span> <span class=n>hFile</span> <span class=o>=</span> <span class=nf>CreateFile</span><span class=p>(</span><span class=nf>TEXT</span><span class=p>(</span><span class=s>&#34;C:</span><span class=se>\\</span><span class=s>Temp</span><span class=se>\\</span><span class=s>99.txt&#34;</span><span class=p>),</span> <span class=n>GENERIC_ALL</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=n>OPEN_ALWAYS</span><span class=p>,</span> <span class=n>FILE_ATTRIBUTE_NORMAL</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=n>HANDLE</span> <span class=n>hMap</span> <span class=o>=</span> <span class=nf>CreateFileMapping</span><span class=p>(</span><span class=n>hFile</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=n>PAGE_READWRITE</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=n>dwFileSize</span><span class=p>,</span> <span class=nf>TEXT</span><span class=p>(</span><span class=s>&#34;f&#34;</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=p>(</span><span class=n>hMap</span> <span class=o>==</span> <span class=n>INVALID_HANDLE_VALUE</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=n>TCHAR</span> <span class=o>*</span> <span class=n>pFileVoid</span> <span class=o>=</span> <span class=p>(</span><span class=n>TCHAR</span> <span class=o>*</span><span class=p>)</span><span class=nf>MapViewOfFile</span><span class=p>(</span><span class=n>hMap</span><span class=p>,</span> <span class=n>FILE_MAP_ALL_ACCESS</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=n>dwFileSize</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=nf>CloseHandle</span><span class=p>(</span><span class=n>hMap</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=nf>CloseHandle</span><span class=p>(</span><span class=n>hFile</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span></code></pre></div><p>这样就能够创建一个1024*1024*1024个字节的文件了。</p></section><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/archivers/2018-12-20/Windows-CriticalSection/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>Windows - 线程同步</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2018-12-20/1/><span>最近学习Windows编程总结</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><script src=/js/fancybox.umd.js></script><script>Fancybox.bind('[data-fancybox="gallery"]',{})</script><script src=/js/pangu.min.js></script><script>document.addEventListener("DOMContentLoaded",()=>{pangu.spacingElementByClassName("prose")})</script><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><nav class="flex items-center"><a class="link footer-link" href=/links/>友情链接</a><a class="link footer-link" href=/message>留言</a><a class="link footer-link" href=/sponsor>赞助</a><a class="link footer-link" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a></nav></footer></body></html>

