@@ -1,0 +1,25 @@
+<div class="table-scroll" role="region" aria-label="表格 {{ add .Ordinal 1 }}" tabindex="0">
+  <table
+    {{- range $name, $value := .Attributes }}
+      {{- printf " %s=%q" $name $value | safeHTMLAttr }}
+    {{- end }}>
+    <thead>
+      {{- range .THead }}
+        <tr>
+          {{- range . }}
+            <th scope="col"{{ with .Alignment }} style="text-align: {{ . }}"{{ end }}>{{ .Text }}</th>
+          {{- end }}
+        </tr>
+      {{- end }}
+    </thead>
+    <tbody>
+      {{- range .TBody }}
+        <tr>
+          {{- range . }}
+            <td{{ with .Alignment }} style="text-align: {{ . }}"{{ end }}>{{ .Text }}</td>
+          {{- end }}
+        </tr>
+      {{- end }}
+    </tbody>
+  </table>
+</div>

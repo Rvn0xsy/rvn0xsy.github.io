@@ -1,0 +1,9 @@
+<footer class="site-footer">
+  <div class="site-footer-inner">
+    <p>© {{ now.Year }} {{ site.Params.author }}</p>
+    <nav aria-label="页脚导航">
+      {{- range site.Menus.footer -}}<a href="{{ .URL }}">{{ .Name }}</a>{{- end -}}
+      <a href="{{ `index.xml` | relURL }}">RSS</a>
+    </nav>
+  </div>
+</footer>

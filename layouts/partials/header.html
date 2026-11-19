@@ -1,0 +1,63 @@
+<a class="skip-link" href="#main-content">跳转到正文</a>
+<header class="site-header">
+  <div class="site-header-inner">
+    <a class="site-brand" href="{{ `` | relURL }}">{{ site.Title }}</a>
+    <nav class="site-nav" id="site-nav" aria-label="主导航">
+      {{- $current := .RelPermalink -}}
+      {{- range site.Menus.main -}}
+      {{- $active := eq (strings.TrimSuffix "/" $current) (strings.TrimSuffix "/" .URL) -}}
+      {{- if and (eq .Identifier "posts") (hasPrefix $current "/archivers/") -}}{{- $active = true -}}{{- end -}}
+      <a href="{{ .URL }}"{{ if $active }} aria-current="page"{{ end }}>{{ .Name }}</a>
+      {{ end -}}
+    </nav>
+    <div class="header-actions">
+      <button class="theme-toggle" type="button" aria-label="切换深色模式" title="切换深色模式">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M20.5 14.1A8.5 8.5 0 0 1 9.9 3.5 8.5 8.5 0 1 0 20.5 14.1Z"/></svg>
+      </button>
+      <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="打开导航菜单"><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+<script>
+  (() => {
+    const root = document.documentElement;
+    const themeButton = document.querySelector('.theme-toggle');
+    const menuButton = document.querySelector('.menu-toggle');
+    const nav = document.querySelector('.site-nav');
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+    function setTheme(dark) {
+      root.classList.toggle('dark', dark);
+      root.style.colorScheme = dark ? 'dark' : 'light';
+      themeMeta?.setAttribute('content', getComputedStyle(root).backgroundColor);
+      themeButton.setAttribute('aria-label', dark ? '切换浅色模式' : '切换深色模式');
+      themeButton.setAttribute('title', dark ? '切换浅色模式' : '切换深色模式');
+      document.dispatchEvent(new Event('site-theme-change'));
+    }
+    const savedTheme = localStorage.getItem('dark');
+    setTheme(savedTheme === null ? systemDark.matches : savedTheme === 'true');
+    root.classList.remove('not-ready');
+    themeButton.addEventListener('click', () => {
+      const dark = !root.classList.contains('dark');
+      setTheme(dark);
+      localStorage.setItem('dark', String(dark));
+    });
+    systemDark.addEventListener('change', event => {
+      if (localStorage.getItem('dark') === null) setTheme(event.matches);
+    });
+    function closeMenu() {
+      menuButton.setAttribute('aria-expanded', 'false');
+      menuButton.setAttribute('aria-label', '打开导航菜单');
+      nav.classList.remove('is-open');
+    }
+    menuButton.addEventListener('click', () => {
+      const open = menuButton.getAttribute('aria-expanded') !== 'true';
+      menuButton.setAttribute('aria-expanded', String(open));
+      menuButton.setAttribute('aria-label', open ? '关闭导航菜单' : '打开导航菜单');
+      nav.classList.toggle('is-open', open);
+    });
+    nav.addEventListener('click', event => { if (event.target.closest('a')) closeMenu(); });
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') closeMenu(); });
+  })();
+</script>

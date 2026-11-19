@@ -1,0 +1,20 @@
+<ul class="project-list" role="list">
+  {{- range .Page.Params.projects }}
+  <li class="project-entry">
+    <h2><a href="{{ .url }}" translate="no">{{ .name }}</a></h2>
+    <div class="project-notes">
+      <p>{{ $.Page.RenderString .description }}</p>
+      {{- with .reading }}
+      <details class="project-reading">
+        <summary>相关文章 <span>({{ len . }})</span></summary>
+        <ul>
+          {{- range . }}
+          <li><a href="{{ .url }}">{{ .title }}</a></li>
+          {{- end }}
+        </ul>
+      </details>
+      {{- end }}
+    </div>
+  </li>
+  {{- end }}
+</ul>

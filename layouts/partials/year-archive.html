@@ -1,0 +1,26 @@
+{{- $posts := where .RegularPagesRecursive "Params.date" "ne" nil -}}
+{{- $years := $posts.GroupByDate "2006" -}}
+<header class="archive-heading">
+  <h1 class="archive-title">文章归档</h1>
+  <span>{{ len $posts }} 篇文章</span>
+</header>
+{{- with $years }}
+<nav class="archive-years" aria-label="按年份跳转">
+  {{- range . }}
+    <a href="#year-{{ .Key }}">{{ .Key }}</a>
+  {{- end }}
+</nav>
+{{- end }}
+{{- range $years }}
+<section class="archive-group" aria-labelledby="year-{{ .Key }}">
+  <h2 id="year-{{ .Key }}">{{ .Key }}</h2>
+  <ul>
+    {{- range .Pages.ByDate.Reverse }}
+      <li>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "01.02" }}</time>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      </li>
+    {{- end }}
+  </ul>
+</section>
+{{- end }}

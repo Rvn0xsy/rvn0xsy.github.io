@@ -1,0 +1,122 @@
+.project-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--ink);
+}
+
+.project-heading,
+.project-profile {
+  display: flex;
+  align-items: center;
+}
+
+.project-heading {
+  align-items: baseline;
+  gap: .85rem;
+}
+
+.project-heading h1 {
+  margin: 0;
+  color: var(--ink);
+  font-size: clamp(1.75rem, 3vw, 2.125rem);
+  line-height: 1.3;
+}
+
+.project-heading span,
+.project-profile {
+  color: var(--muted);
+  font-size: .875rem;
+}
+
+.project-profile {
+  gap: .65rem;
+  text-decoration: none;
+}
+
+.project-profile img {
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: 0;
+  border-radius: 50%;
+}
+
+.project-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.project-entry {
+  display: grid;
+  grid-template-columns: minmax(0, 12.5rem) minmax(0, 1fr);
+  gap: 0 2rem;
+  align-items: baseline;
+  margin: 0;
+  padding: 1.35rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.project-entry h2 {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+
+.project-entry h2 a {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.project-entry h2 a:hover,
+.project-profile:hover {
+  text-decoration: underline;
+}
+
+.project-notes p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.project-reading {
+  margin-top: .45rem;
+  color: var(--muted);
+  font-size: .875rem;
+}
+
+.project-reading summary {
+  width: fit-content;
+  padding-block: .25rem;
+  cursor: pointer;
+}
+
+.project-reading summary:hover,
+.project-reading[open] summary {
+  color: var(--ink);
+}
+
+.project-reading ul {
+  margin: .3rem 0 0 .2rem;
+  padding-left: 1rem;
+  border-left: 1px solid var(--line);
+  list-style: none;
+}
+
+.project-reading li { margin: 0; padding: 0; }
+.project-reading a { display: inline-block; padding-block: .3rem; }
+
+@media (max-width: 42rem) {
+  .project-header { align-items: flex-start; }
+  .project-entry {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: .35rem;
+    padding-block: 1.1rem;
+  }
+  .project-profile img { width: 1.75rem; height: 1.75rem; }
+}

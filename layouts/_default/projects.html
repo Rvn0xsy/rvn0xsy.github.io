@@ -1,0 +1,16 @@
+{{ define "main" }}
+<div class="project-page">
+  <header class="project-header">
+    <div class="project-heading">
+      <h1>{{ .LinkTitle }}</h1>
+      <span>{{ len .Params.projects }} 个仓库</span>
+    </div>
+    <a class="project-profile" href="{{ .Params.github }}">
+      <img src="{{ site.Params.avatar | relURL }}" width="36" height="36" alt="">
+      <span>GitHub / Rvn0xsy</span>
+    </a>
+  </header>
+  {{ .Content }}
+  {{ partial "giscus.html" . }}
+</div>
+{{ end }}

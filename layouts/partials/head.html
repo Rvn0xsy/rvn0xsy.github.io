@@ -12,7 +12,7 @@
   </title>
 
   <!-- meta -->
-  <meta name="theme-color" />
+  <meta name="theme-color" content="{{ $.Scratch.Get "bg_color" }}" />
 
   <!-- author -->
   {{- $site_author := or site.Params.author site.Params.name site.Title -}}
@@ -32,10 +32,14 @@
   <!-- css & js -->
   {{- $main := resources.Get "main.css" -}}
   <!---->
-  {{- $custom := resources.Get "custom.css" -}}
+  {{- $custom := resources.Get "blog.css" -}}
   <!---->
-  {{- $css := slice $main $custom | resources.Concat "main.css" | minify -}}
-  <link rel="preload stylesheet" as="style" href="{{- $css.RelPermalink -}}" />
+  {{- $css := slice $main $custom | resources.Concat "css/site.css" | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}" />
+  {{- if eq .Layout "projects" }}
+    {{- $projectCSS := resources.Get "projects.css" | minify | fingerprint }}
+    <link rel="stylesheet" href="{{ $projectCSS.RelPermalink }}" />
+  {{- end }}
 
   <!-- dark icon -->
   {{- $dark_icon := "theme.png" -}}

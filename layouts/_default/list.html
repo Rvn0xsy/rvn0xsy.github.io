@@ -1,0 +1,52 @@
+{{- define "main" -}}
+{{- if and .IsSection (eq .Section "posts") -}}
+  {{- partial "year-archive.html" . -}}
+{{- else -}}
+{{- if .IsHome -}}
+<section class="site-intro" aria-label="作者简介">
+  {{- with site.Params.avatar -}}<img class="site-avatar" src="{{ . }}" alt="倾旋的头像" width="72" height="72" />{{- end -}}
+  <div>
+    <h1>{{ site.Params.author }}</h1>
+    <p class="intro-bio">{{ site.Params.bio }}</p>
+  </div>
+</section>
+{{- end -}}
+
+{{- if eq .Type "tags" -}}
+<h1 class="archive-title">#{{ .Title }}</h1>
+{{- else if not .IsHome -}}
+<h1 class="archive-title">{{ .Title }}</h1>
+{{- end -}}
+
+{{- $pages := union .RegularPages .Sections -}}
+{{- if .IsHome -}}
+  {{- $pages = where (where site.RegularPages "Section" "posts") "Params.date" "ne" nil -}}
+{{- end -}}
+{{- $paginator := .Paginate ($pages.ByDate.Reverse) 12 -}}
+
+<div class="list-heading">
+  {{- if .IsHome -}}<h2>最新文章</h2>{{- else -}}<h2>文章</h2>{{- end -}}
+  {{- if .IsHome -}}<a href="{{ `posts/` | relURL }}">查看全部文章</a>{{- end -}}
+</div>
+<div class="post-list">
+  {{- range $paginator.Pages -}}
+  <article class="post-item">
+    <time datetime="{{ .Date.Format `2006-01-02` }}">{{ .Date.Format "2006.01.02" }}</time>
+    <div class="post-item-content">
+      <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+      {{- with .Params.description -}}<p>{{ . | plainify }}</p>{{- else -}}{{- with .Summary -}}<p>{{ . | plainify | truncate 145 }}</p>{{- end -}}{{- end -}}
+    </div>
+  </article>
+  {{- else -}}
+  <p class="empty-list">这里还没有文章。</p>
+  {{- end -}}
+</div>
+{{- if gt $paginator.TotalPages 1 -}}
+<nav class="pagination" aria-label="文章分页">
+  {{- if $paginator.HasPrev -}}<a href="{{ $paginator.Prev.URL }}">上一页</a>{{- end -}}
+  <span>第 {{ $paginator.PageNumber }} / {{ $paginator.TotalPages }} 页</span>
+  {{- if $paginator.HasNext -}}<a href="{{ $paginator.Next.URL }}">下一页</a>{{- end -}}
+</nav>
+{{- end -}}
+{{- end -}}
+{{- end -}}
