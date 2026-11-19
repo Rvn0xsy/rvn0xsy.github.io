@@ -14,6 +14,7 @@ theme = "hugo-paper"
 [params]
   email = "rvn0xsy@gmail.com"
   avatar = "/avatar.jpeg"
+  images = ["apple-touch-icon.png"]
   author = "倾旋"
   bio = "从事网络安全行业多年，现阶段在进行企业安全建设与红队评估相关的工作，我的博客会记录一些我的学习过程和部分安全技术研究成果。"
   
